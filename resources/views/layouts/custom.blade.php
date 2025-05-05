@@ -15,6 +15,33 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet" />
+    <style>
+        /* Highlight the active link background */
+        .nav-item.active>.nav-link,
+        .collapse-item.active {
+            background-color: #f5b642;
+            ;
+            /* Example: Bootstrap primary */
+            color: #fff !important;
+        }
+
+        .bg-success {
+            background-color: #f5b642 !important
+        }
+
+        /* Optional: icon and text inside nav-link */
+        .nav-item.active i,
+        .nav-item.active span {
+            color: #fff !important;
+        }
+
+        /* Highlight collapsed child item (e.g., inside dropdown) */
+        .collapse-item.active {
+            font-weight: bold;
+            border-left: 3px solid #f5b642;
+            ;
+        }
+    </style>
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet" />
@@ -37,23 +64,24 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="/dashboard">
+            <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
+                    <span>Dashboard</span>
+                </a>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider" />
+                <!-- Divider -->
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+
+                <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cogs"></i>
                     <span>Shipments</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseTwo" class="collapse {{ request()->routeIs('shipments.*') ? 'active' : '' }}"
+                    aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
@@ -62,17 +90,17 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider" />
+
 
             <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
                     aria-expanded="true" aria-controls="collapseClients">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Clients</span>
                 </a>
-                <div id="collapseClients" class="collapse" aria-labelledby="headingClients"
-                    data-parent="#accordionSidebar">
+                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
                         <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a>
@@ -81,17 +109,18 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider" />
+
 
             <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCompanyInfo"
                     aria-expanded="true" aria-controls="collapseCompanyInfo">
                     <i class="fas fa-fw fa-building"></i>
                     <span>Company Info</span>
                 </a>
-                <div id="collapseCompanyInfo" class="collapse" aria-labelledby="headingCompanyInfo"
-                    data-parent="#accordionSidebar">
+                <div id="collapseCompanyInfo"
+                    class="collapse {{ request()->routeIs('company_infos.*') ? 'active' : '' }}"
+                    aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('company_infos.index') }}">All Company Info</a>
                         <a class="collapse-item" href="{{ route('company_infos.create') }}">Add Company Info</a>
@@ -99,17 +128,17 @@
                 </div>
             </li>
 
-            <hr class="sidebar-divider" />
+
 
             <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item {{ request()->routeIs('offices.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOffice"
                     aria-expanded="true" aria-controls="collapseOffice">
                     <i class="fas fa-fw fa-home"></i>
                     <span>Office</span>
                 </a>
-                <div id="collapseOffice" class="collapse" aria-labelledby="headingCompanyInfo"
-                    data-parent="#accordionSidebar">
+                <div id="collapseOffice" class="collapse {{ request()->routeIs('offices.*') ? 'active' : '' }}"
+                    aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('offices.index') }}">All Offices</a>
                         <a class="collapse-item" href="{{ route('offices.create') }}">Add Office</a>
@@ -118,17 +147,17 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider" />
+
 
             <!-- Nav Item - Vehicles Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVehicles"
                     aria-expanded="true" aria-controls="collapseVehicles">
                     <i class="fas fa-fw fa-truck"></i>
                     <span>Vehicles</span>
                 </a>
-                <div id="collapseVehicles" class="collapse" aria-labelledby="headingVehicles"
-                    data-parent="#accordionSidebar">
+                <div id="collapseVehicles" class="collapse {{ request()->routeIs('vehicles.*') ? 'active' : '' }}"
+                    aria-labelledby="headingVehicles" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('vehicles.index') }}">All Vehicles</a>
                         <a class="collapse-item" href="{{ route('vehicles.create') }}">Add Vehicles</a>
@@ -138,23 +167,43 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider" />
+
 
             <!-- Nav Item - Rates Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item {{ request()->routeIs('rates.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
                     aria-expanded="true" aria-controls="collapseRates">
                     <i class="fas fa-fw fa-dollar-sign"></i>
                     <span>Rates</span>
                 </a>
-                <div id="collapseRates" class="collapse" aria-labelledby="headingRates"
-                    data-parent="#accordionSidebar">
+                <div id="collapseRates" class="collapse {{ request()->routeIs('rates.*') ? 'active' : '' }}"
+                    aria-labelledby="headingRates" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('rates.index') }}">All Rates</a>
                         <a class="collapse-item" href="{{ route('rates.create') }}">Add Rate</a>
                     </div>
                 </div>
             </li>
+            <!-- Nav Item - Stations Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('stations.*') ? 'active' : '' }}">
+                <a class="nav-link {{ request()->routeIs('stations.*') ? '' : 'collapsed' }}" href="#"
+                    data-toggle="collapse" data-target="#collapseStations"
+                    aria-expanded="{{ request()->routeIs('stations.*') ? 'true' : 'false' }}"
+                    aria-controls="collapseStations">
+                    <i class="fas fa-fw fa-dollar-sign"></i>
+                    <span>Stations</span>
+                </a>
+                <div id="collapseStations" class="collapse {{ request()->routeIs('stations.*') ? 'show' : '' }}"
+                    aria-labelledby="headingStations" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item {{ request()->routeIs('stations.index') ? 'active' : '' }}"
+                            href="{{ route('stations.index') }}">All Stations</a>
+                        <a class="collapse-item {{ request()->routeIs('stations.create') ? 'active' : '' }}"
+                            href="{{ route('stations.create') }}">Add Station</a>
+                    </div>
+                </div>
+            </li>
+
 
             <!-- Nav Item - Pages Collapse Menu -->
 
@@ -343,6 +392,37 @@
         <!-- Page level custom scripts -->
         <script src="{{ asset('assets/js/demo/chart-area-demo.js') }}"></script>
         <script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script> --}}
+
+        <script>
+            $('#station_name').on('focusout', function() {
+                let station_name = $(this).val();
+
+                if (station_name !== '') {
+                    $.ajax({
+                        url: '/check_station_name',
+                        method: 'POST',
+                        data: {
+                            station_name: station_name,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.exists) {
+                                $('#station_name_feedback').text('Station Name already saved').css('color',
+                                    'red');
+                                $('#submit-btn').prop('disabled', true);
+                            } else {
+                                $('#station_name_feedback').text('Station Name available').css('color',
+                                    'green');
+                                $('#submit-btn').prop('disabled', false);
+                            }
+                        }
+                    });
+                } else {
+                    $('#station_name_feedback').text('');
+                    $('#submit-btn').prop('disabled', true);
+                }
+            });
+        </script>
         <script>
             // Wait for DOM to load
             document.addEventListener("DOMContentLoaded", function() {
