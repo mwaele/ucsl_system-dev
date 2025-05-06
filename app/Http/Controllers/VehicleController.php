@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
+use App\Models\Shipment;
+use App\Models\Driver;
 use App\Models\User;
 use App\Models\CompanyInfo;
 use Illuminate\Http\Request;
@@ -15,7 +17,9 @@ class VehicleController extends Controller
     public function index()
     {
         $vehicles = Vehicle::all();
-        return view('vehicles.index')->with('vehicles',$vehicles);
+        $shipments = Shipment::all();
+        $drivers = Driver::all();
+        return view('vehicles.index', compact('vehicles', 'shipments', 'drivers'));
     }
 
     /**
@@ -86,4 +90,22 @@ class VehicleController extends Controller
     {
         //
     }
+
+    /**
+     * Allocate the specified resource from storage to a shipment.
+     */
+    public function allocate(Request $request, Vehicle $vehicle)
+    {
+        $request->validate([
+            'shipment_id' => 'required|exists:shipments,id',
+        ]);
+
+        $vehicle->update([
+            'shipment_id' => $request->shipment_id,
+            'status' => 'allocated',
+        ]);
+
+        return redirect()->back()->with('success', 'Vehicle allocated successfully.');
+    }
+
 }
