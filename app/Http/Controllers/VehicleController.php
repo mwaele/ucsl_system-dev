@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
 use App\Models\Shipment;
-use App\Models\Driver;
 use App\Models\User;
 use App\Models\CompanyInfo;
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ class VehicleController extends Controller
     {
         $vehicles = Vehicle::all();
         $shipments = Shipment::all();
-        $drivers = Driver::all();
+        $drivers = User::where('role', 'driver')->get();
         return view('vehicles.index', compact('vehicles', 'shipments', 'drivers'));
     }
 
