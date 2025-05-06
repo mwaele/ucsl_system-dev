@@ -13,11 +13,17 @@ class Vehicle extends Model
         'tonnage',     
         'status',      
         'description', 
-        'user_id',     
+        'shipment_id',   
+        'user_id',  
         'ownedBy', 
     ];
 
+    public function shipment(){
+        return $this->belongsTo('App\Models\Shipment');
+    }
+    
     public function user(){
         return $this->belongsTo('App\Models\User');
     }
+    
 }

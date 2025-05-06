@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StationController;
 
@@ -16,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
+    Route::post('/shipments/{id}/deliver', [ShipmentController::class, 'markAsDelivered'])->name('shipments.deliver');
     Route::resource('shipments','App\Http\Controllers\ShipmentController');
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');

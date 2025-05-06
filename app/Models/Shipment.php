@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Shipment extends Model
 {
     //
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
 }

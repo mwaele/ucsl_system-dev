@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
 class ShipmentController extends Controller
@@ -12,7 +13,26 @@ class ShipmentController extends Controller
      */
     public function index()
     {
-        return view('shipments.index');
+        $vehicles = Vehicle::all();
+        $shipments = Shipment::all();
+        return view('shipments.index', compact('vehicles', 'shipments'));
+    }
+
+    public function markAsDelivered(Shipment $shipment)
+    {
+        // Update shipment status
+        $shipment->update(['status' => 'delivered']);
+
+        // Update vehicle if it's linked to this shipment
+        $vehicle = Vehicle::where('shipment_id', $shipment->id)->first();
+        if ($vehicle) {
+            $vehicle->update([
+                'status' => 'available',
+                'shipment_id' => null,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Shipment marked as delivered and vehicle released.');
     }
 
     /**

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text("description");
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
             $table->text("ownedBy");
+            $table->foreignId('shipment_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }
