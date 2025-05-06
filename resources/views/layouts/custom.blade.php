@@ -85,7 +85,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
-                        <a class="collapse-item" href="{{ route('shipments.create') }}">Loading Sheets</a>
+                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Loading Sheets</a>
                     </div>
                 </div>
             </li>

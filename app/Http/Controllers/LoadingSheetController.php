@@ -13,6 +13,8 @@ class LoadingSheetController extends Controller
     public function index()
     {
         //
+        $sheets = LoadingSheet::all();
+        return view('loading-sheet.index', compact('sheets'));
     }
 
     /**
@@ -21,6 +23,7 @@ class LoadingSheetController extends Controller
     public function create()
     {
         //
+        return view('loading-sheet.create');
     }
 
     /**
