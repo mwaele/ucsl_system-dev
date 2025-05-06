@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StationController;
 
 Route::get('/', function () {
     return view('index');
@@ -28,6 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('rates','App\Http\Controllers\RateController');
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
+    Route::resource('stations','App\Http\Controllers\StationController');
+    Route::post('/check_station_name', [StationController::class, 'checkStation']);
+
+    
 });
 
 require __DIR__.'/auth.php';
