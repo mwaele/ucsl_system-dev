@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
+use App\Models\Station;
+use App\Models\Client;
+
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
@@ -15,6 +18,8 @@ class ShipmentController extends Controller
     {
         $vehicles = Vehicle::all();
         $shipments = Shipment::all();
+        $stations = Station::all();
+        $clients = client::all();
         return view('shipments.index', compact('vehicles', 'shipments'));
     }
 
@@ -40,7 +45,9 @@ class ShipmentController extends Controller
      */
     public function create()
     {
-        return view('shipments.create');
+        $stations = Station::all();
+        $clients = client::all();
+        return view('shipments.create')->with(['stations'=>$stations,'clients'=>$clients]);;
     }
 
     /**

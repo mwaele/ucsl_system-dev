@@ -192,7 +192,7 @@
                     data-toggle="collapse" data-target="#collapseStations"
                     aria-expanded="{{ request()->routeIs('stations.*') ? 'true' : 'false' }}"
                     aria-controls="collapseStations">
-                    <i class="fas fa-fw fa-dollar-sign"></i>
+                    <i class="fas fa-fw fa-map"></i>
                     <span>Stations</span>
                 </a>
                 <div id="collapseStations" class="collapse {{ request()->routeIs('stations.*') ? 'show' : '' }}"
@@ -444,6 +444,18 @@
         </script>
         <script>
             $(document).ready(function() {
+                $('#addRowBtn').on('click', function() {
+                    let newRow = $('#shipmentTable tbody tr:first').clone();
+                    newRow.find('input').val(''); // clear inputs
+                    $('#shipmentTable tbody').append(newRow);
+                });
+
+                // Delegate event to handle dynamically added rows
+                $('#shipmentTable').on('click', '.remove-row', function() {
+                    if ($('#shipmentTable tbody tr').length > 1) {
+                        $(this).closest('tr').remove();
+                    }
+                });
                 // Initialize flatpickr datetime picker
                 $(".datetime").flatpickr({
                     enableTime: true,
@@ -451,23 +463,23 @@
                 });
 
                 // Add new row to shipment table
-                $('#addRowBtn').click(function() {
-                    $('#shipmentTable tbody').append(`
-                      <tr>
-                        <td><input type="number" class="form-control" name="packages[]"></td>
-                        <td><input type="number" class="form-control" name="weight[]"></td>
-                        <td><input type="number" class="form-control" name="length[]"></td>
-                        <td><input type="number" class="form-control" name="width[]"></td>
-                        <td><input type="number" class="form-control" name="height[]"></td>
-                        <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-                      </tr>
-                    `);
-                });
+                // $('#addRowBtn').click(function() {
+                //     $('#shipmentTable tbody').append(`
+        //       <tr>
+        //         <td><input type="number" class="form-control" name="packages[]"></td>
+        //         <td><input type="number" class="form-control" name="weight[]"></td>
+        //         <td><input type="number" class="form-control" name="length[]"></td>
+        //         <td><input type="number" class="form-control" name="width[]"></td>
+        //         <td><input type="number" class="form-control" name="height[]"></td>
+        //         <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+        //       </tr>
+        //     `);
+                // });
 
-                // Remove row
-                $(document).on('click', '.remove-row', function() {
-                    $(this).closest('tr').remove();
-                });
+                // // Remove row
+                // $(document).on('click', '.remove-row', function() {
+                //     $(this).closest('tr').remove();
+                // });
             });
         </script>
 </body>
