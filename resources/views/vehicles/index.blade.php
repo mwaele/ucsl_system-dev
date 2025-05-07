@@ -76,7 +76,7 @@
                                                                 @endforeach
                                                             </select>
                                                             <label>Select driver to allocate to shipment</label>
-                                                            <select name="shipment_id" class="form-control" id="shipment-select-{{ $vehicle->id }}" onchange="enableButton({{ $vehicle->id }})">
+                                                            <select name="driver" class="form-control" id="shipment-select-{{ $vehicle->id }}" onchange="enableButton({{ $vehicle->id }})">
                                                                 <option value="">Select Driver</option>
                                                                 @foreach ($drivers as $driver)
                                                                     <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->status }})</option>
