@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoadingSheet;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LoadingSheetController extends Controller
@@ -14,7 +15,8 @@ class LoadingSheetController extends Controller
     {
         //
         $sheets = LoadingSheet::all();
-        return view('loading-sheet.index', compact('sheets'));
+        $drivers = User::where('role', 'driver')->get();
+        return view('loading-sheet.index', compact('sheets', 'drivers'));
     }
 
     /**

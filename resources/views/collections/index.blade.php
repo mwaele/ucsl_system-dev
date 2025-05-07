@@ -88,21 +88,25 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Dispatch date</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Vehicle Number</th>
-                            <th>Transporter</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Client</th>
+                            <th>Location</th>
+                            <th>Parcel</th>
+                            <th>Details</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Dispatch date</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Vehicle Number</th>
-                            <th>Transporter</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Client</th>
+                            <th>Location</th>
+                            <th>Parcel</th>
+                            <th>Details</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>
