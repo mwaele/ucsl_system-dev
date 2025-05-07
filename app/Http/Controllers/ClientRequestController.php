@@ -20,7 +20,7 @@ class ClientRequestController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -28,7 +28,20 @@ class ClientRequestController extends Controller
      */
     public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'clientId'=>'required',
+            'collectionLocation'=>'required',
+            'parcelDetails'=>'required',
+            'dateRequested'=>'required',
+            'userId'=>'required',
+            'vehicleId'=>'required',
+            'requestId'=>'required',
+        ]);
+
+        $clent_requests = new ClientRequest($validatedData);
+        $clent_requests->save();
         
+        return redirect()->route('collections.index')->with('Success', 'client request Saved Successfully');
     }
 
     /**
