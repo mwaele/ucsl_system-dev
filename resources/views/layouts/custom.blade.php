@@ -42,6 +42,8 @@
             ;
         }
     </style>
+    <!-- Scripts -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet" />
@@ -86,7 +88,7 @@
                         <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
                         <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Loading Sheets</a>
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Collections</a>
+                        <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                     </div>
                 </div>
             </li>

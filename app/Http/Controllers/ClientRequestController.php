@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClientRequest;
+use App\Models\Client;
+use App\Models\Vehicle;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ClientRequestController extends Controller
@@ -13,6 +16,11 @@ class ClientRequestController extends Controller
     public function index()
     {
         //
+        $client_requests = Client::all();
+        $clients = Client::all();
+        $vehicles = Vehicle::all();
+        $drivers = User::where('role', 'driver')->get();
+        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests'));
     }
 
     /**
