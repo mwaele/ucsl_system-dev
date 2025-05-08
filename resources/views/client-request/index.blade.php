@@ -139,11 +139,11 @@
                         @foreach ($client_requests as $request)
                             <tr>
                                 <td> {{ $request->requestId }} </td>
-                                <td> {{ $request->clientId }} </td>
+                                <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
                                 <td> {{ $request->dateRequested }} </td>
-                                <td> {{ $request->userId }} </td>
-                                <td> {{ $request->vehicleId }} </td>
+                                <td> {{ $request->user->name }} </td>
+                                <td> {{ $request->vehicle->regNo }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td class="row pl-4">
                                     <a href="">
