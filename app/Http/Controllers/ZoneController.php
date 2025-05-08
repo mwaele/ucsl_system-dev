@@ -30,13 +30,12 @@ class ZoneController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'station_name'=>'required',
-            'station_prefix' => 'nullable|string',
+            'zone_name'=>'required',
             'description' => 'nullable|string',
         ]);
 
-        $station = new Zone($validatedData);
-        $station->save();
+        $zone = new Zone($validatedData);
+        $zone->save();
         
         return redirect()->route('zones.index')->with('Success', 'Station Saved Successfully');
         
@@ -45,7 +44,7 @@ class ZoneController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Zone $station)
+    public function show(Zone $zone)
     {
         //
     }
@@ -53,7 +52,7 @@ class ZoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Zone $station)
+    public function edit(Zone $zone)
     {
         //
     }
@@ -61,7 +60,7 @@ class ZoneController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Station $station)
+    public function update(Request $request, Station $zone)
     {
         //
     }
@@ -71,8 +70,8 @@ class ZoneController extends Controller
      */
     public function destroy($id)
     {
-        $station = Zone::find($id);
-        $station->delete();
+        $zone = Zone::find($id);
+        $zone->delete();
         return redirect()->route('zones.index')->with('Success', 'Station info deleted successfully.');
     }
     public function checkZone(Request $request)

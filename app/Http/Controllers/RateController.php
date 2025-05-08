@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rate;
+use App\Models\Office;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -14,7 +16,10 @@ class RateController extends Controller
     public function index()
     {
         $rates = Rate::all();
-        return view('rates.index')->with('rates',$rates);
+        $offices = Office::all();
+        $zones = Zone::all();
+ 
+        return view('rates.index')->with(['rates'=>$rates]);
     }
 
     /**
@@ -22,7 +27,9 @@ class RateController extends Controller
      */
     public function create()
     {
-        return view('rates.create');
+        $offices = Office::all();
+        $zones = Zone::all();
+        return view('rates.create')->with(['offices'=>$offices,'zones'=>$zones]);
     }
 
     /**
@@ -33,7 +40,6 @@ class RateController extends Controller
         $validatedDate = $request->validate(
             [
                 'approvedBy'=>'nullable|string',
-                'routeFrom'=>'required',
                 'zone'=>'nullable|string',
                 'origin'=>'nullable|string',
                 'destination'=>'nullable|string',
@@ -43,6 +49,8 @@ class RateController extends Controller
                 'status'=>'required',
                 'approvalStatus'=>'required',
                 'dateApproved'=>'nullable|string',
+                'office_id' =>'required',
+                'zone_id'=>'required'
             ]
             );
             $validatedDate['added_by'] = Auth::user()->id;

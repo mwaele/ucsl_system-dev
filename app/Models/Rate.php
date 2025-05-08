@@ -10,7 +10,6 @@ class Rate extends Model
         'approvedBy',
         'added_by',
         'routeFrom',
-        'zone',
         'origin',
         'destination',
         'rate',
@@ -19,5 +18,20 @@ class Rate extends Model
         'status',
         'approvalStatus',
         'dateApproved',
+        'office_id',
+        'zone_id'
     ];
+
+    
+    public function office()
+    {
+        return $this->belongsTo(Office::class);
+    }
+    
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+
 }

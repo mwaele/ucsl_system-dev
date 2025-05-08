@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('zones', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('rates', function (Blueprint $table) {
+            $table->foreignId('office_id');
+            $table->foreignId('zone_id');
         });
     }
 
@@ -22,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('zones');
+        Schema::table('rates', function (Blueprint $table) {
+            $table->dropColumn(['office_id','zone_id']);
+        });
     }
 };

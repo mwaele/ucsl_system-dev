@@ -16,26 +16,40 @@
                 <div class="row">
                     @csrf
                     <div class="col-md-4">
-                        <div class="form-group"><label>Route From <span class="text-danger">*</span></label>
-                            <input type="text" name="routeFrom" class="form-control" required="">
+                        <div class="form-group"><label class="text-primary">Route From <span
+                                    class="text-danger">*</span></label>
+                            <select name="office_id" class="form-control" required="">
+                                <option value="">Select</option>
+                                @foreach ($offices as $office)
+                                    <option value="{{ $office->id }}">{{ $office->name }}</option>
+                                @endforeach
+
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group"><label>Zone </label>
-                            <input type="text" name="zone" class="form-control">
+                        <div class="form-group"><label class="text-primary">Zone </label>
+                            <select name="zone_id" class="form-control" required="">
+                                <option value="">Select</option>
+                                @foreach ($zones as $zone)
+                                    <option value="{{ $zone->id }}">{{ $zone->zone_name }}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label class="text-primary">Destination </label>
+                            <input type="text" name="destination" class="form-control">
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group"><label>Destination </label>
-                            <input type="text" name="destination" class="form-control">
-                        </div>
-                    </div>
+
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="longitude">Rate <span class="text-danger">*</span></label>
+                            <label class="text-primary" for="longitude">Rate <span class="text-danger">*</span></label>
                             <input type="text" name="rate" required class="form-control">
                         </div>
                     </div>
@@ -43,23 +57,25 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="applicableFrom">Applicable From</label>
+                            <label class="text-primary" for="applicableFrom">Applicable From</label>
                             <input type="date" name="applicableFrom" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="text-primary" for="applicableFrom">Applicable To</label>
+                            <input type="date" name="applicableTo" class="form-control">
                         </div>
                     </div>
 
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="applicableFrom">Applicable To</label>
-                            <input type="date" name="applicableTo" class="form-control">
-                        </div>
-                    </div>
+
 
                     <div class="col-md-4">
-                        <div class="form-group"><label>Approval Status</label>
+                        <div class="form-group"><label class="text-primary">Approval Status</label>
                             <select name="approvalStatus" class="form-control">
                                 <option value="">Select Status</option>
                                 <option value="pending">Pending</option>
@@ -68,7 +84,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group"><label>Status</label>
+                        <div class="form-group"><label class="text-primary">Status</label>
                             <select name="status" class="form-control">
                                 <option value="">Select Status</option>
                                 <option value="active">Active</option>
@@ -86,7 +102,7 @@
 
 
                     <div class="col-md-4 pt-2">
-                        <label for=""></label>
+                        <label class="text-primary" for=""></label>
                         <button type="submit" class="form-control btn btn-primary btn-sm submit">
                             <i class="fas fa-save text-white"></i>
                             Save</button>

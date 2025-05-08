@@ -212,10 +212,8 @@
                 <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
                     aria-labelledby="headingZones" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item {{ request()->routeIs('zones.index') ? 'active' : '' }}"
-                            href="{{ route('zones.index') }}">All Zones</a>
-                        <a class="collapse-item {{ request()->routeIs('zones.create') ? 'active' : '' }}"
-                            href="{{ route('zones.create') }}">Add Station</a>
+                        <a class="collapse-item" href="{{ route('zones.index') }}">All Zones</a>
+                        <a class="collapse-item " href="{{ route('zones.create') }}">Add Station</a>
                     </div>
                 </div>
             </li>
