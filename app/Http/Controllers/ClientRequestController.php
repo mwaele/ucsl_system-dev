@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Vehicle;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ClientRequestController extends Controller
 {
@@ -19,7 +20,7 @@ class ClientRequestController extends Controller
         do {
             $request_id = 'REQ-' . mt_rand(10000, 99999);
         } while (ClientRequest::where('requestId', $request_id)->exists());
-        $client_requests = Client::all();
+        $client_requests = ClientRequest::all();
         $clients = Client::all();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
@@ -43,9 +44,7 @@ class ClientRequestController extends Controller
         $client_requests -> clientId = $request -> clientId;
         $client_requests -> collectionLocation = $request -> collectionLocation;
         $client_requests -> parcelDetails = $request -> parcelDetails;
-        $client_requests -> dateRequested = $request->merge([
-            'dateRequested' => \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d H:i:s')
-        ]);;
+        $client_requests->dateRequested = Carbon::parse($request->dateRequested)->format('Y-m-d H:i:s');
         $client_requests -> userId = $request -> userId;
         $client_requests -> vehicleId = $request -> vehicleId;
         $client_requests -> requestId = $request -> requestId;

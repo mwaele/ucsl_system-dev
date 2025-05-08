@@ -90,8 +90,10 @@
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="datetime">Choose Date & Time:</label>
-                                            <input type="text" name="dateRequested" id="datetime" class="form-control">
+                                            <label for="datetime">Date of Request</label>
+                                            <div class="input-group">
+                                                <input type="text" name="dateRequested" id="datetime" class="form-control">
+                                            </div>
                                         </div>
 
                                     </div>
@@ -118,7 +120,6 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Description of goods</th>
-                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -131,7 +132,6 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Description of goods</th>
-                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>
@@ -145,7 +145,6 @@
                                 <td> {{ $request->userId }} </td>
                                 <td> {{ $request->vehicleId }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
-                                <td> {{ $request->status }} </td>
                                 <td class="row pl-4">
                                     <a href="">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
