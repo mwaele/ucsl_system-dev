@@ -16,11 +16,14 @@ class ClientRequestController extends Controller
     public function index()
     {
         //
+        do {
+            $request_id = 'REQ-' . mt_rand(10000, 99999);
+        } while (ClientRequest::where('requestId', $request_id)->exists());
         $client_requests = Client::all();
         $clients = Client::all();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests'));
+        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id'));
     }
 
     /**

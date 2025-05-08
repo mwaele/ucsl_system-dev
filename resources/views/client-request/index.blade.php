@@ -79,7 +79,7 @@
 
                                 <div class="col-md-4 mb-3">
                                 <label for="requestId" class="form-label">Request ID</label>
-                                <input type="text" class="form-control" id="requestId">
+                                <input type="text" value="{{ $request_id }}" name="requestId" class="form-control" id="request_id" readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="dateRequested" class="form-label">Date of Request</label>
@@ -87,7 +87,7 @@
                                         <input type="text" class="form-control datetimepicker-input" placeholder="Select date & time" data-target="#kt_datetimepicker_1"/>
                                         <div class="input-group-append" data-target="#kt_datetimepicker_1" data-toggle="datetimepicker">
                                             <span class="input-group-text">
-                                                <i class="ki ki-calendar"></i>
+                                                <i class="fa fa-calendar"></i>
                                             </span>
                                         </div>
                                     </div>
