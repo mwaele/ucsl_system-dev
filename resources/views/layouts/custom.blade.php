@@ -50,6 +50,11 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet" />
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Optional: Flatpickr Bootstrap Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
 </head>
 
 <body id="page-top">
@@ -396,6 +401,18 @@
 
         <!-- Custom scripts for all pages-->
         <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
+
+        <!-- Flatpickr JS -->
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+        <script>
+            // Initialize Flatpickr
+            flatpickr("#datetime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+            });
+        </script>
+
 
         {{-- <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/chart.js/Chart.min.js') }}"></script>

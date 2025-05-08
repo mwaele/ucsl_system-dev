@@ -26,8 +26,9 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group"><label>Origin </label>
-                            <input type="text" name="origin" class="form-control">
+                        <div class="form-group">
+                            <label for="datetime">Choose Date & Time:</label>
+                            <input type="text" id="datetime" class="form-control">
                         </div>
                     </div>
                 </div>
