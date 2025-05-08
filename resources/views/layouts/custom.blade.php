@@ -80,11 +80,19 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
+            </li>
 
-                <!-- Divider -->
+            <li class="nav-item {{ request()->routeIs('my_collections') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('my_collections.show') }}">
+                    <i class="fas fa-fw fa-clipboard"></i>
+                    <span>My Collections</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
 
 
-                <!-- Nav Item - Pages Collapse Menu -->
+            <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
@@ -194,22 +202,22 @@
                     </div>
                 </div>
             </li>
-            <!-- Nav Item - Stations Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('stations.*') ? 'active' : '' }}">
-                <a class="nav-link {{ request()->routeIs('stations.*') ? '' : 'collapsed' }}" href="#"
-                    data-toggle="collapse" data-target="#collapseStations"
-                    aria-expanded="{{ request()->routeIs('stations.*') ? 'true' : 'false' }}"
-                    aria-controls="collapseStations">
+            <!-- Nav Item - Zones Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
+                <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
+                    data-toggle="collapse" data-target="#collapseZones"
+                    aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
+                    aria-controls="collapseZones">
                     <i class="fas fa-fw fa-map"></i>
-                    <span>Stations</span>
+                    <span>Zones</span>
                 </a>
-                <div id="collapseStations" class="collapse {{ request()->routeIs('stations.*') ? 'show' : '' }}"
-                    aria-labelledby="headingStations" data-parent="#accordionSidebar">
+                <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
+                    aria-labelledby="headingZones" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item {{ request()->routeIs('stations.index') ? 'active' : '' }}"
-                            href="{{ route('stations.index') }}">All Stations</a>
-                        <a class="collapse-item {{ request()->routeIs('stations.create') ? 'active' : '' }}"
-                            href="{{ route('stations.create') }}">Add Station</a>
+                        <a class="collapse-item {{ request()->routeIs('zones.index') ? 'active' : '' }}"
+                            href="{{ route('zones.index') }}">All Zones</a>
+                        <a class="collapse-item {{ request()->routeIs('zones.create') ? 'active' : '' }}"
+                            href="{{ route('zones.create') }}">Add Station</a>
                     </div>
                 </div>
             </li>

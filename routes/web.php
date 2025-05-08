@@ -6,6 +6,8 @@ use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StationController;
 
+use App\Http\Controllers\MyCollectionController;
+
 Route::get('/', function () {
     return view('index');
 })->middleware(['auth', 'verified'])->name('index');;
@@ -16,6 +18,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
@@ -33,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('stations','App\Http\Controllers\StationController');
     Route::resource('clientRequests','App\Http\Controllers\ClientRequestController');
     Route::post('/check_station_name', [StationController::class, 'checkStation']);
+    Route::resource('zones','App\Http\Controllers\ZoneController');
 });
 
 require __DIR__.'/auth.php';
