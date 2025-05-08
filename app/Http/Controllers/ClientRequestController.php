@@ -38,21 +38,20 @@ class ClientRequestController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'clientId'=>'required',
-            'collectionLocation'=>'required',
-            'parcelDetails'=>'required',
-            'dateRequested'=>'required',
-            'userId'=>'required',
-            'vehicleId'=>'required',
-            'requestId'=>'required',
-        ]);
-
-        $clent_requests = new ClientRequest($validatedData);
-        $clent_requests->save();
+    {       
+        $client_requests = new ClientRequest();
+        $client_requests -> clientId = $request -> clientId;
+        $client_requests -> collectionLocation = $request -> collectionLocation;
+        $client_requests -> parcelDetails = $request -> parcelDetails;
+        $client_requests -> dateRequested = $request->merge([
+            'dateRequested' => \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d H:i:s')
+        ]);;
+        $client_requests -> userId = $request -> userId;
+        $client_requests -> vehicleId = $request -> vehicleId;
+        $client_requests -> requestId = $request -> requestId;
+        $client_requests->save();
         
-        return redirect()->route('collections.index')->with('Success', 'client request Saved Successfully');
+        return redirect()->route('clientRequests.index')->with('Success', 'client request Saved Successfully');
     }
 
     /**
