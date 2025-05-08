@@ -19,7 +19,7 @@ return new class extends Migration
             $table->dateTime('dateRequested');
             $table->foreignId('userId');
             $table->foreignId('vehicleId');
-            $table->string('requestId');
+            $table->string('requestId')->unique();;
             $table->timestamps();
         });
     }

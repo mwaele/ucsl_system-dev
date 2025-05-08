@@ -12,6 +12,9 @@
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- Tempus Dominus CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.5/dist/css/tempus-dominus.min.css" />
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet" />
@@ -92,9 +95,6 @@
                     </div>
                 </div>
             </li>
-
-            <!-- Divider -->
-
 
             <!-- Nav Item - Clients Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
@@ -380,6 +380,13 @@
             </div>
         </div>
 
+
+        <!-- Moment.js (required for legacy versions) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+        <!-- Tempus Dominus JS -->
+        <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.5/dist/js/tempus-dominus.min.js"></script>
+
         <!-- Bootstrap core JavaScript-->
         <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -396,6 +403,29 @@
         <!-- Page level custom scripts -->
         <script src="{{ asset('assets/js/demo/chart-area-demo.js') }}"></script>
         <script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script> --}}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                new tempusDominus.TempusDominus(document.getElementById('kt_datetimepicker_1'), {
+                    display: {
+                        components: {
+                            calendar: true,
+                            date: true,
+                            month: true,
+                            year: true,
+                            decades: true,
+                            clock: true,
+                            hours: true,
+                            minutes: true,
+                            seconds: false
+                        }
+                    },
+                    localization: {
+                        format: 'yyyy-MM-DD HH:mm'
+                    }
+                });
+            });
+        </script>
 
         <script>
             $('#station_name').on('focusout', function() {

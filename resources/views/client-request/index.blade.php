@@ -16,22 +16,21 @@
                 <div class="modal fade" id="createLoadingSheet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                         <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Create Client Request</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <div class="modal-header bg-gradient-primary">
+                            <h5 class="modal-title text-white" id="exampleModalLabel">Create Client Request</h5>
+                            <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
                             <form>
-                            <h6 class="fw-bold text-black">Client Request Information</h6>
                             <p class="text-muted">Fill in the client details.</p>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
 
                                     <label for="clientId" class="form-label">Client</label>
-                                    <select class="form-control" id="clientId">
+                                    <select class="form-control" id="clientId" name="clientId">
                                         <option value="">Select Client</option>
                                         @foreach ($clients as $client)
                                             <option value="{{ $client->id }}">{{ $client->name }} ({{ $client->accountNo }})</option>
@@ -40,7 +39,7 @@
                                 </div>
                                 <div class="col-md-6">
                                 <label for="collectionLocation" class="form-label">Pickup Location</label>
-                                <input type="text" class="form-control" id="collectionLocation">
+                                <input type="text" class="form-control" name="collectionLocation" id="collectionLocation">
                                 </div>
                             </div>
 
@@ -59,7 +58,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="userId" class="form-label">Rider</label>
-                                    <select class="form-control" id="userId">
+                                    <select class="form-control" id="userId" name="userId">
                                         <option value="">Select Rider</option>
                                         @foreach ($drivers as $driver)
                                             <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->station }})</option>
@@ -79,15 +78,15 @@
 
                                 <div class="col-md-4 mb-3">
                                 <label for="requestId" class="form-label">Request ID</label>
-                                <input type="text" class="form-control" id="requestId">
+                                <input type="text" value="{{ $request_id }}" name="requestId" class="form-control" id="request_id" readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="dateRequested" class="form-label">Date of Request</label>
                                     <div class="input-group date" id="kt_datetimepicker_1" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input" placeholder="Select date & time" data-target="#kt_datetimepicker_1"/>
+                                        <input type="text" name="dateRequested" class="form-control datetimepicker-input" placeholder="Select date & time" data-target="#kt_datetimepicker_1"/>
                                         <div class="input-group-append" data-target="#kt_datetimepicker_1" data-toggle="datetimepicker">
                                             <span class="input-group-text">
-                                                <i class="ki ki-calendar"></i>
+                                                <i class="fa fa-calendar"></i>
                                             </span>
                                         </div>
                                     </div>
