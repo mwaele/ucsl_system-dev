@@ -234,21 +234,55 @@
 
                                                     <div class="form-group">
                                                         <label>Rider</label>
-                                                        <select name="userId" class="form-control">
+                                                        <select name="userId" class="form-control rider-select" data-modal="{{ $request->requestId }}">
+                                                            <option value="">Select Rider</option>
                                                             @foreach($drivers as $driver)
-                                                                <option value="{{ $driver->id }}" {{ $driver->id == $request->userId ? 'selected' : '' }}>{{ $driver->name }}</option>
+                                                                @php
+                                                                    $assignedVehicle = $vehicles->firstWhere('user_id', $driver->id);
+                                                                @endphp
+                                                                <option 
+                                                                    value="{{ $driver->id }}" 
+                                                                    data-vehicle="{{ $assignedVehicle ? $assignedVehicle->regNo : '' }}" 
+                                                                    {{ $driver->id == $request->userId ? 'selected' : '' }}>
+                                                                    {{ $driver->name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label>Vehicle</label>
-                                                        <select name="vehicleId" class="form-control">
-                                                            @foreach($vehicles as $vehicle)
-                                                                <option value="{{ $vehicle->id }}" {{ $vehicle->id == $request->vehicleId ? 'selected' : '' }}>{{ $vehicle->regNo }}</option>
-                                                            @endforeach
-                                                        </select>
+                                                        <input type="text" class="form-control vehicle-input" name="vehicleDisplay" value="{{ $request->vehicle->regNo }}" readonly>
+                                                        <input type="hidden" name="vehicleId" class="vehicle-id-hidden" value="{{ $request->vehicleId }}">
                                                     </div>
+
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const selects = document.querySelectorAll('.rider-select');
+
+                                                            selects.forEach(select => {
+                                                                select.addEventListener('change', function () {
+                                                                    const modalId = this.dataset.modal;
+                                                                    const selectedOption = this.options[this.selectedIndex];
+                                                                    const vehicleRegNo = selectedOption.dataset.vehicle || '';
+                                                                    
+                                                                    const modal = document.getElementById('editModal-' + modalId);
+                                                                    const vehicleInput = modal.querySelector('.vehicle-input');
+                                                                    const hiddenVehicleId = modal.querySelector('.vehicle-id-hidden');
+
+                                                                    vehicleInput.value = vehicleRegNo;
+
+                                                                    const allVehicles = @json($vehicles);
+
+                                                                    allVehicles.forEach(vehicle => {
+                                                                        if (vehicle.regNo === vehicleRegNo) {
+                                                                            hiddenVehicleId.value = vehicle.id;
+                                                                        }
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    </script>
 
                                                     <div class="form-group">
                                                         <label>Description of Goods</label>
