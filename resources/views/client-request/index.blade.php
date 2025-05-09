@@ -92,7 +92,12 @@
                                         <div class="col-md-4 mb-3">
                                             <label for="datetime">Date of Request</label>
                                             <div class="input-group">
-                                                <input type="text" name="dateRequested" id="datetime" class="form-control">
+                                                <input type="text" name="dateRequested" id="datetime" class="form-control" placeholder="Select date & time">
+                                                <div class="input-group-append" >
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -113,6 +118,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
                             <th>Pick-up Location</th>
@@ -125,6 +131,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
                             <th>Pick-up Location</th>
@@ -138,6 +145,7 @@
                     <tbody>
                         @foreach ($client_requests as $request)
                             <tr>
+                                <td> {{ $loop->iteration }} </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
@@ -146,24 +154,98 @@
                                 <td> {{ $request->vehicle->regNo }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td class="row pl-4">
-                                    <a href="">
-                                        <button class="btn btn-sm btn-info mr-1" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </a>
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal" data-target="#editModal-{{ $request->requestId }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="editModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editModalLabel-{{ $request->requestId }}">Edit Client Request</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Form Fields -->
+                                                    <div class="form-group">
+                                                        <label>Request ID</label>
+                                                        <input type="text" name="requestId" class="form-control" value="{{ $request->requestId }}" readonly>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Client</label>
+                                                        <select name="clientId" class="form-control">
+                                                            @foreach($clients as $client)
+                                                                <option value="{{ $client->id }}" {{ $client->id == $request->clientId ? 'selected' : '' }}>{{ $client->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Pick-up Location</label>
+                                                        <input type="text" name="collectionLocation" class="form-control" value="{{ $request->collectionLocation }}">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Date Requested</label>
+                                                        <input type="datetime-local" name="dateRequested" class="form-control" value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Rider</label>
+                                                        <select name="userId" class="form-control">
+                                                            @foreach($drivers as $driver)
+                                                                <option value="{{ $driver->id }}" {{ $driver->id == $request->userId ? 'selected' : '' }}>{{ $driver->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Vehicle</label>
+                                                        <select name="vehicleId" class="form-control">
+                                                            @foreach($vehicles as $vehicle)
+                                                                <option value="{{ $vehicle->id }}" {{ $vehicle->id == $request->vehicleId ? 'selected' : '' }}>{{ $vehicle->regNo }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Description of Goods</label>
+                                                        <textarea name="parcelDetails" class="form-control">{{ $request->parcelDetails }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
                                     <a href="">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </a>
                                     <a href="">
-                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                        <button class="btn btn-sm btn-success mr-1 mt-1" title="PDF Download">
                                             <i class="fas fa-file-pdf"></i>
                                         </button>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                        data-target=""><i class="fas fa-trash"></i></button>
-                                    <!-- Logout Modal-->
+                                    <form action="{{ route('clientRequests.destroy', $request->requestId) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger mr-1 mt-1" onclick="return confirm('Are you sure?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    <!-- Delete Modal-->
                                     <div class="modal fade" id="" tabindex="-1" role="dialog"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">

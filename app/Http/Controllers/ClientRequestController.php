@@ -14,17 +14,27 @@ class ClientRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // Filter search
+        $query = ClientRequest::query();
+    
+        if ($request->has('search')) {
+            $query->where('requestId', 'like', '%' . $request->search . '%');
+        }
+    
+        $items = $query->latest()->get();
+        
+        //Generate Unique request ID
         do {
             $request_id = 'REQ-' . mt_rand(10000, 99999);
         } while (ClientRequest::where('requestId', $request_id)->exists());
-        $client_requests = ClientRequest::all();
+
+        $client_requests = ClientRequest::orderBy('created_at', 'desc')->get();
         $clients = Client::all();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id'));
+        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id', 'items'));
     }
 
     /**
@@ -69,19 +79,36 @@ class ClientRequestController extends Controller
         //
     }
 
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ClientRequest $clientRequest)
+    public function update(Request $request, $requestId)
     {
         //
+        $clientRequest = ClientRequest::where('requestId', $requestId)->firstOrFail();;
+
+        $clientRequest->clientId = $request->clientId;
+        $clientRequest->collectionLocation = $request->collectionLocation;
+        $clientRequest->dateRequested = $request->dateRequested;
+        $clientRequest->userId = $request->userId;
+        $clientRequest->vehicleId = $request->vehicleId;
+        $clientRequest->parcelDetails = $request->parcelDetails;
+
+        $clientRequest->save();
+
+        return back()->with('success', 'Client request updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ClientRequest $clientRequest)
+    public function destroy($id)
     {
         //
+        $clientRequest = ClientRequest::where('requestId', $id)->firstOrFail();
+        $clientRequest->delete();
+
+        return back()->with('success', 'Client request deleted successfully.');
     }
 }

@@ -56,7 +56,6 @@
                                     <div class="modal fade" id="allocate_vehicle-{{ $vehicle->id }}" tabindex="-1" role="dialog" aria-labelledby="allocateVehicleLabel-{{ $vehicle->id }}" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
-                                            
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="allocateVehicleLabel-{{ $vehicle->id }}">Allocate Vehicle to Shipment</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
