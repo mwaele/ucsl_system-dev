@@ -58,7 +58,7 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="allocateVehicleLabel-{{ $vehicle->id }}">Allocate Vehicle to Shipment</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <button type="" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
@@ -78,7 +78,7 @@
                                                             <select name="driver" class="form-control" id="shipment-select-{{ $vehicle->id }}" onchange="enableButton({{ $vehicle->id }})">
                                                                 <option value="">Select Driver</option>
                                                                 @foreach ($drivers as $driver)
-                                                                    <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->status }})</option>
+                                                               button     <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->status }})</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>

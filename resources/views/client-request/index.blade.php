@@ -63,24 +63,15 @@
                                             <select class="form-control" id="userId" name="userId">
                                                 <option value="">Select Rider</option>
                                                 @foreach ($drivers as $driver)
-                                                    <option value="{{ $driver->id }}">{{ $driver->name }}
-                                                        ({{ $driver->station }})
-                                                    </option>
+                                                    <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->station }})</option>
                                                 @endforeach
                                             </select>
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="vehicleId" class="form-label">Vehicle</label>
-                                            <select class="form-control" id="vehicleId" name="vehicleId"
-                                                aria-label="Default select example">
-                                                <option value="">Select Vehicle</option>
-                                                @foreach ($vehicles as $vehicle)
-                                                    <option value="{{ $vehicle->id }}">{{ $vehicle->regNo }}
-                                                        ({{ $vehicle->status }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <label for="vehicle" class="form-label">Vehicle</label>
+                                            <input type="text" id="vehicle" class="form-control" name="vehicle_display" placeholder="Select rider to populate" readonly>
+                                            <input type="hidden" id="vehicleId" name="vehicleId">
                                         </div>
 
                                         <div class="col-md-4 mb-3">
@@ -88,6 +79,36 @@
                                             <input type="text" value="{{ $request_id }}" name="requestId"
                                                 class="form-control" id="request_id" readonly>
                                         </div>
+                                        <script>
+                                            const vehicleMap = {
+                                                @foreach ($vehicles as $vehicle)
+                                                    "{{ $vehicle->user_id }}": {
+                                                        id: "{{ $vehicle->id }}",
+                                                        regNo: "{{ $vehicle->regNo }}",
+                                                        status: "{{ $vehicle->status }}"
+                                                    },
+                                                @endforeach
+                                            };
+
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const userSelect = document.getElementById('userId');
+                                                const vehicleInput = document.getElementById('vehicle');
+                                                const vehicleIdInput = document.getElementById('vehicleId');
+
+                                                userSelect.addEventListener('change', function () {
+                                                    const selectedUserId = this.value;
+                                                    const vehicle = vehicleMap[selectedUserId];
+
+                                                    if (vehicle) {
+                                                        vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                                                        vehicleIdInput.value = vehicle.id;
+                                                    } else {
+                                                        vehicleInput.value = '';
+                                                        vehicleIdInput.value = '';
+                                                    }
+                                                });
+                                            });
+                                        </script>
 
                                         <div class="col-md-4 mb-3">
                                             <label for="datetime">Date of Request</label>
@@ -126,6 +147,7 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Description of goods</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -139,6 +161,7 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Description of goods</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>
@@ -153,11 +176,24 @@
                                 <td> {{ $request->user->name }} </td>
                                 <td> {{ $request->vehicle->regNo }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
-                                <td class="row pl-4">
+                                <td> <p class="badge
+                                            @if ($request->status == 'pending collection')
+                                                bg-warning
+                                            @elseif ($request->status == 'Collected')
+                                                bg-success
+                                            @elseif ($request->status == 'Delayed')
+                                                bg-danger
+                                            @endif
+                                            fs-5"
+                                           >
+                                        {{ $request->status }}
+                                    </p>
+                                </td>
+                                <td class="d-flex pl-4">
                                     <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal" data-target="#editModal-{{ $request->requestId }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <!-- Modal -->
+                                    <!-- Edit Modal -->
                                     <div class="modal fade" id="editModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
@@ -227,46 +263,35 @@
                                             </form>
                                         </div>
                                     </div>
-
-                                    <a href="">
-                                        <button class="btn btn-sm btn-warning mr-1" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </a>
-                                    <a href="">
-                                        <button class="btn btn-sm btn-success mr-1 mt-1" title="PDF Download">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                    </a>
-                                    <form action="{{ route('clientRequests.destroy', $request->requestId) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger mr-1 mt-1" onclick="return confirm('Are you sure?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    
+                                    <button class="btn btn-sm btn-danger mr-1" title="Delete"  data-toggle="modal" data-target="#{{ $request->requestId }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                     <!-- Delete Modal-->
-                                    <div class="modal fade" id="" tabindex="-1" role="dialog"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="{{ $request->requestId }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to delete </p>
+                                                    <p>Are you sure you want to delete {{ $request->requestId }}?
+                                                    </p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form action =" " method = "POST">
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                    data-dismiss="modal">Cancel</button>
+                                                    <form
+                                                        action =" {{ route('clientRequests.destroy', $request->requestId) }}"
+                                                        method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            title="Delete" value="DELETE">YES DELETE <i
-                                                                class="fas fa-trash"></i> </button>
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
+                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
                                                     </form>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </td>
                             </tr>
                         @endforeach
