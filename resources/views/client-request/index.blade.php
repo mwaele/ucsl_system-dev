@@ -26,12 +26,12 @@
                             </div>
                             <div class="modal-body">
                                 <form>
-                                    <p class="text-muted">Fill in the client details.</p>
+                                    <h6 class="text-muted text-primary">Fill in the client details.</h6>
 
                                     <div class="row mb-3">
                                         <div class="col-md-6">
 
-                                            <label for="clientId" class="form-label">Client</label>
+                                            <label for="clientId" class="form-label text-primary">Client</label>
                                             <select class="form-control" id="clientId" name="clientId">
                                                 <option value="">Select Client</option>
                                                 @foreach ($clients as $client)
@@ -42,24 +42,24 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="collectionLocation" class="form-label">Pickup Location</label>
+                                            <label for="collectionLocation" class="form-label text-primary">Pickup Location</label>
                                             <input type="text" class="form-control" name="collectionLocation"
                                                 id="collectionLocation">
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="parcelDetails" class="form-label fw-medium text-dark">Parcel
+                                        <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
                                             Details</label>
                                         <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
                                             placeholder="Fill in the description of goods."></textarea>
                                     </div>
 
-                                    <p class="text-muted">Fill in the Rider details.</p>
+                                    <h6 class="text-muted text-primary">Fill in the Rider details.</h6>
 
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
-                                            <label for="userId" class="form-label">Rider</label>
+                                            <label for="userId" class="form-label text-primary">Rider</label>
                                             <select class="form-control" id="userId" name="userId">
                                                 <option value="">Select Rider</option>
                                                 @foreach ($drivers as $driver)
@@ -69,13 +69,13 @@
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="vehicle" class="form-label">Vehicle</label>
+                                            <label for="vehicle" class="form-label text-primary">Vehicle</label>
                                             <input type="text" id="vehicle" class="form-control" name="vehicle_display" placeholder="Select rider to populate" readonly>
                                             <input type="hidden" id="vehicleId" name="vehicleId">
                                         </div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="requestId" class="form-label">Request ID</label>
+                                            <label for="requestId" class="form-label text-primary">Request ID</label>
                                             <input type="text" value="{{ $request_id }}" name="requestId"
                                                 class="form-control" id="request_id" readonly>
                                         </div>
@@ -111,15 +111,21 @@
                                         </script>
 
                                         <div class="col-md-4 mb-3">
-                                            <label for="datetime">Date of Request</label>
+                                            <label for="datetime" class="text-primary">Date of Request</label>
                                             <div class="input-group">
                                                 <input type="text" name="dateRequested" id="datetime" class="form-control" placeholder="Select date & time">
-                                                <div class="input-group-append" >
-                                                    <span class="input-group-text">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="calendar-trigger" style="cursor: pointer;">
                                                         <i class="fa fa-calendar"></i>
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            <script>
+                                                document.getElementById('calendar-trigger').addEventListener('click', function () {
+                                                    document.getElementById('datetime').focus();
+                                                });
+                                            </script>
                                         </div>
 
                                     </div>
@@ -200,8 +206,8 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="editModalLabel-{{ $request->requestId }}">Edit Client Request</h5>
+                                                <div class="modal-header bg-gradient-primary">
+                                                    <h5 class="modal-title text-white" id="editModalLabel-{{ $request->requestId }}">Edit Client Request</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -209,12 +215,12 @@
                                                 <div class="modal-body">
                                                     <!-- Form Fields -->
                                                     <div class="form-group">
-                                                        <label>Request ID</label>
+                                                        <label class="text-primary">Request ID</label>
                                                         <input type="text" name="requestId" class="form-control" value="{{ $request->requestId }}" readonly>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>Client</label>
+                                                        <label class="text-primary">Client</label>
                                                         <select name="clientId" class="form-control">
                                                             @foreach($clients as $client)
                                                                 <option value="{{ $client->id }}" {{ $client->id == $request->clientId ? 'selected' : '' }}>{{ $client->name }}</option>
@@ -223,17 +229,30 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>Pick-up Location</label>
+                                                        <label class="text-primary">Pick-up Location</label>
                                                         <input type="text" name="collectionLocation" class="form-control" value="{{ $request->collectionLocation }}">
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>Date Requested</label>
-                                                        <input type="datetime-local" name="dateRequested" class="form-control" value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}">
+                                                        <label class="text-primary">Date Requested</label>
+                                                        <div class="input-group">
+                                                            <input 
+                                                                type="datetime-local" 
+                                                                name="dateRequested" 
+                                                                id="datetime" 
+                                                                class="form-control" 
+                                                                value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                                            >
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text" style="cursor: pointer;" onclick="document.getElementById('datetime').focus()">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>Rider</label>
+                                                        <label class="text-primary">Rider</label>
                                                         <select name="userId" class="form-control rider-select" data-modal="{{ $request->requestId }}">
                                                             <option value="">Select Rider</option>
                                                             @foreach($drivers as $driver)
@@ -251,7 +270,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>Vehicle</label>
+                                                        <label class="text-primary">Vehicle</label>
                                                         <input type="text" class="form-control vehicle-input" name="vehicleDisplay" value="{{ $request->vehicle->regNo }}" readonly>
                                                         <input type="hidden" name="vehicleId" class="vehicle-id-hidden" value="{{ $request->vehicleId }}">
                                                     </div>
@@ -285,7 +304,7 @@
                                                     </script>
 
                                                     <div class="form-group">
-                                                        <label>Description of Goods</label>
+                                                        <label class="text-primary">Description of Goods</label>
                                                         <textarea name="parcelDetails" class="form-control">{{ $request->parcelDetails }}</textarea>
                                                     </div>
                                                 </div>
