@@ -4,17 +4,30 @@
     <!-- DataTales Example -->
     <div class="card">
         <div class="card-header py-3">
-            <div class="d-sm-flex align-items-center justify-content-between">
+            <div class="d-sm-flex align-items-center justify-content-between"> 
                 <h6 class="m-0 font-weight-bold text-danger">All Client Requests</h6>
-                <button type="button"class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                    data-target="#createLoadingSheet"><i class="fas fa-plus fa-sm text-white"></i> Create Client
-                    Request</button>
+
+                <div class="d-flex align-items-center">
+                    <!-- Counter positioned just before the search input -->
+                    <span class="text-primary counter mr-2"></span>
+
+                    <div class="input-group input-group-sm mr-2" style="width: 250px;">
+                        <input type="text" id="tableSearch" class="form-control" placeholder="Search client requests...">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#createClientRequest">
+                        <i class="fas fa-plus fa-sm text-white"></i> Create Client Request
+                    </button>
+                </div>
             </div>
 
             <!-- Modal -->
             <form action="{{ route('clientRequests.store') }}" method="POST">
                 @csrf
-                <div class="modal fade" id="createLoadingSheet" tabindex="-1" role="dialog"
+                <div class="modal fade" id="createClientRequest" tabindex="-1" role="dialog"
                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                         <div class="modal-content">
@@ -142,7 +155,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered results" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -155,6 +168,11 @@
                             <th>Description of goods</th>
                             <th>Status</th>
                             <th>Action</th>
+                        </tr>
+                        <tr class="table-warning no-result text-center" style="display: none;">
+                            <td>
+                                <i class="fa fa-warning text-danger"></i> No result found.
+                            </td>
                         </tr>
                     </thead>
                     <tfoot>
@@ -196,11 +214,11 @@
                                     </p>
                                 </td>
                                 <td class="d-flex pl-4">
-                                    <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal" data-target="#editModal-{{ $request->requestId }}">
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <!-- Edit Modal -->
-                                    <div class="modal fade" id="editModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                    <div class="modal fade" id="editClientRequest-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
                                                 @csrf
@@ -285,7 +303,7 @@
                                                                     const selectedOption = this.options[this.selectedIndex];
                                                                     const vehicleRegNo = selectedOption.dataset.vehicle || '';
                                                                     
-                                                                    const modal = document.getElementById('editModal-' + modalId);
+                                                                    const modal = document.getElementById('editClientRequest-' + modalId);
                                                                     const vehicleInput = modal.querySelector('.vehicle-input');
                                                                     const hiddenVehicleId = modal.querySelector('.vehicle-id-hidden');
 
@@ -317,11 +335,11 @@
                                         </div>
                                     </div>
                                     
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete"  data-toggle="modal" data-target="#{{ $request->requestId }}">
+                                    <button class="btn btn-sm btn-danger mr-1" title="Delete"  data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <!-- Delete Modal-->
-                                    <div class="modal fade" id="{{ $request->requestId }}" tabindex="-1"
+                                    <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -351,6 +369,42 @@
 
                     </tbody>
                 </table>
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const searchInput = document.getElementById("tableSearch");
+                    const tableRows = document.querySelectorAll(".results tbody tr");
+                    const counter = document.querySelector(".counter"); // optional
+                    const noResult = document.querySelector(".no-result"); // optional
+
+                    searchInput.addEventListener("input", function () {
+                        const searchTerm = searchInput.value.toLowerCase().trim();
+                        let matchCount = 0;
+
+                        tableRows.forEach(row => {
+                            const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
+                            const terms = searchTerm.split(" ");
+                            const matched = terms.every(term => rowText.includes(term));
+
+                            if (matched) {
+                                row.style.display = "";
+                                row.setAttribute("visible", "true");
+                                matchCount++;
+                            } else {
+                                row.style.display = "none";
+                                row.setAttribute("visible", "false");
+                            }
+                        });
+
+                        if (counter) {
+                            counter.textContent = matchCount + " item" + (matchCount !== 1 ? "s" : "");
+                        }
+
+                        if (noResult) {
+                            noResult.style.display = matchCount === 0 ? "block" : "none";
+                        }
+                    });
+                });
+                </script>
             </div>
         </div>
     </div>
