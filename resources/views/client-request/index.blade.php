@@ -170,7 +170,7 @@
                             <th>Action</th>
                         </tr>
                         <tr class="table-warning no-result text-center" style="display: none;">
-                            <td>
+                            <td colspan="10">
                                 <i class="fa fa-warning text-danger"></i> No result found.
                             </td>
                         </tr>
@@ -197,8 +197,8 @@
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
                                 <td> {{ $request->dateRequested }} </td>
-                                <td> {{ $request->user->name }} </td>
-                                <td> {{ $request->vehicle->regNo }} </td>
+                                <td> {{ $request->user->name ?? '—' }} </td>
+                                <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td> <p class="badge
                                             @if ($request->status == 'pending collection')
@@ -208,7 +208,7 @@
                                             @elseif ($request->status == 'Delayed')
                                                 bg-danger
                                             @endif
-                                            fs-5"
+                                            fs-5 text-white"
                                            >
                                         {{ $request->status }}
                                     </p>
@@ -366,45 +366,44 @@
                                 </td>
                             </tr>
                         @endforeach
+                        <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const searchInput = document.getElementById("tableSearch");
+                        const tableRows = document.querySelectorAll(".results tbody tr");
+                        const counter = document.querySelector(".counter"); // optional
+                        const noResult = document.querySelector(".no-result"); // optional
 
-                    </tbody>
-                </table>
-                <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const searchInput = document.getElementById("tableSearch");
-                    const tableRows = document.querySelectorAll(".results tbody tr");
-                    const counter = document.querySelector(".counter"); // optional
-                    const noResult = document.querySelector(".no-result"); // optional
+                        searchInput.addEventListener("input", function () {
+                            const searchTerm = searchInput.value.toLowerCase().trim();
+                            let matchCount = 0;
 
-                    searchInput.addEventListener("input", function () {
-                        const searchTerm = searchInput.value.toLowerCase().trim();
-                        let matchCount = 0;
+                            tableRows.forEach(row => {
+                                const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
+                                const terms = searchTerm.split(" ");
+                                const matched = terms.every(term => rowText.includes(term));
 
-                        tableRows.forEach(row => {
-                            const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
-                            const terms = searchTerm.split(" ");
-                            const matched = terms.every(term => rowText.includes(term));
+                                if (matched) {
+                                    row.style.display = "";
+                                    row.setAttribute("visible", "true");
+                                    matchCount++;
+                                } else {
+                                    row.style.display = "none";
+                                    row.setAttribute("visible", "false");
+                                }
+                            });
 
-                            if (matched) {
-                                row.style.display = "";
-                                row.setAttribute("visible", "true");
-                                matchCount++;
-                            } else {
-                                row.style.display = "none";
-                                row.setAttribute("visible", "false");
+                            if (counter) {
+                                counter.textContent = matchCount + " item" + (matchCount !== 1 ? "s" : "");
+                            }
+
+                            if (noResult) {
+                                noResult.style.display = matchCount === 0 ? "block" : "none";
                             }
                         });
-
-                        if (counter) {
-                            counter.textContent = matchCount + " item" + (matchCount !== 1 ? "s" : "");
-                        }
-
-                        if (noResult) {
-                            noResult.style.display = matchCount === 0 ? "block" : "none";
-                        }
                     });
-                });
-                </script>
+                    </script>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

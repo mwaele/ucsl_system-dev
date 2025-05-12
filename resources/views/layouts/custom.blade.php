@@ -108,6 +108,22 @@
 
             <!-- Divider -->
 
+            <!-- Nav Item - Clients Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
+                    aria-expanded="true" aria-controls="collapseClients">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Client Registration</span>
+                </a>
+                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
+                        <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a>
+                    </div>
+                </div>
+            </li>
+
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
@@ -123,22 +139,6 @@
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
                         <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Loading Sheets</a>
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
-                    aria-expanded="true" aria-controls="collapseClients">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Clients</span>
-                </a>
-                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
-                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
-                        <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a>
                     </div>
                 </div>
             </li>
