@@ -22,6 +22,21 @@ class RateController extends Controller
         return view('rates.index')->with(['rates'=>$rates]);
     }
 
+    public function mombasa_office(){
+        $rates = Rate::where('id',2)->get();
+        $zones = Zone::all();
+ 
+        return view('rates.mombasa_rates')->with(['rates'=>$rates,'zones'=>$zones]);
+
+    }
+    public function nairobi_office(){
+        $rates = Rate::where('id',1)->get();
+        $zones = Zone::all();
+ 
+        return view('rates.nairobi_rates')->with(['rates'=>$rates,'zones'=>$zones]);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      */

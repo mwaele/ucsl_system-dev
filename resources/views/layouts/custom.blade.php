@@ -13,9 +13,7 @@
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css" />
 
-    <!-- Tempus Dominus CSS -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.5/dist/css/tempus-dominus.min.css" />
+
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet" />
@@ -52,6 +50,11 @@
             color: #fff !important;
         }
 
+        label {
+            font-size: 20px;
+            color: black;
+        }
+
         /* Highlight collapsed child item (e.g., inside dropdown) */
         .collapse-item.active {
             font-weight: bold;
@@ -67,6 +70,9 @@
 
     <!-- Optional: Flatpickr Bootstrap Theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+    <!-- Custom styles for this page -->
+    <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+
 </head>
 
 <body id="page-top">
@@ -208,8 +214,11 @@
                 <div id="collapseRates" class="collapse {{ request()->routeIs('rates.*') ? 'active' : '' }}"
                     aria-labelledby="headingRates" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('rates.index') }}">All Rates</a>
+                        <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
+                        <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Nairobi Rates</a>
                         <a class="collapse-item" href="{{ route('rates.create') }}">Add Rate</a>
+
+                        <a class="collapse-item" href="{{ route('rates.index') }}">All Rates</a>
                     </div>
                 </div>
             </li>
@@ -403,12 +412,22 @@
             </div>
         </div>
 
+        <!-- Bootstrap core JavaScript-->
+        <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
-        <!-- Moment.js (required for legacy versions) -->
+        <!-- Core plugin JavaScript-->
+        <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="js/sb-admin-2.min.js') }}"></script>
+
+        <!-- Page level plugins -->
+        <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+        {{-- <!-- Moment.js (required for legacy versions) -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
-        <!-- Tempus Dominus JS -->
-        <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.5/dist/js/tempus-dominus.min.js"></script>
 
         <!-- Bootstrap core JavaScript-->
         <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
@@ -418,10 +437,14 @@
         <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
         <!-- Custom scripts for all pages-->
-        <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script> --}}
 
         <!-- Flatpickr JS -->
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+        {{-- <!-- Page level plugins -->
+        <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
 
         <script>
             // Initialize Flatpickr
@@ -440,26 +463,26 @@
         <script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script> --}}
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                new tempusDominus.TempusDominus(document.getElementById('kt_datetimepicker_1'), {
-                    display: {
-                        components: {
-                            calendar: true,
-                            date: true,
-                            month: true,
-                            year: true,
-                            decades: true,
-                            clock: true,
-                            hours: true,
-                            minutes: true,
-                            seconds: false
-                        }
-                    },
-                    localization: {
-                        format: 'yyyy-MM-DD HH:mm'
-                    }
-                });
-            });
+            // document.addEventListener('DOMContentLoaded', function() {
+            //     new tempusDominus.TempusDominus(document.getElementById('kt_datetimepicker_1'), {
+            //         display: {
+            //             components: {
+            //                 calendar: true,
+            //                 date: true,
+            //                 month: true,
+            //                 year: true,
+            //                 decades: true,
+            //                 clock: true,
+            //                 hours: true,
+            //                 minutes: true,
+            //                 seconds: false
+            //             }
+            //         },
+            //         localization: {
+            //             format: 'yyyy-MM-DD HH:mm'
+            //         }
+            //     });
+            // });
         </script>
 
         <script>
