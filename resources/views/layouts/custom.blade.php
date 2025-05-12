@@ -139,6 +139,7 @@
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
                         <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Loading Sheets</a>
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
+                        <a class="collapse-item" href="{{ route('clientRequests.index') }}">Parcel Receiving</a>
                     </div>
                 </div>
             </li>

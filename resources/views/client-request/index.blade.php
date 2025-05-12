@@ -367,41 +367,143 @@
                             </tr>
                         @endforeach
                         <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const searchInput = document.getElementById("tableSearch");
-                        const tableRows = document.querySelectorAll(".results tbody tr");
-                        const counter = document.querySelector(".counter"); // optional
-                        const noResult = document.querySelector(".no-result"); // optional
+                
+                
 
-                        searchInput.addEventListener("input", function () {
-                            const searchTerm = searchInput.value.toLowerCase().trim();
-                            let matchCount = 0;
 
-                            tableRows.forEach(row => {
-                                const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
-                                const terms = searchTerm.split(" ");
-                                const matched = terms.every(term => rowText.includes(term));
 
-                                if (matched) {
-                                    row.style.display = "";
-                                    row.setAttribute("visible", "true");
-                                    matchCount++;
-                                } else {
-                                    row.style.display = "none";
-                                    row.setAttribute("visible", "false");
-                                }
-                            });
 
-                            if (counter) {
-                                counter.textContent = matchCount + " item" + (matchCount !== 1 ? "s" : "");
-                            }
 
-                            if (noResult) {
-                                noResult.style.display = matchCount === 0 ? "block" : "none";
-                            }
-                        });
-                    });
-                    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
                     </tbody>
                 </table>
             </div>
