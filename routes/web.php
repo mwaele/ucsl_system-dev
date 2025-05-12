@@ -5,6 +5,7 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StationController;
+use App\Http\Controllers\RateController;
 
 use App\Http\Controllers\MyCollectionController;
 
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('vehicles','App\Http\Controllers\VehicleController');
     Route::resource('offices','App\Http\Controllers\OfficeController');
     Route::resource('rates','App\Http\Controllers\RateController');
+    Route::get('mombasa_rates', [RateController::class, 'mombasa_office'])->name('rates.mombasa_office');
+    Route::get('nairobi_rates', [RateController::class, 'nairobi_office'])->name('rates.nairobi_office');
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');

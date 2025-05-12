@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="card mb-3">
-        <div class="card-header pt-4">
+        <div class="card-header pt-4 ">
             <div class="row pt-2">
                 <div class="col-sm-4">
-                    <i class="fas fa-table text-success"></i>
-                    Add Rate
+                    <i class="fas fa-table text-white"></i>
+                    <b class="text-dark">Create Rate</b>
                 </div>
             </div>
         </div>
