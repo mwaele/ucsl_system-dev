@@ -14,27 +14,21 @@ class ClientRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // Filter search
-        $query = ClientRequest::query();
-    
-        if ($request->has('search')) {
-            $query->where('requestId', 'like', '%' . $request->search . '%');
-        }
-    
-        $items = $query->latest()->get();
         
         //Generate Unique request ID
         do {
             $request_id = 'REQ-' . mt_rand(10000, 99999);
         } while (ClientRequest::where('requestId', $request_id)->exists());
-
-        $client_requests = ClientRequest::orderBy('created_at', 'desc')->get();
+        
+        $client_requests = ClientRequest::with(['client', 'vehicle', 'user']) // Eager load relations
+                            ->orderBy('created_at', 'desc')
+                            ->get();
         $clients = Client::all();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id', 'items'));
+        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id'));
     }
 
     /**
