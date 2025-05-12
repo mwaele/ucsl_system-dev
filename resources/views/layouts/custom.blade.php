@@ -19,18 +19,19 @@
         rel="stylesheet" />
     <style>
         .results tr[visible='false'],
-        .no-result{
-        display:none;
+        .no-result {
+            display: none;
         }
 
-        .results tr[visible='true']{
-        display:table-row;
+        .results tr[visible='true'] {
+            display: table-row;
         }
 
-        .counter{
-        padding:8px; 
-        color:#ccc;
+        .counter {
+            padding: 8px;
+            color: #ccc;
         }
+
         /* Highlight the active link background */
         .nav-item.active>.nav-link,
         .collapse-item.active {
@@ -571,6 +572,22 @@
                 // $(document).on('click', '.remove-row', function() {
                 //     $(this).closest('tr').remove();
                 // });
+
+                $('#origin').on('change', function() {
+                    let officeId = $(this).val();
+
+                    $('#destination').html('<option value="">Select</option>'); // Reset
+
+                    if (officeId) {
+                        $.get('/get-destinations/' + officeId, function(data) {
+                            data.forEach(function(item) {
+                                $('#destination').append(
+                                    `<option value="${item.id}">${item.destination}</option>`
+                                );
+                            });
+                        });
+                    }
+                });
             });
         </script>
 </body>

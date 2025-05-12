@@ -37,6 +37,13 @@ class RateController extends Controller
 
     }
 
+    public function getDestinations($office_id)
+    {
+        $destinations = Rate::where('office_id', $office_id)->get(['destination','id']);
+
+        return response()->json($destinations);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
