@@ -140,7 +140,6 @@
                                                 });
                                             </script>
                                         </div>
-
                                     </div>
                                 </form>
                             </div>
@@ -205,7 +204,7 @@
                                                 bg-secondary
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
-                                            @elseif ($request->status == 'Delayed')
+                                            @elseif ($request->status == 'received')
                                                 bg-primary
                                             @endif
                                             fs-5 text-white"
@@ -214,18 +213,18 @@
                                     </p>
                                 </td>
                                 <td class="d-flex pl-4">
-                                    <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit Client Request" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <!-- Edit Modal -->
-                                    <div class="modal fade" id="editClientRequest-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                    <!-- Edit Client Request Modal -->
+                                    <div class="modal fade" id="editClientRequest-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editClientRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
                                                 <div class="modal-header bg-gradient-primary">
-                                                    <h5 class="modal-title text-white" id="editModalLabel-{{ $request->requestId }}">Edit Client Request</h5>
+                                                    <h5 class="modal-title text-white" id="editClientRequestModalLabel-{{ $request->requestId }}">Edit Client Request</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -334,8 +333,119 @@
                                             </form>
                                         </div>
                                     </div>
+
+                                    <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                    @if ($request->status === 'collected')
+                                        <button class="btn btn-sm btn-primary mr-1" 
+                                                title="Verify Collected Parcel" 
+                                                data-toggle="modal" 
+                                                data-target="#verifyCollectedParcel-{{ $request->requestId }}"> 
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </button>
+                                    @endif
+                                    <!-- Verify Collected Parcel Modal -->
+                                    <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-content">
+                                                <div class="modal-header bg-gradient-primary">
+                                                    <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">Verify Details of Collected Parcel </h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Form Fields -->
+                                                    <div class="row">
+                                                        <div class="form-group col-md-3">
+                                                            <label class="text-primary">Request ID</label>
+                                                            <input type="text" name="requestId" class="form-control" value="{{ $request->requestId }}" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-md-3">
+                                                            <label class="text-primary">Rider</label>
+                                                            <input type="text" name="userId" class="form-control" value="{{ $driver->name }}" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-md-3">
+                                                            <label class="text-primary">Vehicle</label>
+                                                            <input type="text" class="form-control vehicle-input" name="vehicleDisplay" value="{{ $request->vehicle->regNo }}" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-md-3">
+                                                            <label class="text-primary">Date Requested</label>
+                                                            <input type="datetime-local" name="dateRequested" id="datetime" class="form-control" 
+                                                                value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                                                readonly>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="text-primary">Client</label>
+                                                        <select name="clientId" class="form-control">
+                                                            @foreach($clients as $client)
+                                                                <option value="{{ $client->id }}" {{ $client->id == $request->clientId ? 'selected' : '' }}>{{ $client->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="text-primary">Pick-up Location</label>
+                                                        <input type="text" name="collectionLocation" class="form-control" value="{{ $request->collectionLocation }}">
+                                                    </div>
+
+                                                    
+
+                                                    
+
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const selects = document.querySelectorAll('.rider-select');
+
+                                                            selects.forEach(select => {
+                                                                select.addEventListener('change', function () {
+                                                                    const modalId = this.dataset.modal;
+                                                                    const selectedOption = this.options[this.selectedIndex];
+                                                                    const vehicleRegNo = selectedOption.dataset.vehicle || '';
+                                                                    
+                                                                    const modal = document.getElementById('editClientRequest-' + modalId);
+                                                                    const vehicleInput = modal.querySelector('.vehicle-input');
+                                                                    const hiddenVehicleId = modal.querySelector('.vehicle-id-hidden');
+
+                                                                    vehicleInput.value = vehicleRegNo;
+
+                                                                    const allVehicles = @json($vehicles);
+
+                                                                    allVehicles.forEach(vehicle => {
+                                                                        if (vehicle.regNo === vehicleRegNo) {
+                                                                            hiddenVehicleId.value = vehicle.id;
+                                                                        }
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    </script>
+
+                                                    <div class="form-group">
+                                                        <label class="text-primary">Description of Goods</label>
+                                                        <textarea name="parcelDetails" class="form-control">{{ $request->parcelDetails }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                     
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete"  data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
+                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"  data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <!-- Delete Modal-->

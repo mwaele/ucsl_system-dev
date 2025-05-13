@@ -66,8 +66,8 @@
                                         </button>
                                     </a>
                                     <a href="#">
-                                        <button class="btn btn-sm btn-warning" data-toggle="modal"
-                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-bars"></i>
+                                        <button class="btn btn-sm btn-warning" data-toggle="modal" title="Collect parcels"
+                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-box"></i>
                                         </button>
                                     </a>
                                     {{-- <a href="#">

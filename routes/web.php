@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('zones','App\Http\Controllers\ZoneController');
     Route::get('/get-destinations/{office_id}', [RateController::class, 'getDestinations']);
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
+    Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
 });
 
 require __DIR__.'/auth.php';
