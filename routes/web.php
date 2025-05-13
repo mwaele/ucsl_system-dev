@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('clientRequests','App\Http\Controllers\ClientRequestController');
     Route::post('/check_station_name', [StationController::class, 'checkStation']);
     Route::resource('zones','App\Http\Controllers\ZoneController');
+    Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
 });
 
 require __DIR__.'/auth.php';
