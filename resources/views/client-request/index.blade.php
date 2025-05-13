@@ -203,10 +203,10 @@
                                 <td> <p class="badge
                                             @if ($request->status == 'pending collection')
                                                 bg-warning
-                                            @elseif ($request->status == 'Collected')
-                                                bg-success
+                                            @elseif ($request->status == 'collected')
+                                                bg-primary
                                             @elseif ($request->status == 'Delayed')
-                                                bg-danger
+                                                bg-secondary
                                             @endif
                                             fs-5 text-white"
                                            >
