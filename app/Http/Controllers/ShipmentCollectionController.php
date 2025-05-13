@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ShipmentCollection;
 use App\Models\ShipmentItem;
 use Illuminate\Http\Request;
+use App\Models\ClientRequest; 
 
 class ShipmentCollectionController extends Controller
 {
@@ -61,6 +62,12 @@ class ShipmentCollectionController extends Controller
             'destination_id' => $request->destination,
             'cost' => $request->cost,
         ]);
+
+        if($shipment){
+        // Update the client_requests table
+        ClientRequest::where('requestId', $request->requestId)
+        ->update(['status' => 'collected']); // or whatever status you need
+        }
 
         // Save shipment items
         foreach ($request->item as $i => $itemName) {

@@ -422,7 +422,7 @@
         <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
         <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
 
         <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
@@ -536,14 +536,14 @@
         </script>
         <script>
             $(document).ready(function() {
-                $('#addRowBtn').on('click', function() {
+                $('.addRowBtn').on('click', function() {
                     let newRow = $('#shipmentTable tbody tr:first').clone();
                     newRow.find('input').val(''); // clear inputs
-                    $('#shipmentTable tbody').append(newRow);
+                    $('.shipmentTable tbody').append(newRow);
                 });
 
                 // Delegate event to handle dynamically added rows
-                $('#shipmentTable').on('click', '.remove-row', function() {
+                $('.shipmentTable').on('click', '.remove-row', function() {
                     if ($('#shipmentTable tbody tr').length > 1) {
                         $(this).closest('tr').remove();
                     }
@@ -573,21 +573,44 @@
                 //     $(this).closest('tr').remove();
                 // });
 
-                $('#origin').on('change', function() {
-                    let officeId = $(this).val();
+                // $('#origin').on('change', function() {
+                //     let officeId = $(this).val();
 
-                    $('#destination').html('<option value="">Select</option>'); // Reset
+                //     $('#destination').html('<option value="">Select</option>'); // Reset
 
-                    if (officeId) {
-                        $.get('/get-destinations/' + officeId, function(data) {
-                            data.forEach(function(item) {
-                                $('#destination').append(
-                                    `<option value="${item.id}">${item.destination}</option>`
-                                );
+                //     if (officeId) {
+                //         $.get('/get-destinations/' + officeId, function(data) {
+                //             data.forEach(function(item) {
+                //                 $('#destination').append(
+                //                     `<option value="${item.destination}">${item.destination}</option>`
+                //                 );
+                //             });
+                //         });
+                //     }
+                // });
+                $(document).on('change', '.origin-dropdown', function() {
+                    const originSelect = $(this);
+                    const selectedOfficeId = originSelect.val();
+                    const modal = originSelect.closest('.modal');
+                    const destinationSelect = modal.find('.destination-dropdown');
+
+                    destinationSelect.html('<option value="">Select Destination</option>');
+
+                    if (selectedOfficeId) {
+                        $.get('/get-destinations/' + selectedOfficeId)
+                            .done(function(data) {
+                                data.forEach(function(item) {
+                                    destinationSelect.append(
+                                        `<option value="${item.id}">${item.destination}</option>`
+                                    );
+                                });
+                            })
+                            .fail(function() {
+                                console.error("Failed to load destinations");
                             });
-                        });
                     }
                 });
+
             });
         </script>
 </body>

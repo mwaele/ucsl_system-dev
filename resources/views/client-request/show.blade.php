@@ -246,7 +246,7 @@
                                                                 <label class="form-label text-dark">Origin <span
                                                                         class="text-danger">*</span> </label>
                                                                 <select name="origin" id="origin"
-                                                                    class="form-control" required>
+                                                                    class="form-control origin-dropdown" required>
                                                                     <option value="">Select</option>
                                                                     @foreach ($offices as $office)
                                                                         <option value="{{ $office->id }}">
@@ -258,7 +258,7 @@
                                                                 <label class="form-label text-dark">Destination <span
                                                                         class="text-danger">*</span> </label>
                                                                 <select name="destination" id="destination"
-                                                                    class="form-control" required>
+                                                                    class="form-control destination-dropdown" required>
                                                                     <option value="">Select</option>
                                                                 </select>
                                                             </div>
@@ -269,7 +269,8 @@
                             Shipment Information</b></div> --}}
 
                                                         <div class="table-responsive mt-3">
-                                                            <table class="table table-bordered" id="shipmentTable">
+                                                            <table class="table table-bordered shipmentTable"
+                                                                id="shipmentTable">
                                                                 <thead class="thead-success">
                                                                     <tr>
                                                                         <th>Item Name</th>
@@ -308,7 +309,7 @@
                                                             </table>
                                                         </div>
 
-                                                        <button type="button" class="btn btn-primary mb-3"
+                                                        <button type="button" class="btn btn-primary mb-3 addRowBtn"
                                                             id="addRowBtn">Add
                                                             Row</button>
 
