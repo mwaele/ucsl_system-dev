@@ -6,6 +6,7 @@ use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\ShipmentCollectionController;
 
 use App\Http\Controllers\MyCollectionController;
 
@@ -39,7 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('clientRequests','App\Http\Controllers\ClientRequestController');
     Route::post('/check_station_name', [StationController::class, 'checkStation']);
     Route::resource('zones','App\Http\Controllers\ZoneController');
-    Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
+    Route::get('/get-destinations/{office_id}', [RateController::class, 'getDestinations']);
+    Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
 });
 
 require __DIR__.'/auth.php';

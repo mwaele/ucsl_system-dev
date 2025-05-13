@@ -15,6 +15,8 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+
+                            <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Telephone Number</th>
                             <th>Date Allocated</th>
@@ -25,6 +27,8 @@
                     </thead>
                     <tfoot>
                         <tr>
+
+                            <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Client Telephone Number</th>
                             <th>Date Allocated</th>
@@ -37,6 +41,7 @@
                     <tbody>
                         @foreach ($collections as $collection)
                             <tr>
+                                <td>{{ $collection->requestId }}</td>
                                 <td> {{ $collection->client->name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->created_at }} </td>
@@ -93,38 +98,61 @@
                                         aria-labelledby="collectionModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p class="text-dark ">Collection of {{ $collection->parcelDetails }}.
+                                                <div class="modal-header bg-warning">
+                                                    <h5 class="modal-title text-dark" id="exampleModalLabel">Collection of
+                                                        {{ $collection->parcelDetails }}. Request ID
+                                                        {{ $collection->requestId }}
                                                         for
-                                                        {{ $collection->client->name }}</p>
+                                                        {{ $collection->client->name }}</h5>
+                                                    <button type="button" class="text-white close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <form action ="#" method = "POST">
+                                                <div class="modal-body">
+
+
+
+
+
+                                                    <form action="{{ route('shipment_collections.store') }}"
+                                                        method="POST">
+
                                                         @csrf
                                                         <!-- Sender and Receiver in same row -->
 
                                                         <div class="row">
-                                                            <!-- Receiver Panel -->
-                                                            <div class="col-md-12">
+                                                            <!-- Sender Panel -->
+                                                            {{-- <div class="col-md-12">
                                                                 <div class="card shadow-sm mb-4">
-                                                                    <div class="card-header bg-success text-white">Receiver
+                                                                    <div class="card-header bg-primary text-white">Sender
                                                                         Details</div>
-                                                                    <!-- RECEIVER DETAILS -->
+                                                                    <!-- SENDER DETAILS -->
                                                                     <div class="card-body">
                                                                         <div class="form-row">
+                                                                            <div class="form-group col-md-12">
+                                                                                <label class="form-label text-dark">Sender
+                                                                                    Name <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="senderName" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-row">
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Receiver
-                                                                                    Name <span class="text-danger">*</span>
+                                                                                <label class="form-label text-dark">ID
+                                                                                    Number <span
+                                                                                        class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="receiverContactPerson" required>
+                                                                                    name="senderIdNo" required>
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Address
+                                                                                <label class="form-label text-dark">Phone
                                                                                     <span class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="receiverAddress" required>
+                                                                                    name="senderPhone" required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
@@ -133,13 +161,43 @@
                                                                                     <span class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="receiverTown" required>
+                                                                                    name="senderTown" required>
                                                                             </div>
-                                                                            {{-- <div class="form-group col-md-6">
-                                        <label class="form-label text-dark">Contact Person <span
-                                                class="text-danger">*</span> </label>
-                                        <input type="text" class="form-control" name="receiver_contact" required>
-                                    </div> --}}
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-dark">Address
+                                                                                    <span class="text-danger">*</span>
+                                                                                </label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="senderAddress" required>
+                                                                            </div>
+                                                                        </div>
+
+
+
+
+
+                                                                    </div>
+                                                                </div>
+                                                            </div> --}}
+                                                            <!-- Receiver Panel -->
+                                                            <div class="col-md-12">
+                                                                <div class="card shadow-sm mb-4">
+                                                                    <div class="card-header bg-primary text-white">Receiver
+                                                                        Details</div>
+                                                                    <!-- RECEIVER DETAILS -->
+                                                                    <div class="card-body">
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-12">
+                                                                                <label class="form-label text-dark">Receiver
+                                                                                    Name <span class="text-danger">*</span>
+                                                                                </label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="receiverContactPerson" required>
+                                                                                <input type="hidden" name='client_id'
+                                                                                    value="{{ $collection->client->id }}">
+                                                                                <input type="hidden" name="requestId"
+                                                                                    value="{{ $collection->requestId }}">
+                                                                            </div>
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
@@ -151,20 +209,32 @@
                                                                                     name="receiverIdNo" required>
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-dark">Telephone
+                                                                                <label class="form-label text-dark">Phone
+                                                                                    Number
                                                                                     <span class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="receiverPhone" required>
                                                                             </div>
                                                                         </div>
-                                                                        {{-- <div class="form-group">
-                                    <label class="form-label text-dark">Date
-                                    </label>
-                                    <input type="date" class="form-control datetime" name="receiver_datetime"
-                                        required>
-                                </div> --}}
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-dark">Address
+                                                                                    <span class="text-danger">*</span>
+                                                                                </label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="receiverAddress" required>
+                                                                            </div>
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-dark">Town
+                                                                                    <span class="text-danger">*</span>
+                                                                                </label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="receiverTown" required>
+                                                                            </div>
+                                                                        </div>
+
+
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -175,11 +245,11 @@
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Origin <span
                                                                         class="text-danger">*</span> </label>
-                                                                <select name="origin" id=""
-                                                                    class="form-control" required>
+                                                                <select name="origin" id="origin"
+                                                                    class="form-control origin-dropdown" required>
                                                                     <option value="">Select</option>
                                                                     @foreach ($offices as $office)
-                                                                        <option value="{{ $office->name }}">
+                                                                        <option value="{{ $office->id }}">
                                                                             {{ $office->name }}</option>
                                                                     @endforeach
                                                                 </select>
@@ -187,23 +257,20 @@
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Destination <span
                                                                         class="text-danger">*</span> </label>
-                                                                <select name="destination" id=""
-                                                                    class="form-control" required>
+                                                                <select name="destination" id="destination"
+                                                                    class="form-control destination-dropdown" required>
                                                                     <option value="">Select</option>
-                                                                    @foreach ($destinations as $destination)
-                                                                        <option value="{{ $destination->destination }}">
-                                                                            {{ $destination->destination }}</option>
-                                                                    @endforeach
                                                                 </select>
                                                             </div>
                                                         </div>
 
                                                         <!-- Shipment Info Table -->
                                                         {{-- <div class="section-title"><b class="text-dark">
-                        Shipment Information</b></div> --}}
+                            Shipment Information</b></div> --}}
 
                                                         <div class="table-responsive mt-3">
-                                                            <table class="table table-bordered" id="shipmentTable">
+                                                            <table class="table table-bordered shipmentTable"
+                                                                id="shipmentTable">
                                                                 <thead class="thead-success">
                                                                     <tr>
                                                                         <th>Item Name</th>
@@ -242,14 +309,15 @@
                                                             </table>
                                                         </div>
 
-                                                        <button type="button" class="btn btn-primary mb-3"
-                                                            id="addRowBtn">Add Row</button>
+                                                        <button type="button" class="btn btn-primary mb-3 addRowBtn"
+                                                            id="addRowBtn">Add
+                                                            Row</button>
 
 
                                                         <!-- Service Level -->
                                                         <div class="section-title"></div>
                                                         <div class="form-row">
-                                                            <div class="form-group col-md-6">
+                                                            {{-- <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Select Service <span
                                                                         class="text-danger">*</span> </label>
                                                                 <select class="form-control" name="service" required>
@@ -258,8 +326,8 @@
                                                                     <option value="express">Express</option>
                                                                     <option value="overnight">Overnight</option>
                                                                 </select>
-                                                            </div>
-                                                            <div class="form-group col-md-6">
+                                                            </div> --}}
+                                                            <div class="form-group col-md-12">
                                                                 <label class="form-label text-dark">Cost <span
                                                                         class="text-danger">*</span>
                                                                 </label>
@@ -268,18 +336,24 @@
                                                             </div>
 
                                                             <!-- Submit -->
-                                                            <button type="submit" class="btn btn-success">Submit
-                                                                Shipment</button>
+
 
                                                             {{-- <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button> --}}
+                                                                value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button> --}}
+
+
+                                                        </div>
+                                                        <div class="modal-footer d-flex justify-content-between p-0">
+                                                            <button type="submit" class="btn btn-success">Submit
+                                                                Collection</button>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Cancel</button>
+                                                        </div>
+
                                                     </form>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
                                 </td>
                             </tr>
