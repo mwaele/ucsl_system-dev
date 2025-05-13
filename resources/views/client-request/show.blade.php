@@ -46,7 +46,19 @@
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->created_at }} </td>
                                 <td> {{ $collection->client->address }} </td>
-                                <td>{{ $collection->status }}</td>
+                                <td> <p class="badge
+                                            @if ($collection->status == 'pending collection')
+                                                bg-secondary
+                                            @elseif ($collection->status == 'collected')
+                                                bg-warning
+                                            @elseif ($collection->status == 'Delayed')
+                                                bg-primary
+                                            @endif
+                                            fs-5 text-white"
+                                           >
+                                        {{ \Illuminate\Support\Str::title($collection->status) }}
+                                    </p>
+                                </td>
                                 <td class="row pl-4">
                                     <a href="#">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">

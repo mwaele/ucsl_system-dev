@@ -202,15 +202,15 @@
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td> <p class="badge
                                             @if ($request->status == 'pending collection')
-                                                bg-warning
-                                            @elseif ($request->status == 'collected')
-                                                bg-primary
-                                            @elseif ($request->status == 'Delayed')
                                                 bg-secondary
+                                            @elseif ($request->status == 'collected')
+                                                bg-warning
+                                            @elseif ($request->status == 'Delayed')
+                                                bg-primary
                                             @endif
                                             fs-5 text-white"
                                            >
-                                        {{ $request->status }}
+                                        {{ \Illuminate\Support\Str::title($request->status) }}
                                     </p>
                                 </td>
                                 <td class="d-flex pl-4">
