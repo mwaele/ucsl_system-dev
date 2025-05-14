@@ -93,9 +93,51 @@
                                     </p>
                                 </td>
                                 <td class="d-flex pl-4">
-                                    <button class="btn btn-sm btn-info mr-1" title="Proceed to Verify Collection" data-toggle="modal" data-target="#verifyCollection">
+                                    <button 
+                                        class="btn btn-sm btn-info mr-1" 
+                                        title="Proceed to Verify Collection" 
+                                        data-toggle="modal" 
+                                        data-target="#verifyModal-{{ $entry->user->id }}-{{ \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d') }}">
                                         <i class="fas fa-clipboard-check"></i>
                                     </button>
+
+                                    <!-- Proceed to Verify Collection Modal -->
+                                    <div class="modal fade" id="verifyModal-{{ $entry->user->id }}-{{ \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d') }}" tabindex="-1" role="dialog" aria-labelledby="verifyModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-gradient-info">
+                                                    <h5 class="modal-title text-white" id="verifyModalLabel">Verify Parcels for {{ $entry->user->name }}</h5>
+                                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-group">
+                                                        @php
+                                                            $requests = \App\Models\ClientRequest::where('userId', $entry->user->id)
+                                                                ->whereDate('dateRequested', \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d'))
+                                                                ->where('status', 'collected')
+                                                                ->with('client')
+                                                                ->get();
+                                                        @endphp
+
+                                                        @forelse ($requests as $request)
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>{{ $request->requestId }}</strong> - {{ $request->client->name }}
+                                                                </div>
+                                                                <a href="" class="btn btn-sm btn-primary" title="Verify Now">
+                                                                    <i class="fas fa-arrow-right"></i>
+                                                                </a>
+                                                            </li>
+                                                        @empty
+                                                            <li class="list-group-item text-muted">No collected parcels to verify for this rider.</li>
+                                                        @endforelse
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <button class="btn btn-sm btn-warning mr-1" title="View Collection">
                                         <i class="fas fa-eye"></i>
@@ -196,6 +238,7 @@
                             <th>Vehicle</th>
                             <th>Date of Request</th>
                             <th>No. of Parcels</th>
+                            <th>Verified By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -212,6 +255,7 @@
                             <th>Vehicle</th>
                             <th>Date of Request</th>
                             <th>No. of Parcels</th>
+                            <th>Verified By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
