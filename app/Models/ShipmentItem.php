@@ -20,4 +20,13 @@ class ShipmentItem extends Model
     {
         return $this->belongsTo(Shipment::class);
     }
+
+    public function getVolumeAttribute()
+    {
+        if ($this->length && $this->width && $this->height) {
+            return $this->length * $this->width * $this->height;
+        }
+        return null;
+    }
+
 }
