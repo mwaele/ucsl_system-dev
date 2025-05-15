@@ -35,14 +35,13 @@ class FrontOfficeController extends Controller
                                         ->groupBy('userId', 'vehicleId', DB::raw('DATE(dateRequested)'))
                                         ->orderBy('request_date', 'desc')
                                         ->get()
-                                        ->groupBy('request_date'); 
-        $collections = ShipmentCollection::orderBy('created_at', 'desc')->get();
-        $items = ShipmentItem::all();
-        $client_requests = ClientRequest::all();              
-        $clients = Client::all();
-        $vehicles = Vehicle::all();
-        $drivers = User::where('role', 'driver')->get();
-        return view('front-office.index', compact('groupedVerifiedParcels', 'ridersWithPendingVerification'));
+                                        ->groupBy('request_date');
+
+        $requestsToVerify = ClientRequest::with('client')
+                            ->where('status', 'collected')
+                            ->get()
+                            ->groupBy('userId');
+        return view('front-office.index', compact('groupedVerifiedParcels', 'ridersWithPendingVerification', 'requestsToVerify'));
     }
 
     /**

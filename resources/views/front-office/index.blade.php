@@ -1,7 +1,7 @@
 @extends('layouts.custom')
 
 @section('content')
-    <!-- DataTales Example -->
+    <!-- DataTables Example -->
     <div class="card mb-4">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between"> 
@@ -19,29 +19,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Modal -->
-            <form action="{{ route('clientRequests.store') }}" method="POST">
-                @csrf
-                <div class="modal fade" id="createClientRequest" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
-                        <div class="modal-content">
-                            <div class="modal-header bg-gradient-primary">
-                                <h5 class="modal-title text-white" id="exampleModalLabel">Create Client Request</h5>
-                                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -97,12 +74,12 @@
                                         class="btn btn-sm btn-info mr-1" 
                                         title="Proceed to Verify Collection" 
                                         data-toggle="modal" 
-                                        data-target="#verifyModal-{{ $entry->user->id }}-{{ \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d') }}">
+                                        data-target="#verifyModal-{{ $entry->user->id }}">
                                         <i class="fas fa-clipboard-check"></i>
                                     </button>
 
                                     <!-- Proceed to Verify Collection Modal -->
-                                    <div class="modal fade" id="verifyModal-{{ $entry->user->id }}-{{ \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d') }}" tabindex="-1" role="dialog" aria-labelledby="verifyModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="verifyModal-{{ $entry->user->id }}" tabindex="-1" role="dialog" aria-labelledby="verifyModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header bg-gradient-info">
@@ -114,14 +91,10 @@
                                                 <div class="modal-body">
                                                     <ul class="list-group">
                                                         @php
-                                                            $requests = \App\Models\ClientRequest::where('userId', $entry->user->id)
-                                                                ->whereDate('dateRequested', \Carbon\Carbon::parse($entry->request_date)->format('Y-m-d'))
-                                                                ->where('status', 'collected')
-                                                                ->with('client')
-                                                                ->get();
+                                                            $userRequests = $requestsToVerify[$entry->user->id] ?? collect();
                                                         @endphp
 
-                                                        @forelse ($requests as $request)
+                                                        @forelse ($userRequests as $request)
                                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                                 <div>
                                                                     <strong>{{ $request->requestId }}</strong> - {{ $request->client->name }}
