@@ -43,6 +43,20 @@ class RateController extends Controller
 
         return response()->json($destinations);
     }
+    
+    public function getCost($originId, $destinationId)
+    {
+        $rate = Rate::where('office_id', $originId)
+                    ->where('destination', $destinationId)
+                    ->first();
+
+        if ($rate) {
+            return response()->json(['cost' => $rate->rate]);
+        }
+
+        return response()->json(['cost' => 'N/A'], 404);
+    }
+
 
     /**
      * Show the form for creating a new resource.

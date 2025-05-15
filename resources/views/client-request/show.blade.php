@@ -46,16 +46,15 @@
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->created_at }} </td>
                                 <td> {{ $collection->client->address }} </td>
-                                <td> <p class="badge
-                                            @if ($collection->status == 'pending collection')
-                                                bg-secondary
+                                <td>
+                                    <p
+                                        class="badge
+                                            @if ($collection->status == 'pending collection') bg-secondary
                                             @elseif ($collection->status == 'collected')
                                                 bg-warning
                                             @elseif ($collection->status == 'Delayed')
-                                                bg-primary
-                                            @endif
-                                            fs-5 text-white"
-                                           >
+                                                bg-primary @endif
+                                            fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </p>
                                 </td>
@@ -131,126 +130,145 @@
                                                         method="POST">
 
                                                         @csrf
+
+                                                        <!-- Radio Buttons -->
+                                                        <div class="form-group mb-3">
+                                                            <label class="form-label text-dark">Sender Type</label><br>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="sender_type" id="clientRadio" value="client">
+                                                                <label class="form-check-label"
+                                                                    for="clientRadio">Client</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="sender_type" id="agentRadio" value="agent">
+                                                                <label class="form-check-label"
+                                                                    for="agentRadio">Agent</label>
+                                                            </div>
+                                                        </div>
+
                                                         <!-- Sender and Receiver in same row -->
 
-                                                        <div class="row">
-                                                            <!-- Sender Panel -->
-                                                            {{-- <div class="col-md-12">
-                                                                <div class="card shadow-sm mb-4">
-                                                                    <div class="card-header bg-primary text-white">Sender
-                                                                        Details</div>
-                                                                    <!-- SENDER DETAILS -->
-                                                                    <div class="card-body">
+                                                        <!-- Sender Panel -->
+                                                        <div class="col-md-12">
+                                                            <div class="card shadow-sm mb-4" id="senderForm"
+                                                                style="display: none;">
+                                                                <div class="card-header bg-primary text-white">Sender
+                                                                    Details</div>
+                                                                <!-- SENDER DETAILS -->
+                                                                <div class="card-body">
+                                                                    <!-- Sender Details Form (Initially Hidden) -->
+                                                                    <div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-12">
                                                                                 <label class="form-label text-dark">Sender
                                                                                     Name <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="senderName" required>
+                                                                                    name="sender_name" id="sender_name">
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">ID
                                                                                     Number <span
-                                                                                        class="text-danger">*</span>
-                                                                                </label>
+                                                                                        class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="senderIdNo" required>
+                                                                                    name="sender_id_no" id="sender_id_no">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Phone
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="senderPhone" required>
+                                                                                    name="sender_contact"
+                                                                                    id="sender_contact">
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Town
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="senderTown" required>
+                                                                                    name="sender_town" id="sender_town">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Address
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="senderAddress" required>
+                                                                                    name="sender_address"
+                                                                                    id="sender_address">
                                                                             </div>
                                                                         </div>
-
-
-
-
-
                                                                     </div>
-                                                                </div>
-                                                            </div> --}}
-                                                            <!-- Receiver Panel -->
-                                                            <div class="col-md-12">
-                                                                <div class="card shadow-sm mb-4">
-                                                                    <div class="card-header bg-primary text-white">Receiver
-                                                                        Details</div>
-                                                                    <!-- RECEIVER DETAILS -->
-                                                                    <div class="card-body">
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-12">
-                                                                                <label class="form-label text-dark">Receiver
-                                                                                    Name <span class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="receiverContactPerson" required>
-                                                                                <input type="hidden" name='client_id'
-                                                                                    value="{{ $collection->client->id }}">
-                                                                                <input type="hidden" name="requestId"
-                                                                                    value="{{ $collection->requestId }}">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">ID
-                                                                                    Number <span
-                                                                                        class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="receiverIdNo" required>
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Phone
-                                                                                    Number
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="receiverPhone" required>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Address
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="receiverAddress" required>
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Town
-                                                                                    <span class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="receiverTown" required>
-                                                                            </div>
-                                                                        </div>
 
 
-                                                                    </div>
+
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <!-- Receiver Panel -->
+                                                        <div class="col-md-12">
+                                                            <div class="card shadow-sm mb-4">
+                                                                <div class="card-header bg-primary text-white">Receiver
+                                                                    Details</div>
+                                                                <!-- RECEIVER DETAILS -->
+                                                                <div class="card-body">
+                                                                    <div class="form-row">
+                                                                        <div class="form-group col-md-12">
+                                                                            <label class="form-label text-dark">Receiver
+                                                                                Name <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiverContactPerson" required>
+                                                                            <input type="hidden" name='client_id'
+                                                                                value="{{ $collection->client->id }}">
+                                                                            <input type="hidden" name="requestId"
+                                                                                value="{{ $collection->requestId }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="form-label text-dark">ID
+                                                                                Number <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiverIdNo" required>
+                                                                        </div>
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="form-label text-dark">Phone
+                                                                                Number
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiverPhone" required>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="form-label text-dark">Address
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiverAddress" required>
+                                                                        </div>
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="form-label text-dark">Town
+                                                                                <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiverTown" required>
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
 
                                                         <!-- Description of Goods -->
                                                         <div class="form-row">
@@ -274,11 +292,13 @@
                                                                     <option value="">Select</option>
                                                                 </select>
                                                             </div>
+                                                            <input type="hidden" name='destination_id'
+                                                                id="destination_id">
                                                         </div>
 
                                                         <!-- Shipment Info Table -->
                                                         {{-- <div class="section-title"><b class="text-dark">
-                            Shipment Information</b></div> --}}
+                                                Shipment Information</b></div> --}}
 
                                                         <div class="table-responsive mt-3">
                                                             <table class="table table-bordered shipmentTable"
@@ -286,12 +306,13 @@
                                                                 <thead class="thead-success">
                                                                     <tr>
                                                                         <th>Item Name</th>
-                                                                        <th>No. of Packages</th>
+                                                                        <th>Packages #</th>
                                                                         <th>Weight (kg)</th>
                                                                         <th>Length (cm)</th>
                                                                         <th>Width (cm)</th>
                                                                         <th>Height (cm)</th>
-                                                                        <th>Action</th>
+                                                                        <th>Volume (cm<sup>3</sup>)</th>
+                                                                        <th>Act</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -313,8 +334,14 @@
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
                                                                                 name="height[]"></td>
+                                                                        <td class="volume-display text-muted"><input
+                                                                                type="number" min="0"
+                                                                                class="form-control" name="volume[]"
+                                                                                readonly></td>
                                                                         <td><button type="button"
-                                                                                class="btn btn-danger btn-sm remove-row">Remove</button>
+                                                                                class="btn btn-danger btn-sm remove-row"
+                                                                                title="Delete Row"><i
+                                                                                    class="fas fa-trash"></i></button>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -339,12 +366,33 @@
                                                                     <option value="overnight">Overnight</option>
                                                                 </select>
                                                             </div> --}}
-                                                            <div class="form-group col-md-12">
-                                                                <label class="form-label text-dark">Cost <span
-                                                                        class="text-danger">*</span>
-                                                                </label>
-                                                                <input type="number" min="0" class="form-control"
-                                                                    name="cost" required>
+                                                            <div class="form-row">
+                                                                <div class="form-group col-md-4">
+                                                                    <label class="form-label text-dark">Cost <span
+                                                                            class="text-danger">*</span>
+                                                                    </label>
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="cost" required
+                                                                        readonly>
+                                                                </div>
+                                                                <input type="hidden" name="base_cost" value="">
+
+                                                                <div class="form-group col-md-4">
+                                                                    <label class="form-label text-dark">Tax (16%) <span
+                                                                            class="text-danger">*</span>
+                                                                    </label>
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="vat" required
+                                                                        readonly>
+                                                                </div>
+                                                                <div class="form-group col-md-4">
+                                                                    <label class="form-label text-dark">Total Cost <span
+                                                                            class="text-danger">*</span>
+                                                                    </label>
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="total_cost" required
+                                                                        readonly>
+                                                                </div>
                                                             </div>
 
                                                             <!-- Submit -->
@@ -356,14 +404,17 @@
 
                                                         </div>
                                                         <div class="modal-footer d-flex justify-content-between p-0">
-                                                            <button type="submit" class="btn btn-success">Submit
+                                                            <button type="submit"
+                                                                class="btn btn-success text-dark">Submit
                                                                 Collection</button>
-                                                            <button type="button" class="btn btn-secondary"
+                                                            <button type="button" class="btn btn-danger"
                                                                 data-dismiss="modal">Cancel</button>
                                                         </div>
 
                                                     </form>
                                                 </div>
+
+
                                             </div>
                                         </div>
 
@@ -374,6 +425,72 @@
                     </tbody>
                 </table>
             </div>
+
+
+            <!-- JavaScript to toggle and populate form -->
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const clientRadio = document.getElementById('clientRadio');
+                    const agentRadio = document.getElementById('agentRadio');
+                    const senderForm = document.getElementById('senderForm');
+
+                    const sender_name = document.getElementById('sender_name');
+                    const sender_id_no = document.getElementById('sender_id_no');
+                    const sender_contact = document.getElementById('sender_contact');
+                    const sender_town = document.getElementById('sender_town');
+                    const sender_address = document.getElementById('sender_address');
+
+                    function clearForm() {
+                        sender_name.value = '';
+                        sender_id_no.value = '';
+                        sender_contact.value = '';
+                        sender_town.value = '';
+                        sender_address.value = '';
+                    }
+
+                    clientRadio.addEventListener('change', () => {
+                        if (clientRadio.checked) {
+                            senderForm.style.display = 'block';
+
+                            fetch('/clientData') // Adjust this URL as needed
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Use the first client for demo purposes
+                                    if (data.length > 0) {
+                                        const client = data[0];
+                                        sender_name.value = client.name || '';
+                                        sender_id_no.value = client.kraPin || '';
+                                        sender_contact.value = client.contact || '';
+                                        sender_town.value = client.city || '';
+                                        sender_address.value = client.address || '';
+                                    } else {
+                                        alert('No clients found.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching client data:', error);
+                                    alert('Failed to fetch client data.');
+                                });
+                        }
+                    });
+
+                    agentRadio.addEventListener('change', () => {
+                        if (agentRadio.checked) {
+                            senderForm.style.display = 'block';
+                            clearForm(); // Allow fresh entry
+                        }
+                    });
+                });
+            </script>
+
+
+
         </div>
     </div>
 @endsection
