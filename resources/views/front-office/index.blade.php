@@ -99,9 +99,14 @@
                                                                 <div>
                                                                     <strong>{{ $request->requestId }}</strong> - {{ $request->client->name }}
                                                                 </div>
-                                                                <a href="" class="btn btn-sm btn-primary" title="Verify Now">
+                                                                <button 
+                                                                    class="btn btn-sm btn-primary" 
+                                                                    data-toggle="modal" 
+                                                                    data-target="#verifyRequestModal-{{ $request->id }}" 
+                                                                    onclick="$('#verifyModal-{{ $entry->user->id }}').modal('hide')"
+                                                                    title="Verify Now">
                                                                     <i class="fas fa-arrow-right"></i>
-                                                                </a>
+                                                                </button>
                                                             </li>
                                                         @empty
                                                             <li class="list-group-item text-muted">No collected parcels to verify for this rider.</li>
@@ -117,9 +122,76 @@
                                     </button>
                                 </td>
                             </tr>
+                        @endforeach
+                        @foreach ($requestsToVerify as $userRequests)
+                            @foreach ($userRequests as $request)
+                                <div class="modal fade" id="verifyRequestModal-{{ $request->id }}" tabindex="-1" role="dialog" aria-labelledby="verifyRequestModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl" role="document">
+                                        <form method="POST" action="">
+                                            @csrf
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-gradient-info">
+                                                    <h5 class="modal-title text-white">
+                                                        Verify Parcels - {{ $request->requestId }} | {{ $request->client->name }}
+                                                    </h5>
+                                                    <button type="button" class="close text-white" data-dismiss="modal">
+                                                        <span>&times;</span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    @if ($request->shipmentCollection && $request->shipmentCollection->items->isNotEmpty())
+                                                        @foreach ($request->shipmentCollection->items as $item)                                                     
+                                                            <div class="border p-2 mb-3">
+                                                                <h6>Item {{ $index + 1 }} - {{ $item->description ?? 'No description' }}</h6>
+                                                                <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
+
+                                                                <div class="form-row">
+                                                                    <div class="col">
+                                                                        <label>Item name</label>
+                                                                        <input type="text" name="items[{{ $index }}][item_name]" class="form-control" value="{{ $item->item_name }}" required>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <label>Quantity</label>
+                                                                        <input type="number" name="items[{{ $index }}][packages_no]" class="form-control" value="{{ $item->packages_no }}" required>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <label>Weight (kg)</label>
+                                                                        <input type="number" step="0.01" name="items[{{ $index }}][weight]" class="form-control" value="{{ $item->weight }}" required>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <label>Length (cm)</label>
+                                                                        <input type="number" name="items[{{ $index }}][length]" class="form-control" value="{{ $item->length }}" required>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <label>Width (cm)</label>
+                                                                        <input type="number" name="items[{{ $index }}][width]" class="form-control" value="{{ $item->width }}" required>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <label>Height (cm)</label>
+                                                                        <input type="number" name="items[{{ $index }}][height]" class="form-control" value="{{ $item->height }}" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <div class="text-muted">No items found for this request.</div>
+                                                    @endif
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="fas fa-check-circle"></i> Submit Verification
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
                         @endforeach          
                     </tbody>
                 </table>
+
                 <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.getElementById("tableSearch");
@@ -302,4 +374,5 @@
             </div>
         </div>
     </div>
+
 @endsection

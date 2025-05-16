@@ -20,8 +20,13 @@ class ShipmentCollection extends Model
         'cost'
     ];
 
+    public function clientRequest()
+    {
+        return $this->belongsTo(ClientRequest::class, 'requestId');
+    }
+
     public function items()
     {
-        return $this->hasMany(ShipmentItem::class);
+        return $this->hasMany(ShipmentItem::class, 'shipment_id');
     }
 }

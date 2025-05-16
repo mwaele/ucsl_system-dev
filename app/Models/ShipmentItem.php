@@ -16,11 +16,6 @@ class ShipmentItem extends Model
         'height'
     ];
 
-    public function shipment()
-    {
-        return $this->belongsTo(Shipment::class);
-    }
-
     public function getVolumeAttribute()
     {
         if ($this->length && $this->width && $this->height) {
@@ -29,4 +24,8 @@ class ShipmentItem extends Model
         return null;
     }
 
+    public function shipment()
+    {
+        return $this->belongsTo(ShipmentCollection::class, 'shipment_id');
+    }
 }

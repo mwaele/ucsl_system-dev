@@ -37,10 +37,13 @@ class FrontOfficeController extends Controller
                                         ->get()
                                         ->groupBy('request_date');
 
-        $requestsToVerify = ClientRequest::with('client')
+        $requestsToVerify = $requestsToVerify = ClientRequest::with([
+                                'client',
+                                'shipmentCollection.items' // nested relationship
+                            ])
                             ->where('status', 'collected')
                             ->get()
-                            ->groupBy('userId');
+                            ->groupBy('userId'); // For modal filtering
         return view('front-office.index', compact('groupedVerifiedParcels', 'ridersWithPendingVerification', 'requestsToVerify'));
     }
 

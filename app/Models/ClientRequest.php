@@ -30,4 +30,9 @@ class ClientRequest extends Model
     {
         return $this->belongsTo(Vehicle::class, 'vehicleId');
     }
+
+    public function shipmentCollection()
+    {
+        return $this->hasOne(ShipmentCollection::class, 'requestId');
+    }
 }
