@@ -13,7 +13,8 @@ class ShipmentItem extends Model
         'weight',
         'length',
         'width',
-        'height'
+        'height',
+        'volume',
     ];
 
     public function getVolumeAttribute()

@@ -7,6 +7,8 @@
 
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
+                <a href="{{ route('rates.create') }}"><button class="btn btn-sm btn-primary"> Add
+                        Rate <i class="fas fa-plus"></i></button></a>
                 <h6 class="m-0 font-weight-bold text-danger">Nairobi Rates Lists</h6>
                 <a href="/rates_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>

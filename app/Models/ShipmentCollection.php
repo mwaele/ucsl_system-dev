@@ -17,7 +17,15 @@ class ShipmentCollection extends Model
         'requestId',
         'origin_id',
         'destination_id',
-        'cost'
+        'cost',
+        'sender_type',
+        'sender_name',
+        'sender_contact',
+        'sender_address',
+        'sender_town',
+        'sender_id_no',
+        'total_cost',
+        'vat',
     ];
 
     public function clientRequest()

@@ -10,6 +10,8 @@ use App\Http\Controllers\ShipmentCollectionController;
 
 use App\Http\Controllers\MyCollectionController;
 
+use App\Http\Controllers\MainController;
+
 Route::get('/', function () {
     return view('index');
 })->middleware(['auth', 'verified'])->name('index');;
@@ -43,6 +45,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-destinations/{office_id}', [RateController::class, 'getDestinations']);
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
+    Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
+    Route::get('/clientData', [MainController::class, 'clients']);
+
+
 });
 
 require __DIR__.'/auth.php';

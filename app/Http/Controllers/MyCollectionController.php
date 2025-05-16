@@ -38,6 +38,7 @@ class MyCollectionController extends Controller
         'length' => 'required|array',
         'width' => 'required|array',
         'height' => 'required|array',
+        'volume' => 'required|array',
     ]);
 
     // Save the main shipment
