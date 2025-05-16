@@ -33,6 +33,6 @@ class ClientRequest extends Model
 
     public function shipmentCollection()
     {
-        return $this->hasOne(ShipmentCollection::class, 'requestId');
+        return $this->hasOne(ShipmentCollection::class,  'requestId', 'requestId');
     }
 }

@@ -346,6 +346,7 @@
                                             <i class="fas fa-clipboard-check"></i>
                                         </button>
                                     @endif
+                                    
                                     <!-- Verify Collected Parcel Modal -->
                                     <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
@@ -353,7 +354,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
-                                                <div class="modal-header bg-gradient-primary">
+                                                <div class="modal-header bg-gradient-info">
                                                     <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">Verify Details of Collected Parcel </h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -384,61 +385,49 @@
                                                                 readonly>
                                                         </div>
                                                     </div>
-
-                                                    <div class="form-group">
-                                                        <label class="text-primary">Client</label>
-                                                        <select name="clientId" class="form-control">
-                                                            @foreach($clients as $client)
-                                                                <option value="{{ $client->id }}" {{ $client->id == $request->clientId ? 'selected' : '' }}>{{ $client->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="text-primary">Pick-up Location</label>
-                                                        <input type="text" name="collectionLocation" class="form-control" value="{{ $request->collectionLocation }}">
-                                                    </div>
-
-                                                    
-
-                                                    
-
-                                                    <script>
-                                                        document.addEventListener('DOMContentLoaded', function () {
-                                                            const selects = document.querySelectorAll('.rider-select');
-
-                                                            selects.forEach(select => {
-                                                                select.addEventListener('change', function () {
-                                                                    const modalId = this.dataset.modal;
-                                                                    const selectedOption = this.options[this.selectedIndex];
-                                                                    const vehicleRegNo = selectedOption.dataset.vehicle || '';
-                                                                    
-                                                                    const modal = document.getElementById('editClientRequest-' + modalId);
-                                                                    const vehicleInput = modal.querySelector('.vehicle-input');
-                                                                    const hiddenVehicleId = modal.querySelector('.vehicle-id-hidden');
-
-                                                                    vehicleInput.value = vehicleRegNo;
-
-                                                                    const allVehicles = @json($vehicles);
-
-                                                                    allVehicles.forEach(vehicle => {
-                                                                        if (vehicle.regNo === vehicleRegNo) {
-                                                                            hiddenVehicleId.value = vehicle.id;
-                                                                        }
-                                                                    });
-                                                                });
-                                                            });
-                                                        });
-                                                    </script>
-
-                                                    <div class="form-group">
-                                                        <label class="text-primary">Description of Goods</label>
-                                                        <textarea name="parcelDetails" class="form-control">{{ $request->parcelDetails }}</textarea>
-                                                    </div>
+                                                    @if ($request->shipmentCollection && $request->shipmentCollection->items->count())
+                                                        <table class="table table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Item No.</th>
+                                                                    <th>Item Name</th>
+                                                                    <th>Quantity</th>
+                                                                    <th>Weight</th>
+                                                                    <th>Length</th>
+                                                                    <th>Width</th>
+                                                                    <th>Height</th>
+                                                                    <th>Volume</th>
+                                                                    <th>Cost</th>
+                                                                    <th>Remarks</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($request->shipmentCollection->items as $index => $item)
+                                                                    <tr>
+                                                                        <td>{{ $index + 1 }}</td>
+                                                                        <td><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][quantity]" value="{{ $item->quantity }}" class="form-control" required></td>
+                                                                        <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][height]" value="{{ $item->height }}" class="form-control" required></td>
+                                                                        <td>
+                                                                            {{ $item->length * $item->width * $item->height }}
+                                                                            <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
+                                                                        </td>
+                                                                        <td><input type="number" step="0.01" name="items[{{ $index }}][cost]" value="{{ $item->cost }}" class="form-control"></td>
+                                                                        <td><input type="text" name="items[{{ $index }}][remarks]" value="{{ $item->remarks }}" class="form-control"></td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    @else
+                                                        <p class="text-muted">No items found for this request.</p>
+                                                    @endif
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                    <button type="submit" class="btn btn-success">Submit Verification</button>
                                                 </div>
                                                 </div>
                                             </form>

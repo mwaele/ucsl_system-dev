@@ -306,7 +306,7 @@
                                                                 <thead class="thead-success">
                                                                     <tr>
                                                                         <th>Item Name</th>
-                                                                        <th>Packages #</th>
+                                                                        <th>Quantity #</th>
                                                                         <th>Weight (kg)</th>
                                                                         <th>Length (cm)</th>
                                                                         <th>Width (cm)</th>
@@ -321,7 +321,7 @@
                                                                                 name="item[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
-                                                                                name="packages[]"></td>
+                                                                                name="quantity[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
                                                                                 name="weight[]"></td>

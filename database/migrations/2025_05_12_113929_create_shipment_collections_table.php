@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('origin_id');
             $table->unsignedBigInteger('destination_id');
             $table->decimal('cost', 10, 2);
+            $table->foreignId('verified_by')->nullable()->constrained('users');
+            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
     }
