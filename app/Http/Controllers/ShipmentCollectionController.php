@@ -90,7 +90,7 @@ class ShipmentCollectionController extends Controller
             ShipmentItem::create([
                 'shipment_id' => $shipment->id,
                 'item_name' => $itemName,
-                'quantity' => $request->quantity[$i],
+                'packages_no' => $request->packages[$i],
                 'weight' => $request->weight[$i],
                 'length' => $request->length[$i],
                 'width' => $request->width[$i],

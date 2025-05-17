@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('shipment_id');
             $table->string('item_name');
-            $table->integer('quantity');
+            $table->integer('packages_no');
             $table->integer('weight');
             $table->integer('length')->nullable();
             $table->integer('height')->nullable();

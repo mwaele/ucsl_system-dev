@@ -321,7 +321,7 @@
                                                                                 name="item[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
-                                                                                name="quantity[]"></td>
+                                                                                name="packages[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
                                                                                 name="weight[]"></td>

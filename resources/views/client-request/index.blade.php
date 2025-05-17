@@ -406,7 +406,7 @@
                                                                     <tr>
                                                                         <td>{{ $index + 1 }}</td>
                                                                         <td><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][quantity]" value="{{ $item->quantity }}" class="form-control" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->quantity }}" class="form-control" required></td>
                                                                         <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
                                                                         <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control" required></td>
                                                                         <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control" required></td>
