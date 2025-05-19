@@ -30,39 +30,6 @@ class ShipmentCollectionController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
-
-
-        $request->validate([
-            'receiverContactPerson' => 'required|string',
-            'receiverIdNo' => 'required|string',
-            'receiverPhone' => 'required|string',
-            'receiverAddress' => 'required|string',
-            'receiverTown' => 'required|string',
-            'origin' => 'required',
-            'destination_id' => 'required',
-            'requestId' => 'required',
-            'client_id' => 'required',
-            'item' => 'required|array',
-            'quantity' => 'required|array',
-            'weight' => 'required|array',
-            'length' => 'required|array',
-            'width' => 'required|array',
-            'height' => 'required|array',
-            'volume' => 'required|array',
-            'cost' => 'required|numeric',
-            'sender_type' => 'required|string',
-            'sender_name' => 'required|string',
-            'sender_contact' => 'required|string',
-            'sender_address' => 'required|string',
-            'sender_town' => 'string',
-            'sender_id_no' => 'required|string',
-            'vat' => 'required|string',
-            'total_cost' => 'required|string',
-        ]);
-
-        
-
         // Save main shipment
         $shipment = ShipmentCollection::create([
             'receiver_name' => $request->receiverContactPerson,
@@ -70,7 +37,7 @@ class ShipmentCollectionController extends Controller
             'receiver_phone' => $request->receiverPhone,
             'receiver_address' => $request->receiverAddress,
             'receiver_town' => $request->receiverTown,
-            'origin_id' => $request->origin,
+            'origin_id' => $request->origin_id,
             'client_id' => $request->client_id,
             'requestId' => $request->requestId,
             'destination_id' => $request->destination_id,
@@ -89,11 +56,11 @@ class ShipmentCollectionController extends Controller
         if($shipment){
         
          // Save shipment items
-         foreach ($request->item as $i => $itemName) {
+         foreach ($request->item_name as $i => $itemName) {
             ShipmentItem::create([
                 'shipment_id' => $shipment->id,
                 'item_name' => $itemName,
-                'packages_no' => $request->quantity[$i],
+                'packages_no' => $request->packages_no[$i],
                 'weight' => $request->weight[$i],
                 'length' => $request->length[$i],
                 'width' => $request->width[$i],

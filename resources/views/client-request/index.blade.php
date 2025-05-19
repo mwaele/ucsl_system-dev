@@ -191,7 +191,7 @@
                     <tbody>
                         @foreach ($client_requests as $request)
                             <tr>
-                                <td> {{ $loop->iteration }} </td>
+                                <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
@@ -212,10 +212,12 @@
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </p>
                                 </td>
-                                <td class="d-flex pl-4">
-                                    <button class="btn btn-sm btn-info mr-1" title="Edit Client Request" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
+                                <td class="d-flex pl-2">
+                                    @if ($request->status === 'pending collection')
+                                        <button class="btn btn-sm btn-info mr-1" title="Edit Client Request" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    @endif
                                     <!-- Edit Client Request Modal -->
                                     <div class="modal fade" id="editClientRequest-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="editClientRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
@@ -334,9 +336,35 @@
                                         </div>
                                     </div>
 
-                                    <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
+                                    @if ($request->status === 'pending collection')
+                                        <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"  data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    @endif
+                                    <!-- Delete Modal-->
+                                    <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete {{ $request->requestId }}?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                    data-dismiss="modal">Cancel</button>
+                                                    <form
+                                                        action =" {{ route('clientRequests.destroy', $request->requestId) }}"
+                                                        method = "POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
+                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-primary mr-1" 
@@ -349,7 +377,7 @@
                                     
                                     <!-- Verify Collected Parcel Modal -->
                                     <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-dialog modal-xl" role="document">
                                             <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
@@ -392,12 +420,11 @@
                                                                     <th>Item No.</th>
                                                                     <th>Item Name</th>
                                                                     <th>Quantity</th>
-                                                                    <th>Weight</th>
-                                                                    <th>Length</th>
-                                                                    <th>Width</th>
-                                                                    <th>Height</th>
-                                                                    <th>Volume</th>
-                                                                    <th>Cost</th>
+                                                                    <th>Weight (Kg)</th>
+                                                                    <th>Length (cm)</th>
+                                                                    <th>Width (cm)</th>
+                                                                    <th>Height (cm)</th>
+                                                                    <th>Volume (cm<sup>3</sup>)</th>
                                                                     <th>Remarks</th>
                                                                 </tr>
                                                             </thead>
@@ -405,7 +432,7 @@
                                                                 @foreach ($request->shipmentCollection->items as $index => $item)
                                                                     <tr>
                                                                         <td>{{ $index + 1 }}</td>
-                                                                        <td><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
+                                                                        <td style="width: 250px;"><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
                                                                         <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->quantity }}" class="form-control" required></td>
                                                                         <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
                                                                         <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control" required></td>
@@ -415,7 +442,6 @@
                                                                             {{ $item->length * $item->width * $item->height }}
                                                                             <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
                                                                         </td>
-                                                                        <td><input type="number" step="0.01" name="items[{{ $index }}][cost]" value="{{ $item->cost }}" class="form-control"></td>
                                                                         <td><input type="text" name="items[{{ $index }}][remarks]" value="{{ $item->remarks }}" class="form-control"></td>
                                                                     </tr>
                                                                 @endforeach
@@ -433,35 +459,12 @@
                                             </form>
                                         </div>
                                     </div>
-                                    
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"  data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <!-- Delete Modal-->
-                                    <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $request->requestId }}?
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
-                                                    <form
-                                                        action =" {{ route('clientRequests.destroy', $request->requestId) }}"
-                                                        method = "POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
+                                    @if ($request->status === 'collected')
+                                        <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach          

@@ -15,7 +15,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-
+                            <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Telephone Number</th>
@@ -27,7 +27,7 @@
                     </thead>
                     <tfoot>
                         <tr>
-
+                            <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Client Telephone Number</th>
@@ -41,7 +41,8 @@
                     <tbody>
                         @foreach ($collections as $collection)
                             <tr>
-                                <td>{{ $collection->requestId }}</td>
+                                <td> {{ $loop->iteration }}.</td>
+                                <td> {{ $collection->requestId }} </td>
                                 <td> {{ $collection->client->name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->created_at }} </td>
@@ -58,17 +59,13 @@
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </p>
                                 </td>
-                                <td class="row pl-4">
-                                    <a href="#">
-                                        <button class="btn btn-sm btn-info mr-1" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </a>
-                                    <a href="#">
-                                        <button class="btn btn-sm btn-warning" data-toggle="modal" title="Collect parcels"
-                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-box"></i>
-                                        </button>
-                                    </a>
+                                <td class="d-flex pl-2">
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" title="Collect parcels"
+                                        data-target="#collect-{{ $collection->id }}"><i class="fas fa-box"></i>
+                                    </button>
                                     {{-- <a href="#">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i>
@@ -104,7 +101,7 @@
                                         </div>
                                     </div>
 
-
+                                    <!-- Collect Parcel Modal -->
                                     <div class="modal fade" id="collect-{{ $collection->id }}" tabindex="-1" role="dialog"
                                         aria-labelledby="collectionModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
@@ -121,11 +118,6 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-
-
-
-
-
                                                     <form method="POST"
                                                         action="{{ route('shipment_collections.store') }}">
                                                         @csrf
@@ -146,8 +138,6 @@
                                                                     for="agentRadio">Agent</label>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Sender and Receiver in same row -->
 
                                                         <!-- Sender Panel -->
                                                         <div class="col-md-12">
@@ -268,13 +258,12 @@
                                                             </div>
                                                         </div>
 
-
-                                                        <!-- Description of Goods -->
+                                                        <!-- Origin & Destination -->
                                                         <div class="form-row">
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Origin <span
                                                                         class="text-danger">*</span> </label>
-                                                                <select name="origin" id="origin"
+                                                                <select name="origin_id" id="origin_id"
                                                                     class="form-control origin-dropdown" required>
                                                                     <option value="">Select</option>
                                                                     @foreach ($offices as $office)
@@ -286,7 +275,7 @@
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Destination <span
                                                                         class="text-danger">*</span> </label>
-                                                                <select name="destination" id="destination"
+                                                                <select
                                                                     class="form-control destination-dropdown">
                                                                     <option value="">Select</option>
                                                                 </select>
@@ -296,9 +285,7 @@
                                                         </div>
 
                                                         <!-- Shipment Info Table -->
-                                                        {{-- <div class="section-title"><b class="text-dark">
-                                                Shipment Information</b></div> --}}
-
+                                                        {{-- <div class="section-title"><b class="text-dark">Shipment Information</b></div> --}}
                                                         <div class="table-responsive mt-3">
                                                             <table class="table table-bordered shipmentTable"
                                                                 id="shipmentTable">
@@ -317,10 +304,10 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td><input type="text" class="form-control"
-                                                                                name="item[]"></td>
+                                                                                name="item_name[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
-                                                                                name="packages[]"></td>
+                                                                                name="packages_no[]"></td>
                                                                         <td><input type="number" min="0"
                                                                                 max="100" class="form-control"
                                                                                 name="weight[]"></td>
