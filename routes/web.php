@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/clientData', [MainController::class, 'clients']);
+    Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
 
 
 });

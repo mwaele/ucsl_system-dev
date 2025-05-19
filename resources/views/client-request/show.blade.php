@@ -126,9 +126,8 @@
 
 
 
-                                                    <form action="{{ route('shipment_collections.store') }}"
-                                                        method="POST">
-
+                                                    <form method="POST"
+                                                        action="{{ route('shipment_collections.store') }}">
                                                         @csrf
 
                                                         <!-- Radio Buttons -->
@@ -288,7 +287,7 @@
                                                                 <label class="form-label text-dark">Destination <span
                                                                         class="text-danger">*</span> </label>
                                                                 <select name="destination" id="destination"
-                                                                    class="form-control destination-dropdown" required>
+                                                                    class="form-control destination-dropdown">
                                                                     <option value="">Select</option>
                                                                 </select>
                                                             </div>
@@ -465,7 +464,7 @@
                                     if (data.length > 0) {
                                         const client = data[0];
                                         sender_name.value = client.name || '';
-                                        sender_id_no.value = client.kraPin || '';
+                                        sender_id_no.value = client.contact_person_id_no || '';
                                         sender_contact.value = client.contact || '';
                                         sender_town.value = client.city || '';
                                         sender_address.value = client.address || '';

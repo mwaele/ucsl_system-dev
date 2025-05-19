@@ -8,7 +8,6 @@ class ShipmentCollection extends Model
 {
     protected $fillable = [
         'receiver_name',
-        'receiver_contact_person',
         'receiver_id_no',
         'receiver_phone',
         'receiver_address',
