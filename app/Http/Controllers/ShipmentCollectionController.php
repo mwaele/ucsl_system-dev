@@ -32,16 +32,19 @@ class ShipmentCollectionController extends Controller
     {
         //dd($request->all());
 
+
         $request->validate([
             'receiverContactPerson' => 'required|string',
             'receiverIdNo' => 'required|string',
             'receiverPhone' => 'required|string',
             'receiverAddress' => 'required|string',
             'receiverTown' => 'required|string',
-            'origin' => 'required|integer',
-            'destination' => 'required|integer',
+            'origin' => 'required',
+            'destination_id' => 'required',
+            'requestId' => 'required',
+            'client_id' => 'required',
             'item' => 'required|array',
-            'packages' => 'required|array',
+            'quantity' => 'required|array',
             'weight' => 'required|array',
             'length' => 'required|array',
             'width' => 'required|array',
@@ -57,6 +60,8 @@ class ShipmentCollectionController extends Controller
             'vat' => 'required|string',
             'total_cost' => 'required|string',
         ]);
+
+        
 
         // Save main shipment
         $shipment = ShipmentCollection::create([
@@ -82,15 +87,13 @@ class ShipmentCollectionController extends Controller
         ]);
 
         if($shipment){
-        // Update the client_requests table
-        ClientRequest::where('requestId', $request->requestId)
-        ->update(['status' => 'collected']); // or whatever status you need
+        
          // Save shipment items
          foreach ($request->item as $i => $itemName) {
             ShipmentItem::create([
                 'shipment_id' => $shipment->id,
                 'item_name' => $itemName,
-                'packages_no' => $request->packages[$i],
+                'packages_no' => $request->quantity[$i],
                 'weight' => $request->weight[$i],
                 'length' => $request->length[$i],
                 'width' => $request->width[$i],
@@ -98,6 +101,10 @@ class ShipmentCollectionController extends Controller
                 'volume' => $request->volume[$i],
             ]);
         }
+
+        // Update the client_requests table
+        ClientRequest::where('requestId', $request->requestId)
+        ->update(['status' => 'collected']); // or whatever status you need
 
        
         }
