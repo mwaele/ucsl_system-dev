@@ -35,7 +35,6 @@
                             <th>Physical Address</th>
                             <th>Status</th>
                             <th>Action</th>
-
                         </tr>
                     </tfoot>
                     <tbody>
@@ -53,7 +52,7 @@
                                             @if ($collection->status == 'pending collection') bg-secondary
                                             @elseif ($collection->status == 'collected')
                                                 bg-warning
-                                            @elseif ($collection->status == 'Delayed')
+                                            @elseif ($collection->status == 'verified')
                                                 bg-primary @endif
                                             fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
@@ -193,9 +192,6 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-
-
-
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -399,11 +395,8 @@
 
                                                     </form>
                                                 </div>
-
-
                                             </div>
                                         </div>
-
                                 </td>
                             </tr>
                         @endforeach

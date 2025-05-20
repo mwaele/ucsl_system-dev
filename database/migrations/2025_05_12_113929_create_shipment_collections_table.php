@@ -25,6 +25,9 @@ return new class extends Migration
             $table->decimal('cost', 10, 2);
             $table->foreignId('verified_by')->nullable()->constrained('users');
             $table->timestamp('verified_at')->nullable();
+            $table->integer('actual_cost')->nullable();
+            $table->integer('actual_vat')->nullable();
+            $table->integer('actual_total_cost')->nullable();
             $table->timestamps();
         });
     }

@@ -204,7 +204,7 @@
                                                 bg-secondary
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
-                                            @elseif ($request->status == 'received')
+                                            @elseif ($request->status == 'verified')
                                                 bg-primary
                                             @endif
                                             fs-5 text-white"
@@ -214,7 +214,7 @@
                                 </td>
                                 <td class="d-flex pl-2">
                                     @if ($request->status === 'pending collection')
-                                        <button class="btn btn-sm btn-info mr-1" title="Edit Client Request" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
+                                        <button class="btn btn-sm btn-primary mr-1" title="Edit Client Request" data-toggle="modal" data-target="#editClientRequest-{{ $request->requestId }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     @endif
@@ -341,6 +341,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     @endif
+
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -367,7 +368,7 @@
                                     </div>
 
                                     @if ($request->status === 'collected')
-                                        <button class="btn btn-sm btn-primary mr-1" 
+                                        <button class="btn btn-sm btn-info mr-1" 
                                                 title="Verify Collected Parcel" 
                                                 data-toggle="modal" 
                                                 data-target="#verifyCollectedParcel-{{ $request->requestId }}"> 
@@ -378,7 +379,7 @@
                                     <!-- Verify Collected Parcel Modal -->
                                     <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
                                         <div class="modal-dialog modal-xl" role="document">
-                                            <form action="{{ route('clientRequests.update', $request->requestId) }}" method="POST">
+                                            <form action="{{ route('shipment-collections.update', $request->requestId) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
@@ -414,7 +415,7 @@
                                                         </div>
                                                     </div>
                                                     @if ($request->shipmentCollection && $request->shipmentCollection->items->count())
-                                                        <table class="table table-bordered">
+                                                        <table class="table table-bordered shipmentTable" id="shipmentTable">
                                                             <thead>
                                                                 <tr>
                                                                     <th>Item No.</th>
@@ -430,23 +431,42 @@
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($request->shipmentCollection->items as $index => $item)
-                                                                    <tr>
-                                                                        <td>{{ $index + 1 }}</td>
-                                                                        <td style="width: 250px;"><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->quantity }}" class="form-control" required></td>
-                                                                        <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][height]" value="{{ $item->height }}" class="form-control" required></td>
-                                                                        <td>
-                                                                            {{ $item->length * $item->width * $item->height }}
-                                                                            <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
-                                                                        </td>
-                                                                        <td><input type="text" name="items[{{ $index }}][remarks]" value="{{ $item->remarks }}" class="form-control"></td>
-                                                                    </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        {{ $index + 1 }}
+                                                                        <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
+                                                                    </td>
+                                                                    <td style="width: 250px;"><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
+                                                                    <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->packages_no }}" class="form-control" required></td>
+                                                                    <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
+                                                                    <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control"></td>
+                                                                    <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control"></td>
+                                                                    <td><input type="number" name="items[{{ $index }}][height]" value="{{ $item->height }}" class="form-control"></td>
+                                                                    <td>
+                                                                        {{ $item->length * $item->width * $item->height }}
+                                                                        <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
+                                                                    </td>
+                                                                    <td><input type="text" name="items[{{ $index }}][remarks]" value="{{ $item->remarks }}" class="form-control"></td>
+                                                                </tr>
                                                                 @endforeach
                                                             </tbody>
                                                         </table>
+                                                        <div class="form-row">
+                                                            <div class="form-group col-md-2">
+                                                                <label class="form-label text-dark"><small>Cost <span class="text-danger">*</span></small> </label>
+                                                                <input type="number" min="0" class="form-control" name="cost" placeholder="{{ $request->shipmentCollection->cost }}" required readonly>
+                                                            </div>
+                                                            <input type="hidden" name="base_cost" value="500">
+
+                                                            <div class="form-group col-md-2">
+                                                                <label class="form-label text-dark text-bold"><small>Tax (16%) <span class="text-danger">*</span></small> </label>
+                                                                <input type="number" min="0" class="form-control" name="vat" placeholder="{{ $request->shipmentCollection->vat }}" required readonly>
+                                                            </div>
+                                                            <div class="form-group col-md-2">
+                                                                <label class="form-label text-dark"><small>Total Cost <span class="text-danger">*</span></small> </label>
+                                                                <input type="number" min="0" class="form-control" name="total_cost" placeholder="{{ $request->shipmentCollection->total_cost }}" required readonly>
+                                                            </div>
+                                                        </div>
                                                     @else
                                                         <p class="text-muted">No items found for this request.</p>
                                                     @endif
@@ -463,6 +483,18 @@
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
                                             <i class="fas fa-eye"></i>
+                                        </button>
+                                    @endif
+
+                                    @if ($request->status === 'verified')
+                                        <button class="btn btn-sm btn-success mr-1" title="Generate waybill" data-toggle="modal" data-target="">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                    @endif
+
+                                    @if ($request->status === 'verified')
+                                        <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel" data-toggle="modal" data-target="">
+                                            <i class="fas fa-truck"></i>
                                         </button>
                                     @endif
                                 </td>

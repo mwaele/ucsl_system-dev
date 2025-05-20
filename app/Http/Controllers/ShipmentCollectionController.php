@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ShipmentCollection;
 use App\Models\ShipmentItem;
 use Illuminate\Http\Request;
-use App\Models\ClientRequest; 
+use App\Models\ClientRequest;
+use Auth;
 
 class ShipmentCollectionController extends Controller
 {
@@ -98,9 +99,42 @@ class ShipmentCollectionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ShipmentCollection $shipmentCollection)
+    public function update(Request $request, $requestId)
     {
-        //
+        // Update main shipment details
+        $shipment = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
+
+        $shipment->update([
+            'actual_cost' => $request->base_cost,
+            'actual_vat' => $request->vat,
+            'actual_total_cost' => $request->total_cost,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
+        // Update shipment items
+        if ($request->has('items')) {
+            foreach ($request->items as $itemData) {
+                $item = ShipmentItem::find($itemData['id']);
+                if ($item) {
+                    $item->update([
+                        'actual_quantity' => $itemData['packages_no'],
+                        'actual_weight' => $itemData['weight'],
+                        'actual_length' => $itemData['length'],
+                        'actual_width'  => $itemData['width'],
+                        'actual_height' => $itemData['height'],
+                        'volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
+                        'remarks' => $itemData['remarks'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // Update status in client_requests
+        ClientRequest::where('requestId', $request->requestId)
+            ->update(['status' => 'verified']);
+
+        return redirect()->route('clientRequests.index')->with('success', 'Shipment collection verified successfully!');
     }
 
     /**

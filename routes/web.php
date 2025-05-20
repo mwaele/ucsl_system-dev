@@ -48,8 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/clientData', [MainController::class, 'clients']);
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
-
-
+    Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
 });
 
 require __DIR__.'/auth.php';
