@@ -64,6 +64,9 @@
         }
     </style>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.1/css/dataTables.bootstrap4.css">
+
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet" />
     <!-- Flatpickr CSS -->
@@ -414,6 +417,13 @@
             </div>
         </div>
 
+        <!-- Datatable JS -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
+        <script src="https://cdn.datatables.net/2.3.1/js/dataTables.bootstrap4.js"></script>
+
         <!-- Bootstrap core JavaScript-->
         <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -453,6 +463,15 @@
             flatpickr("#datetime", {
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
+            });
+        </script>
+
+        <script>
+            // Initialise the datatable
+            new DataTable('#ucsl-table', {
+                paging: true,
+                scrollCollapse: true,
+                scrollY: '50vh'
             });
         </script>
 

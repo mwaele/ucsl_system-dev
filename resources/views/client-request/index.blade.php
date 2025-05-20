@@ -11,13 +11,6 @@
                     <!-- Counter positioned just before the search input -->
                     <span class="text-primary counter mr-2"></span>
 
-                    <div class="input-group input-group-sm mr-2" style="width: 250px;">
-                        <input type="text" id="tableSearch" class="form-control" placeholder="Search client requests...">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fa fa-search"></i></span>
-                        </div>
-                    </div>
-
                     <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#createClientRequest">
                         <i class="fas fa-plus fa-sm text-white"></i> Create Client Request
                     </button>
@@ -154,7 +147,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered results" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered results display" id="ucsl-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -383,12 +376,12 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
-                                                <div class="modal-header bg-gradient-info">
-                                                    <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">Verify Details of Collected Parcel </h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
+                                                    <div class="modal-header bg-gradient-info">
+                                                        <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">Verify Details of Collected Parcel </h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
                                                 <div class="modal-body">
                                                     <!-- Form Fields -->
                                                     <div class="row">
