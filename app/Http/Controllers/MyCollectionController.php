@@ -20,7 +20,7 @@ class MyCollectionController extends Controller
             ->where('userId', $loggedInUserId)
             ->orderBy('created_at','desc')
             ->get();
-        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations]);
+        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId]);
     }
 
     public function store(Request $request)
