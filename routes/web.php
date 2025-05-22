@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/clientData', [MainController::class, 'clients']);
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
+    Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
 });
 
 require __DIR__.'/auth.php';

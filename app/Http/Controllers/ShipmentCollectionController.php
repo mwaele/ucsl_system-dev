@@ -144,4 +144,12 @@ class ShipmentCollectionController extends Controller
     {
         //
     }
+
+    public function receipt($id)
+    {
+
+        $request = ShipmentCollection::with(['clientRequest', 'items'])->findOrFail($id);
+
+        return view('receipts.shipment', compact('request'));
+    }
 }

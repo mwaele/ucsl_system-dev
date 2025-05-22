@@ -16,7 +16,10 @@ class MyCollectionController extends Controller
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
-        $collections = ClientRequest::where('userId',$loggedInUserId)->orderBy('created_at','desc')->get();
+        $collections = ClientRequest::with('shipmentCollection.items')
+            ->where('userId', $loggedInUserId)
+            ->orderBy('created_at','desc')
+            ->get();
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations]);
     }
 

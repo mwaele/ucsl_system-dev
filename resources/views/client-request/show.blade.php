@@ -62,9 +62,75 @@
                                     <button class="btn btn-sm btn-info mr-1" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning" data-toggle="modal" title="Collect parcels"
+                                    <button class="btn btn-sm btn-warning mr-1" data-toggle="modal" title="Collect parcels"
                                         data-target="#collect-{{ $collection->id }}"><i class="fas fa-box"></i>
                                     </button>
+                                    @if ($collection->status === 'collected')
+                                        <button class="btn btn-sm btn-primary" title="Print collection" data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    @endif
+                                    <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1" aria-labelledby="printModalLabel-{{ $collection->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content" id="print-modal-{{ $collection->id }}">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">Shipment Receipt</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body" id="print-content-{{ $collection->id }}">
+                                                    <div id="receipt-{{ $collection->id }}">
+                                                        <h4 style="text-align: center;">Ufanisi Courier Services</h4>
+                                                        <p style="text-align: center;">Parcel Dispatch Receipt</p>
+                                                        <hr>
+
+                                                        <strong>Date:</strong> {{ now()->format('F j, Y g:i A') }}<br>
+                                                        <strong>Receipt No:</strong> {{ $collection->id ?? 'N/A' }}
+                                                        <hr>
+
+                                                        <strong>Sender:</strong><br>
+                                                        Name: {{ $collection->client->name }}<br>
+                                                        ID: {{ $collection->sender_id_no }}<br>
+                                                        Phone: {{ $collection->sender_contact }}<br>
+                                                        Town: {{ $collection->sender_town }}<br>
+                                                        Address: {{ $collection->sender_address }}<br>
+                                                        <hr>
+
+                                                        <strong>Receiver:</strong><br>
+                                                        Name: {{ $collection->receiver_contact_person }}<br>
+                                                        ID: {{ $collection->receiver_id_no }}<br>
+                                                        Phone: {{ $collection->receiver_phone }}<br>
+                                                        Town: {{ $collection->receiver_town }}<br>
+                                                        Address: {{ $collection->receiver_address }}
+                                                        <hr>
+
+                                                        <strong>Parcel(s):</strong><br>
+                                                        @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
+                                                            @foreach ($collection->shipmentCollection->items as $item)
+                                                                <p>
+                                                                    {{ $item->item_name }}<br>
+                                                                    Qty: {{ $item->packages_no }}, Weight: {{ $item->weight }}kg
+                                                                </p>
+                                                            @endforeach
+                                                        @else
+                                                            <p>No shipment items found.</p>
+                                                        @endif
+                                                        <strong>Charges:</strong><br>
+                                                        Base: KES {{ number_format($collection->base_cost, 2) }}<br>
+                                                        VAT: KES {{ number_format($collection->vat, 2) }}<br>
+                                                        <strong>Total: KES {{ number_format($collection->total_cost, 2) }}</strong>
+
+                                                        <hr>
+                                                        <p style="text-align: center;">Thank you for choosing Ufanisi Courier!</p>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-primary" onclick="printModalContent({{ $collection->id }})">Print</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {{-- <a href="#">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i>
@@ -379,7 +445,6 @@
 
                                                             <!-- Submit -->
 
-
                                                             {{-- <button type="submit" class="btn btn-sm btn-danger" title="Delete"
                                                                 value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button> --}}
 
@@ -391,8 +456,7 @@
                                                                 Collection</button>
                                                             <button type="button" class="btn btn-danger"
                                                                 data-dismiss="modal">Cancel</button>
-                                                        </div>
-
+                                                        </div>                                                       
                                                     </form>
                                                 </div>
                                             </div>

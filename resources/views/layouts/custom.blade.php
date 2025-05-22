@@ -18,6 +18,20 @@
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet" />
     <style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #print-modal, #print-modal * {
+            visibility: visible;
+        }
+        #print-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        }  
         .results tr[visible='false'],
         .no-result {
             display: none;
@@ -475,6 +489,37 @@
             });
         </script>
 
+        <script>
+        function printModalContent(id) {
+            var content = document.getElementById('print-content-' + id).innerHTML;
+            var printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write('<html><head><title>Print Shipment Receipt</title>');
+            printWindow.document.write('<link rel="stylesheet" href="/css/app.css">'); // optional
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(content);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+        </script>
+
+
+        <script>
+        function openPrintModal() {
+            var printModal = new bootstrap.Modal(document.getElementById('printModal'));
+            printModal.show();
+        }
+
+        function printModalContent() {
+            const originalContents = document.body.innerHTML;
+            const printContents = document.getElementById('print-modal').innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload(); // reload to restore JS functionality
+        }
+        </script>
 
         {{-- <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/chart.js/Chart.min.js') }}"></script>

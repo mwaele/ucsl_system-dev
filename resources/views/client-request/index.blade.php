@@ -188,7 +188,7 @@
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ $request->dateRequested }} </td>
+                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }} </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
@@ -253,7 +253,7 @@
                                                                 name="dateRequested" 
                                                                 id="datetime" 
                                                                 class="form-control" 
-                                                                value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                                                value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:iA') }}"
                                                             >
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text" style="cursor: pointer;" onclick="document.getElementById('datetime').focus()">
