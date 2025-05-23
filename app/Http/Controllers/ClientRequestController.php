@@ -21,6 +21,10 @@ class ClientRequestController extends Controller
         do {
             $request_id = 'REQ-' . mt_rand(10000, 99999);
         } while (ClientRequest::where('requestId', $request_id)->exists());
+
+        do {
+            $consignment_no = 'CN-' . mt_rand(10000, 99999);
+        } while (ClientRequest::where('requestId', $request_id)->exists());
         
         $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items']) // Eager load relations
                             ->orderBy('created_at', 'desc')

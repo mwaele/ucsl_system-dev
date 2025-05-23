@@ -413,7 +413,7 @@
                                                                 <tr>
                                                                     <th>Item No.</th>
                                                                     <th>Item Name</th>
-                                                                    <th>Quantity</th>
+                                                                    <th>Package No</th>
                                                                     <th>Weight (Kg)</th>
                                                                     <th>Length (cm)</th>
                                                                     <th>Width (cm)</th>
@@ -431,7 +431,7 @@
                                                                     </td>
                                                                     <td style="width: 250px;"><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
                                                                     <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->packages_no }}" class="form-control" required></td>
-                                                                    <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" value="{{ $item->weight }}" class="form-control" required></td>
+                                                                    <td><input type="number" step="0.01" name="weight[]" value="{{ $item->weight }}" class="form-control" required></td>
                                                                     <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control"></td>
                                                                     <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control"></td>
                                                                     <td><input type="number" name="items[{{ $index }}][height]" value="{{ $item->height }}" class="form-control"></td>
@@ -449,7 +449,7 @@
                                                                 <label class="form-label text-dark"><small>Cost <span class="text-danger">*</span></small> </label>
                                                                 <input type="number" min="0" class="form-control" name="cost" placeholder="{{ $request->shipmentCollection->cost }}" required readonly>
                                                             </div>
-                                                            <input type="hidden" name="base_cost" value="500">
+                                                            <input type="hidden" name="base_cost" value="">
 
                                                             <div class="form-group col-md-2">
                                                                 <label class="form-label text-dark text-bold"><small>Tax (16%) <span class="text-danger">*</span></small> </label>
