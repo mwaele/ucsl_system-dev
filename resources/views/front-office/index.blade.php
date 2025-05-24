@@ -141,7 +141,7 @@
 
                                                 <div class="modal-body">
                                                     @if ($request->shipmentCollection && $request->shipmentCollection->items->isNotEmpty())
-                                                        @foreach ($request->shipmentCollection->items as $item)                                                     
+                                                        @foreach ($request->shipmentCollection->items as $index => $item)                                                     
                                                             <div class="border p-2 mb-3">
                                                                 <h6>Item {{ $index + 1 }} - {{ $item->description ?? 'No description' }}</h6>
                                                                 <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">

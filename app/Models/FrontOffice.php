@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class FrontOffice extends Model
 {
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userId');
+    }
+    
     public function item()
     {
         return $this->belongsTo(ShipmentItem::class, 'item_name', 'packages_no', 'weight', 'volume');

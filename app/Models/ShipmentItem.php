@@ -29,4 +29,9 @@ class ShipmentItem extends Model
     {
         return $this->belongsTo(ShipmentCollection::class, 'shipment_id');
     }
+
+    public function subItems()
+    {
+        return $this->hasMany(ShipmentSubItem::class);
+    }
 }

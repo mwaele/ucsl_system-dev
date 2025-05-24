@@ -361,117 +361,158 @@
                                     </div>
 
                                     @if ($request->status === 'collected')
-                                        <button class="btn btn-sm btn-info mr-1" 
-                                                title="Verify Collected Parcel" 
-                                                data-toggle="modal" 
-                                                data-target="#verifyCollectedParcel-{{ $request->requestId }}"> 
+                                        <button class="btn btn-sm btn-info mr-1"
+                                                title="Verify Collected Parcel"
+                                                data-toggle="modal"
+                                                data-target="#verifyCollectedParcel-{{ $request->requestId }}">
                                             <i class="fas fa-clipboard-check"></i>
                                         </button>
                                     @endif
-                                    
+
                                     <!-- Verify Collected Parcel Modal -->
-                                    <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-xl" role="document">
+                                    <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}" tabindex="-1" aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl">
                                             <form action="{{ route('shipment-collections.update', $request->requestId) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-gradient-info">
-                                                        <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">Verify Details of Collected Parcel </h5>
+                                                        <h5 class="modal-title text-white" id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">
+                                                            Verify Details of Collected Parcel
+                                                        </h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
+                                                            <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                <div class="modal-body">
-                                                    <!-- Form Fields -->
-                                                    <div class="row">
-                                                        <div class="form-group col-md-3">
-                                                            <label class="text-primary">Request ID</label>
-                                                            <input type="text" name="requestId" class="form-control" value="{{ $request->requestId }}" readonly>
+
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Request ID</label>
+                                                                <input type="text" name="requestId" class="form-control" value="{{ $request->requestId }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Rider</label>
+                                                                <input type="text" name="userId" class="form-control" value="{{ $driver->name }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Vehicle</label>
+                                                                <input type="text" class="form-control" name="vehicleDisplay" value="{{ $request->vehicle->regNo }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Date Requested</label>
+                                                                <input type="datetime-local" name="dateRequested" class="form-control"
+                                                                    value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}" readonly>
+                                                            </div>
                                                         </div>
 
-                                                        <div class="form-group col-md-3">
-                                                            <label class="text-primary">Rider</label>
-                                                            <input type="text" name="userId" class="form-control" value="{{ $driver->name }}" readonly>
-                                                        </div>
+                                                        @if ($request->shipmentCollection && $request->shipmentCollection->items->count())
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Item No.</th>
+                                                                        <th>Item Name</th>
+                                                                        <th>Package No</th>
+                                                                        <th>Weight (Kg)</th>
+                                                                        <th>Length (cm)</th>
+                                                                        <th>Width (cm)</th>
+                                                                        <th>Height (cm)</th>
+                                                                        <th>Volume (cm<sup>3</sup>)</th>
+                                                                        <th>Remarks</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($request->shipmentCollection->items as $index => $item)
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ $index + 1 }}
+                                                                            <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
+                                                                        </td>
+                                                                        <td><input type="text" name="items[{{ $index }}][item_name]" class="form-control" value="{{ $item->item_name }}" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][packages_no]" class="form-control" value="{{ $item->packages_no }}" required></td>
+                                                                        <td><input type="number" step="0.01" name="weight[]" class="form-control" value="{{ $item->weight }}" required></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][length]" class="form-control" value="{{ $item->length }}"></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][width]" class="form-control" value="{{ $item->width }}"></td>
+                                                                        <td><input type="number" name="items[{{ $index }}][height]" class="form-control" value="{{ $item->height }}"></td>
+                                                                        <td>
+                                                                            {{ $item->length * $item->width * $item->height }}
+                                                                            <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
+                                                                        </td>
+                                                                        <td><input type="text" name="items[{{ $index }}][remarks]" class="form-control" value="{{ $item->remarks }}"></td>
+                                                                        <td>
+                                                                            <button type="button"
+                                                                                    class="btn btn-sm btn-outline-info"
+                                                                                    
+                                                                                    data-toggle="modal"
+                                                                                    data-target="#subItemsModal{{ $item->id }}">
+                                                                                Open Package
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
 
-                                                        <div class="form-group col-md-3">
-                                                            <label class="text-primary">Vehicle</label>
-                                                            <input type="text" class="form-control vehicle-input" name="vehicleDisplay" value="{{ $request->vehicle->regNo }}" readonly>
-                                                        </div>
+                                                                    <!-- SubItems Modal -->
+                                                                    <div class="modal fade" id="subItemsModal{{ $item->id }}" tabindex="-1" aria-labelledby="subItemsLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <form method="POST" action="">
+                                                                                    @csrf
+                                                                                    <input type="hidden" name="shipment_item_id" value="{{ $item->id }}">
+                                                                                    <div class="modal-header">
+                                                                                        <h5 class="modal-title">Package Details: {{ $item->item_name }}</h5>
+                                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                            <span aria-hidden="true">&times;</span>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        <!-- Dynamic sub-items can be added here -->
+                                                                                    </div>
+                                                                                    <div class="modal-footer">
+                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                                        <button type="submit" class="btn btn-primary">Save Sub-Items</button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
 
-                                                        <div class="form-group col-md-3">
-                                                            <label class="text-primary">Date Requested</label>
-                                                            <input type="datetime-local" name="dateRequested" id="datetime" class="form-control" 
-                                                                value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
-                                                                readonly>
-                                                        </div>
+                                                            <div class="form-row">
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Cost *</small></label>
+                                                                    <input type="number" class="form-control" name="cost" value="{{ $request->shipmentCollection->cost }}" readonly>
+                                                                </div>
+                                                                <input type="hidden" name="base_cost" value="">
+
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Tax (16%) *</small></label>
+                                                                    <input type="number" class="form-control" name="vat" value="{{ $request->shipmentCollection->vat }}" readonly>
+                                                                </div>
+
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Total Cost *</small></label>
+                                                                    <input type="number" class="form-control" name="total_cost" value="{{ $request->shipmentCollection->total_cost }}" readonly>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <p class="text-muted">No items found for this request.</p>
+                                                        @endif
                                                     </div>
-                                                    @if ($request->shipmentCollection && $request->shipmentCollection->items->count())
-                                                        <table class="table table-bordered shipmentTable" id="shipmentTable">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Item No.</th>
-                                                                    <th>Item Name</th>
-                                                                    <th>Package No</th>
-                                                                    <th>Weight (Kg)</th>
-                                                                    <th>Length (cm)</th>
-                                                                    <th>Width (cm)</th>
-                                                                    <th>Height (cm)</th>
-                                                                    <th>Volume (cm<sup>3</sup>)</th>
-                                                                    <th>Remarks</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($request->shipmentCollection->items as $index => $item)
-                                                                <tr>
-                                                                    <td>
-                                                                        {{ $index + 1 }}
-                                                                        <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
-                                                                    </td>
-                                                                    <td style="width: 250px;"><input type="text" name="items[{{ $index }}][item_name]" value="{{ $item->item_name }}" class="form-control" required></td>
-                                                                    <td><input type="number" name="items[{{ $index }}][packages_no]" value="{{ $item->packages_no }}" class="form-control" required></td>
-                                                                    <td><input type="number" step="0.01" name="weight[]" value="{{ $item->weight }}" class="form-control" required></td>
-                                                                    <td><input type="number" name="items[{{ $index }}][length]" value="{{ $item->length }}" class="form-control"></td>
-                                                                    <td><input type="number" name="items[{{ $index }}][width]" value="{{ $item->width }}" class="form-control"></td>
-                                                                    <td><input type="number" name="items[{{ $index }}][height]" value="{{ $item->height }}" class="form-control"></td>
-                                                                    <td>
-                                                                        {{ $item->length * $item->width * $item->height }}
-                                                                        <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
-                                                                    </td>
-                                                                    <td><input type="text" name="items[{{ $index }}][remarks]" value="{{ $item->remarks }}" class="form-control"></td>
-                                                                </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                        <div class="form-row">
-                                                            <div class="form-group col-md-2">
-                                                                <label class="form-label text-dark"><small>Cost <span class="text-danger">*</span></small> </label>
-                                                                <input type="number" min="0" class="form-control" name="cost" placeholder="{{ $request->shipmentCollection->cost }}" required readonly>
-                                                            </div>
-                                                            <input type="hidden" name="base_cost" value="">
 
-                                                            <div class="form-group col-md-2">
-                                                                <label class="form-label text-dark text-bold"><small>Tax (16%) <span class="text-danger">*</span></small> </label>
-                                                                <input type="number" min="0" class="form-control" name="vat" placeholder="{{ $request->shipmentCollection->vat }}" required readonly>
-                                                            </div>
-                                                            <div class="form-group col-md-2">
-                                                                <label class="form-label text-dark"><small>Total Cost <span class="text-danger">*</span></small> </label>
-                                                                <input type="number" min="0" class="form-control" name="total_cost" placeholder="{{ $request->shipmentCollection->total_cost }}" required readonly>
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <p class="text-muted">No items found for this request.</p>
-                                                    @endif
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-success">Submit Verification</button>
-                                                </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-success">Submit Verification</button>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
+
 
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
@@ -495,6 +536,18 @@
                         @endforeach          
                     </tbody>
                 </table>
+                <script>
+                $('#verifyCollectedParcel-{{ $request->requestId }}').on('hidden.bs.modal', function () {
+                    $('#subItemsModal{{ $item->id }}').modal('show');
+                });
+
+                // Attach this to your "Open Package" buttons
+                document.querySelectorAll('[data-target^="#subItemsModal"]').forEach(button => {
+                    button.addEventListener('click', function () {
+                    $('#verifyCollectedParcel-{{ $request->requestId }}').modal('hide');
+                    });
+                });
+                </script>
                 <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.getElementById("tableSearch");
