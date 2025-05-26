@@ -6,6 +6,7 @@ use App\Models\ShipmentCollection;
 use App\Models\ShipmentItem;
 use Illuminate\Http\Request;
 use App\Models\ClientRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Auth;
 
 class ShipmentCollectionController extends Controller
@@ -74,7 +75,11 @@ class ShipmentCollectionController extends Controller
         ClientRequest::where('requestId', $request->requestId)
         ->update(['status' => 'collected']); // or whatever status you need
 
-       
+        $shipment_collections = ShipmentCollection::with('shipment_items')->findOrFail($shipment->id);
+        $pdf = Pdf::loadView('receipts.collection_receipt', compact('shipment_collections'))
+        ->setPaper([0, 0, 226.77, 600], 'portrait'); // 80mm wide receipt
+
+        return $pdf->stream("receipt_{$shipment->id}.pdf");
         }
 
         return back()->with('success', 'Shipment saved successfully!');
