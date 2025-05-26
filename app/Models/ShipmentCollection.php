@@ -36,4 +36,14 @@ class ShipmentCollection extends Model
     {
         return $this->hasMany(ShipmentItem::class, 'shipment_id');
     }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'origin_id');
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(Rate::class, 'destination_id');
+    }
 }

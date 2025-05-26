@@ -92,7 +92,10 @@
 
                                                         <div style="font-size: 14px;"><strong>Request ID: {{ $collection->requestId ?? 'N/A' }}</strong></div>
                                                         <div style="font-size: 14px;"><strong>Consignment Number: {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                                        <div><strong>Total Items:</strong> {{ $collection->shipmentCollection->items->count() }}</div>
+                                                        <div>
+                                                            <strong>From:</strong> {{ $collection->shipmentCollection->office->city ?? '' }}
+                                                            <strong style="margin-left: 10px;">To:</strong> {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                                        </div>
                                                         <div>
                                                             <strong>Date:</strong> {{ now()->format('F j, Y') }} 
                                                             <strong style="margin-left: 10px;">Time:</strong> {{ now()->format('g:i A') }}
@@ -126,20 +129,39 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach ($collection->shipmentCollection->items as $item)
-                                                                    <tr>
-                                                                        <td>{{ $loop->iteration }}.</td>
-                                                                        <td>{{ $item->item_name }}</td>
-                                                                        <td style="text-align: center;">{{ $item->packages_no }}</td>
-                                                                        <td style="text-align: right;">{{ $item->weight }}</td>
-                                                                    </tr>
+                                                                        <tr>
+                                                                            <td>{{ $loop->iteration }}.</td>
+                                                                            <td>{{ $item->item_name }}</td>
+                                                                            <td style="text-align: center;">{{ $item->packages_no }}</td>
+                                                                            <td style="text-align: right;">{{ number_format($item->weight, 2) }}</td>
+                                                                        </tr>
                                                                     @endforeach
+                                                                    <tr style="font-weight: bold; border-top: 1px solid #000;">
+                                                                        <td colspan="2" style="text-align: right;">Total:</td>
+                                                                        <td style="text-align: center;">
+                                                                            {{ $collection->shipmentCollection->items->sum('packages_no') }}
+                                                                        </td>
+                                                                        <td style="text-align: right;">
+                                                                            {{ number_format($collection->shipmentCollection->items->sum('weight'), 2) }}
+                                                                        </td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
+
                                                             <hr style="margin: 4px 0;">
 
-                                                            <div><strong>Base Cost:</strong> Ksh {{ number_format($collection->shipmentCollection->cost, 2) }}</div>
-                                                            <div><strong>VAT:</strong> Ksh {{ number_format($collection->shipmentCollection->vat, 2) }}</div>
-                                                            <div><strong>Total:</strong> Ksh {{ number_format($collection->shipmentCollection->total_cost, 2) }}</div>
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>Base Cost:</strong>
+                                                                <span>Ksh {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
+                                                            </div>
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>VAT:</strong>
+                                                                <span>Ksh {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
+                                                            </div>
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>Total:</strong>
+                                                                <span>Ksh {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
+                                                            </div>
                                                         @else
                                                             <p>No shipment items found.</p>
                                                         @endif
