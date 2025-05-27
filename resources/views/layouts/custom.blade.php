@@ -359,6 +359,7 @@
                 <div class="container-fluid h-100">
                     <!-- Page Heading -->
                     @yield('content')
+                    @stack('scripts')
                     <!-- /.container-fluid -->
                 </div>
                 <!-- End of Main Content -->

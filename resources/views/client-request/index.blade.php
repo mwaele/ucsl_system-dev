@@ -422,62 +422,71 @@
                                                                         <th>Height (cm)</th>
                                                                         <th>Volume (cm<sup>3</sup>)</th>
                                                                         <th>Remarks</th>
-                                                                        <th>Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach ($request->shipmentCollection->items as $index => $item)
-                                                                    <tr>
-                                                                        <td>
-                                                                            {{ $index + 1 }}
-                                                                            <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
-                                                                        </td>
-                                                                        <td><input type="text" name="items[{{ $index }}][item_name]" class="form-control" value="{{ $item->item_name }}" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][packages_no]" class="form-control" value="{{ $item->packages_no }}" required></td>
-                                                                        <td><input type="number" step="0.01" name="weight[]" class="form-control" value="{{ $item->weight }}" required></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][length]" class="form-control" value="{{ $item->length }}"></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][width]" class="form-control" value="{{ $item->width }}"></td>
-                                                                        <td><input type="number" name="items[{{ $index }}][height]" class="form-control" value="{{ $item->height }}"></td>
-                                                                        <td>
-                                                                            {{ $item->length * $item->width * $item->height }}
-                                                                            <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
-                                                                        </td>
-                                                                        <td><input type="text" name="items[{{ $index }}][remarks]" class="form-control" value="{{ $item->remarks }}"></td>
-                                                                        <td>
-                                                                            <button type="button"
-                                                                                    class="btn btn-sm btn-outline-info"
-                                                                                    
-                                                                                    data-toggle="modal"
-                                                                                    data-target="#subItemsModal{{ $item->id }}">
-                                                                                Open Package
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $index + 1 }}
+                                                                                <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
+                                                                            </td>
+                                                                            <td><input type="text" name="items[{{ $index }}][item_name]" class="form-control" value="{{ $item->item_name }}" required></td>
+                                                                            <td><input type="number" name="items[{{ $index }}][packages_no]" class="form-control" value="{{ $item->packages_no }}" required></td>
+                                                                            <td><input type="number" step="0.01" name="items[{{ $index }}][weight]" class="form-control" value="{{ $item->weight }}" required></td>
+                                                                            <td><input type="number" name="items[{{ $index }}][length]" class="form-control" value="{{ $item->length }}"></td>
+                                                                            <td><input type="number" name="items[{{ $index }}][width]" class="form-control" value="{{ $item->width }}"></td>
+                                                                            <td><input type="number" name="items[{{ $index }}][height]" class="form-control" value="{{ $item->height }}"></td>
+                                                                            <td>
+                                                                                {{ $item->length * $item->width * $item->height }}
+                                                                                <input type="hidden" name="items[{{ $index }}][volume]" value="{{ $item->length * $item->width * $item->height }}">
+                                                                            </td>
+                                                                            <td><input type="text" name="items[{{ $index }}][remarks]" class="form-control" value="{{ $item->remarks }}"></td>
+                                                                        </tr>
 
-                                                                    <!-- SubItems Modal -->
-                                                                    <div class="modal fade" id="subItemsModal{{ $item->id }}" tabindex="-1" aria-labelledby="subItemsLabel" aria-hidden="true">
-                                                                        <div class="modal-dialog modal-lg">
-                                                                            <div class="modal-content">
-                                                                                <form method="POST" action="">
-                                                                                    @csrf
-                                                                                    <input type="hidden" name="shipment_item_id" value="{{ $item->id }}">
-                                                                                    <div class="modal-header">
-                                                                                        <h5 class="modal-title">Package Details: {{ $item->item_name }}</h5>
-                                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                            <span aria-hidden="true">&times;</span>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div class="modal-body">
-                                                                                        <!-- Dynamic sub-items can be added here -->
-                                                                                    </div>
-                                                                                    <div class="modal-footer">
-                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                                        <button type="submit" class="btn btn-primary">Save Sub-Items</button>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                        <!-- Sub Items Table -->
+                                                                        <tr>
+                                                                            <td colspan="9">
+                                                                                <table class="table table-sm table-bordered mt-2">
+                                                                                    <thead class="thead-light">
+                                                                                        <tr>
+                                                                                            <th>Sub Item Name</th>
+                                                                                            <th>Quantity</th>
+                                                                                            <th>Weight (Kg)</th>
+                                                                                            <th>Remarks</th>
+                                                                                            <th>Action</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody id="sub-items-{{ $index }}">
+                                                                                        <!-- JS will populate sub-items here -->
+                                                                                    </tbody>
+                                                                                </table>
+
+                                                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItem({{ $index }})">
+                                                                                    + Add Sub Item
+                                                                                </button>
+                                                                                @push('scripts')
+                                                                                <script>
+                                                                                    function addSubItem(parentIndex) {
+                                                                                        const container = document.getElementById(`sub-items-${parentIndex}`);
+
+                                                                                        const subItemCount = container.children.length;
+
+                                                                                        const row = document.createElement('tr');
+                                                                                        row.innerHTML = `
+                                                                                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
+                                                                                            <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
+                                                                                            <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
+                                                                                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
+                                                                                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
+                                                                                        `;
+
+                                                                                        container.appendChild(row);
+                                                                                    }
+                                                                                </script>
+                                                                                @endpush
+                                                                            </td>
+                                                                        </tr>
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -505,7 +514,7 @@
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <button type="submit" class="btn btn-success">Submit Verification</button>
                                                     </div>
                                                 </div>
@@ -537,17 +546,46 @@
                     </tbody>
                 </table>
                 <script>
-                $('#verifyCollectedParcel-{{ $request->requestId }}').on('hidden.bs.modal', function () {
-                    $('#subItemsModal{{ $item->id }}').modal('show');
-                });
+                    document.addEventListener("DOMContentLoaded", function () {
+                        document.querySelectorAll('.add-sub-item-btn').forEach(button => {
+                            button.addEventListener('click', function () {
+                                const itemIndex = this.getAttribute('data-item-index');
+                                let subCount = parseInt(this.getAttribute('data-sub-count'), 10);
+                                const tbody = document.querySelector(`#sub-items-body-${itemIndex}`);
 
-                // Attach this to your "Open Package" buttons
-                document.querySelectorAll('[data-target^="#subItemsModal"]').forEach(button => {
-                    button.addEventListener('click', function () {
-                    $('#verifyCollectedParcel-{{ $request->requestId }}').modal('hide');
+                                const newRow = document.createElement('tr');
+                                newRow.innerHTML = `
+                                    <td>
+                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][name]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][quantity]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" name="items[${itemIndex}][sub_items][${subCount}][weight]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][length]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][width]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][height]" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][remarks]" class="form-control">
+                                    </td>
+                                `;
+                                tbody.appendChild(newRow);
+
+                                // Update sub-count so future rows are correctly indexed
+                                this.setAttribute('data-sub-count', subCount + 1);
+                            });
+                        });
                     });
-                });
                 </script>
+
                 <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.getElementById("tableSearch");
