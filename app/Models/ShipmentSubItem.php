@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class ShipmentSubItem extends Model
 {
     protected $fillable = [
-        'shipment_item_id', 'item_name', 'quantity', 'weight', 'length', 'width', 'height', 'volume', 'cost', 'remarks'
+        'shipment_item_id', 'item_name', 'weight', 'length', 'width', 'height'
     ];
 
     public function shipmentItem()
     {
-        return $this->belongsTo(ShipmentItem::class);
+        return $this->belongsTo(ShipmentItem::class, 'shipment_item_id');
     }
 }

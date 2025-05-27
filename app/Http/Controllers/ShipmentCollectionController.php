@@ -121,7 +121,9 @@ class ShipmentCollectionController extends Controller
         if ($request->has('items')) {
             foreach ($request->items as $itemData) {
                 $item = ShipmentItem::find($itemData['id']);
+
                 if ($item) {
+                    // Update the main item
                     $item->update([
                         'actual_quantity' => $itemData['packages_no'],
                         'actual_weight' => $itemData['weight'],
@@ -131,6 +133,22 @@ class ShipmentCollectionController extends Controller
                         'volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
                         'remarks' => $itemData['remarks'] ?? null,
                     ]);
+
+                    // Sync sub-items if any
+                    if (isset($itemData['sub_items']) && is_array($itemData['sub_items'])) {
+                        foreach ($itemData['sub_items'] as $subItemData) {
+                            \App\Models\ShipmentSubItem::create([
+                                'shipment_item_id' => $item->id,
+                                'item_name' => $subItemData['name'],
+                                'quantity' => $subItemData['quantity'],
+                                'weight' => $subItemData['weight'],
+                                'remarks' => $subItemData['remarks'] ?? null,
+                                'length' => $subItemData['length'] ?? null,
+                                'width' => $subItemData['width'] ?? null,
+                                'height' => $subItemData['height'] ?? null,
+                            ]);
+                        }
+                    }
                 }
             }
         }
