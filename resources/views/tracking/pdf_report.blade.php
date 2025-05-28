@@ -39,7 +39,7 @@
             text-align: center;
             line-height: 24px;
             position: absolute;
-            left: -30px;
+            left: -33px;
             top: 0;
             font-size: 14px;
             font-weight: bold;
@@ -71,8 +71,8 @@
 
 <body>
     <h2>
-        &#128640; Tracking Results for <strong>{{ $trackingData['requestId'] }}</strong>
-        For <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
+        &#128640; Tracking Results For <strong>{{ $trackingData['requestId'] }}</strong>
+        Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
     </h2>
 
     <section class="py-2">

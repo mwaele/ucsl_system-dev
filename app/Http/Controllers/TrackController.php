@@ -189,7 +189,7 @@ class TrackController extends Controller
             
     
             $pdf = Pdf::loadView('tracking.pdf_report', compact('trackingData'));
-            return $pdf->download("tracking-{$requestId}.pdf");
+            return $pdf->download("tracking-report-{$requestId}.pdf");
         }
         abort(404);
     }
