@@ -76,24 +76,24 @@
                             'N/A';
                         let html =
                             `<h5 class="text-secondary mb-4">Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</h5> <section class="py-2">
-  <ul class="timeline-with-icons">`;
+                         <ul class="timeline-with-icons">`;
 
                         data.tracking_infos.forEach(info => {
                             html += `
                             <li class="timeline-item mb-5">
-      <span class="timeline-icon">
-        <i class="fas fa-check text-success fa-sm fa-fw"></i>
-      </span>
+                <span class="timeline-icon">
+                    <i class="fas fa-check text-success fa-sm fa-fw"></i>
+                </span>
 
-      <h5 class="fw-bold">${info.details}</h5>
-      <p class="text-muted mb-2 fw-bold">${info.date}</p>
-      <p class="text-muted">
-        ${info.remarks}
-      </p>
-    </li>
-             `;
+                <h5 class="fw-bold">${info.details}</h5>
+                <p class="text-muted mb-2 fw-bold">${info.date}</p>
+                <p class="text-muted">
+                    ${info.remarks}
+                </p>
+                </li>
+                        `;
                         }); + ` </ul>
-</section> `;
+                </section> `;
 
                         $('#trackingResults').html(html);
                         $('#generatePdfBtn').show().data('requestId', requestId);

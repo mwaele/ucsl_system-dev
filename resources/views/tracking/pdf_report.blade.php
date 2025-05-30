@@ -15,7 +15,7 @@
         h4 {
             color: #0d6efd;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .timeline-with-icons {
@@ -26,7 +26,7 @@
 
         .timeline-item {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding-left: 20px;
         }
 

@@ -164,6 +164,9 @@ class ClientRequestController extends Controller
         $clientRequest->requestId = $validated['requestId'];
         $clientRequest->save();
 
+        $userName = User::find($validated['userId'])->name;
+        $regNo = Vehicle::find($validated['vehicleId'])->regNo;
+
         // 2. Insert into tracks table and get inserted ID
         $trackingId = DB::table('tracks')->insertGetId([
             'requestId' =>  $clientRequest->requestId, // This is the DB PK (id), not requestId
@@ -177,7 +180,9 @@ class ClientRequestController extends Controller
             'trackId' => $trackingId,
             'date' => now(),
             'details' => 'Client Request Submitted for Collection',
-            'remarks' => 'Initial entry',
+            'user_id' => $validated['userId'],
+            'vehicle_id' => $validated['vehicleId'],
+            'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
             'created_at' => now(),
             'updated_at' => now()
         ]);

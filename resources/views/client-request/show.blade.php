@@ -103,7 +103,14 @@
                                                             <div style="font-size: 14px;"><strong>Request ID:
                                                                     {{ $collection->requestId ?? 'N/A' }}</strong></div>
                                                             <div style="font-size: 14px;"><strong>Consignment Number:
-                                                                    {{ $collection->requestId ?? 'N/A' }}</strong></div>
+                                                                    {{ $collection->consignment_no ?? 'N/A' }}</strong>
+                                                            </div>
+                                                            <div>
+                                                                <strong>From:</strong>
+                                                                {{ $collection->shipmentCollection->office->name }}
+                                                                <strong style="margin-left: 10px;">To:</strong>
+                                                                {{ $collection->shipmentCollection->destination->destination }}
+                                                            </div>
                                                             <div><strong>Total Items:</strong>
                                                                 {{ $collection->shipmentCollection->items->count() }}</div>
                                                             <div>
@@ -111,6 +118,7 @@
                                                                 <strong style="margin-left: 10px;">Time:</strong>
                                                                 {{ now()->format('g:i A') }}
                                                             </div>
+
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;"><u>Sender:</u></div>
@@ -392,6 +400,9 @@
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-dark">Origin <span
                                                                         class="text-danger">*</span> </label>
+
+                                                                <input type="hidden" value="{{ $consignment_no }}"
+                                                                    name="consignment_no">
                                                                 <select name="origin_id" id="origin_id"
                                                                     class="form-control origin-dropdown" required>
                                                                     <option value="">Select</option>

@@ -25,6 +25,9 @@ class ShipmentCollection extends Model
         'sender_id_no',
         'total_cost',
         'vat',
+        'collected_by',
+        'consignment_no',
+        'waybill_no',
     ];
 
     public function clientRequest()
