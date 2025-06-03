@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\FrontOffice;
 use App\Models\ShipmentCollection;
-use App\Models\ShipmentItem;
-use App\Models\ClientRequest;
+use App\Models\Office;
+use App\Models\Rate;
 use App\Models\Client;
-use App\Models\Vehicle;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Auth;
 
 class FrontOfficeController extends Controller
 {
@@ -20,31 +19,17 @@ class FrontOfficeController extends Controller
     public function index()
     {
         //
-        $ridersWithPendingVerification = ClientRequest::with(['user', 'vehicle'])
-                                        ->where('status', 'collected')
-                                        ->select('userId', 'vehicleId', 'status')
-                                        ->selectRaw('MIN(dateRequested) as dateRequested') // earliest
-                                        ->selectRaw('COUNT(*) as parcel_count')
-                                        ->groupBy('userId', 'vehicleId', 'status')
-                                        ->get();
+        $offices = Office::all();
+        $loggedInUserId = Auth::user()->id;
+        $destinations = Rate::all();
+        $walkInClients = Client::where('type', 'Walkin')->get();
 
-        $groupedVerifiedParcels = ClientRequest::with(['user', 'vehicle'])
-                                        ->where('status', 'verified')
-                                        ->select('userId', 'vehicleId', DB::raw('DATE(dateRequested) as request_date'))
-                                        ->selectRaw('COUNT(*) as parcel_count')
-                                        ->groupBy('userId', 'vehicleId', DB::raw('DATE(dateRequested)'))
-                                        ->orderBy('request_date', 'desc')
-                                        ->get()
-                                        ->groupBy('request_date');
+        do {
+            $consignment_no = 'CN-' . mt_rand(10000, 99999);
+        } while (ShipmentCollection::where('consignment_no', $consignment_no)->exists());
 
-        $requestsToVerify = $requestsToVerify = ClientRequest::with([
-                                'client',
-                                'shipmentCollection.items' // nested relationship
-                            ])
-                            ->where('status', 'collected')
-                            ->get()
-                            ->groupBy('userId'); // For modal filtering
-        return view('front-office.index', compact('groupedVerifiedParcels', 'ridersWithPendingVerification', 'requestsToVerify'));
+        $collections = ShipmentCollection::all();
+        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'consignment_no', 'collections'));
     }
 
     /**

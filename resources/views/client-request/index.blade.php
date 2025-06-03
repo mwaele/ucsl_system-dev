@@ -571,7 +571,7 @@
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-2">
                                                                     <label class="text-dark"><small>Cost *</small></label>
-                                                                    <input type="number" class="form-control cost"
+                                                                    <input type="number" class="form-control cost basecost"
                                                                         name="cost" id="basecost"
                                                                         value="{{ $request->shipmentCollection->cost }}"
                                                                         readonly>

@@ -263,12 +263,11 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label>Type</label>
-                        <select name="type" id="">
+                        <select name="type" id="type">
                             <option value="">Select Account Type</option>
                             <option value="COD">COD</option>
                             <option value="Walkin">Walkin</option>
                         </select>
-                        <input type="text" name="type" class="form-control">
                     </div>
                     <div class="form-group col-md-4">
                         <label>Industry</label>
