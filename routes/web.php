@@ -12,6 +12,8 @@ use App\Http\Controllers\MyCollectionController;
 
 use App\Http\Controllers\MainController;
 
+use App\Http\Controllers\TrackController;
+
 Route::get('/', function () {
     return view('index');
 })->middleware(['auth', 'verified'])->name('index');;
@@ -50,6 +52,24 @@ Route::middleware('auth')->group(function () {
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
+
+    //Route::resource('tracking','App\Http\Controllers\TrackingController');
+    Route::resource('trackingInfo','App\Http\Controllers\TrackingInfoController');
+   // Route::get('/track/{requestId}', [TrackController::class, 'showTrackingView'])->name('track.view');
+
+    Route::get('/tracking', function () {
+        return view('tracking.index');
+    });
+    //Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
+
+    //Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);
+    
+
 });
+
+
+
+
+
 
 require __DIR__.'/auth.php';

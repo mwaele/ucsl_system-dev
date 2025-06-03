@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use App\Models\Rate;
 use App\Models\Office;
+use App\Models\ShipmentCollection;
 
 use Auth;
 
@@ -16,13 +17,17 @@ class MyCollectionController extends Controller
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
+        do {
+            $consignment_no = 'CN-' . mt_rand(10000, 99999);
+        } while (ShipmentCollection::where('consignment_no', $consignment_no)->exists());
+
         $collections = ClientRequest::with('shipmentCollection.office',
                                             'shipmentCollection.destination',
                                             'shipmentCollection.items')
             ->where('userId', $loggedInUserId)
             ->orderBy('created_at','desc')
             ->get();
-        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId]);
+        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no]);
     }
 
     public function store(Request $request)

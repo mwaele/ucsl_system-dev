@@ -27,4 +27,8 @@ class Client extends Model
         'status',
         'verificationCode',
     ];
+    public function tracks()
+    {
+        return $this->hasMany(Track::class, 'clientId');
+    }
 }

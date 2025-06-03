@@ -7,7 +7,10 @@ use App\Models\ShipmentItem;
 use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use App\Models\TrackingInfo;
+
+use Illuminate\Support\Facades\DB;
 
 class ShipmentCollectionController extends Controller
 {
@@ -31,7 +34,38 @@ class ShipmentCollectionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    { 
+
+        $request->validate([
+            'receiverContactPerson' => 'required|string',
+            'receiverIdNo' => 'required|string',
+            'receiverPhone' => 'required|string',
+            'receiverAddress' => 'required|string',
+            'receiverTown' => 'required|string',
+            'origin_id' => 'required',
+            'destination_id' => 'required',
+            'requestId' => 'required',
+            'client_id' => 'required',
+            'item_name' => 'required|array',
+            'item_name.*' => 'required|string',
+            'packages' => 'required|array',
+            'weight' => 'required|array',
+            'length' => 'required|array',
+            'width' => 'required|array',
+            'height' => 'required|array',
+            'volume' => 'required|array',
+            'cost' => 'required|numeric',
+            'sender_type' => 'required|string',
+            'sender_name' => 'required|string',
+            'sender_contact' => 'required|string',
+            'sender_address' => 'required|string',
+            'sender_town' => 'string',
+            'sender_id_no' => 'required|string',
+            'vat' => 'required|string',
+            'total_cost' => 'required|string',
+            'consignment_no' => 'string'
+        ]);
+        $consignment_no = $request->consignment_no;
         // Save main shipment
         $shipment = ShipmentCollection::create([
             'receiver_name' => $request->receiverContactPerson,
@@ -52,34 +86,76 @@ class ShipmentCollectionController extends Controller
             'sender_id_no' => $request->sender_id_no,
             'vat' => $request->vat,
             'total_cost' => $request->total_cost,
+            'collected_by' => Auth::user()->id,
+            'consignment_no' => $consignment_no,
             
         ]);
 
-        if($shipment){
         
-         // Save shipment items
-         foreach ($request->item_name as $i => $itemName) {
+
+        if($shipment){
+            \Log::info('Saving shipment items', [
+                'items' => $request->item_name,
+                'packages' => $request->packages,
+            ]);
+            
+          // Save shipment items
+
+          $totalWeight = 0;
+          $itemCount = 0;
+
+          foreach ($request->item_name as $i => $itemName) {
             ShipmentItem::create([
                 'shipment_id' => $shipment->id,
                 'item_name' => $itemName,
-                'packages_no' => $request->packages_no[$i],
+                //'packages_no' => $request->packages[$i],
+                'packages_no' => $request->packages[$i],
                 'weight' => $request->weight[$i],
                 'length' => $request->length[$i],
                 'width' => $request->width[$i],
                 'height' => $request->height[$i],
                 'volume' => $request->volume[$i],
             ]);
-        }
+            $itemCount++;
+            $totalWeight += $request->weight[$i]* $request->packages[$i]; // Make sure this is numeric
+            }
 
-        // Update the client_requests table
-        ClientRequest::where('requestId', $request->requestId)
-        ->update(['status' => 'collected']); // or whatever status you need
+            // Update the client_requests table
+            ClientRequest::where('requestId', $request->requestId)
+            ->update(['status' => 'collected','collected_by' => Auth::user()->id,
+            'consignment_no' => $consignment_no]); // or whatever status you need
 
-        $shipment_collections = ShipmentCollection::with('shipment_items')->findOrFail($shipment->id);
-        $pdf = Pdf::loadView('receipts.collection_receipt', compact('shipment_collections'))
-        ->setPaper([0, 0, 226.77, 600], 'portrait'); // 80mm wide receipt
+            $id = DB::table('tracks')->where('requestId', $request->rqid)->value('id');
 
-        return $pdf->stream("receipt_{$shipment->id}.pdf");
+            $text = $itemCount === 1 ? 'item' : 'items';
+            $text2 = $totalWeight === 1 ? 'kg' : 'kgs';
+
+            // 3. Insert into tracking_infos
+            TrackingInfo::create([
+                'trackId' => $id,
+                'date' => now(),
+                'details' => 'Parcel Collected at Client Premises',
+                'remarks' => "Rider arrived at client premises for collection; Collected {$itemCount} {$text} with total weight of {$totalWeight} {$text2}. Generated Consignment Note Number {$consignment_no}",
+            ]);
+            
+            // DB::table('tracking_infos')->insert([
+            //     'trackId' => $id,
+            //     'date' => now(),
+            //     'details' => 'Parcel Collected at Client Premises',
+            //     'remarks' => 'Rider arrived at client premises for collection; Collected ' . $itemCount . ' ' . $text . 
+            //                  ' with total weight of ' . $totalWeight . ' ' . $text2 . 
+            //                  '. Generated Consignment Note Number ' . $consignment_no,
+            //     'created_at' => now(),
+            //     'updated_at' => now()
+            // ]);
+            
+
+
+        // $shipment_collections = ShipmentCollection::with('shipment_items')->findOrFail($shipment->id);
+        // $pdf = Pdf::loadView('receipts.collection_receipt', compact('shipment_collections'))
+        // ->setPaper([0, 0, 226.77, 600], 'portrait'); // 80mm wide receipt
+
+        // return $pdf->stream("receipt_{$shipment->id}.pdf");
         }
 
         return back()->with('success', 'Shipment saved successfully!');
@@ -116,6 +192,31 @@ class ShipmentCollectionController extends Controller
             'verified_by' => auth()->id(),
             'verified_at' => now(),
         ]);
+
+        $prefix = 'UCSL';
+        $suffix = 'KE';
+        $padLength = 10;
+
+        $latestWaybill = DB::table('shipment_collections')
+            ->whereNotNull('waybill_no')
+            ->orderByDesc('id')
+            ->value('waybill_no');
+
+        if ($latestWaybill) {
+            // Remove prefix and suffix
+            $waybill_no = substr($latestWaybill, strlen($prefix), -strlen($suffix));
+
+            // Convert to int and increment
+            $bill_no = (int)$waybill_no + 1;
+        } else {
+            // First waybill
+            $bill_no = 1;
+        }
+
+        // Pad with zeros
+        $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
+
+        $waybill_no = $prefix . $padded_no . $suffix;
 
         // Update shipment items
         if ($request->has('items')) {
@@ -156,6 +257,24 @@ class ShipmentCollectionController extends Controller
         // Update status in client_requests
         ClientRequest::where('requestId', $request->requestId)
             ->update(['status' => 'verified']);
+
+            ShipmentCollection::where('requestId', $request->requestId)
+            ->update(['waybill_no' => $waybill_no]);
+
+
+
+            $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
+
+
+            // 3. Insert into tracking_infos
+            DB::table('tracking_infos')->insert([
+                'trackId' => $id,
+                'date' => now(),
+                'details' => 'Parcel Verified and ready for dispatch',
+                'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated '.$waybill_no,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
         return redirect()->route('clientRequests.index')->with('success', 'Shipment collection verified successfully!');
     }

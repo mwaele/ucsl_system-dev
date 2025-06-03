@@ -476,37 +476,6 @@
             });
         </script>
 
-
-        {{-- <!-- Page level plugins -->
-        <script src="{{ asset('assets/vendor/chart.js/Chart.min.js') }}"></script>
-
-        <!-- Page level custom scripts -->
-        <script src="{{ asset('assets/js/demo/chart-area-demo.js') }}"></script>
-        <script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script> --}}
-
-        <script>
-            // document.addEventListener('DOMContentLoaded', function() {
-            //     new tempusDominus.TempusDominus(document.getElementById('kt_datetimepicker_1'), {
-            //         display: {
-            //             components: {
-            //                 calendar: true,
-            //                 date: true,
-            //                 month: true,
-            //                 year: true,
-            //                 decades: true,
-            //                 clock: true,
-            //                 hours: true,
-            //                 minutes: true,
-            //                 seconds: false
-            //             }
-            //         },
-            //         localization: {
-            //             format: 'yyyy-MM-DD HH:mm'
-            //         }
-            //     });
-            // });
-        </script>
-
         <script>
             $('#station_name').on('focusout', function() {
                 let station_name = $(this).val();
@@ -574,40 +543,8 @@
                     dateFormat: "Y-m-d H:i"
                 });
 
-                // Add new row to shipment table
-                // $('#addRowBtn').click(function() {
-                //     $('#shipmentTable tbody').append(`
-        //       <tr>
-        //         <td><input type="number" class="form-control" name="packages[]"></td>
-        //         <td><input type="number" class="form-control" name="weight[]"></td>
-        //         <td><input type="number" class="form-control" name="length[]"></td>
-        //         <td><input type="number" class="form-control" name="width[]"></td>
-        //         <td><input type="number" class="form-control" name="height[]"></td>
-        //         <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-        //       </tr>
-        //     `);
-                // });
+                // get destinations based on origin select
 
-                // // Remove row
-                // $(document).on('click', '.remove-row', function() {
-                //     $(this).closest('tr').remove();
-                // });
-
-                // $('#origin').on('change', function() {
-                //     let officeId = $(this).val();
-
-                //     $('#destination').html('<option value="">Select</option>'); // Reset
-
-                //     if (officeId) {
-                //         $.get('/get-destinations/' + officeId, function(data) {
-                //             data.forEach(function(item) {
-                //                 $('#destination').append(
-                //                     `<option value="${item.destination}">${item.destination}</option>`
-                //                 );
-                //             });
-                //         });
-                //     }
-                // });
                 $(document).on('change', '.origin-dropdown', function() {
                     const originSelect = $(this);
                     const selectedOfficeId = originSelect.val();
@@ -631,6 +568,10 @@
                     }
                 });
 
+                // end get destinations
+
+                // calculate volume
+
                 function calculateVolume(row) {
                     const length = parseFloat(row.find('input[name="length[]"]').val()) || 0;
                     const width = parseFloat(row.find('input[name="width[]"]').val()) || 0;
@@ -643,6 +584,8 @@
                         row.find('input[name="volume[]"]').val('');
                     }
                 }
+
+                // end calculate volume
 
                 // Total weight calculation and cost update
                 function recalculateCosts() {
@@ -705,23 +648,6 @@
                     }
                 });
 
-                // Add row functionality
-                // $('#addRowBtn').on('click', function () {
-                //     const newRow = `
-        //     <tr>
-        //         <td><input type="text" class="form-control" name="item[]"></td>
-        //         <td><input type="number" min="0" max="100" class="form-control" name="packages[]"></td>
-        //         <td><input type="number" min="0" max="100" class="form-control" name="weight[]"></td>
-        //         <td><input type="number" min="0" max="100" class="form-control" name="length[]"></td>
-        //         <td><input type="number" min="0" max="100" class="form-control" name="width[]"></td>
-        //         <td><input type="number" min="0" max="100" class="form-control" name="height[]"></td>
-        //         <td class="volume-display text-muted"><input type="number" min="0" max="100" class="form-control" name="volume[]"></td>
-        //         <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-        //     </tr>`;
-                //     $('#shipmentTable tbody').append(newRow);
-                // });
-
-                // Remove row functionality
                 $(document).on('click', '.remove-row', function() {
                     const rowCount = $('#shipmentTable tbody tr').length;
 
@@ -732,269 +658,6 @@
                         alert("You must have at least one shipment row.");
                     }
                 });
-
-
-                // When destination dropdown changes, query cost
-                // $(document).on('change', '.destination-dropdown', function() {
-                //     const destinationSelect = $(this);
-                //     const destinationId = destinationSelect.val();
-                //     console.log('destination:' +
-                //         destinationId);
-                //     const modal = destinationSelect.closest('.modal');
-                //     const originId = modal.find('.origin-dropdown').val();
-
-                //     console.log('Origin Id:' + originId);
-                //     const costDisplay = modal.find('.cost-display'); // element to show cost
-
-                //     costDisplay.text(''); // Clear cost first
-
-                //     if (originId && destinationId) {
-                //         $.get(`/get-cost/${originId}/${destinationId}`)
-                //             .done(function(data) {
-                //                 costDisplay.text(`Cost: ${data.cost}`);
-                //             })
-                //             .fail(function() {
-                //                 console.error("Failed to load cost");
-                //             });
-                //     }
-                // });
-                // $(document).on('change', '.destination-dropdown', function() {
-                //     const destinationSelect = $(this);
-                //     const destinationId = destinationSelect.val();
-                //     const modal = destinationSelect.closest('.modal');
-                //     const originId = modal.find('.origin-dropdown').val();
-                //     const costDisplay = modal.find('.cost-display'); // Display element
-                //     const costInput = modal.find('input[name="cost"]');
-                //     const vatInput = modal.find('input[name="vat"]');
-                //     const totalCostInput = modal.find('input[name="total_cost"]');
-
-                //     costDisplay.text(''); // Clear cost first
-
-                //     if (originId && destinationId) {
-                //         $.get(`/get-cost/${originId}/${destinationId}`)
-                //             .done(function(data) {
-                //                 let baseCost = parseFloat(data.cost);
-
-                //                 // Calculate weight from inputs
-                //                 let totalWeight = 0;
-                //                 modal.find('input[name="weight[]"]').each(function() {
-                //                     totalWeight += parseFloat($(this).val()) || 0;
-                //                 });
-
-                //                 if (totalWeight > 25) {
-                //                     const extraKg = totalWeight - 25;
-                //                     baseCost += extraKg * 50;
-                //                 }
-
-                //                 // Update the UI
-                //                 costDisplay.text(`Cost: ${baseCost.toFixed(2)}`);
-                //                 if (costInput.length) costInput.val(baseCost.toFixed(2));
-
-                //                 const vat = baseCost * 0.16;
-                //                 const totalCost = baseCost + vat;
-
-                //                 if (vatInput.length) vatInput.val(vat.toFixed(2));
-                //                 if (totalCostInput.length) totalCostInput.val(totalCost.toFixed(2));
-                //             })
-                //             .fail(function() {
-                //                 console.error("Failed to load cost");
-                //             });
-                //     }
-                // });
-
-                // Recalculate Cost, VAT, and Total Cost
-                // function recalculateCosts(modal) {
-                //     const costInput = modal.find('input[name="cost"]');
-                //     const vatInput = modal.find('input[name="vat"]');
-                //     const totalCostInput = modal.find('input[name="total_cost"]');
-
-                //     let baseCost = parseFloat(costInput.val()) || 0;
-
-                //     // Calculate total weight
-                //     let totalWeight = 0;
-                //     modal.find('input[name="weight[]"]').each(function() {
-                //         totalWeight += parseFloat($(this).val()) || 0;
-                //         console.log('total weight' + totalWeight);
-                //     });
-
-                //     // Apply additional charge: 50 per kg over 25kg
-                //     let finalCost = baseCost;
-                //     if (totalWeight > 25) {
-                //         const extraKg = totalWeight - 25;
-                //         console.log('extra kg' + extraKg)
-
-                //         console.log('base cost' + baseCost)
-                //         finalCost = baseCost + (extraKg * 50);
-                //     }
-
-                //     // Update inputs
-                //     costInput.val(finalCost.toFixed(2));
-
-                //     const vat = finalCost * 0.16;
-                //     const totalCost = finalCost + vat;
-
-                //     vatInput.val(vat.toFixed(2));
-                //     totalCostInput.val(totalCost.toFixed(2));
-                // }
-
-                // Trigger when destination changes
-                // $(document).on('change', '.destination-dropdown', function() {
-                //     const destinationSelect = $(this);
-                //     const destinationId = destinationSelect.val();
-                //     const modal = destinationSelect.closest('.modal');
-                //     const originId = modal.find('.origin-dropdown').val();
-
-                //     const costDisplay = modal.find('.cost-display');
-                //     const costInput = modal.find('input[name="cost"]');
-
-                //     costDisplay.text('');
-
-                //     if (originId && destinationId) {
-                //         $.get(`/get-cost/${originId}/${destinationId}`)
-                //             .done(function(data) {
-                //                 const baseCost = parseFloat(data.cost);
-                //                 costDisplay.text(`Base Cost: ${baseCost.toFixed(2)}`);
-                //                 costInput.val(baseCost.toFixed(2));
-                //                 recalculateCosts(modal);
-                //             })
-                //             .fail(function() {
-                //                 console.error("Failed to load cost");
-                //                 costInput.val('');
-                //             });
-                //     }
-                // });
-
-                // // Trigger when any weight changes
-                // $(document).on('input', 'input[name="weight[]"]', function() {
-                //     const modal = $(this).closest('.modal');
-                //     recalculateCosts(modal);
-                // });
-
-                // Global
-
-                // function to recalculate based on fixed baseCost
-
-                // function recalculateCosts(modal) {
-                //     const baseCost = parseFloat(modal.find('input[name="base_cost"]').val()) || 0;
-
-                //     // Sum total weight
-                //     let totalWeight = 0;
-                //     modal.find('input[name="weight[]"]').each(function() {
-                //         totalWeight += parseFloat($(this).val()) || 0;
-                //     });
-
-                //     // Determine new cost based on weight
-                //     let cost = baseCost;
-                //     if (totalWeight > 25) {
-                //         cost = baseCost + ((totalWeight - 25) * 50);
-                //     }
-
-                //     const vat = cost * 0.16;
-                //     const totalCost = cost + vat;
-
-                //     // Set calculated fields
-                //     modal.find('input[name="cost"]').val(cost.toFixed(2));
-                //     modal.find('input[name="vat"]').val(vat.toFixed(2));
-                //     modal.find('input[name="total_cost"]').val(totalCost.toFixed(2));
-                // }
-
-                // // On destination change — fetch base cost and set base_cost field
-                // $(document).on('change', '.destination-dropdown', function() {
-                //     const destinationSelect = $(this);
-                //     const destinationId = destinationSelect.val();
-                //     const modal = destinationSelect.closest('.modal');
-                //     const originId = modal.find('.origin-dropdown').val();
-
-                //     const baseCostInput = modal.find('input[name="base_cost"]');
-                //     const costDisplay = modal.find('.cost-display');
-
-                //     costDisplay.text('');
-
-                //     if (originId && destinationId) {
-                //         $.get(`/get-cost/${originId}/${destinationId}`)
-                //             .done(function(data) {
-                //                 const baseCost = parseFloat(data.cost);
-                //                 baseCostInput.val(baseCost.toFixed(2));
-                //                 costDisplay.text(`Base Cost: ${baseCost.toFixed(2)}`);
-
-                //                 // Trigger cost calculation based on this base
-                //                 recalculateCosts(modal);
-                //             })
-                //             .fail(function() {
-                //                 console.error("Failed to fetch cost");
-                //                 baseCostInput.val('');
-                //             });
-                //     }
-                // });
-
-                // // On weight change — recalculate based on stored base_cost
-                // $(document).on('input', 'input[name="weight[]"]', function() {
-                //     const modal = $(this).closest('.modal');
-                //     recalculateCosts(modal);
-                // });
-
-                // // Trigger when destination changes
-                // $(document).on('change', '.destination-dropdown', function() {
-                //     const destinationSelect = $(this);
-                //     const destinationId = destinationSelect.val();
-                //     const modal = destinationSelect.closest('.modal');
-                //     const originId = modal.find('.origin-dropdown').val();
-
-                //     const costDisplay = modal.find('.cost-display');
-                //     const costInput = modal.find('input[name="cost"]');
-                //     const baseCostInput = modal.find('input[name="base_cost"]'); // hidden input
-
-                //     costDisplay.text('');
-                //     costInput.val('');
-                //     baseCostInput.val('');
-
-                //     if (originId && destinationId) {
-                //         $.get(`/get-cost/${originId}/${destinationId}`)
-                //             .done(function(data) {
-                //                 const baseCost = parseFloat(data.cost);
-                //                 costDisplay.text(`Base Cost: ${baseCost.toFixed(2)}`);
-
-                //                 // Set both cost and base_cost fields
-                //                 baseCostInput.val(baseCost.toFixed(2));
-                //                 costInput.val(baseCost.toFixed(2));
-
-                //                 recalculateCosts(modal);
-                //             })
-                //             .fail(function() {
-                //                 console.error("Failed to load cost");
-                //                 costInput.val('');
-                //                 baseCostInput.val('');
-                //             });
-                //     }
-                // });
-
-                // function recalculateCosts(modal) {
-                //     let totalWeight = 0;
-                //     const baseCost = parseFloat(modal.find('input[name="base_cost"]').val()) || 0;
-
-                //     modal.find('input[name="weight[]"]').each(function(index) {
-                //         const weight = parseFloat($(this).val()) || 0;
-                //         const packages = parseInt(modal.find('input[name="packages[]"]').eq(index).val()) || 1;
-                //         totalWeight += weight * packages;
-                //     });
-
-                //     let cost = baseCost;
-                //     if (totalWeight > 25) {
-                //         cost += (totalWeight - 25) * 50;
-                //     }
-
-                //     const vat = cost * 0.16;
-                //     const totalCost = cost + vat;
-
-                //     modal.find('input[name="cost"]').val(cost.toFixed(2));
-                //     modal.find('input[name="vat"]').val(vat.toFixed(2));
-                //     modal.find('input[name="total_cost"]').val(totalCost.toFixed(2));
-                // }
-
-
-
-
-
 
             });
         </script>
