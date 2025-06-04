@@ -6,6 +6,7 @@ use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client;
 use App\Models\Vehicle;
+use App\Models\ShipmentCollection;
 use App\Models\User;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
@@ -25,7 +26,11 @@ class ClientRequestController extends Controller
         //Generate Unique request ID
         do {
             $request_id = 'REQ-' . mt_rand(10000, 99999);
-        } while (ClientRequest::where('requestId', $request_id)->exists());
+        } while (
+            ClientRequest::where('requestId', $request_id)->exists() ||
+            ShipmentCollection::where('requestId', $request_id)->exists()
+        );
+
 
         do {
             $consignment_no = 'CN-' . mt_rand(10000, 99999);

@@ -7,6 +7,7 @@ use App\Models\ShipmentCollection;
 use App\Models\Office;
 use App\Models\Rate;
 use App\Models\Client;
+use App\Models\ClientRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
@@ -25,11 +26,15 @@ class FrontOfficeController extends Controller
         $walkInClients = Client::where('type', 'Walkin')->get();
 
         do {
-            $consignment_no = 'CN-' . mt_rand(10000, 99999);
-        } while (ShipmentCollection::where('consignment_no', $consignment_no)->exists());
+            $request_id = 'REQ-' . mt_rand(10000, 99999);
+        } while (
+            ClientRequest::where('requestId', $request_id)->exists() ||
+            ShipmentCollection::where('requestId', $request_id)->exists()
+        );
+
 
         $collections = ShipmentCollection::all();
-        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'consignment_no', 'collections'));
+        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'collections', 'request_id'));
     }
 
     /**

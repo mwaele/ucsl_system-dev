@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
+    Route::post('/shipment-collections/walkin', [ShipmentCollectionController::class, 'create'])->name('shipment-collections.create');
 
     //Route::resource('tracking','App\Http\Controllers\TrackingController');
     Route::resource('trackingInfo','App\Http\Controllers\TrackingInfoController');

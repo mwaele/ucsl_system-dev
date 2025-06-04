@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('client_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('clientId');
-            $table->string('collectionLocation');
-            $table->text('parcelDetails');
-            $table->dateTime('dateRequested');
-            $table->foreignId('userId');
-            $table->foreignId('vehicleId');
+            $table->string('collectionLocation')->nullable();
+            $table->text('parcelDetails')->nullable();
+            $table->dateTime('dateRequested')->nullable();
+            $table->foreignId('userId')->nullable();
+            $table->foreignId('vehicleId')->nullable();
             $table->string('status')->default('pending collection');
             $table->string('requestId')->unique();
             $table->timestamps();

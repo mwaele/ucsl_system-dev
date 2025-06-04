@@ -356,13 +356,13 @@
                                         </div>
                                     </div>
 
-                                    @if ($request->status === 'pending collection')
+                                    
                                         <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                             data-toggle="modal"
                                             data-target="#deleteClientRequest-{{ $request->requestId }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                    @endif
+                                   
 
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"

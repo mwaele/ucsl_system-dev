@@ -23,11 +23,69 @@ class ShipmentCollectionController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Save walk-in parcel details
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // 1. Save ShipmentCollection
+            $collection = ShipmentCollection::create([
+                'receiver_name' => $request->receiverContactPerson,
+                'receiver_id_no' => $request->receiverIdNo,
+                'receiver_phone' => $request->receiverPhone,
+                'receiver_address' => $request->receiverAddress,
+                'receiver_town' => $request->receiverTown,
+                'requestId' => $request->requestId,
+                'client_id' => $request->clientId,
+                'origin_id' => $request->origin_id,
+                'destination_id' => $request->destination_id,
+                'cost' => $request->cost,
+                'vat' => $request->vat,
+                'total_cost' => $request->total_cost,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // 2. Save ShipmentItems
+            foreach ($request->items as $itemIndex => $itemData) {
+                $item = $collection->items()->create([
+                    'item_name' => $itemData['item_name'],
+                    'packages_no' => $itemData['packages_no'],
+                    'weight' => $itemData['weight'],
+                    'length' => $itemData['length'],
+                    'width' => $itemData['width'],
+                    'height' => $itemData['height'],
+                    'volume' => $itemData['volume'],
+                    'remarks' => $itemData['remarks'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+                // 3. Save Sub Items if any
+                if (isset($itemData['sub_items'])) {
+                    foreach ($itemData['sub_items'] as $subItemData) {
+                        $item->subItems()->create([
+                            'item_name' => $subItemData['name'],
+                            'quantity' => $subItemData['quantity'],
+                            'weight' => $subItemData['weight'],
+                            'remarks' => $subItemData['remarks'] ?? null,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Shipment collection created successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error saving shipment: ' . $e->getMessage());
+        }
     }
 
     /**
