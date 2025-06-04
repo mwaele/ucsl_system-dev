@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\ShipmentCollectionController;
-
+use App\Http\Controllers\ShipmentItemController;
 use App\Http\Controllers\MyCollectionController;
 
 use App\Http\Controllers\MainController;
@@ -54,6 +54,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
     Route::post('/shipment-collections/walkin', [ShipmentCollectionController::class, 'create'])->name('shipment-collections.create');
 
+
+    Route::get('/shipments/{id}/items', [ShipmentItemController::class, 'fetchItems']);
+
     //Route::resource('tracking','App\Http\Controllers\TrackingController');
     Route::resource('trackingInfo','App\Http\Controllers\TrackingInfoController');
    // Route::get('/track/{requestId}', [TrackController::class, 'showTrackingView'])->name('track.view');
@@ -61,6 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracking', function () {
         return view('tracking.index');
     });
+
+    Route::put('/update_collections/{id}', [ShipmentCollectionController::class, 'update_collections'])->name('shipments.update_collections');
+
     //Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
 
     //Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);

@@ -15,6 +15,12 @@ class ShipmentItemController extends Controller
         //
     }
 
+    public function fetchItems($id)
+    {
+        $items = ShipmentItem::where('shipment_id', $id)->get();
+        return response()->json(['items' => $items]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
