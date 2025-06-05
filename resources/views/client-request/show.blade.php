@@ -62,9 +62,12 @@
                                     <button class="btn btn-sm btn-info mr-1" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning mr-1" data-toggle="modal" title="Collect parcels"
-                                        data-target="#collect-{{ $collection->id }}"><i class="fas fa-box"></i>
-                                    </button>
+                                    @if ($collection->status === 'pending collection')
+                                        <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
+                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"><i
+                                                class="fas fa-box"></i>
+                                        </button>
+                                    @endif
                                     @if ($collection->status === 'collected')
                                         <button class="btn btn-sm btn-primary" title="Print collection" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">

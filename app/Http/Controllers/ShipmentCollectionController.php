@@ -122,7 +122,8 @@ class ShipmentCollectionController extends Controller
             'sender_id_no' => 'required|string',
             'vat' => 'required|string',
             'total_cost' => 'required|string',
-            'consignment_no' => 'string'
+            'consignment_no' => 'string',
+            'base_cost' => 'string',
         ]);
         $consignment_no = $request->consignment_no;
         // Save main shipment
@@ -147,6 +148,7 @@ class ShipmentCollectionController extends Controller
             'total_cost' => $request->total_cost,
             'collected_by' => Auth::user()->id,
             'consignment_no' => $consignment_no,
+            'base_cost' => $request->base_cost,
             
         ]);
 
@@ -245,7 +247,7 @@ class ShipmentCollectionController extends Controller
         $shipment = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
 
         $shipment->update([
-            'actual_cost' => $request->base_cost,
+            'actual_cost' => $request->cost,
             'actual_vat' => $request->vat,
             'actual_total_cost' => $request->total_cost,
             'verified_by' => auth()->id(),
@@ -285,7 +287,7 @@ class ShipmentCollectionController extends Controller
                 if ($item) {
                     // Update the main item
                     $item->update([
-                        'actual_quantity' => $itemData['packages_no'],
+                        'actual_quantity' => $itemData['packages'],
                         'actual_weight' => $itemData['weight'],
                         'actual_length' => $itemData['length'],
                         'actual_width'  => $itemData['width'],
@@ -337,6 +339,41 @@ class ShipmentCollectionController extends Controller
 
         return redirect()->route('clientRequests.index')->with('success', 'Shipment collection verified successfully!');
     }
+
+    public function update_collections(Request $request, $id)
+{
+    $shipment = ShipmentCollection::where('requestId', $request->requestId)->firstOrFail();
+
+    // Update main shipment
+    $shipment->update([
+        'actual_cost' => $request->cost,
+        'actual_vat' => $request->vat,
+        'actual_total_cost' => $request->total_cost,
+        'verified_by' => auth()->id(),
+        'verified_at' => now(),
+    ]);
+
+    // Update shipment items
+    if ($request->has('items')) {
+        foreach ($request->items as $itemData) {
+            $item = ShipmentItem::find($itemData['id']);
+            if ($item) {
+                $item->update([
+                    'actual_quantity' => $itemData['packages'],
+                    'actual_weight' => $itemData['weight'],
+                    'actual_length' => $itemData['length'],
+                    'actual_width'  => $itemData['width'],
+                    'actual_height' => $itemData['height'],
+                    'volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
+                    'remarks' => $itemData['remarks'] ?? null,
+                ]);
+            }
+        }
+    }
+
+    return response()->json(['message' => 'Shipment and items updated successfully']);
+}
+
 
     /**
      * Remove the specified resource from storage.

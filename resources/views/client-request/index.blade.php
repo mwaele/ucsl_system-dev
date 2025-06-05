@@ -397,10 +397,22 @@
                                             data-target="#verifyCollectedParcel-{{ $request->requestId }}">
                                             <i class="fas fa-clipboard-check"></i>
                                         </button>
+                                        <button class="btn btn-dark btn-sm verify-btn mr-1"
+                                            data-id="{{ $request->shipmentCollection->id }}"
+                                            data-request-id="{{ $request->requestId }}"
+                                            data-rider="{{ $request->user->name }}"
+                                            data-vehicle="{{ $request->vehicle->regNo }}"
+                                            data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                            data-cost="{{ $request->shipmentCollection->cost }}"
+                                            data-total-cost="{{ $request->shipmentCollection->total_cost }}"
+                                            data-vat="{{ $request->shipmentCollection->vat }}"
+                                            data-base-cost="{{ $request->shipmentCollection->base_cost }}">
+                                            Verify
+                                        </button>
                                     @endif
 
                                     <!-- Verify Collected Parcel Modal -->
-                                    <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}"
+                                    {{-- <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}"
                                         tabindex="-1"
                                         aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}"
                                         aria-hidden="true">
@@ -610,7 +622,7 @@
                                                 </div>
                                             </form>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
 
                                     @if ($request->status === 'collected')
@@ -638,36 +650,216 @@
                     </tbody>
                 </table>
 
+                <!-- Modal -->
+                <div class="modal fade" id="itemsModal" tabindex="-1" aria-labelledby="itemsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success">
+                                <h5 class="modal-title text-white"><strong>Parcel Collection Details Verification</strong>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                            </div>
+                            <div class="modal-body" id="modalItemsBody">
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
-                        // Initial cost calculation bindings
-                        function calculateCost() {
-                            const row = this.closest('tr');
-                            const packages = parseFloat(row.querySelector('[name*="[packages_no]"]')?.value || 0);
-                            const weight = parseFloat(row.querySelector('[name*="[weight]"]')?.value || 0);
-                            const costInput = row.querySelector('[name*="[cost]"]');
-                            const basecost = parseFloat(document.getElementById('basecost')?.value || 0);
 
-                            const cost = basecost * packages * weight;
-                            if (costInput) {
-                                costInput.value = cost.toFixed(2);
-                            }
-                        }
+                        //
+                        $(document).on('click', '.verify-btn', function() {
+                            const shipment_id = $(this).data('id');
+                            const vehicle_reg_no = $(this).data('vehicle');
+                            const rider = $(this).data('rider');
+                            const date_requested = $(this).data('date-requested');
+                            const request_id = $(this).data('request-id');
+                            const cost = $(this).data('cost');
+                            const total_cost = $(this).data('total-cost');
+                            const vat = $(this).data('vat');
+                            const base_cost = $(this).data('base-cost');
+                            $.ajax({
+                                url: '/shipments/' + shipment_id + '/items',
+                                method: 'GET',
+                                success: function(response) {
+                                    let headerInfo = `
+                                    <form id="shipmentForm">
+                                                @csrf
+                                                @method('PUT')
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Request ID</label>
+                                            <input type="text" name="requestId" class="form-control" id="requestId" readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Rider</label>
+                                            <input type="text" name="userId" id="riderName" class="form-control"  readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Vehicle</label>
+                                            <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Date Requested</label>
+                                            <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
+                                        </div>
+                                    </div>
+                                `;
 
-                        // Bind cost calculation listeners to initial inputs
-                        function bindCostListeners(context = document) {
-                            context.querySelectorAll('.packages, [name^="items"][name$="[weight]"]').forEach(input => {
-                                input.addEventListener('input', calculateCost);
+                                    let itemsHtml =
+                                        '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
+                                    response.items.forEach((item, index) => {
+                                        const volume = item.length * item.width * item.height;
+
+                                        itemsHtml += `<thead> <tr><th> Item No. </th> <th> Item Name </th> <th> Package No </th> <th> Weight(Kg) </th> <th> Length(cm) </th> <th> Width(cm) </th> <th> Height(cm) </th> <th> Volume(cm <sup> 3 </sup>)</th><th> Remarks </th> </tr> </thead>
+                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
+
+
+                                    <tr>
+                                        <td colspan="9">
+                                            <table class="table table-sm table-bordered mt-2">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Sub Item Name</th>
+                                                        <th>Quantity</th>
+                                                        <th>Weight (Kg)</th>
+                                                        <th>Remarks</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="sub_items-${index}">
+                                                    <!-- Sub-items will be appended here -->
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item </button>
+                                        </td>
+                                    </tr>
+                                `;
+                                    });
+                                    itemsHtml += `
+                                        </tbody>
+                                    </table>
+                                    </div>
+
+                                    <div class="form-row">
+                                    <div class="form-group col-md-2">
+                                        <label class="text-dark"><small>Cost *</small></label>
+                                        <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
+                                    </div>
+                                    <input type="hidden" name="base_cost" id="baseCost" value="">
+                                    <div class="form-group col-md-2">
+                                        <label class="text-dark"><small>Tax (16%)*</small></label>
+                                        <input type="number" class="form-control" name="vat" id="vat" readonly>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label class="text-dark"><small>Total Cost*</small></label>
+                                        <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
+                                    </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Submit Verification</button>
+                                    </div></form>
+                                    `;
+
+
+                                    // ✅ Correct usage
+                                    $('#modalItemsBody').html(headerInfo + itemsHtml);
+                                    document.getElementById('requestId').value = request_id;
+                                    document.getElementById('totalCost').value = total_cost;
+                                    document.getElementById('cost').value = cost;
+                                    document.getElementById('riderName').value = rider;
+                                    document.getElementById('vehicleRegNo').value = vehicle_reg_no;
+                                    document.getElementById('dateRequested').value = date_requested;
+                                    document.getElementById('vat').value = vat;
+                                    document.getElementById('baseCost').value = base_cost;
+                                    $('#itemsModal').modal('show');
+                                },
+                                error: function() {
+                                    $('#modalItemsBody').html('<p>Error loading items.</p>');
+                                    $('#itemsModal').modal('show');
+                                }
                             });
-                        }
 
-                        // Trigger initial cost calculation
-                        document.querySelectorAll('.packages').forEach(input => {
-                            input.dispatchEvent(new Event('input'));
                         });
 
+                        //
+                        // Initial cost calculation bindings
+                        // function calculateCost() {
+                        //     const row = this.closest('tr');
+                        //     const packages = parseFloat(row.querySelector('[name*="[packages_no]"]')?.value || 0);
+                        //     const weight = parseFloat(row.querySelector('[name*="[weight]"]')?.value || 0);
+                        //     const costInput = row.querySelector('[name*="[cost]"]');
+                        //     const basecost = parseFloat(document.getElementById('basecost')?.value || 0);
+
+                        //     const cost = basecost * packages * weight;
+                        //     if (costInput) {
+                        //         costInput.value = cost.toFixed(2);
+                        //     }
+                        // }
+
+                        // Bind cost calculation listeners to initial inputs
+                        // function bindCostListeners(context = document) {
+                        //     context.querySelectorAll('.packages, [name^="items"][name$="[weight]"]').forEach(input => {
+                        //         input.addEventListener('input', calculateCost);
+                        //     });
+                        // }
+
+                        // Trigger initial cost calculation
+                        // document.querySelectorAll('.packages').forEach(input => {
+                        //     input.dispatchEvent(new Event('input'));
+                        // });
+
                         // Bind to existing inputs
-                        bindCostListeners();
+                        // bindCostListeners();
+
+
+                        // Total weight calculation and cost update
+                        function recalculateCosts() {
+                            let totalWeight = 0;
+
+                            $('#shipmentTable tbody tr').each(function() {
+                                const row = $(this);
+                                const weight = parseFloat(row.find('.weight').val()) || 0;
+                                const packages = parseFloat(row.find('.packages').val()) || 1;
+                                totalWeight += weight * packages;
+                            });
+
+                            const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                            let cost = baseCost;
+
+                            if (totalWeight > 25) {
+                                const extraWeight = totalWeight - 25;
+                                cost += extraWeight * 50;
+                            }
+
+                            $('input[name="cost"]').val(cost.toFixed(2));
+
+                            const vat = cost * 0.16;
+                            $('input[name="vat"]').val(vat.toFixed(2));
+                            $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                        }
+
+                        // Watch for changes in volume dimensions
+                        $(document).on('input', '.length, .width, .height',
+                            function() {
+                                const row = $(this).closest('tr');
+                                calculateVolume(row);
+                            });
+
+                        // Watch for changes in weight or packages
+                        $(document).on('input', '.weight, .packages', function() {
+                            recalculateCosts();
+                        });
+
+
+
+
+
+
 
                         // Handle dynamic sub-item row addition
                         document.querySelectorAll('.add-sub-item-btn').forEach(button => {
@@ -712,8 +904,38 @@
                         });
                     });
                 </script>
-
                 <script>
+                    // Handle form submission
+                    $(document).on('submit', '#shipmentForm', function(e) {
+                        e.preventDefault();
+
+                        const form = $(this);
+                        const shipmentId = $('.verify-btn').data('id');
+                        const formData = form.serialize();
+
+                        $.ajax({
+                            url: `/update_collections/${shipmentId}`,
+                            type: 'POST',
+                            data: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': $('input[name="_token"]').val(),
+                                'X-HTTP-Method-Override': 'PUT'
+                            },
+                            success: function(response) {
+                                alert('Shipment Collection Verified Successfully!');
+                                $('#itemsModal').modal('hide');
+                                // Optionally reload the page or update the table
+                                location.reload();
+                            },
+                            error: function(xhr) {
+                                alert('Error verifying shipment');
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+                </script>
+
+                {{-- <script>
                     document.addEventListener("DOMContentLoaded", function() {
                         const searchInput = document.getElementById("tableSearch");
                         const tableRows = document.querySelectorAll(".results tbody tr");
@@ -748,7 +970,7 @@
                             });
                         }
                     });
-                </script>
+                </script> --}}
 
                 {{-- <script>
                     document.addEventListener("DOMContentLoaded", function() {
@@ -851,6 +1073,26 @@
                         });
                     });
                 </script> --}}
+
+                <script>
+                    function addSubItems(parentIndex) {
+
+                        const container = document.getElementById(`sub_items-${parentIndex}`);
+
+                        const subItemCount = container.children.length;
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                                                                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
+                                                                                <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
+                                                                                <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
+                                                                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
+                                                                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
+                                                                            `;
+
+                        container.appendChild(row);
+                    }
+                </script>
             </div>
         </div>
     </div>

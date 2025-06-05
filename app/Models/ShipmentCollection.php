@@ -28,6 +28,12 @@ class ShipmentCollection extends Model
         'collected_by',
         'consignment_no',
         'waybill_no',
+        'base_cost',
+        'actual_cost',
+        'actual_vat',
+        'actual_total_cost',
+        'verified_by',
+        'verified_at',
     ];
 
     public function clientRequest()
