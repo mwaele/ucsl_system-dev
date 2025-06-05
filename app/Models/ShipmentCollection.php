@@ -49,4 +49,14 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(Rate::class, 'destination_id');
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function collectedBy()
+    {
+        return $this->belongsTo(User::class, 'collected_by');
+    }
 }

@@ -44,6 +44,7 @@ class ShipmentCollectionController extends Controller
                 'cost' => $request->cost,
                 'vat' => $request->vat,
                 'total_cost' => $request->total_cost,
+                'collected_by' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -340,9 +341,14 @@ class ShipmentCollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ShipmentCollection $shipmentCollection)
+    public function delete($requestId)
     {
         //
+        //
+        $clientRequest = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
+        $clientRequest->delete();
+
+        return redirect()->back()->with('success', 'Walk-in parcel deleted successfully.');
     }
 
     public function receipt($id)

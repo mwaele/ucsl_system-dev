@@ -25,15 +25,30 @@ class FrontOfficeController extends Controller
         $destinations = Rate::all();
         $walkInClients = Client::where('type', 'Walkin')->get();
 
-        do {
-            $request_id = 'REQ-' . mt_rand(10000, 99999);
-        } while (
-            ClientRequest::where('requestId', $request_id)->exists() ||
-            ShipmentCollection::where('requestId', $request_id)->exists()
-        );
+        // 1. Get the latest requestId from both tables
+        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
+            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->value('requestId');
 
+        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
+            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->value('requestId');
 
-        $collections = ShipmentCollection::all();
+        // 2. Extract numeric parts and determine the highest
+        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
+        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
+
+        $nextNumber = max($clientNumber, $collectionNumber) + 1;
+
+        // 3. Format requestId
+        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+        $collections = ShipmentCollection::with('client')
+                ->whereHas('client', function ($query) {
+                    $query->where('type', 'Walkin'); // Only walk-in clients
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
         return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'collections', 'request_id'));
     }
 

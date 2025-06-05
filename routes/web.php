@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
     Route::post('/shipment-collections/walkin', [ShipmentCollectionController::class, 'create'])->name('shipment-collections.create');
+    Route::delete('/shipment-collections/delete/{requestId}', [ShipmentCollectionController::class, 'delete'])->name('shipment-collections.delete');
 
     //Route::resource('tracking','App\Http\Controllers\TrackingController');
     Route::resource('trackingInfo','App\Http\Controllers\TrackingInfoController');
