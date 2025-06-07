@@ -30,7 +30,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <label class="form-label text-primary">Fill in the client details.</label>
+                                <label class="form-label text-primary">Fill in the Client details.</label>
 
                                 <div class="row mb-3">
                                     <div class="col-md-3 mb-3">

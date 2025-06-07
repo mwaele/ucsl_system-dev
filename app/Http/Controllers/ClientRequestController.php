@@ -49,7 +49,7 @@ class ClientRequestController extends Controller
         $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems' ]) // Eager load relations
                             ->orderBy('created_at', 'desc')
                             ->get();
-        $clients = Client::all();
+        $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
         return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id'));
@@ -153,71 +153,78 @@ class ClientRequestController extends Controller
     //}
 
     public function store(Request $request)
-{
-    // Optional: Validate input
-    $validated = $request->validate([
-        'clientId' => 'required|integer',
-        'collectionLocation' => 'required|string',
-        'parcelDetails' => 'required|string',
-        'dateRequested' => 'required|date',
-        'userId' => 'required|integer',
-        'vehicleId' => 'required|integer',
-        'requestId' => 'required|string|unique:client_requests,requestId',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        // 1. Create ClientRequest
-        $clientRequest = new ClientRequest();
-        $clientRequest->clientId = $validated['clientId'];
-        $clientRequest->collectionLocation = $validated['collectionLocation'];
-        $clientRequest->parcelDetails = $validated['parcelDetails'];
-        $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
-        $clientRequest->userId = $validated['userId'];
-        $clientRequest->vehicleId = $validated['vehicleId'];
-        $clientRequest->requestId = $validated['requestId'];
-        $clientRequest->save();
-
-        $userName = User::find($validated['userId'])->name;
-        $regNo = Vehicle::find($validated['vehicleId'])->regNo;
-
-        // 2. Insert into tracks table and get inserted ID
-        $trackingId = DB::table('tracks')->insertGetId([
-            'requestId' =>  $clientRequest->requestId, // This is the DB PK (id), not requestId
-            'clientId' => $clientRequest->clientId,
-            'created_at' => now(),
-            'updated_at' => now()
+    {
+        // Optional: Validate input
+        $validated = $request->validate([
+            'clientId' => 'required|integer',
+            'collectionLocation' => 'required|string',
+            'parcelDetails' => 'required|string',
+            'dateRequested' => 'required|date',
+            'userId' => 'required|integer',
+            'vehicleId' => 'required|integer',
+            'requestId' => 'required|string|unique:client_requests,requestId',
         ]);
 
-        // 3. Insert into tracking_infos
-        DB::table('tracking_infos')->insert([
-            'trackId' => $trackingId,
-            'date' => now(),
-            'details' => 'Client Request Submitted for Collection',
-            'user_id' => $validated['userId'],
-            'vehicle_id' => $validated['vehicleId'],
-            'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        DB::beginTransaction();
 
-        DB::commit();
+        try {
+            // 1. Create ClientRequest
+            $clientRequest = new ClientRequest();
+            $clientRequest->clientId = $validated['clientId'];
+            $clientRequest->collectionLocation = $validated['collectionLocation'];
+            $clientRequest->parcelDetails = $validated['parcelDetails'];
+            $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
+            $clientRequest->userId = $validated['userId'];
+            $clientRequest->vehicleId = $validated['vehicleId'];
+            $clientRequest->requestId = $validated['requestId'];
+            $clientRequest->save();
 
-        return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
+            $userName = User::find($validated['userId'])->name;
+            $regNo = Vehicle::find($validated['vehicleId'])->regNo;
 
-    } catch (\Exception $e) {
-        DB::rollBack();
-    
-        \Log::error('Tracking Info Insert Error', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-    
-        return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+            // 2. Insert into tracks table and get inserted ID
+            $trackingId = DB::table('tracks')->insertGetId([
+                'requestId' =>  $clientRequest->requestId, // This is the DB PK (id), not requestId
+                'clientId' => $clientRequest->clientId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // 3. Insert into tracking_infos
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Client Request Submitted for Collection',
+                'user_id' => $validated['userId'],
+                'vehicle_id' => $validated['vehicleId'],
+                'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // ✅ 4. Send SMS Notification
+            $client = Client::find($validated['clientId']); // Assuming you have a Client model
+            $phoneNumber = $client->contactPersonPhone; // Adjust to your actual column
+            $message = "Hi {$client->name}, your parcel request {$clientRequest->requestId} has been submitted. We'll keep you updated.";
+
+            $smsService->sendSMS($phoneNumber, $message);
+
+            DB::commit();
+
+            return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+        
+            \Log::error('Tracking Info Insert Error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        
+            return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+        }
+        
     }
-    
-}
 
     // public function store(Request $request)
     // {       
