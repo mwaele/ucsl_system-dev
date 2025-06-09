@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ShipmentSubItem extends Model
 {
     protected $fillable = [
-        'shipment_item_id', 'item_name', 'weight', 'length', 'width', 'height'
+        'shipment_item_id', 'item_name','quantity', 'weight', 'remarks', 'length', 'width', 'height'
     ];
 
     public function shipmentItem()

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Auth;
+use App\Services\SmsService;
 
 class ClientRequestController extends Controller
 {
@@ -151,7 +152,7 @@ class ClientRequestController extends Controller
         // return redirect()->route('clientRequests.index')->with('Success', 'Client request saved successfully.');
     //}
 
-    public function store(Request $request)
+    public function store(Request $request, SmsService $smsService)
     {
         // Optional: Validate input
         $validated = $request->validate([
@@ -189,21 +190,26 @@ class ClientRequestController extends Controller
                 'updated_at' => now()
             ]);
 
-            // 3. Insert into tracking_infos
-            DB::table('tracking_infos')->insert([
-                'trackId' => $trackingId,
-                'date' => now(),
-                'details' => 'Client Request Submitted for Collection',
-                'user_id' => $validated['userId'],
-                'vehicle_id' => $validated['vehicleId'],
-                'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+        // 3. Insert into tracking_infos
+        DB::table('tracking_infos')->insert([
+            'trackId' => $trackingId,
+            'date' => now(),
+            'details' => 'Client Request Submitted for Collection',
+            'user_id' => $validated['userId'],
+            'vehicle_id' => $validated['vehicleId'],
+            'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-            
-
-            DB::commit();
+        DB::commit();
+        // send sms to 
+        $smsService->sendSms(
+            phone: '254729395605',
+            subject: 'Client Request Alert',
+            message: 'Dear Emmanuel, Client (Saraf Shipping) has requested for parcel collection.',
+            addFooter: true
+        );
 
             return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
 

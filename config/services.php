@@ -34,6 +34,13 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'bitwise_sms' => [
+    'api_key' => env('BITWISE_SMS_API_KEY'),
+    'sender_id' => env('BITWISE_SMS_SENDERID'),
+    'url' => env('BITWISE_SMS_URL'),
+    'terms_and_conditions' => env('TERMS_AND_CONDITIONS'),
+    ],
+
 
     'africastalking' => [
     'username' => env('AFRICASTALKING_USERNAME'),

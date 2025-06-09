@@ -9,6 +9,8 @@ use App\Models\ClientRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TrackingInfo;
+use App\Models\ShipmentSubItem;
+use App\Services\SmsService;
 
 use Illuminate\Support\Facades\DB;
 
@@ -387,16 +389,18 @@ class ShipmentCollectionController extends Controller
 {
     $shipment = ShipmentCollection::where('requestId', $request->requestId)->firstOrFail();
 
-    // Update main shipment
-    $shipment->update([
-        'actual_cost' => $request->cost,
-        'actual_vat' => $request->vat,
-        'actual_total_cost' => $request->total_cost,
-        'verified_by' => auth()->id(),
-        'verified_at' => now(),
-    ]);
+    if($shipment){
 
-    // Update shipment items
+        // Update main shipment
+        $shipment->update([
+            'actual_cost' => $request->cost,
+            'actual_vat' => $request->vat,
+            'actual_total_cost' => $request->total_cost,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
+         // Update shipment items
     if ($request->has('items')) {
         foreach ($request->items as $itemData) {
             $item = ShipmentItem::find($itemData['id']);
@@ -407,14 +411,83 @@ class ShipmentCollectionController extends Controller
                     'actual_length' => $itemData['length'],
                     'actual_width'  => $itemData['width'],
                     'actual_height' => $itemData['height'],
-                    'volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
+                    'actual_volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
                     'remarks' => $itemData['remarks'] ?? null,
                 ]);
             }
         }
     }
+        $prefix = 'UCSL';
+        $suffix = 'KE';
+        $padLength = 10;
 
-    return response()->json(['message' => 'Shipment and items updated successfully']);
+        $latestWaybill = DB::table('shipment_collections')
+            ->whereNotNull('waybill_no')
+            ->orderByDesc('id')
+            ->value('waybill_no');
+
+        if ($latestWaybill) {
+            // Remove prefix and suffix
+            $waybill_no = substr($latestWaybill, strlen($prefix), -strlen($suffix));
+
+            // Convert to int and increment
+            $bill_no = (int)$waybill_no + 1;
+        } else {
+            // First waybill
+            $bill_no = 1;
+        }
+
+        // Pad with zeros
+        $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
+
+        $waybill_no = $prefix . $padded_no . $suffix;
+
+        
+
+         // Sync sub-items if any
+         if (isset($itemData['sub_items']) && is_array($itemData['sub_items'])) {
+           
+            foreach ($itemData['sub_items'] as $subItemData) {
+                ShipmentSubItem::create([
+                    'shipment_item_id' => $shipment->id,
+                    'item_name' => $subItemData['name'],
+                    'quantity' => $subItemData['quantity'],
+                    'weight' => $subItemData['weight'],
+                    'remarks' => $subItemData['remarks'] ?? null,
+                    'length' => $subItemData['length'] ?? null,
+                    'width' => $subItemData['width'] ?? null,
+                    'height' => $subItemData['height'] ?? null,
+                ]);
+            }
+        }
+    
+       // Update status in client_requests
+       ClientRequest::where('requestId', $request->requestId)
+       ->update(['status' => 'verified']);
+
+       ShipmentCollection::where('requestId', $request->requestId)
+       ->update(['waybill_no' => $waybill_no]);
+
+
+
+       $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
+
+
+       // 3. Insert into tracking_infos
+       DB::table('tracking_infos')->insert([
+           'trackId' => $id,
+           'date' => now(),
+           'details' => 'Parcel Verified and ready for dispatch',
+           'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated '.$waybill_no,
+           'created_at' => now(),
+           'updated_at' => now()
+       ]);
+       return response()->json(['message' => 'Shipment and items updated successfully']);
+    }else{
+        return response()->json(['message' => 'Shipment and items not found']);
+    }
+
+    
 }
 
 

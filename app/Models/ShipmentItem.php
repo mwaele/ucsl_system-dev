@@ -15,6 +15,13 @@ class ShipmentItem extends Model
         'width',
         'height',
         'volume',
+        "actual_quantity",
+        "actual_weight",
+        "actual_length",
+        "actual_width",
+        "actual_height",
+        "actual_volume",
+        "remarks",
     ];
 
     public function getVolumeAttribute()

@@ -20,6 +20,12 @@ return [
 
     'default' => env('LOG_CHANNEL', 'stack'),
 
+    'sms' => [
+    'driver' => 'single',
+    'path' => storage_path('logs/sms.log'),
+    'level' => 'debug',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Deprecations Log Channel

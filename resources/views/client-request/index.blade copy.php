@@ -391,12 +391,12 @@
                                     </div>
 
                                     @if ($request->status === 'collected')
-                                        {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
+                                        <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
                                             data-toggle="modal" data-rider="{{ $request->user->name }}"
                                             data-target="#verifyCollectedParcel-{{ $request->requestId }}">
                                             <i class="fas fa-clipboard-check"></i>
-                                        </button> --}}
-                                        <button class="btn btn-info btn-sm verify-btn mr-1"
+                                        </button>
+                                        <button class="btn btn-dark btn-sm verify-btn mr-1"
                                             data-id="{{ $request->shipmentCollection->id }}"
                                             data-request-id="{{ $request->requestId }}"
                                             data-rider="{{ $request->user->name }}"
@@ -410,6 +410,218 @@
                                         </button>
                                     @endif
 
+                                    <!-- Verify Collected Parcel Modal -->
+                                    {{-- <div class="modal fade" id="verifyCollectedParcel-{{ $request->requestId }}"
+                                        tabindex="-1"
+                                        aria-labelledby="verifyCollectedParcelModalLabel-{{ $request->requestId }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-xl">
+                                            <form action="{{ route('shipment-collections.update', $request->requestId) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-gradient-info">
+                                                        <h5 class="modal-title text-white"
+                                                            id="verifyCollectedParcelModalLabel-{{ $request->requestId }}">
+                                                            Verify Details of Collected Parcel
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Request ID</label>
+                                                                <input type="text" name="requestId"
+                                                                    class="form-control"
+                                                                    value="{{ $request->requestId }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Rider</label>
+                                                                <input type="text" name="userId" id="rider"
+                                                                    class="form-control"
+                                                                    value="{{ $request->user->name }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Vehicle</label>
+                                                                <input type="text" class="form-control"
+                                                                    name="vehicleDisplay"
+                                                                    value="{{ $request->vehicle->regNo }}" readonly>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3">
+                                                                <label class="text-primary">Date Requested</label>
+                                                                <input type="datetime-local" name="dateRequested"
+                                                                    class="form-control"
+                                                                    value="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                                                    readonly>
+                                                            </div>
+                                                        </div>
+
+                                                        @if ($request->shipmentCollection && $request->shipmentCollection->items->count())
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Item No.</th>
+                                                                        <th>Item Name</th>
+                                                                        <th>Package No</th>
+                                                                        <th>Weight (Kg)</th>
+                                                                        <th>Length (cm)</th>
+                                                                        <th>Width (cm)</th>
+                                                                        <th>Height (cm)</th>
+                                                                        <th>Volume (cm<sup>3</sup>)</th>
+                                                                        <th>Remarks</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($request->shipmentCollection->items as $index => $item)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $index + 1 }}
+                                                                                <input type="hidden"
+                                                                                    name="items[{{ $index }}][id]"
+                                                                                    value="{{ $item->id }}">
+                                                                            </td>
+                                                                            <td><input type="text"
+                                                                                    name="items[{{ $index }}][item_name]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->item_name }}"
+                                                                                    required></td>
+                                                                            <td><input type="number"
+                                                                                    name="items[{{ $index }}][packages_no]"
+                                                                                    class="form-control packages"
+                                                                                    value="{{ $item->packages_no }}"
+                                                                                    required></td>
+                                                                            <td><input type="number" step="0.01"
+                                                                                    name="items[{{ $index }}][weight]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->weight }}" required>
+                                                                            </td>
+                                                                            <td><input type="number"
+                                                                                    name="items[{{ $index }}][length]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->length }}"></td>
+                                                                            <td><input type="number"
+                                                                                    name="items[{{ $index }}][width]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->width }}"></td>
+                                                                            <td><input type="number"
+                                                                                    name="items[{{ $index }}][height]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->height }}"></td>
+                                                                            <td>
+                                                                                {{ $item->length * $item->width * $item->height }}
+                                                                                <input type="hidden"
+                                                                                    name="items[{{ $index }}][volume]"
+                                                                                    value="{{ $item->length * $item->width * $item->height }}">
+                                                                            </td>
+                                                                            <td><input type="text"
+                                                                                    name="items[{{ $index }}][remarks]"
+                                                                                    class="form-control"
+                                                                                    value="{{ $item->remarks }}"></td>
+                                                                        </tr>
+
+                                                                        <!-- Sub Items Table -->
+                                                                        <tr>
+                                                                            <td colspan="9">
+                                                                                <table
+                                                                                    class="table table-sm table-bordered mt-2">
+                                                                                    <thead class="thead-light">
+                                                                                        <tr>
+                                                                                            <th>Sub Item Name</th>
+                                                                                            <th>Quantity</th>
+                                                                                            <th>Weight (Kg)</th>
+                                                                                            <th>Remarks</th>
+                                                                                            <th>Action</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody
+                                                                                        id="sub-items-{{ $index }}">
+                                                                                        <!-- JS will populate sub-items here -->
+                                                                                    </tbody>
+                                                                                </table>
+
+                                                                                <button type="button"
+                                                                                    class="btn btn-sm btn-outline-primary"
+                                                                                    onclick="addSubItem({{ $index }})">
+                                                                                    + Add Sub Item
+                                                                                </button>
+                                                                                @push('scripts')
+                                                                                    <script>
+                                                                                        function addSubItem(parentIndex) {
+                                                                                            const container = document.getElementById(`sub-items-${parentIndex}`);
+
+                                                                                            const subItemCount = container.children.length;
+
+                                                                                            const row = document.createElement('tr');
+                                                                                            row.innerHTML = `
+                                                                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
+                                                                                <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
+                                                                                <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
+                                                                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
+                                                                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
+                                                                            `;
+
+                                                                                            container.appendChild(row);
+                                                                                        }
+                                                                                    </script>
+                                                                                @endpush
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+
+                                                            <div class="form-row">
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Cost *</small></label>
+                                                                    <input type="number" class="form-control cost basecost"
+                                                                        name="cost" id="basecost"
+                                                                        value="{{ $request->shipmentCollection->cost }}"
+                                                                        readonly>
+                                                                </div>
+                                                                <input type="hidden" name="base_cost" value="">
+
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Tax (16%)
+                                                                            *</small></label>
+                                                                    <input type="number" class="form-control"
+                                                                        name="vat"
+                                                                        value="{{ $request->shipmentCollection->vat }}"
+                                                                        readonly>
+                                                                </div>
+
+                                                                <div class="form-group col-md-2">
+                                                                    <label class="text-dark"><small>Total Cost
+                                                                            *</small></label>
+                                                                    <input type="number" class="form-control"
+                                                                        name="total_cost"
+                                                                        value="{{ $request->shipmentCollection->total_cost }}"
+                                                                        readonly>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <p class="text-muted">No items found for this request.</p>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-success">Submit
+                                                            Verification</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div> --}}
 
 
                                     @if ($request->status === 'collected')
@@ -573,6 +785,37 @@
 
                         });
 
+                        //
+                        // Initial cost calculation bindings
+                        // function calculateCost() {
+                        //     const row = this.closest('tr');
+                        //     const packages = parseFloat(row.querySelector('[name*="[packages_no]"]')?.value || 0);
+                        //     const weight = parseFloat(row.querySelector('[name*="[weight]"]')?.value || 0);
+                        //     const costInput = row.querySelector('[name*="[cost]"]');
+                        //     const basecost = parseFloat(document.getElementById('basecost')?.value || 0);
+
+                        //     const cost = basecost * packages * weight;
+                        //     if (costInput) {
+                        //         costInput.value = cost.toFixed(2);
+                        //     }
+                        // }
+
+                        // Bind cost calculation listeners to initial inputs
+                        // function bindCostListeners(context = document) {
+                        //     context.querySelectorAll('.packages, [name^="items"][name$="[weight]"]').forEach(input => {
+                        //         input.addEventListener('input', calculateCost);
+                        //     });
+                        // }
+
+                        // Trigger initial cost calculation
+                        // document.querySelectorAll('.packages').forEach(input => {
+                        //     input.dispatchEvent(new Event('input'));
+                        // });
+
+                        // Bind to existing inputs
+                        // bindCostListeners();
+
+
                         // Total weight calculation and cost update
                         function recalculateCosts() {
                             let totalWeight = 0;
@@ -654,6 +897,146 @@
                         });
                     });
                 </script>
+
+
+                {{-- <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const searchInput = document.getElementById("tableSearch");
+                        const tableRows = document.querySelectorAll(".results tbody tr");
+                        const counter = document.querySelector(".counter");
+                        const noResult = document.querySelector(".no-result");
+
+                        if (searchInput) {
+                            searchInput.addEventListener("input", function() {
+                                const searchTerm = searchInput.value.toLowerCase().trim();
+                                const terms = searchTerm.split(" ");
+                                let matchCount = 0;
+
+                                tableRows.forEach(row => {
+                                    const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
+                                    const matched = terms.every(term => rowText.includes(term));
+
+                                    if (matched) {
+                                        row.style.display = "";
+                                        matchCount++;
+                                    } else {
+                                        row.style.display = "none";
+                                    }
+                                });
+
+                                if (counter) {
+                                    counter.textContent = `${matchCount} item${matchCount !== 1 ? 's' : ''}`;
+                                }
+
+                                if (noResult) {
+                                    noResult.style.display = matchCount === 0 ? "block" : "none";
+                                }
+                            });
+                        }
+                    });
+                </script> --}}
+
+                {{-- <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+
+                        const basecost = parseFloat(document.getElementById('basecost').value || 0);
+
+                        console.log(basecost)
+
+                        // Add event listeners to all package and weight fields
+                        document.querySelectorAll('.packages, [name^="items"][name$="[weight]"]').forEach(input => {
+                            input.addEventListener('input', calculateCost);
+                        });
+
+                        function calculateCost() {
+                            const row = this.closest('tr');
+                            const packages = parseFloat(row.querySelector('[name*="[packages_no]"]').value) || 0;
+                            const weight = parseFloat(row.querySelector('[name*="[weight]"]').value) || 0;
+                            const costInput = row.querySelector('[name*="[cost]"]');
+
+                            const cost = basecost * packages * weight;
+                            costInput.value = cost.toFixed(2);
+                        }
+
+                        // Trigger initial cost calculation on page load
+                        document.querySelectorAll('.packages').forEach(input => input.dispatchEvent(new Event('input')));
+                    });
+
+
+                    document.querySelectorAll('.add-sub-item-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const itemIndex = this.getAttribute('data-item-index');
+                        let subCount = parseInt(this.getAttribute('data-sub-count'), 10);
+                        const tbody = document.querySelector(`#sub-items-body-${itemIndex}`);
+
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                        <td>
+                            <input type="text" name="items[${itemIndex}][sub_items][${subCount}][name]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="number" name="items[${itemIndex}][sub_items][${subCount}][quantity]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="items[${itemIndex}][sub_items][${subCount}][weight]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="number" name="items[${itemIndex}][sub_items][${subCount}][length]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="number" name="items[${itemIndex}][sub_items][${subCount}][width]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="number" name="items[${itemIndex}][sub_items][${subCount}][height]" class="form-control">
+                        </td>
+                        <td>
+                            <input type="text" name="items[${itemIndex}][sub_items][${subCount}][remarks]" class="form-control">
+                        </td>
+                    `;
+                        tbody.appendChild(newRow);
+
+                        // Update sub-count so future rows are correctly indexed
+                        this.setAttribute('data-sub-count', subCount + 1);
+                    });
+                    });
+                </script>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const searchInput = document.getElementById("tableSearch");
+                        const tableRows = document.querySelectorAll(".results tbody tr");
+                        const counter = document.querySelector(".counter"); // optional
+                        const noResult = document.querySelector(".no-result"); // optional
+
+                        searchInput.addEventListener("input", function() {
+                            const searchTerm = searchInput.value.toLowerCase().trim();
+                            let matchCount = 0;
+
+                            tableRows.forEach(row => {
+                                const rowText = row.textContent.toLowerCase().replace(/\s+/g, " ");
+                                const terms = searchTerm.split(" ");
+                                const matched = terms.every(term => rowText.includes(term));
+
+                                if (matched) {
+                                    row.style.display = "";
+                                    row.setAttribute("visible", "true");
+                                    matchCount++;
+                                } else {
+                                    row.style.display = "none";
+                                    row.setAttribute("visible", "false");
+                                }
+                            });
+
+                            if (counter) {
+                                counter.textContent = matchCount + " item" + (matchCount !== 1 ? "s" : "");
+                            }
+
+                            if (noResult) {
+                                noResult.style.display = matchCount === 0 ? "block" : "none";
+                            }
+                        });
+                    });
+                </script> --}}
 
                 <script>
                     function addSubItems(parentIndex) {
