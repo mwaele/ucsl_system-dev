@@ -388,14 +388,14 @@
 
                                                         <hr style="margin: 4px 0;">
 
-                                                        <div style="font-weight: bold;"><u>Sender:</u></div>
+                                                        <div style="font-weight: bold;">Sender:</div>
                                                         <div>Name: {{ $collection->client->name }}</div>
                                                         <div>Phone: {{ $collection->client->contact }}</div>
                                                         <div>Location: {{ $collection->client->building }}</div>
                                                         <div>Town: {{ $collection->client->city }}</div>
                                                         <hr style="margin: 4px 0;">
 
-                                                        <div style="font-weight: bold;"><u>Receiver:</u></div>
+                                                        <div style="font-weight: bold;">Receiver:</div>
                                                         <div>Name: {{ $collection->receiver_name }}
                                                         </div>
                                                         <div>Phone:
@@ -407,8 +407,8 @@
                                                         </div>
                                                         <hr style="margin: 4px 0;">
 
-                                                        <div style="font-weight: bold;"><u>Parcel Details:</u></div>
-                                                        @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
+                                                        <div style="font-weight: bold;">Parcel Details:</div>
+                                                        @if ($collection->items && $collection->items->count())
                                                             <table
                                                                 style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
                                                                 <thead>
@@ -449,7 +449,7 @@
 
                                                         <hr style="margin: 6px 0;">
                                                         <div style="text-align: left; font-size: 12px;">
-                                                            <strong><u>TERMS & CONDITIONS</u></strong><br>
+                                                            <strong>TERMS & CONDITIONS</strong><br>
                                                             Carriage of this shipment is subject to the terms and
                                                             conditions overleaf.<br><br>
                                                             <strong>Received By:

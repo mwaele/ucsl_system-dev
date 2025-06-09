@@ -26,7 +26,7 @@ class MyCollectionController extends Controller
             $lastNumber = intval($matches[1]);
             $newNumber = $lastNumber + 1;
         } else {
-            $newNumber = 00001; // Start from CN-00001
+            $newNumber = 10000; // Start from CN-10000
         }
 
         $consignment_no = 'CN-' . $newNumber;

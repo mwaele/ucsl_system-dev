@@ -39,12 +39,11 @@ class ClientRequestController extends Controller
 
         $nextNumber = max($clientNumber, $collectionNumber) + 1;
 
-        // 3. Format requestId
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        // 3. Ensure minimum start number is 10000
+        $nextNumber = max($nextNumber + 1, 10000);
 
-        do {
-            $consignment_no = 'CN-' . mt_rand(10000, 99999);
-        } while (ClientRequest::where('requestId', $request_id)->exists());
+        // 4. Format requestId
+        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
         
         $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems' ]) // Eager load relations
                             ->orderBy('created_at', 'desc')

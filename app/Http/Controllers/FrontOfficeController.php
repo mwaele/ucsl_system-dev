@@ -40,7 +40,10 @@ class FrontOfficeController extends Controller
 
         $nextNumber = max($clientNumber, $collectionNumber) + 1;
 
-        // 3. Format requestId
+        // 3. Ensure minimum start number is 10000
+        $nextNumber = max($nextNumber + 1, 10000);
+
+        // 4. Format requestId
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         $collections = ShipmentCollection::with('client')
@@ -59,7 +62,7 @@ class FrontOfficeController extends Controller
             $lastNumber = intval($matches[1]);
             $newNumber = $lastNumber + 1;
         } else {
-            $newNumber = 00001; // Start from CN-00001
+            $newNumber = 10000; // Start from CN-10000
         }
 
         $consignment_no = 'CN-' . $newNumber;
