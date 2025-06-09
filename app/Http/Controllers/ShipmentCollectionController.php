@@ -49,29 +49,43 @@ class ShipmentCollectionController extends Controller
                 'updated_at' => now()
             ]);
 
-            // 2. Save ShipmentItems
-            foreach ($request->items as $itemIndex => $itemData) {
+            // 2. Rebuild items array from flat structure
+            $itemCount = count($request->input('item_name', []));
+            for ($i = 0; $i < $itemCount; $i++) {
+                $itemData = [
+                    'item_name' => $request->item_name[$i],
+                    'packages' => $request->packages[$i],
+                    'weight' => $request->weight[$i],
+                    'length' => $request->length[$i],
+                    'width' => $request->width[$i],
+                    'height' => $request->height[$i],
+                    'volume' => $request->volume[$i],
+                    'remarks' => $request->remarks[$i] ?? null,
+                    'sub_items' => $request->input("items.$i.sub_items", []) // sub-items kept in nested format
+                ];
+
+                // 3. Save each item
                 $item = $collection->items()->create([
                     'item_name' => $itemData['item_name'],
-                    'packages_no' => $itemData['packages_no'],
+                    'packages_no' => $itemData['packages'],
                     'weight' => $itemData['weight'],
                     'length' => $itemData['length'],
                     'width' => $itemData['width'],
                     'height' => $itemData['height'],
                     'volume' => $itemData['volume'],
-                    'remarks' => $itemData['remarks'] ?? null,
+                    'remarks' => $itemData['remarks'],
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
 
-                // 3. Save Sub Items if any
-                if (isset($itemData['sub_items'])) {
-                    foreach ($itemData['sub_items'] as $subItemData) {
+                // 4. Save sub-items if any
+                if (!empty($itemData['sub_items'])) {
+                    foreach ($itemData['sub_items'] as $subItem) {
                         $item->subItems()->create([
-                            'item_name' => $subItemData['name'],
-                            'quantity' => $subItemData['quantity'],
-                            'weight' => $subItemData['weight'],
-                            'remarks' => $subItemData['remarks'] ?? null,
+                            'item_name' => $subItem['name'],
+                            'quantity' => $subItem['quantity'],
+                            'weight' => $subItem['weight'],
+                            'remarks' => $subItem['remarks'] ?? null,
                             'created_at' => now(),
                             'updated_at' => now()
                         ]);

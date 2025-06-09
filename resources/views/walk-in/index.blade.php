@@ -120,21 +120,21 @@
                                         <!-- First item row -->
                                         <tr>
                                             <td>1</td>
-                                            <td><input type="text" name="items[0][item_name]" class="form-control" required></td>
-                                            <td><input type="number" name="items[0][packages_no]" class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="items[0][weight]" class="form-control" required></td>
-                                            <td><input type="number" name="items[0][length]" class="form-control" onchange="calculateVolume(0)"></td>
-                                            <td><input type="number" name="items[0][width]" class="form-control" onchange="calculateVolume(0)"></td>
-                                            <td><input type="number" name="items[0][height]" class="form-control" onchange="calculateVolume(0)"></td>
+                                            <td><input type="text" name="item_name[]" class="form-control" required></td>
+                                            <td><input type="number" name="packages[]" class="form-control" required></td>
+                                            <td><input type="number" step="0.01" name="weight[]" class="form-control" required></td>
+                                            <td><input type="number" name="length[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                            <td><input type="number" name="width[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                            <td><input type="number" name="height[]" class="form-control" onchange="calculateVolume(this)"></td>
                                             <td>
-                                                <span id="volume-display-0">0</span>
-                                                <input type="hidden" name="items[0][volume]" id="volume-input-0" value="0">
+                                                <input type="number" name="volume[]" class="form-control" readonly>
                                             </td>
-                                            <td><input type="text" name="items[0][remarks]" class="form-control"></td>
+                                            <td><input type="text" name="remarks[]" class="form-control"></td>
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addSubItem(0)">+ Sub Item</button>
                                             </td>
                                         </tr>
+
                                         <tr>
                                             <td colspan="10">
                                                 <div id="sub-items-wrapper-0" style="display: none;">
@@ -180,6 +180,15 @@
 
                                 @push('scripts')
                                 <script>
+                                    document.addEventListener('input', function (e) {
+                                        if (
+                                            e.target.matches('[name="weight[]"]') ||
+                                            e.target.matches('[name="packages[]"]')
+                                        ) {
+                                            recalculateCosts();
+                                        }
+                                    });
+
                                     let itemCount = 1;
 
                                     function addItem() {
@@ -188,17 +197,14 @@
                                         const itemRow = document.createElement('tr');
                                         itemRow.innerHTML = `
                                             <td>${itemCount + 1}</td>
-                                            <td><input type="text" name="items[${itemCount}][item_name]" class="form-control" required></td>
-                                            <td><input type="number" name="items[${itemCount}][packages_no]" class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="items[${itemCount}][weight]" class="form-control" required></td>
-                                            <td><input type="number" name="items[${itemCount}][length]" class="form-control" onchange="calculateVolume(${itemCount})"></td>
-                                            <td><input type="number" name="items[${itemCount}][width]" class="form-control" onchange="calculateVolume(${itemCount})"></td>
-                                            <td><input type="number" name="items[${itemCount}][height]" class="form-control" onchange="calculateVolume(${itemCount})"></td>
-                                            <td>
-                                                <span id="volume-display-${itemCount}">0</span>
-                                                <input type="hidden" name="items[${itemCount}][volume]" id="volume-input-${itemCount}" value="0">
-                                            </td>
-                                            <td><input type="text" name="items[${itemCount}][remarks]" class="form-control"></td>
+                                            <td><input type="text" name="item_name[]" class="form-control" required></td>
+                                            <td><input type="number" name="packages[]" class="form-control" required></td>
+                                            <td><input type="number" step="0.01" name="weight[]" class="form-control" required></td>
+                                            <td><input type="number" name="length[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                            <td><input type="number" name="width[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                            <td><input type="number" name="height[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                            <td><input type="number" name="volume[]" class="form-control" readonly></td>
+                                            <td><input type="text" name="remarks[]" class="form-control"></td>
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addSubItem(${itemCount})">+ Sub Item</button>
                                             </td>
@@ -250,14 +256,16 @@
                                         container.appendChild(row);
                                     }
 
-                                    function calculateVolume(index) {
-                                        const length = parseFloat(document.querySelector(`[name="items[${index}][length]"]`).value) || 0;
-                                        const width = parseFloat(document.querySelector(`[name="items[${index}][width]"]`).value) || 0;
-                                        const height = parseFloat(document.querySelector(`[name="items[${index}][height]"]`).value) || 0;
+                                    function calculateVolume(el) {
+                                        const row = el.closest('tr');
+                                        const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
+                                        const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
+                                        const height = parseFloat(row.querySelector('[name="height[]"]').value) || 0;
                                         const volume = length * width * height;
+                                        row.querySelector('[name="volume[]"]').value = volume;
 
-                                        document.getElementById(`volume-display-${index}`).innerText = volume;
-                                        document.getElementById(`volume-input-${index}`).value = volume;
+                                        // Recalculate totals
+                                        recalculateCosts();
                                     }
 
                                     function removeSubItem(button, parentIndex) {

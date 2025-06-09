@@ -202,12 +202,7 @@ class ClientRequestController extends Controller
                 'updated_at' => now()
             ]);
 
-            // ✅ 4. Send SMS Notification
-            $client = Client::find($validated['clientId']); // Assuming you have a Client model
-            $phoneNumber = $client->contactPersonPhone; // Adjust to your actual column
-            $message = "Hi {$client->name}, your parcel request {$clientRequest->requestId} has been submitted. We'll keep you updated.";
-
-            $smsService->sendSMS($phoneNumber, $message);
+            
 
             DB::commit();
 
