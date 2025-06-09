@@ -64,7 +64,7 @@
                                         <h6 for="collectionLocation" class="text-muted text-primary">To</h6>
                                         <select name="destination"
                                             class="form-control destination-dropdown">
-                                            <option value="">Select</option>
+                                            <option value="{{ $office->id }}" data-id="{{ $office->id }}">{{ $office->name }}</option>
                                         </select>
                                     </div>
                                     <input type="hidden" name='destination_id' id="destination_id">
@@ -101,7 +101,7 @@
 
                                 <label class="form-label text-primary">Fill in the Parcel details.</label>
 
-                                <table class="table table-bordered">
+                                <table class="table table-bordered" id="shipmentTable">
                                     <thead>
                                         <tr>
                                             <th>Item No.</th>
@@ -167,7 +167,7 @@
                                         <h6 for="itemCost" class="text-muted text-primary">Item Cost (KES)</h6>
                                         <input type="number" min="0" class="form-control" name="cost" required readonly>
                                     </div>
-                                    <input type="hidden" name="base_cost" value="">
+                                    <input type="hidden" name="base_cost" value="0">
                                     <div class="col-md-3">
                                         <h6 for="vatAmount" class="text-muted text-primary">Tax (16%)</h6>
                                         <input type="number" min="0" class="form-control" name="vat" required readonly>
