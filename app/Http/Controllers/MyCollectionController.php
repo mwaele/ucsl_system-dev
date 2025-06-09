@@ -17,9 +17,19 @@ class MyCollectionController extends Controller
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
-        do {
-            $consignment_no = 'CN-' . mt_rand(10000, 99999);
-        } while (ShipmentCollection::where('consignment_no', $consignment_no)->exists());
+        // Get the latest consignment number
+        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
+            ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
+            ->first();
+
+        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 00001; // Start from CN-00001
+        }
+
+        $consignment_no = 'CN-' . $newNumber;
 
         $collections = ClientRequest::with('shipmentCollection.office',
                                             'shipmentCollection.destination',

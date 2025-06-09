@@ -30,6 +30,33 @@ class ShipmentCollectionController extends Controller
         DB::beginTransaction();
 
         try {
+
+            // Generate waybill
+            $prefix = 'UCSL';
+            $suffix = 'KE';
+            $padLength = 10;
+
+            $latestWaybill = DB::table('shipment_collections')
+                ->whereNotNull('waybill_no')
+                ->orderByDesc('id')
+                ->value('waybill_no');
+
+            if ($latestWaybill) {
+                // Remove prefix and suffix
+                $waybill_no = substr($latestWaybill, strlen($prefix), -strlen($suffix));
+
+                // Convert to int and increment
+                $bill_no = (int)$waybill_no + 1;
+            } else {
+                // First waybill
+                $bill_no = 1;
+            }
+
+            // Pad with zeros
+            $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
+
+            $waybill_no = $prefix . $padded_no . $suffix;
+
             // 1. Save ShipmentCollection
             $collection = ShipmentCollection::create([
                 'receiver_name' => $request->receiverContactPerson,
@@ -41,6 +68,8 @@ class ShipmentCollectionController extends Controller
                 'client_id' => $request->clientId,
                 'origin_id' => $request->origin_id,
                 'destination_id' => $request->destination_id,
+                'consignment_no' => $request->consignment_no,
+                'waybill_no' => $waybill_no,
                 'cost' => $request->cost,
                 'vat' => $request->vat,
                 'total_cost' => $request->total_cost,

@@ -38,6 +38,7 @@
                                         <input type="text" value="{{ $request_id }}" name="requestId"
                                             class="form-control" id="request_id" readonly>
                                     </div>
+                                    <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                     <div class="col-md-3">
                                         <h6 for="clientId" class="text-muted text-primary">Client</h6>
                                         <select class="form-control" id="clientId" name="clientId">

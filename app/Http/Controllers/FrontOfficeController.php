@@ -49,7 +49,22 @@ class FrontOfficeController extends Controller
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
-        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'collections', 'request_id'));
+
+        // Get the latest consignment number
+        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
+            ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
+            ->first();
+
+        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 00001; // Start from CN-00001
+        }
+
+        $consignment_no = 'CN-' . $newNumber;
+
+        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'collections', 'request_id', 'consignment_no'));
     }
 
     /**
