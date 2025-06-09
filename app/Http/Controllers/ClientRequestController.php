@@ -203,14 +203,42 @@ class ClientRequestController extends Controller
         ]);
 
         DB::commit();
-        // send sms to 
+
+        // SMS
+        $request_id = $clientRequest->requestId;
+         // get rider details
+        $rider_id = $validated['userId'];
+        $rider = User::find($rider_id);
+        $rider_name = $rider ? $rider->name : 'Rider';
+        $rider_phone = $rider ? $rider->phone_number : null; 
+        $location = $validated['collectionLocation'];
+
+        // get client details
+        $client_id = $validated['clientId'];
+        $client = Client::find($client_id);
+        $client_name = $client ? $client->name : 'client';
+        $client_phone = $client ? $client->contact : null; 
+
+        // send sms to Rider
+        $rider_message = "Dear $rider_name, Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
+
         $smsService->sendSms(
-            phone: '254729395605',
-            subject: 'Client Request Alert',
-            message: 'Dear Emmanuel, Client (Saraf Shipping) has requested for parcel collection.',
+            phone: $rider_phone,
+            subject: 'Client Collections Alert',
+            message: $rider_message,
+            addFooter: true
+        ); 
+
+        //send sms to the client
+
+        $client_message = "Dear $client_name, We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
+
+        $smsService->sendSms(
+            phone: $client_phone,
+            subject: 'Parcel Collection Alert',
+            message: $client_message,
             addFooter: true
         );
-
             return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
 
         } catch (\Exception $e) {
