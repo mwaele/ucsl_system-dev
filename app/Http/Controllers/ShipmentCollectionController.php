@@ -124,6 +124,26 @@ class ShipmentCollectionController extends Controller
                 }
             }
 
+            // 5. Save Track
+            $trackingId = DB::table('tracks')->insertGetId([
+                'requestId' =>  $request->requestId,
+                'clientId' => $request->clientId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            $text = $itemCount === 1 ? 'item' : 'items';
+
+            // 6. Save Tracking Info
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Parcel received from Walk-in Client',
+                'remarks' => ''.auth()->id() .' received '.$itemCount.' '.$text.' from '.$request->clientId.', generated client request ID '.$request->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             DB::commit();
 
             return redirect()->back()->with('success', 'Shipment collection created successfully.');

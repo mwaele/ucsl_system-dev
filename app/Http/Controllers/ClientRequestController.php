@@ -6,6 +6,7 @@ use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client;
 use App\Models\Vehicle;
+use App\Models\SentMessage;
 use App\Models\ShipmentCollection;
 use App\Models\User;
 use App\Models\Tracking;
@@ -152,9 +153,8 @@ class ClientRequestController extends Controller
         // return redirect()->route('clientRequests.index')->with('Success', 'Client request saved successfully.');
     //}
 
-    public function store(Request $request, SmsService $smsService)
+    public function store(Request $request, SmsService $smsService) 
     {
-        // Optional: Validate input
         $validated = $request->validate([
             'clientId' => 'required|integer',
             'collectionLocation' => 'required|string',
@@ -168,7 +168,7 @@ class ClientRequestController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Create ClientRequest
+            // 1. Save Client Request
             $clientRequest = new ClientRequest();
             $clientRequest->clientId = $validated['clientId'];
             $clientRequest->collectionLocation = $validated['collectionLocation'];
@@ -179,80 +179,97 @@ class ClientRequestController extends Controller
             $clientRequest->requestId = $validated['requestId'];
             $clientRequest->save();
 
-            $userName = User::find($validated['userId'])->name;
-            $regNo = Vehicle::find($validated['vehicleId'])->regNo;
-
-            // 2. Insert into tracks table and get inserted ID
+            // 2. Save Track
             $trackingId = DB::table('tracks')->insertGetId([
-                'requestId' =>  $clientRequest->requestId, // This is the DB PK (id), not requestId
+                'requestId' =>  $clientRequest->requestId,
                 'clientId' => $clientRequest->clientId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
-        // 3. Insert into tracking_infos
-        DB::table('tracking_infos')->insert([
-            'trackId' => $trackingId,
-            'date' => now(),
-            'details' => 'Client Request Submitted for Collection',
-            'user_id' => $validated['userId'],
-            'vehicle_id' => $validated['vehicleId'],
-            'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+            // 3. Save Tracking Info
+            $userName = User::find($validated['userId'])->name;
+            $regNo = Vehicle::find($validated['vehicleId'])->regNo;
 
-        DB::commit();
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Client Request Submitted for Collection',
+                'user_id' => $validated['userId'],
+                'vehicle_id' => $validated['vehicleId'],
+                'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
-        // SMS
+            DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Tracking Info Insert Error', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+            }
+
+        // --------------------------
+        // ✅ SMS Logic After Commit
+        // --------------------------
         $request_id = $clientRequest->requestId;
-         // get rider details
-        $rider_id = $validated['userId'];
-        $rider = User::find($rider_id);
-        $rider_name = $rider ? $rider->name : 'Rider';
-        $rider_phone = $rider ? $rider->phone_number : null; 
-        $location = $validated['collectionLocation'];
+        $location = $clientRequest->collectionLocation;
 
-        // get client details
-        $client_id = $validated['clientId'];
-        $client = Client::find($client_id);
-        $client_name = $client ? $client->name : 'client';
-        $client_phone = $client ? $client->contact : null; 
+        // Rider details
+        $rider = User::find($clientRequest->userId);
+        $rider_name = $rider?->name ?? 'Rider';
+        $rider_phone = $rider?->phone_number;
 
-        // send sms to Rider
+        // Client details
+        $client = Client::find($clientRequest->clientId);
+        $client_name = $client?->name ?? 'Client';
+        $client_phone = $client?->contact;
+
+        // Rider SMS
         $rider_message = "Dear $rider_name, Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
-
         $smsService->sendSms(
             phone: $rider_phone,
             subject: 'Client Collections Alert',
             message: $rider_message,
             addFooter: true
-        ); 
+        );
+        SentMessage::create([
+            'request_id' => $request_id,
+            'client_id' => $clientRequest->clientId,
+            'rider_id' => $clientRequest->userId,
+            'recipient_type' => 'rider',
+            'recipient_name' => $rider_name,
+            'phone_number' => $rider_phone,
+            'subject' => 'Client Collections Alert',
+            'message' => $rider_message,
+        ]);
 
-        //send sms to the client
-
+        // Client SMS
         $client_message = "Dear $client_name, We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
-
         $smsService->sendSms(
             phone: $client_phone,
             subject: 'Parcel Collection Alert',
             message: $client_message,
-            addFooter: true
+            addFooter: false
         );
-            return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
+        SentMessage::create([
+            'request_id' => $request_id,
+            'client_id' => $clientRequest->clientId,
+            'rider_id' => $clientRequest->userId,
+            'recipient_type' => 'client',
+            'recipient_name' => $client_name,
+            'phone_number' => $client_phone,
+            'subject' => 'Parcel Collection Alert',
+            'message' => $client_message,
+        ]);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-        
-            \Log::error('Tracking Info Insert Error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-        
-            return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
-        }
-        
+        return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
     }
+
 
     // public function store(Request $request)
     // {       
