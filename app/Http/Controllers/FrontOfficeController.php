@@ -38,10 +38,7 @@ class FrontOfficeController extends Controller
         $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
         $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
 
-        $nextNumber = max($clientNumber, $collectionNumber) + 1;
-
-        // 3. Ensure minimum start number is 10000
-        $nextNumber = max($nextNumber + 1, 10000);
+        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
 
         // 4. Format requestId
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);

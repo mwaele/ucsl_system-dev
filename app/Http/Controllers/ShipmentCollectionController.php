@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
 use App\Services\SmsService;
+use App\Models\Client;
 
 use Illuminate\Support\Facades\DB;
 
@@ -82,6 +83,7 @@ class ShipmentCollectionController extends Controller
 
             // 2. Rebuild items array from flat structure
             $itemCount = count($request->input('item_name', []));
+            $totalWeight = 0;
             for ($i = 0; $i < $itemCount; $i++) {
                 $itemData = [
                     'item_name' => $request->item_name[$i],
@@ -94,6 +96,8 @@ class ShipmentCollectionController extends Controller
                     'remarks' => $request->remarks[$i] ?? null,
                     'sub_items' => $request->input("items.$i.sub_items", []) // sub-items kept in nested format
                 ];
+
+                $totalWeight += $itemData['weight'] * $itemData['packages'];
 
                 // 3. Save each item
                 $item = $collection->items()->create([
@@ -133,13 +137,16 @@ class ShipmentCollectionController extends Controller
             ]);
 
             $text = $itemCount === 1 ? 'item' : 'items';
+            $text2 = $totalWeight === 1 ? 'kg' : 'kgs';
+            $client = Client::find($request->clientId);
+            $clientName = $client ? $client->name : 'Unknown Client';
 
             // 6. Save Tracking Info
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
                 'details' => 'Parcel received from Walk-in Client',
-                'remarks' => ''.auth()->id() .' received '.$itemCount.' '.$text.' from '.$request->clientId.', generated client request ID '.$request->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
+                'remarks' => ''.auth()->user()->name.' received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName.', generated client request ID '.$request->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
