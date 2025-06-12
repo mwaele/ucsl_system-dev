@@ -105,14 +105,14 @@
                                 <table class="table table-bordered" id="shipmentTable">
                                     <thead>
                                         <tr>
-                                            <th>Item No.</th>
+                                            <th>#</th>
                                             <th>Item Name</th>
                                             <th>Package No</th>
                                             <th>Weight (Kg)</th>
                                             <th>Length (cm)</th>
                                             <th>Width (cm)</th>
                                             <th>Height (cm)</th>
-                                            <th>Volume (cm<sup>3</sup>)</th>
+                                            <th>Vol (cm<sup>3</sup>)</th>
                                             <th>Remarks</th>
                                             <th>Action</th>
                                         </tr>
@@ -132,14 +132,14 @@
                                             </td>
                                             <td><input type="text" name="remarks[]" class="form-control"></td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addSubItem(0)">+ Sub Item</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItem(0)">+Subitem</button>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td colspan="10">
                                                 <div id="sub-items-wrapper-0" style="display: none;">
-                                                    <table class="table table-sm table-bordered mt-2">
+                                                    <table class="table table-sm table-bordered mt-1">
                                                         <thead class="thead-light">
                                                             <tr>
                                                                 <th>Sub Item Name</th>
@@ -164,6 +164,10 @@
                                 <label class="form-label text-primary mt-4">Cost Summary</label>
 
                                 <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <h6 class="text-muted text-primary">Total Weight (Kg)</h6>
+                                        <input type="number" min="0" class="form-control" name="total_weight" readonly>
+                                    </div>
                                     <div class="col-md-3">
                                         <h6 for="itemCost" class="text-muted text-primary">Item Cost (KES)</h6>
                                         <input type="number" min="0" class="form-control" name="cost" required readonly>
@@ -207,7 +211,7 @@
                                             <td><input type="number" name="volume[]" class="form-control" readonly></td>
                                             <td><input type="text" name="remarks[]" class="form-control"></td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addSubItem(${itemCount})">+ Sub Item</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItem(${itemCount})">+Subitem</button>
                                             </td>
                                         `;
 
@@ -351,7 +355,7 @@
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                                <div class="modal-body" id="print-content-{{ $collection->requestId }}">
+                                                <div class="modal-body" id="print-content-{{ $collection->id }}">
                                                     <div id="receipt-{{ $collection->requestId }}"
                                                         style="font-family: monospace; font-size: 13px; line-height: 1.2;">
                                                         <div style="text-align: center;">
@@ -409,8 +413,10 @@
 
                                                         <div style="font-weight: bold;">Parcel Details:</div>
                                                         @if ($collection->items && $collection->items->count())
-                                                            <table
-                                                                style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                                                            @php
+                                                                $totalWeight = 0;
+                                                            @endphp
+                                                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
                                                                 <thead>
                                                                     <tr>
                                                                         <th style="text-align: left;">#</th>
@@ -421,27 +427,34 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach ($collection->items as $item)
+                                                                        @php
+                                                                            $totalWeight += $item->packages_no * $item->weight;
+                                                                        @endphp
                                                                         <tr>
                                                                             <td>{{ $loop->iteration }}.</td>
                                                                             <td>{{ $item->item_name }}</td>
-                                                                            <td style="text-align: center;">
-                                                                                {{ $item->packages_no }}</td>
-                                                                            <td style="text-align: right;">
-                                                                                {{ $item->weight }}</td>
+                                                                            <td style="text-align: center;">{{ $item->packages_no }}</td>
+                                                                            <td style="text-align: right;">{{ $item->weight }}</td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
                                                             <hr style="margin: 4px 0;">
-
-                                                            <div><strong>Base Cost:</strong> Ksh
-                                                                {{ number_format($collection->cost, 2) }}
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>Total Weight:</strong>
+                                                                <span>{{ number_format($totalWeight) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                             </div>
-                                                            <div><strong>VAT:</strong> Ksh
-                                                                {{ number_format($collection->vat, 2) }}
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>Base Cost:</strong>
+                                                                <span>Ksh {{ number_format($collection->cost, 2) }}</span>
                                                             </div>
-                                                            <div><strong>Total:</strong> Ksh
-                                                                {{ number_format($collection->total_cost, 2) }}
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>VAT:</strong>
+                                                                <span> Ksh {{ number_format($collection->vat, 2) }}</span>
+                                                            </div>
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong>Total:</strong>
+                                                                <span> Ksh {{ number_format($collection->total_cost, 2) }}</span>
                                                             </div>
                                                         @else
                                                             <p>No shipment items found.</p>
@@ -466,6 +479,28 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <script>
+                                        function printModalContent(id) {
+                                            var content = document.getElementById('print-content-' + id).innerHTML;
+                                            var printWindow = window.open('', '', 'width=800,height=600');
+                                            printWindow.document.write('<html><head><title>Print Shipment Receipt</title>');
+                                            printWindow.document.write('<link rel="stylesheet" href="/css/app.css">'); // optional
+                                            printWindow.document.write('</head><body>');
+                                            printWindow.document.write(content);
+                                            printWindow.document.write('</body></html>');
+                                            printWindow.document.close();
+
+                                            setTimeout(function () {
+                                                printWindow.focus();
+                                                printWindow.print();
+                                                printWindow.close();
+
+                                                // Auto-close the Bootstrap modal after printing
+                                                var modalId = '#printModal-' + id;
+                                                $(modalId).modal('hide');
+                                            }, 500);
+                                        }
+                                    </script>
 
                                     <button class="btn btn-sm btn-danger mr-1" title="Delete Walk-in Request"
                                         data-toggle="modal"
@@ -505,6 +540,7 @@
                         @endforeach   
                     </tbody>  
                 </table>
+                
             </div>
         </div>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -27,6 +28,22 @@ class ClientController extends Controller
 
         
         return view('clients.create')->with('accountNo',$number);
+    }
+
+    private function normalizePhoneNumber($phone)
+    {
+        // Remove all non-numeric characters
+        $phone = preg_replace('/\D/', '', $phone);
+
+        if (Str::startsWith($phone, '0')) {
+            return '+254' . substr($phone, 1);
+        } elseif (Str::startsWith($phone, '7') && strlen($phone) === 9) {
+            return '+254' . $phone;
+        } elseif (Str::startsWith($phone, '254')) {
+            return '+' . $phone;
+        }
+
+        return $phone; // fallback: assume it's already in international format
     }
 
     /**
@@ -66,7 +83,7 @@ class ClientController extends Controller
         $client->name = $validated['name'];
         $client->email = $validated['email'];
         $client->password = bcrypt($validated['password']);  // Ensure password is hashed
-        $client->contact = $validated['contact'];
+        $client->contact = $this->normalizePhoneNumber($validated['contact']); 
         $client->address = $validated['address'];
         $client->city = $validated['city'];
         $client->building = $validated['building'];
@@ -85,9 +102,9 @@ class ClientController extends Controller
         $client->save();  // Save the client to the database
 
 
-            return redirect()->route('clients.index')->with('success', 'Client created successfully!');
+        return redirect()->route('clients.index')->with('success', 'Client created successfully!');
 
-        }
+    }
     
 
     /**

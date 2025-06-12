@@ -614,6 +614,8 @@
                         totalWeight += weight * packages;
                     });
 
+                    $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
                     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                     let cost = baseCost;
 

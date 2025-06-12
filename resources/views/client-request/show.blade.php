@@ -145,6 +145,9 @@
 
                                                             <div style="font-weight: bold;"><u>Parcel Details:</u></div>
                                                             @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
+                                                                @php
+                                                                    $totalWeight = 0;
+                                                                @endphp
                                                                 <table
                                                                     style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
                                                                     <thead>
@@ -157,6 +160,9 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach ($collection->shipmentCollection->items as $item)
+                                                                            @php
+                                                                                $totalWeight += $item->packages_no * $item->weight;
+                                                                            @endphp
                                                                             <tr>
                                                                                 <td>{{ $loop->iteration }}.</td>
                                                                                 <td>{{ $item->item_name }}</td>
@@ -170,14 +176,21 @@
                                                                 </table>
                                                                 <hr style="margin: 4px 0;">
 
-                                                                <div><strong>Base Cost:</strong> Ksh
-                                                                    {{ number_format($collection->shipmentCollection->cost, 2) }}
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Total Weight:</strong>
+                                                                    <span>{{ number_format($totalWeight) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
-                                                                <div><strong>VAT:</strong> Ksh
-                                                                    {{ number_format($collection->shipmentCollection->vat, 2) }}
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Base Cost:</strong>
+                                                                    <span>Ksh {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
                                                                 </div>
-                                                                <div><strong>Total:</strong> Ksh
-                                                                    {{ number_format($collection->shipmentCollection->total_cost, 2) }}
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>VAT:</strong>
+                                                                    <span> Ksh {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
+                                                                </div>
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Total:</strong>
+                                                                    <span> Ksh {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
                                                                 </div>
                                                             @else
                                                                 <p>No shipment items found.</p>
@@ -496,6 +509,14 @@
                                                                 </select>
                                                             </div> --}}
                                                             <div class="form-row">
+                                                                <div class="form-group col-md-4">
+                                                                    <label class="form-label text-dark">Total Weight (Kg) <span
+                                                                            class="text-danger">*</span>
+                                                                    </label>
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="total_weight" required
+                                                                        readonly>
+                                                                </div>
                                                                 <div class="form-group col-md-4">
                                                                     <label class="form-label text-dark">Cost <span
                                                                             class="text-danger">*</span>
