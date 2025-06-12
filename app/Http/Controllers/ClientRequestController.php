@@ -180,6 +180,7 @@ class ClientRequestController extends Controller
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' =>  $clientRequest->requestId,
                 'clientId' => $clientRequest->clientId,
+                'current_status' => 'Awaiting Collection',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);

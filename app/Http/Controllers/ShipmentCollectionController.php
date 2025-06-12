@@ -127,12 +127,18 @@ class ShipmentCollectionController extends Controller
                     }
                 }
             }
-
-            // 5. Save Track
+             // 5. Save Track
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' =>  $request->requestId,
                 'clientId' => $request->clientId,
                 'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::table('tracks')
+            ->where('requestId',$request->requestId,)
+            ->update([
+                'current_status' => 'Awaiting Verification',
                 'updated_at' => now()
             ]);
 
@@ -262,6 +268,13 @@ class ShipmentCollectionController extends Controller
 
             $text = $itemCount === 1 ? 'item' : 'items';
             $text2 = $totalWeight === 1 ? 'kg' : 'kgs';
+
+            DB::table('tracks')
+            ->where('requestId',$request->requestId)
+            ->update([
+                'current_status' => 'Awaiting Verification',
+                'updated_at' => now()
+            ]);
 
             // 3. Insert into tracking_infos
             TrackingInfo::create([
@@ -495,7 +508,12 @@ class ShipmentCollectionController extends Controller
        ShipmentCollection::where('requestId', $request->requestId)
        ->update(['waybill_no' => $waybill_no]);
 
-
+        DB::table('tracks')
+            ->where('requestId',$request->requestId)
+            ->update([
+                'current_status' => 'Awaiting Dispatch',
+                'updated_at' => now()
+            ]);
 
        $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
 

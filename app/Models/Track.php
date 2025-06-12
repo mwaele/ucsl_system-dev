@@ -9,7 +9,8 @@ class Track extends Model
     protected $fillable = [
         'requestId',
         'clientId',
-        'clientRequestId'
+        'clientRequestId',
+        'current_status',
     ];
     public function trackingInfos()
     {

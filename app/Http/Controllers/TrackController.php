@@ -35,116 +35,45 @@ class TrackController extends Controller
     //     ]);
     // }
     public function getTrackingByRequestId($requestId)
-    {
-        // START DUMMY 
-        // $dummyTrack = [
-        //     'requestId' => 'REQ-12345',
-        //     'clientId' => 1,
-        //     'client' => [
-        //         'name' => 'Saraf Shipping',
-        //         'address' => '123 Main Street, Nairobi, Kenya',
-        //         'email' => 'info@sarafshipping.com',
-        //         'phone' => '+254 712 345678',
-        //     ],
-        //     'tracking_infos' => [
-        //         [
-        //             'id' => 1,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-26 10:00:00',
-        //             'details' => 'Client Request Submitted for Collection',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => 'Initial entry',
-        //             'created_at' => '2025-05-26 10:00:00',
-        //             'updated_at' => '2025-05-26 10:00:00',
-        //         ],
-        //         [
-        //             'id' => 2,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-27 08:00:00',
-        //             'details' => 'Parcel Collected at client premises',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => 'Package picked up successfully',
-        //             'created_at' => '2025-05-27 08:00:00',
-        //             'updated_at' => '2025-05-27 08:00:00',
-        //         ],
-        //         [
-        //             'id' => 3,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-28 10:30:00',
-        //             'details' => 'Parcel Verified and ready for dispatch',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => '',
-        //             'created_at' => '2025-05-28 12:30:00',
-        //             'updated_at' => '2025-05-28 12:30:00',
-        //         ],
-        //         [
-        //             'id' => 4,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-28 17:15:00',
-        //             'details' => 'Parcel Dispatched',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => 'Package dispatched',
-        //             'created_at' => '2025-05-28 12:30:00',
-        //             'updated_at' => '2025-05-28 12:30:00',
-        //         ],
-        //         [
-        //             'id' => 3,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-28 12:30:00',
-        //             'details' => 'Parcel In Transit',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => 'In Transit',
-        //             'created_at' => '2025-05-28 12:30:00',
-        //             'updated_at' => '2025-05-28 12:30:00',
-        //         ],
-        //         [
-        //             'id' => 4,
-        //             'trackId' => 1,
-        //             'date' => '2025-05-29 15:00:00',
-        //             'details' => 'Parcel Delivered to Destination',
-        //             'qty' => null,
-        //             'weight' => null,
-        //             'volume' => null,
-        //             'remarks' => 'Delivered successfully',
-        //             'created_at' => '2025-05-29 15:00:00',
-        //             'updated_at' => '2025-05-29 15:00:00',
-        //         ],
-        //     ],
-        // ];
-        
-        // if ($requestId === 'REQ-12345') {
-        //     return response()->json($dummyTrack);
-        // }
-    
-        // return response()->json(['message' => 'No tracking found for this request ID.'], 404);
-        // // END DUMMY 
+{
+    // Get the main tracking info
+    $track = Track::with(['client', 'trackingInfos', 'clientRequest.user', 'clientRequest.vehicle'])
+        ->where('requestId', $requestId)
+        ->first();
 
-
-        // START REAL 
-
-        $track = Track::with(['client', 'trackingInfos','clientRequest.user','clientRequest.vehicle'])
-                ->where('requestId', $requestId)
-                ->first();
-
-        if (!$track) {
-            return response()->json(['message' => 'Track not found'], 404);
-        }
-    
-            return response()->json($track);
-
-        // END REAL
-   
+    // If no track found, return null or 404
+    if (!$track) {
+        return response()->json(['message' => 'Tracking not found'], 404);
     }
+
+    // Get shipment collection using the same requestId
+    $shipment = DB::table('shipment_collections')
+        ->where('requestId', $requestId)
+        ->first();
+
+    // If shipment exists, fetch origin office and destination name
+    if ($shipment) {
+        // Get origin office name
+        $originOffice = DB::table('offices')
+            ->where('id', $shipment->origin_id)
+            ->value('name');
+            
+
+        // Get destination from rates
+        $destinationName = DB::table('rates')
+            ->where('id', $shipment->destination_id)
+            ->value('destination');
+
+        // Attach them to the response
+        $track->origin_office = $originOffice;
+        $track->destination_name = $destinationName;
+        $track->sender_name = $shipment->sender_name;
+        $track->receiver_name = $shipment->receiver_name;
+    }
+
+    return response()->json($track);
+}
+
 
     public function generateTrackingPdf($requestId)
     {

@@ -35,14 +35,14 @@
         /* Highlight the active link background */
         .nav-item.active>.nav-link,
         .collapse-item.active {
-            background-color: #f5b642;
+            background-color: #f57f3f;
             ;
             /* Example: Bootstrap primary */
             color: #fff !important;
         }
 
         .bg-success {
-            background-color: #f5b642 !important
+            background-color: #f57f3f !important
         }
 
         /* Optional: icon and text inside nav-link */
@@ -59,7 +59,7 @@
         /* Highlight collapsed child item (e.g., inside dropdown) */
         .collapse-item.active {
             font-weight: bold;
-            border-left: 3px solid #f5b642;
+            border-left: 3px solid #f57f3f;
             ;
         }
     </style>

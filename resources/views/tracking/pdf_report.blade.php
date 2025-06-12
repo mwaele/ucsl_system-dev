@@ -13,13 +13,17 @@
         }
 
         h4 {
-            color: #0d6efd;
+            color: #14489f;
             font-weight: bold;
             margin-bottom: 10px;
         }
 
+        h2 {
+            color: #14489f;
+        }
+
         .timeline-with-icons {
-            border-left: 2px solid #ccc;
+            border-left: 2px solid #fff;
             list-style: none;
             padding-left: 20px;
         }
@@ -31,8 +35,8 @@
         }
 
         .timeline-icon {
-            background-color: #d1e7dd;
-            color: #0f5132;
+            background-color: #f57f3f;
+            color: #fff;
             border-radius: 50%;
             height: 24px;
             width: 24px;
@@ -55,7 +59,7 @@
         }
 
         .mb-4 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
         .mb-2 {
