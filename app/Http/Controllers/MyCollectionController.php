@@ -41,53 +41,53 @@ class MyCollectionController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Validate request
-    $request->validate([
-        'receiverContactPerson' => 'required|string',
-        'receiverIdNo' => 'required|string',
-        'receiverPhone' => 'required|string',
-        'receiverAddress' => 'required|string',
-        'receiverTown' => 'required|string',
-        'origin' => 'required',
-        'destination' => 'required|string',
-        'cost' => 'required|numeric',
-        'item' => 'required|array',
-        'packages' => 'required|array',
-        'weight' => 'required|array',
-        'length' => 'required|array',
-        'width' => 'required|array',
-        'height' => 'required|array',
-        'volume' => 'required|array',
-    ]);
+    {
+        // Validate request
+        $request->validate([
+            'receiverContactPerson' => 'required|string',
+            'receiverIdNo' => 'required|string',
+            'receiverPhone' => 'required|string',
+            'receiverAddress' => 'required|string',
+            'receiverTown' => 'required|string',
+            'origin' => 'required',
+            'destination' => 'required|string',
+            'cost' => 'required|numeric',
+            'item' => 'required|array',
+            'packages' => 'required|array',
+            'weight' => 'required|array',
+            'length' => 'required|array',
+            'width' => 'required|array',
+            'height' => 'required|array',
+            'volume' => 'required|array',
+        ]);
 
-    // Save the main shipment
-    $shipment = Shipment::create([
-        'receiver_contact_person' => $request->receiverContactPerson,
-        'receiver_id_no' => $request->receiverIdNo,
-        'receiver_phone' => $request->receiverPhone,
-        'receiver_address' => $request->receiverAddress,
-        'receiver_town' => $request->receiverTown,
-        'origin' => $request->origin,
-        'destination' => $request->destination,
-        'cost' => $request->cost
-    ]);
+        // Save the main shipment
+        $shipment = Shipment::create([
+            'receiver_contact_person' => $request->receiverContactPerson,
+            'receiver_id_no' => $request->receiverIdNo,
+            'receiver_phone' => $request->receiverPhone,
+            'receiver_address' => $request->receiverAddress,
+            'receiver_town' => $request->receiverTown,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'cost' => $request->cost
+        ]);
 
-    // Save multiple items
-    // foreach ($request->item as $index => $itemName) {
-    //     ShipmentItem::create([
-    //         'shipment_id' => $shipment->id,
-    //         'item_name' => $itemName,
-    //         'packages' => $request->packages[$index],
-    //         'weight' => $request->weight[$index],
-    //         'length' => $request->length[$index],
-    //         'width' => $request->width[$index],
-    //         'height' => $request->height[$index],
-    //     ]);
-    // }
+        // Save multiple items
+        // foreach ($request->item as $index => $itemName) {
+        //     ShipmentItem::create([
+        //         'shipment_id' => $shipment->id,
+        //         'item_name' => $itemName,
+        //         'packages' => $request->packages[$index],
+        //         'weight' => $request->weight[$index],
+        //         'length' => $request->length[$index],
+        //         'width' => $request->width[$index],
+        //         'height' => $request->height[$index],
+        //     ]);
+        // }
 
-    return redirect()->back()->with('success', 'Shipment saved successfully!');
-}
+        return redirect()->back()->with('success', 'Shipment saved successfully!');
+    }
 
     // public function store(Request $request)
     // {

@@ -174,6 +174,7 @@ class ClientRequestController extends Controller
             $clientRequest->userId = $validated['userId'];
             $clientRequest->vehicleId = $validated['vehicleId'];
             $clientRequest->requestId = $validated['requestId'];
+            $clientRequest->created_by = Auth::id();
             $clientRequest->save();
 
             // 2. Save Track
