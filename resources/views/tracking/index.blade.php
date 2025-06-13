@@ -48,111 +48,48 @@
 
 <body class="p-4">
 
-    <div class="container">
-        <h2 class="mb-4 text-primary">
-            <img src="{{ asset('images/UCSLogo1.png') }}" height="200px" width="auto" alt="">
+    <div class="container ">
+        <div class="row justify-content-center">
 
-            Track Your Parcel
-        </h2>
-
-        <div class="mb-3">
-            <input type="text" id="requestId" class="form-control" placeholder="Enter Request ID">
+            <h2 class="mb-2 text-primary  justify-content-center">
+                <img src="{{ asset('images/UCSLogo1.png') }}" height="200px" width="auto" alt="">
+                Track Your Parcel
+            </h2>
         </div>
-
-        <button id="trackBtn" class="btn btn-primary mb-3 me-2"><i class="bi bi-search"></i> Track</button>
-        <button id="generatePdfBtn" class="btn btn-warning mb-3" style="display: none;"><i
-                class="bi bi-filetype-pdf"></i> Generate PDF</button>
-
-
-        <div id="trackingResults" class="timeline mt-4"></div>
-    </div>
-
-    <script>
-        $(document).ready(function() {
-            $('#trackBtn').on('click', function() {
-                const requestId = $('#requestId').val().trim();
-                if (!requestId) return alert('Please enter a Request ID.');
-
-                $.ajax({
-                    url: `http://127.0.0.1:8000/api/track/${requestId}`,
-                    method: 'GET',
-                    success: function(data) {
-                        let clientName = data.client && data.client.name ? data.client.name :
-                            'N/A';
-                        let html =
-                            `<h5 class="text-primary mb-4">Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</h5> 
-                        <section class="mb-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="shadow-sm p-3">
-                                    <p class="text-success mb-1">
-                                        Origin: <span class="text-dark">${data.origin_office}</span>
-                                    </p>
-                                    <p class="text-success mb-1">
-                                        Destination: <span class="text-dark">${data.destination_name}</span>
-                                    </p>
+        <div class=" mt-1">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow rounded-4">
+                        <div class="card-body p-4">
+                            <h3 class="text-center text-success mb-2">Client Sign In</h3>
+                            <form method="POST" action="{{ route('signin.process') }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="text-dark">Email</label>
+                                    <input type="email" name="email"
+                                        class="form-control @error('email') is-invalid @enderror"
+                                        value="{{ old('email') }}" required autofocus>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="shadow-sm p-3">
-                                    <p class="text-success mb-1">
-                                        Sender:<span class="text-dark">${data.sender_name}</span>
-                                    </p>
-                                    <p class="text-success mb-1">
-                                        Receiver:<span class="text-dark">${data.receiver_name}</span>
-                                    </p>
+                                <div class="mb-3">
+                                    <label>Password</label>
+                                    <input type="password" name="password"
+                                        class="form-control @error('password') is-invalid @enderror" required>
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                                <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-2">Continue as Guest</a>
+                            </form>
                         </div>
-                        </section>
-                                
-                        <section class="">
-                         <ul class="timeline-with-icons ">`;
-
-                        data.tracking_infos.forEach((info, index) => {
-                            let isLast = index === data.tracking_infos.length - 1;
-
-                            html += `
-        <li class="timeline-item mb-2">
-            <span class="timeline-icon">
-                <i class="fas fa-check text-white fa-sm fa-fw"></i>
-            </span>
-            <h5 class="fw-bold text-primary"><strong>${info.details}</strong></h5>
-            <p class="text-dark mb-1 fw-bold">${new Date(info.date).toLocaleString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            })}</p>
-            <p class="text-dark mb-1">${info.remarks}</p>
-            ${isLast ? `<p class="text-success p-0 m-0 fst-italic"><strong>Current Status: ${data.current_status}</strong></p>` : ''}
-        </li>
-    `;
-                        }); +
-                        ` </ul>
-                </section> `;
-
-                        $('#trackingResults').html(html);
-                        $('#generatePdfBtn').show().data('requestId', requestId);
-                    },
-                    error: function() {
-                        $('#trackingResults').html(
-                            `<div class="alert alert-danger">Tracking data not found.</div>`
-                        );
-                        $('#generatePdfBtn').hide();
-                    }
-                });
-            });
-
-            $('#generatePdfBtn').on('click', function() {
-                const requestId = $(this).data('requestId');
-                window.open(`/api/track/${requestId}/pdf`, '_blank');
-            });
-        });
-    </script>
-
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
