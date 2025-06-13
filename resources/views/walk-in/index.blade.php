@@ -23,18 +23,20 @@
                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document"> 
                         <div class="modal-content">
-                            <div class="modal-header bg-gradient-primary">
-                                <h5 class="modal-title text-white" id="exampleModalLabel">Register Parcel</h5>
+                            <div class="modal-header bg-warning">
+                                <h5 class="modal-title text-white" id="exampleModalLabel">    Register Parcel</h5>
                                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <label class="form-label text-primary">Fill in the Client details.</label>
+                                <div class="modal-header bg-primary">
+                                    <h5 class="text-white">Fill in the Client details.</h5>
+                                </div>
 
-                                <div class="row mb-3">
+                                <div class="row mt-3 mb-3">
                                     <div class="col-md-3 mb-3">
-                                        <h6 for="requestId" class="text-muted text-primary">Request ID</h6>
+                                        <h6 for="requestId" class="text-muted text-dark">Request ID</h6>
                                         <input type="text" value="{{ $request_id }}" name="requestId"
                                             class="form-control" id="request_id" readonly>
                                     </div>
@@ -71,20 +73,22 @@
                                     <input type="hidden" name='destination_id' id="destination_id">
                                 </div>
 
-                                <label class="form-label text-primary">Fill in the Receiver details.</label>
+                                <div class="modal-header bg-primary">
+                                    <h5 class=" text-white">Fill in the Receiver details.</h5>
+                                </div>
 
-                                <div class="row">
+                                <div class="row mt-3 mb-3">
                                     <div class="col-md-3 mb-3">
                                         <h6 for="receiverContactPerson" class="text-muted text-primary">Name</h6>
                                         <input type="text" id="receiverContactPerson" class="form-control" name="receiverContactPerson">
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <h6 for="receiverIdNo" class="text-muted text-primary">ID Number</h6>
                                         <input type="text" id="receiverIdNo" class="form-control" name="receiverIdNo">
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <h6 for="receiverPhone" class="text-muted text-primary">Phone Number</h6>
                                         <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
                                     </div>
@@ -94,13 +98,15 @@
                                         <input type="text" id="receiverAddress" class="form-control" name="receiverAddress">
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <h6 for="receiverTown" class="text-muted text-primary">Town</h6>
                                         <input type="text" id="receiverTown" class="form-control" name="receiverTown">
                                     </div>
                                 </div>
 
-                                <label class="form-label text-primary">Fill in the Parcel details.</label>
+                                <div class="modal-header bg-primary">
+                                    <h5 class=" text-white">Fill in the Parcel details.</h5>
+                                </div>
 
                                 <table class="table table-bordered" id="shipmentTable">
                                     <thead>
@@ -442,7 +448,7 @@
                                                             <hr style="margin: 4px 0;">
                                                             <div style="display: flex; justify-content: space-between;">
                                                                 <strong>Total Weight:</strong>
-                                                                <span>{{ number_format($totalWeight) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
+                                                                <span>{{ number_format($totalWeight, 2) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                             </div>
                                                             <div style="display: flex; justify-content: space-between;">
                                                                 <strong>Base Cost:</strong>
@@ -465,8 +471,7 @@
                                                             <strong>TERMS & CONDITIONS</strong><br>
                                                             Carriage of this shipment is subject to the terms and
                                                             conditions overleaf.<br><br>
-                                                            <strong>Received By:
-                                                                {{ $collection->collectedBy->name }}</strong>
+                                                            <strong>Received By: {{ $collection->collectedBy->name }}</strong>
                                                         </div>
                                                     </div>
                                                 </div>

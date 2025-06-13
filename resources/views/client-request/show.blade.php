@@ -124,14 +124,14 @@
 
                                                             <hr style="margin: 4px 0;">
 
-                                                            <div style="font-weight: bold;"><u>Sender:</u></div>
+                                                            <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->client->name }}</div>
                                                             <div>Phone: {{ $collection->client->contact }}</div>
                                                             <div>Location: {{ $collection->client->building }}</div>
                                                             <div>Town: {{ $collection->client->city }}</div>
                                                             <hr style="margin: 4px 0;">
 
-                                                            <div style="font-weight: bold;"><u>Receiver:</u></div>
+                                                            <div style="font-weight: bold;">Receiver:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->receiver_name }}
                                                             </div>
                                                             <div>Phone:
@@ -143,7 +143,7 @@
                                                             </div>
                                                             <hr style="margin: 4px 0;">
 
-                                                            <div style="font-weight: bold;"><u>Parcel Details:</u></div>
+                                                            <div style="font-weight: bold;">Parcel Details:</div>
                                                             @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
                                                                 @php
                                                                     $totalWeight = 0;
@@ -153,7 +153,7 @@
                                                                     <thead>
                                                                         <tr>
                                                                             <th style="text-align: left;">#</th>
-                                                                            <th style="text-align: left;">Item</th>
+                                                                            <th style="text-align: left;">Desc.</th>
                                                                             <th style="text-align: center;">Qty</th>
                                                                             <th style="text-align: right;">Wt(kg)</th>
                                                                         </tr>
@@ -178,7 +178,7 @@
 
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Total Weight:</strong>
-                                                                    <span>{{ number_format($totalWeight) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
+                                                                    <span>{{ number_format($totalWeight, 2) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Base Cost:</strong>
@@ -198,11 +198,21 @@
 
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
-                                                                <strong><u>TERMS & CONDITIONS</u></strong><br>
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Collected By:</strong>
+                                                                    <span> {{ $collection->user->name }} </span>
+                                                                </div>
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Contact:</strong>
+                                                                    <span> {{ $collection->user->phone_number }} </span>
+                                                                </div>
+                                                                <div style="display: flex; justify-content: space-between;">
+                                                                    <strong>Vehicle Registration:</strong>
+                                                                    <span> {{ $collection->vehicle->regNo }} </span>
+                                                                </div><br>
+                                                                <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
-                                                                conditions overleaf.<br><br>
-                                                                <strong>Collected By:
-                                                                    {{ $collection->user->name }}</strong>
+                                                                conditions overleaf.
                                                             </div>
                                                         </div>
                                                     </div>
