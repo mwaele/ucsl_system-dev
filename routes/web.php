@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
 
     //Route::resource('tracking','App\Http\Controllers\TrackingController');
     Route::resource('trackingInfo','App\Http\Controllers\TrackingInfoController');
+
+    Route::resource('special_rates','App\Http\Controllers\SpecialRateController');
    // Route::get('/track/{requestId}', [TrackController::class, 'showTrackingView'])->name('track.view');
 
     Route::get('/tracking', function () {
