@@ -50,7 +50,11 @@ class ClientRequestController extends Controller
         $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id'));
+        $totalRequests = ClientRequest::count();
+        $collected = ClientRequest::where('status', 'collected')->count();
+        $verified = ClientRequest::where('status', 'verified')->count();
+        $pending_collection = ClientRequest::where('status', 'pending collection')->count();
+        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id', 'totalRequests', 'collected', 'verified', 'pending_collection'));
     }
 
     /**

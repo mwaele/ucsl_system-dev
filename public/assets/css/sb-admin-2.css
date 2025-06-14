@@ -9592,11 +9592,11 @@ button.bg-dark:focus {
 }
 
 .text-primary {
-  color: #14489f !important;
+  color: #000 !important;
 }
 
 a.text-primary:hover, a.text-primary:focus {
-  color: #224abe !important;
+  color: #000 !important;
 }
 
 .text-secondary {

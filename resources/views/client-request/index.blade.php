@@ -5,18 +5,26 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-danger">All Client Requests</h6>
+                <!-- Left: Title -->
+                <h5 class="m-0 font-weight-bold text-success">All Client Requests</h5>
 
-                <div class="d-flex align-items-center">
-                    <!-- Counter positioned just before the search input -->
-                    <span class="text-primary counter mr-2"></span>
+                <!-- Middle: Stats -->
+                <div class="d-flex align-items-center justify-content-center flex-wrap">
+                    <span class="rounded badge-secondary p-2 mx-1">Pending Collection: <strong>{{ $pending_collection }}</strong></span>
+                    <span class="rounded badge-success p-2 mx-1">Collected: <strong>{{ $collected }}</strong></span>
+                    <span class="rounded badge-info p-2 mx-1">Verified: <strong>{{ $verified }}</strong></span>
+                    <span class="rounded badge-primary p-2 mx-1">Total Requests: <strong>{{ $totalRequests }}</strong></span>
+                </div>
 
+                <!-- Right: Button -->
+                <div class="d-flex p-2 align-items-center rounded">
                     <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal"
                         data-target="#createClientRequest">
-                        <i class="fas fa-plus fa-sm text-white"></i> Create Client Request
+                        <h5><i class="fas fa-plus fa-sm text-white"></i> Create Client Request</h5>
                     </button>
                 </div>
             </div>
+
 
             <!-- Modal -->
             <form action="{{ route('clientRequests.store') }}" method="POST">
@@ -154,9 +162,9 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered results display" id="ucsl-table" width="100%" cellspacing="0">
+                <table class="table text-primary table-bordered results display" id="ucsl-table" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="text-success">
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
