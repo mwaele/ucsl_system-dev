@@ -86,7 +86,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center bg-white shadow" href="/">
-                <img src="{{ asset('images/UCSLogo1.png') }}" alt="" height="100px" width="auto"
+                <img src="{{ asset('images/ucsl-logo.jpg') }}" alt="" height="55" width="auto"
                     class="image-fluid">
                 {{-- <div class="sidebar-brand-icon">
                     <i class="fas fa-truck"></i>
@@ -485,42 +485,50 @@
                 scrollY: '50vh'
             });
 
-            new DataTable('#example', {
+            new DataTable('#ucsl-table', {
                 initComplete: function () {
                     this.api()
                         .columns()
                         .every(function (index) {
-                            // Skip the Action column (assumed to be the last column)
-                            if (index === this.api().columns().nodes().length - 1) return;
+                            // Skip first and last columns
+                            if (index === 0 || index === this.columns().count() - 1) {
+                                return;
+                            }
 
                             let column = this;
 
                             // Create select element
                             let select = document.createElement('select');
-                            select.classList.add('form-control', 'form-select'); // optional styling
+                            select.classList.add('form-control', 'form-select');
                             select.add(new Option(''));
                             column.footer().replaceChildren(select);
 
                             // Apply listener for user change in value
                             select.addEventListener('change', function () {
+                                // Escape regex special characters in the value
+                                let val = select.value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                                 column
-                                    .search(this.value, { exact: true })
+                                    .search(val ? val : '', true, false) // true: regex, false: smart search
                                     .draw();
                             });
 
-                            // Add list of options
-                            column
-                                .data()
-                                .unique()
-                                .sort()
-                                .each(function (d) {
-                                    select.add(new Option(d));
-                                });
+                            // Extract visible text from each cell (not HTML)
+                            let uniqueOptions = [];
+                            column.nodes().each(function (cell) {
+                                let text = $(cell).text().trim();
+                                if (text && !uniqueOptions.includes(text)) {
+                                    uniqueOptions.push(text);
+                                }
+                            });
+
+                            uniqueOptions.sort().forEach(function (d) {
+                                select.add(new Option(d));
+                            });
                         });
                 }
             });
 
-            new DataTable('#ucsl-table', {
+            new DataTable('#example', {
                 initComplete: function () {
                     this.api()
                         .columns()

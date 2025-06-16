@@ -17,7 +17,7 @@
                 </div>
 
                 <!-- Right: Button -->
-                <div class="d-flex p-2 align-items-center rounded">
+                <div class="d-flex align-items-center rounded">
                     <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal"
                         data-target="#createClientRequest">
                         <h5><i class="fas fa-plus fa-sm text-white"></i> Create Client Request</h5>
@@ -209,8 +209,8 @@
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td>
-                                    <p
-                                        class="badge
+                                    <span
+                                        class="badge p-2
                                 @if ($request->status == 'pending collection') bg-secondary
                                 @elseif ($request->status == 'collected')
                                     bg-warning
@@ -218,7 +218,7 @@
                                     bg-primary @endif
                                 fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
-                                    </p>
+                                    </span>
                                 </td>
                                 <td class="d-flex pl-2">
                                     @if ($request->status === 'pending collection')
@@ -364,12 +364,12 @@
                                         </div>
                                     </div>
 
-
+                                    @if ($request->status === 'pending collection')
                                     <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                         data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
-
+                                    @endif
 
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
@@ -417,8 +417,6 @@
                                             Verify
                                         </button>
                                     @endif
-
-
 
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
