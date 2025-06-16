@@ -9,7 +9,8 @@ use App\Http\Controllers\RateController;
 use App\Http\Controllers\ShipmentCollectionController;
 use App\Http\Controllers\ShipmentItemController;
 use App\Http\Controllers\MyCollectionController;
-
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClientRequestController;
 use App\Http\Controllers\MainController;
 
 use App\Http\Controllers\TrackController;
@@ -18,11 +19,10 @@ Route::get('/', function () {
     return view('index');
 })->middleware(['auth', 'verified'])->name('index');;
 
-Route::get('/dashboard', function () {
-    return view('index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');
     Route::resource('clientRequests','App\Http\Controllers\ClientRequestController');
+    Route::get('/client-requests', [ClientRequestController::class, 'index'])->name('client-requests.index');
     Route::post('/check_station_name', [StationController::class, 'checkStation']);
     Route::resource('zones','App\Http\Controllers\ZoneController');
     Route::get('/get-destinations/{office_id}', [RateController::class, 'getDestinations']);

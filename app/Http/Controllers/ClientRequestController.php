@@ -22,7 +22,7 @@ class ClientRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         
         //Generate Unique request ID
@@ -44,9 +44,17 @@ class ClientRequestController extends Controller
         // 4. Format requestId
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
         
-        $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems' ]) // Eager load relations
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+        // If a status is passed, filter by it
+        if ($request->has('status')) {
+            $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems'])
+                ->where('status', $request->status)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
         $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();

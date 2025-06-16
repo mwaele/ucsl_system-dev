@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Ufanisi Courier Services Limited Management Information System" />
     <meta name="author" content="ICT" />
 
@@ -86,7 +86,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center bg-white shadow" href="/">
-                <img src="{{ asset('images/ucsl-logo.jpg') }}" alt="" height="55" width="auto"
+                <img src="{{ asset('images/ucsl-logo.jpg') }}" alt="" height="50" width="auto"
                     class="image-fluid">
                 {{-- <div class="sidebar-brand-icon">
                     <i class="fas fa-truck"></i>
@@ -105,7 +105,7 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->routeIs('my_collections') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_collections.show') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span>My Collections</span>
@@ -132,7 +132,7 @@
 
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cogs"></i>
@@ -432,8 +432,8 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
-        <script src="https://cdn.datatables.net/2.3.1/js/dataTables.bootstrap4.js"></script>
+        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap4.js"></script>
 
         <!-- Bootstrap core JavaScript-->
         <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>

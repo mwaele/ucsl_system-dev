@@ -4,26 +4,41 @@
     <!-- DataTales Example -->
     <div class="card">
         <div class="card-header py-3">
-            <div class="d-sm-flex align-items-center justify-content-between">
+            <div class="d-sm-flex align-items-center justify-content-between flex-wrap" style="font-size: 14px;">
                 <!-- Left: Title -->
-                <h5 class="m-0 font-weight-bold text-success">All Client Requests</h5>
+                <span class="m-0 font-weight-bold text-success">All Client Requests</span>
 
-                <!-- Middle: Stats -->
-                <div class="d-flex align-items-center justify-content-center flex-wrap">
-                    <span class="rounded badge-secondary p-2 mx-1">Pending Collection: <strong>{{ $pending_collection }}</strong></span>
-                    <span class="rounded badge-success p-2 mx-1">Collected: <strong>{{ $collected }}</strong></span>
-                    <span class="rounded badge-info p-2 mx-1">Verified: <strong>{{ $verified }}</strong></span>
-                    <span class="rounded badge-primary p-2 mx-1">Total Requests: <strong>{{ $totalRequests }}</strong></span>
-                </div>
+                <!-- Right: Stats + Button wrapper -->
+                <div class="d-flex align-items-center justify-content-end flex-wrap ml-auto">
+                    <!-- Middle: Stats -->
+                    <div class="d-flex align-items-center flex-wrap mr-3">
+                        <span class="rounded badge-primary p-2 mx-1">
+                            Today's Requests: <strong>{{ $totalRequests }}</strong>
+                        </span>
+                        <span class="rounded badge-primary p-2 mx-1">
+                            Total Requests: <strong>{{ $totalRequests }}</strong>
+                        </span>
+                        <span class="rounded badge-info p-2 mx-1">
+                            Verified: <strong>{{ $verified }}</strong>
+                        </span>
+                        <span class="rounded badge-success p-2 mx-1">
+                            Collected: <strong>{{ $collected }}</strong>
+                        </span>
+                        <span class="rounded badge-secondary p-2 mx-1">
+                            Pending Collection: <strong>{{ $pending_collection }}</strong>
+                        </span>
+                    </div>
 
-                <!-- Right: Button -->
-                <div class="d-flex align-items-center rounded">
-                    <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                        data-target="#createClientRequest">
-                        <h5><i class="fas fa-plus fa-sm text-white"></i> Create Client Request</h5>
-                    </button>
+                    <!-- Right: Button -->
+                    <div>
+                        <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
+                            data-target="#createClientRequest">
+                            <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client Request</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
 
 
             <!-- Modal -->
@@ -162,7 +177,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table text-primary table-bordered results display" id="ucsl-table" width="100%" cellspacing="0">
+                <table class="table text-dark table-bordered results display" id="ucsl-table" width="100%" cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
                             <th>#</th>

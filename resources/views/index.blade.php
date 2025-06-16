@@ -2,113 +2,109 @@
 
 @section('content')
     <!-- Page Heading -->
-
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Generate
-            Report</a>
-    </div>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
+    </div>   
 
     <!-- Content Row -->
     <div class="row">
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Earnings (Monthly)
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                $40,000
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Earnings (Monthly) Card Example -->
+        <!-- Total Requests Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Earnings (Annual)
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                $215,000
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Tasks
-                            </div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                                        50%
-                                    </div>
+            <a href="{{ route('client-requests.index') }}" title="View All Client Requests" class="text-decoration-none text-dark">
+                <div class="card border-left-primary shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Requests
                                 </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 50%"
-                                            aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $totalRequests }}
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <!-- Pending Requests Card Example -->
+        <!-- Collected Requests Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Requests
+            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Collected Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Collected Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $collected }}
+                                </div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                18
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
                             </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+
+        <!-- Verified Requests Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', ['status' => 'verified']) }}" title="View Verified Collections"  class="text-decoration-none text-dark">
+                <div class="card border-left-info shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Verified
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $verified }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pending Collections Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', ['status' => 'pending collection']) }}" title="View Pending Collections" class="text-decoration-none text-dark">
+                <div class="card border-left-warning shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending Collections
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $pendingCollection }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
     </div>
 
     <!-- Content Row -->
-
     <div class="row">
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-7">
@@ -184,6 +180,5 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
