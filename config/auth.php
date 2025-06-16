@@ -41,8 +41,12 @@ return [
             'provider' => 'users',
         ],
         'client' => [
-        'driver' => 'session',
+        'driver' => 'sanctum',
         'provider' => 'clients',
+    ],
+     'api' => [
+        'driver' => 'sanctum',
+        'provider' => 'guests',
     ],
     ],
 
@@ -71,6 +75,12 @@ return [
         'clients' => [
         'driver' => 'eloquent',
         'model' => App\Models\Client::class,
+
+        
+    ],
+    'guests' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Guest::class,
     ],
 
         // 'users' => [

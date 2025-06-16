@@ -11,9 +11,29 @@ use App\Http\Controllers\ShipmentItemController;
 use App\Http\Controllers\MyCollectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientRequestController;
+use App\Http\Controllers\AuthController;
+
 use App\Http\Controllers\MainController;
 
 use App\Http\Controllers\TrackController;
+
+Route::middleware('client.auth')->group(function () {
+    Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
+    Route::get('/tracker', [TrackController::class, 'index'])->name('tracker');
+    Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);
+
+    Route::get('/tracking', function () {
+        return view('tracking.index');
+    });
+
+    Route::get('/signin', [AuthController::class, 'showSignIn'])->name('signin');
+    Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');
+
+    Route::get('/guest', [AuthController::class, 'showGuest'])->name('guest');
+    Route::post('/guest', [AuthController::class, 'processGuest'])->name('guest.process');
+});
+
+Route::resource('guests','App\Http\Controllers\GuestController');
 
 Route::get('/', function () {
     return view('index');
@@ -65,9 +85,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('special_rates','App\Http\Controllers\SpecialRateController');
    // Route::get('/track/{requestId}', [TrackController::class, 'showTrackingView'])->name('track.view');
 
-    Route::get('/tracking', function () {
-        return view('tracking.index');
-    });
 
     Route::put('/update_collections/{id}', [ShipmentCollectionController::class, 'update_collections'])->name('shipments.update_collections');
 
