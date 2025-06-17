@@ -197,6 +197,8 @@ class ShipmentCollectionController extends Controller
     public function store(Request $request, SmsService $smsService)
     { 
 
+        //dd($request);
+
         $request->validate([
             'receiverContactPerson' => 'required|string',
             'receiverIdNo' => 'required|string',
@@ -226,7 +228,7 @@ class ShipmentCollectionController extends Controller
             'total_cost' => 'required|string',
             'consignment_no' => 'string',
             'base_cost' => 'string',
-            'special_rates_state' => 'string',
+        //  'special_rates_state' => 'string',
         ]);
         $consignment_no = $request->consignment_no;
         // Save main shipment

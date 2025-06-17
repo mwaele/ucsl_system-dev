@@ -479,6 +479,9 @@
                                                                 <input type="hidden" name='destination_id_special'
                                                                     id="destination_id_special">
                                                             </div>
+                                                            {{-- <input type="hidden" name='destination' id="destination_id">
+
+                                                            <input type="hidden" name='origin_id' id="origin_id"> --}}
                                                         @else
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
@@ -502,6 +505,8 @@
                                                                         <option value="">Select</option>
                                                                     </select>
                                                                 </div>
+                                                                <input type="hidden" name='destination_id'
+                                                                    id="destination_id">
 
 
                                                                 <input type="hidden"
@@ -510,9 +515,7 @@
                                                             </div>
                                                         @endif
 
-                                                        <input type="hidden" name='destination' id="destination_id">
 
-                                                        <input type="hidden" name='origin_id' id="origin_id">
 
 
                                                         <!-- Shipment Info Table -->
