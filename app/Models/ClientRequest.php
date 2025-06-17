@@ -16,6 +16,7 @@ class ClientRequest extends Model
         'requestId',
         'collected_by',
         'consignment_no',
+        'created_by'
     ];
 
     public function client()
@@ -36,5 +37,10 @@ class ClientRequest extends Model
     public function shipmentCollection()
     {
         return $this->hasOne(ShipmentCollection::class,  'requestId', 'requestId');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

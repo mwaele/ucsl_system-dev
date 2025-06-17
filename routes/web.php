@@ -12,7 +12,7 @@ use App\Http\Controllers\MyCollectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientRequestController;
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\MainController;
 
 use App\Http\Controllers\TrackController;
@@ -44,6 +44,8 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users/save', [UserController::class, 'store'])->name('users.store');
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

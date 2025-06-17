@@ -254,8 +254,8 @@
             </li>
 
 
-            <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('my_collections.show') }}">
+            <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('users.index') }}">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Users</span>
                 </a>
@@ -341,8 +341,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span
-                                    class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-dark small">
+                                    {{ Auth::user()->name }} | UCSL - {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->station . ' Office' }} </span>
                                 <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
                             </a>
                             <!-- Dropdown - User Information -->

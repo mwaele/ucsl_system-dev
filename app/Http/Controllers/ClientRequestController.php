@@ -22,11 +22,11 @@ class ClientRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request) 
     {
-        
-        //Generate Unique request ID
-        // 1. Get the latest requestId from both tables
+        $station = Auth::user()->station;
+
+        // Generate Unique request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
             ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
             ->value('requestId');
@@ -35,34 +35,50 @@ class ClientRequestController extends Controller
             ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
             ->value('requestId');
 
-        // 2. Extract numeric parts and determine the highest
         $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
         $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
 
         $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-
-        // 4. Format requestId
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-        
-        // If a status is passed, filter by it
+
+        $query = ClientRequest::with([
+            'client', 
+            'vehicle', 
+            'user', 
+            'shipmentCollection.items', 
+            'shipmentCollection.items.subItems', 
+            'createdBy'
+        ])->whereHas('createdBy', function ($q) use ($station) {
+            $q->where('station', $station);
+        });
+
         if ($request->has('status')) {
-            $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems'])
-                ->where('status', $request->status)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            $client_requests = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection.items', 'shipmentCollection.items.subItems'])
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $query->where('status', $request->status);
         }
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
+
         $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        $totalRequests = ClientRequest::count();
-        $collected = ClientRequest::where('status', 'collected')->count();
-        $verified = ClientRequest::where('status', 'verified')->count();
-        $pending_collection = ClientRequest::where('status', 'pending collection')->count();
-        return view('client-request.index', compact('clients', 'vehicles', 'drivers', 'client_requests', 'request_id', 'totalRequests', 'collected', 'verified', 'pending_collection'));
+        
+        // Summary counts filtered by station
+        $totalRequests = ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
+        $collected = ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
+        $verified = ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
+        $pending_collection = ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
+
+        return view('client-request.index', compact(
+            'clients', 
+            'vehicles', 
+            'drivers', 
+            'client_requests', 
+            'request_id', 
+            'totalRequests', 
+            'collected', 
+            'verified', 
+            'pending_collection'
+        ));
     }
 
     /**
