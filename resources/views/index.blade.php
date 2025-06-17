@@ -7,6 +7,21 @@
         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
     </div>   
 
+    <!-- Time Filter -->
+    <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
+        <div class="form-inline">
+            <label for="time" class="mr-2 font-weight-bold">Filter by Time:</label>
+            <select name="time" id="time" class="form-control mr-2" onchange="this.form.submit()">
+                <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
+                <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
+                <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
+                <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days</option>
+                <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
+                <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
+            </select>
+        </div>
+    </form>
+
     <!-- Content Row -->
     <div class="row">
 
@@ -123,9 +138,26 @@
                     </div>
                 </div>
             </a>
-        </div>
-        
+        </div>      
     </div>
+
+    @if($stationStats)
+        <div class="row mt-4">
+            @foreach($stationStats as $stationName => $stats)
+                <div class="col-md-3 mb-3">
+                    <div class="card border-left-primary shadow h-100 py-2 hover-card">
+                        <div class="card-body">
+                            <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>
+                            <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
+                            <p class="mb-1 text-success">Collected: <strong>{{ $stats['collected'] }}</strong></p>
+                            <p class="mb-1 text-info">Verified: <strong>{{ $stats['verified'] }}</strong></p>
+                            <p class="mb-1 text-warning">Pending Collection: <strong>{{ $stats['pending'] }}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     <!-- Content Row -->
     <div class="row">
