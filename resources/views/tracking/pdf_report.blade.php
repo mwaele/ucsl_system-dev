@@ -199,8 +199,8 @@
                         <p class="text-muted format">{{ $info['remarks'] }}</p>
                     @endif
                     @if ($loop->last)
-                        <p class="text-success p-0 m-0 fst-italic format"><strong>Current Status:
-                                {{ $trackingData['current_status'] }}</strong></p>
+                        <h2 class="text-success p-0 m-0 fst-italic format"><strong>Current Status:
+                                {{ $trackingData['current_status'] }}</strong></h2>
                     @endif
                 </li>
             @endforeach
