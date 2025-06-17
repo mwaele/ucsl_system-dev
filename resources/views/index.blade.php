@@ -4,8 +4,9 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
-    </div>   
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
+    </div>
 
     <!-- Time Filter -->
     <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
@@ -27,7 +28,8 @@
 
         <!-- Total Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index') }}" title="View All Client Requests" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index') }}" title="View All Client Requests"
+                class="text-decoration-none text-dark">
                 <div class="card border-left-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -50,7 +52,8 @@
 
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Collected Parcels" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Collected Parcels"
+                class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -73,7 +76,8 @@
 
         <!-- Verified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'verified']) }}" title="View Verified Collections"  class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', ['status' => 'verified']) }}" title="View Verified Collections"
+                class="text-decoration-none text-dark">
                 <div class="card border-left-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -96,7 +100,8 @@
 
         <!-- Unverified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Unverified Parcels" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Unverified Parcels"
+                class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -119,7 +124,8 @@
 
         <!-- Pending Collections Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'pending collection']) }}" title="View Pending Collections" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', ['status' => 'pending collection']) }}"
+                title="View Pending Collections" class="text-decoration-none text-dark">
                 <div class="card border-left-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -138,12 +144,12 @@
                     </div>
                 </div>
             </a>
-        </div>      
+        </div>
     </div>
 
-    @if($stationStats)
+    @if ($stationStats)
         <div class="row mt-4">
-            @foreach($stationStats as $stationName => $stats)
+            @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-3 mb-3">
                     <div class="card border-left-primary shadow h-100 py-2 hover-card">
                         <div class="card-body">

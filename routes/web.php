@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MainController;
 
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\SpecialRateController;
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
@@ -35,13 +36,14 @@ Route::middleware('client.auth')->group(function () {
 
 Route::resource('guests','App\Http\Controllers\GuestController');
 
-Route::get('/', function () {
-    return view('index');
-})->middleware(['auth', 'verified'])->name('index');;
+// Route::get('/', function () {
+//     return view('index');
+// })->middleware(['auth', 'verified'])->name('index');;
 
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -71,7 +73,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
-    Route::get('/clientData', [MainController::class, 'clients']);
+
+    //special rates
+    Route::get('/get_destinations/{office_id}/{client_id}', [SpecialRateController::class, 'getDestinations']);
+
+    Route::get('/get_cost/{originId}/{destinationId}/{client_id}', [SpecialRateController::class, 'getCost']);
+
+    Route::get('/clientData/{cid}', [MainController::class, 'clients']);
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');

@@ -66,6 +66,24 @@ class SpecialRateController extends Controller
 
     }
 
+     public function getDestinations($office_id, $client_id)
+    {
+        $destinations = SpecialRate::where(['office_id' => $office_id,'client_id' => $client_id])->get(['destination','id']);
+
+        return response()->json($destinations);
+    }
+    
+    public function getCost($originId, $destinationId, $client_id)
+    {
+        $rate = SpecialRate::where(['office_id'=>$originId,'destination'=> $destinationId,'client_id'=> $client_id])->first();
+
+        if ($rate) {
+            return response()->json(['cost' => $rate->rate]);
+        }
+
+        return response()->json(['cost' => 'N/A'], 404);
+    }
+
     /**
      * Display the specified resource.
      */

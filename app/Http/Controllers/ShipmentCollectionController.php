@@ -226,6 +226,7 @@ class ShipmentCollectionController extends Controller
             'total_cost' => 'required|string',
             'consignment_no' => 'string',
             'base_cost' => 'string',
+            'special_rates_state' => 'string',
         ]);
         $consignment_no = $request->consignment_no;
         // Save main shipment

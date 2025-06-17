@@ -132,7 +132,8 @@
 
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
+            <li
+                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cogs"></i>
@@ -494,10 +495,10 @@
             });
 
             new DataTable('#ucsl-table', {
-                initComplete: function () {
+                initComplete: function() {
                     this.api()
                         .columns()
-                        .every(function (index) {
+                        .every(function(index) {
                             // Skip first and last columns
                             if (index === 0 || index === this.columns().count() - 1) {
                                 return;
@@ -512,24 +513,25 @@
                             column.footer().replaceChildren(select);
 
                             // Apply listener for user change in value
-                            select.addEventListener('change', function () {
+                            select.addEventListener('change', function() {
                                 // Escape regex special characters in the value
                                 let val = select.value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                                 column
-                                    .search(val ? val : '', true, false) // true: regex, false: smart search
+                                    .search(val ? val : '', true,
+                                    false) // true: regex, false: smart search
                                     .draw();
                             });
 
                             // Extract visible text from each cell (not HTML)
                             let uniqueOptions = [];
-                            column.nodes().each(function (cell) {
+                            column.nodes().each(function(cell) {
                                 let text = $(cell).text().trim();
                                 if (text && !uniqueOptions.includes(text)) {
                                     uniqueOptions.push(text);
                                 }
                             });
 
-                            uniqueOptions.sort().forEach(function (d) {
+                            uniqueOptions.sort().forEach(function(d) {
                                 select.add(new Option(d));
                             });
                         });
@@ -537,18 +539,18 @@
             });
 
             new DataTable('#example', {
-                initComplete: function () {
+                initComplete: function() {
                     this.api()
                         .columns()
-                        .every(function () {
+                        .every(function() {
                             let column = this;
                             let title = column.footer().textContent;
-            
+
                             // Create input element
                             let input = document.createElement('input');
                             input.placeholder = title;
                             column.footer().replaceChildren(input);
-            
+
                             // Event listener for user input
                             input.addEventListener('keyup', () => {
                                 if (column.search() !== this.value) {
@@ -651,6 +653,9 @@
                             });
                     }
                 });
+
+
+
 
                 // end get destinations
 

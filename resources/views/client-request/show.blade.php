@@ -161,7 +161,8 @@
                                                                     <tbody>
                                                                         @foreach ($collection->shipmentCollection->items as $item)
                                                                             @php
-                                                                                $totalWeight += $item->packages_no * $item->weight;
+                                                                                $totalWeight +=
+                                                                                    $item->packages_no * $item->weight;
                                                                             @endphp
                                                                             <tr>
                                                                                 <td>{{ $loop->iteration }}.</td>
@@ -178,19 +179,23 @@
 
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Total Weight:</strong>
-                                                                    <span>{{ number_format($totalWeight, 2) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
+                                                                    <span>{{ number_format($totalWeight, 2) }}
+                                                                        {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Base Cost:</strong>
-                                                                    <span>Ksh {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
+                                                                    <span>Ksh
+                                                                        {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>VAT:</strong>
-                                                                    <span> Ksh {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
+                                                                    <span> Ksh
+                                                                        {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Total:</strong>
-                                                                    <span> Ksh {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
+                                                                    <span> Ksh
+                                                                        {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
                                                                 </div>
                                                             @else
                                                                 <p>No shipment items found.</p>
@@ -269,7 +274,8 @@
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header bg-warning">
-                                                    <h5 class="modal-title text-dark" id="exampleModalLabel">Collection of
+                                                    <h5 class="modal-title text-white" id="exampleModalLabel">Collection
+                                                        of
                                                         {{ $collection->parcelDetails }}. Request ID
                                                         {{ $collection->requestId }}
                                                         for
@@ -286,23 +292,42 @@
 
                                                         <!-- Radio Buttons -->
                                                         <div class="form-group mb-3">
-                                                            <label class="form-label text-dark">Sender Type</label><br>
-                                                            <div class="form-check form-check-inline">
-                                                                <input type="hidden" name="cid"
-                                                                    value="{{ $collection->client->id }}">
-                                                                <input type="hidden" name="rqid"
-                                                                    value="{{ $collection->requestId }}">
-                                                                <input class="form-check-input" type="radio"
-                                                                    name="sender_type" id="clientRadio" value="client">
-                                                                <label class="form-check-label"
-                                                                    for="clientRadio">Client</label>
+                                                            <div class="form-row">
+                                                                <div class="col-md-8">
+                                                                    <label class="form-label text-dark">Sender Type
+                                                                    </label><br>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input type="hidden" name="cid"
+                                                                            id="cid"
+                                                                            value="{{ $collection->client->id }}">
+                                                                        <input type="hidden" name="rqid"
+                                                                            value="{{ $collection->requestId }}">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="sender_type" id="clientRadio"
+                                                                            value="client">
+                                                                        <label class="form-check-label"
+                                                                            for="clientRadio">Client</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="sender_type" id="agentRadio"
+                                                                            value="agent">
+                                                                        <label class="form-check-label"
+                                                                            for="agentRadio">Agent</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label class=" form-label text-dark pull-right">Special
+                                                                        Rate Status:
+                                                                        <badge class="text-success" id="rates_status">
+                                                                            {{ $collection->client->special_rates_status ?? 'off' }}
+                                                                        </badge>
+                                                                    </label>
+                                                                </div>
+
                                                             </div>
-                                                            <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio"
-                                                                    name="sender_type" id="agentRadio" value="agent">
-                                                                <label class="form-check-label"
-                                                                    for="agentRadio">Agent</label>
-                                                            </div>
+
+
                                                         </div>
 
                                                         <!-- Sender Panel -->
@@ -380,6 +405,8 @@
                                                                                 value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId"
                                                                                 value="{{ $collection->requestId }}">
+
+
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -413,6 +440,9 @@
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverTown" required>
+                                                                            <input type="hidden"
+                                                                                value="{{ $consignment_no }}"
+                                                                                name="consignment_no">
                                                                         </div>
                                                                     </div>
 
@@ -421,34 +451,69 @@
                                                             </div>
                                                         </div>
 
-                                                        <!-- Origin & Destination -->
-                                                        <div class="form-row">
-                                                            <div class="form-group col-md-6">
-                                                                <label class="form-label text-dark">Origin <span
-                                                                        class="text-danger">*</span> </label>
+                                                        @if ($collection->client->special_rates_status)
+                                                            <!-- Origin & Destination -->
+                                                            <div class="form-row">
 
-                                                                <input type="hidden" value="{{ $consignment_no }}"
-                                                                    name="consignment_no">
-                                                                <select name="origin_id" id="origin_id"
-                                                                    class="form-control origin-dropdown" required>
-                                                                    <option value="">Select</option>
-                                                                    @foreach ($offices as $office)
-                                                                        <option value="{{ $office->id }}">
-                                                                            {{ $office->name }}</option>
-                                                                    @endforeach
-                                                                </select>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-dark">Origin <span
+                                                                            class="text-danger">*</span> </label>
+                                                                    <select name="origin_id_special"
+                                                                        id="origin_id_special"
+                                                                        class="form-control origin-dropdown-special">
+                                                                        <option value="">Select</option>
+                                                                        @foreach ($offices as $office)
+                                                                            <option value="{{ $office->id }}">
+                                                                                {{ $office->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-dark">Destination <span
+                                                                            class="text-danger">*</span> </label>
+                                                                    <select name="destination_special"
+                                                                        class="form-control destination-dropdown-special">
+                                                                        <option value="">Select</option>
+                                                                    </select>
+                                                                </div>
+                                                                <input type="hidden" name='destination_id_special'
+                                                                    id="destination_id_special">
                                                             </div>
-                                                            <div class="form-group col-md-6">
-                                                                <label class="form-label text-dark">Destination <span
-                                                                        class="text-danger">*</span> </label>
-                                                                <select name="destination"
-                                                                    class="form-control destination-dropdown">
-                                                                    <option value="">Select</option>
-                                                                </select>
+                                                        @else
+                                                            <!-- Origin & Destination -->
+                                                            <div class="form-row">
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-dark">Origin <span
+                                                                            class="text-danger">*</span> </label>
+                                                                    <select name="origin_id" id="origin_id"
+                                                                        class="form-control origin-dropdown" required>
+                                                                        <option value="">Select</option>
+                                                                        @foreach ($offices as $office)
+                                                                            <option value="{{ $office->id }}">
+                                                                                {{ $office->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-dark">Destination <span
+                                                                            class="text-danger">*</span> </label>
+                                                                    <select name="destination"
+                                                                        class="form-control destination-dropdown">
+                                                                        <option value="">Select</option>
+                                                                    </select>
+                                                                </div>
+
+
+                                                                <input type="hidden"
+                                                                    value="{{ $collection->client->special_rates_status }}"
+                                                                    name='special_rate_state' id="special_rate_state">
                                                             </div>
-                                                            <input type="hidden" name='destination_id'
-                                                                id="destination_id">
-                                                        </div>
+                                                        @endif
+
+                                                        <input type="hidden" name='destination' id="destination_id">
+
+                                                        <input type="hidden" name='origin_id' id="origin_id">
+
 
                                                         <!-- Shipment Info Table -->
                                                         {{-- <div class="section-title"><b class="text-dark">Shipment Information</b></div> --}}
@@ -520,8 +585,8 @@
                                                             </div> --}}
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-4">
-                                                                    <label class="form-label text-dark">Total Weight (Kg) <span
-                                                                            class="text-danger">*</span>
+                                                                    <label class="form-label text-dark">Total Weight (Kg)
+                                                                        <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
                                                                         class="form-control" name="total_weight" required
@@ -573,6 +638,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -590,11 +656,14 @@
                     const agentRadio = document.getElementById('agentRadio');
                     const senderForm = document.getElementById('senderForm');
 
+                    const cid = document.getElementById('cid').value;
+
                     const sender_name = document.getElementById('sender_name');
                     const sender_id_no = document.getElementById('sender_id_no');
                     const sender_contact = document.getElementById('sender_contact');
                     const sender_town = document.getElementById('sender_town');
                     const sender_address = document.getElementById('sender_address');
+                    //const rates_status = document.getElementById('rates_status');
 
                     function clearForm() {
                         sender_name.value = '';
@@ -602,30 +671,31 @@
                         sender_contact.value = '';
                         sender_town.value = '';
                         sender_address.value = '';
+                        //   rates_status.textContent = '';
                     }
 
                     clientRadio.addEventListener('change', () => {
                         if (clientRadio.checked) {
                             senderForm.style.display = 'block';
+                            //console.log('cid:', cid);
 
-                            fetch('/clientData') // Adjust this URL as needed
+                            fetch('/clientData/' + cid) // Adjust this URL as needed
                                 .then(response => {
                                     if (!response.ok) {
                                         throw new Error('Network response was not ok');
                                     }
                                     return response.json();
                                 })
-                                .then(data => {
-                                    // Use the first client for demo purposes
-                                    if (data.length > 0) {
-                                        const client = data[0];
+                                .then(client => {
+                                    if (client && !client.message) { // Ensure it's not a 404 error response
                                         sender_name.value = client.name || '';
                                         sender_id_no.value = client.contact_person_id_no || '';
                                         sender_contact.value = client.contact || '';
                                         sender_town.value = client.city || '';
                                         sender_address.value = client.address || '';
+                                        //   rates_status.textContent = client.special_rates_status || '';
                                     } else {
-                                        alert('No clients found.');
+                                        alert('Client not found.');
                                     }
                                 })
                                 .catch(error => {
@@ -641,6 +711,85 @@
                             clearForm(); // Allow fresh entry
                         }
                     });
+
+
+                    // get destinations
+
+
+                    $(document).on('change', '.origin-dropdown-special', function() {
+                        const originSelect2 = $(this);
+                        const selectedOfficeId2 = originSelect2.val();
+                        const modal = originSelect2.closest('.modal');
+                        const destinationSelect2 = modal.find('.destination-dropdown-special');
+                        $('#origin_id').val(selectedOfficeId2);
+                        destinationSelect2.html('<option value="">Select Destination</option>');
+
+                        if (selectedOfficeId2) {
+                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
+                                .done(function(data) {
+                                    data.forEach(function(item) {
+                                        destinationSelect2.append(
+                                            `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                                        );
+                                    });
+                                })
+                                .fail(function() {
+                                    console.error("Failed to load destinations");
+                                });
+                        }
+                    });
+
+                    function recalculateCosts() {
+                        let totalWeight = 0;
+
+                        $('#shipmentTable tbody tr').each(function() {
+                            const row = $(this);
+                            const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                            const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                            totalWeight += weight * packages;
+                        });
+
+                        $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
+                        const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                        let cost = baseCost;
+
+                        if (totalWeight > 25) {
+                            const extraWeight = totalWeight - 25;
+                            cost += extraWeight * 50;
+                        }
+
+                        $('input[name="cost"]').val(cost.toFixed(2));
+
+                        const vat = cost * 0.16;
+                        $('input[name="vat"]').val(vat.toFixed(2));
+                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                    }
+
+                    // Trigger when destination changes
+                    $(document).on('change', '.destination-dropdown-special', function() {
+
+                        const destinationId2 = $(this).val();
+                        const selectedOption2 = $(this).find('option:selected');
+                        const destination_id2 = selectedOption2.data('id');
+                        $("#destination_id_special").val(destination_id2);
+                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
+                        const originId2 = modal.find('.origin-dropdown-special').val();
+                        $('#destination_id').val(destination_id2);
+                        if (originId2 && destinationId2) {
+                            $.get(`/get_cost/${originId2}/${destinationId2}/${cid}`)
+                                .done(function(data) {
+                                    const baseCost = parseFloat(data.cost);
+                                    $('input[name="base_cost"]').val(baseCost);
+                                    recalculateCosts();
+                                })
+                                .fail(function() {
+                                    console.error("Failed to fetch base cost");
+                                    $('input[name="base_cost"]').val(0);
+                                });
+                        }
+                    });
+
                 });
             </script>
             <script>
