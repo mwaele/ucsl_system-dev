@@ -29,6 +29,7 @@ class Client extends Authenticatable
         'postalCode',
         'status',
         'verificationCode',
+        'special_rates_status',
     ];
     /**
      * The attributes that should be hidden for arrays (e.g., when returned in API).
