@@ -254,6 +254,14 @@
             </li>
 
 
+            <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('my_collections.show') }}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+
+
             <!-- Nav Item - Pages Collapse Menu -->
 
 

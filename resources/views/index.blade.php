@@ -11,13 +11,13 @@
     <div class="row">
 
         <!-- Total Requests Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index') }}" title="View All Client Requests" class="text-decoration-none text-dark">
                 <div class="card border-left-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
                                     Total Requests
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Collected Requests Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Collected Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -57,7 +57,7 @@
         </div>
 
         <!-- Verified Requests Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', ['status' => 'verified']) }}" title="View Verified Collections"  class="text-decoration-none text-dark">
                 <div class="card border-left-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -79,8 +79,31 @@
             </a>
         </div>
 
+        <!-- Unverified Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Unverified Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Unverified Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $collected }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- Pending Collections Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', ['status' => 'pending collection']) }}" title="View Pending Collections" class="text-decoration-none text-dark">
                 <div class="card border-left-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">

@@ -5,7 +5,7 @@
     <div class="card mb-4">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Walk-in Parcels</h6>
+                <h6 class="m-0 font-weight-bold text-success">Walk-in Parcels</h6>
                 <div class="d-flex align-items-center">
                     <!-- Counter positioned just before the search input -->
                     <span class="text-primary counter mr-2"></span>
@@ -24,7 +24,7 @@
                     <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-warning">
-                                <h5 class="modal-title text-white" id="exampleModalLabel">    Register Parcel</h5>
+                                <h5 class="modal-title text-white" id="exampleModalLabel">Register Parcel</h5>
                                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -319,9 +319,9 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered results" id="ucsl-table" width="100%" cellspacing="0">
+                <table class="table text-dark table-bordered results" id="ucsl-table" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="text-success">
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
