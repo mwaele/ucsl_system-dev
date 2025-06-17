@@ -72,6 +72,7 @@ class ClientController extends Controller
             'kraPin' => 'required|string|max:255',
             'postalCode' => 'required|string|max:255',
             'status' => 'required|string|in:active,inactive',
+            'special_rates_status'=>'nullable|string',
         ]);
     
 
@@ -97,6 +98,7 @@ class ClientController extends Controller
         $client->kraPin = $validated['kraPin'];
         $client->postalCode = $validated['postalCode'];
         $client->status = $validated['status'];
+        $client->special_rates_status = $validated['special_rates_status'];
 
         //dd($client);
         $client->save();  // Save the client to the database

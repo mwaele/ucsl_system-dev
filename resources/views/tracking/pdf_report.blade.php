@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
-            background-color: #f4f6f9;
+            background-color: #fff;
             font-size: 12px;
             margin: 20px;
         }
@@ -15,7 +15,7 @@
         h4 {
             color: #14489f;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         h2 {
@@ -23,14 +23,14 @@
         }
 
         .timeline-with-icons {
-            border-left: 2px solid #fff;
+            border-left: 2px solid #f3f2f2;
             list-style: none;
             padding-left: 20px;
         }
 
         .timeline-item {
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             padding-left: 20px;
         }
 
@@ -51,15 +51,30 @@
 
 
         .text-muted {
-            color: #6c757d;
+            color: #000;
         }
 
         .fw-bold {
             font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+
+        .format {
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         .mb-4 {
             margin-bottom: 0.5rem;
+        }
+
+        .h2 {
+            font-size: 14px;
+        }
+
+        .text-primary {
+            color: #14489f;
         }
 
         .mb-2 {
@@ -70,25 +85,122 @@
             padding-top: 0.5rem;
             padding-bottom: 0.5rem;
         }
+
+        .header,
+        .head {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .row {
+            display: block;
+            clear: both;
+        }
+
+        .col-md-6 {
+            display: inline-block;
+            width: 49%;
+            vertical-align: top;
+            margin-right: 1%;
+        }
+
+        .p-3 {
+            padding: 16px;
+            border: 1px solid #ccc;
+            /* instead of box-shadow */
+        }
+
+        /* Margins and text styles */
+        .mb-1 {
+            margin-bottom: 4px;
+        }
+
+        .text-success {
+            color: #f57f3f;
+        }
+
+        .text-dark {
+            color: #212529;
+        }
+
+        .p {
+            color: #f57f3f;
+            margin-bottom: 4px;
+        }
+
+        .td {
+            width: 50%;
+            border: 1px solid #ccc;
+            vertical-align: top;
+        }
     </style>
 </head>
 
 <body>
-    <h2>
-        &#128640; Tracking Results For <strong>{{ $trackingData['requestId'] }}</strong>
-        Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
-    </h2>
+    <table width="100%" style="border-collapse: collapse;">
+        <tr>
+            <td style="width: 60%;">
+                <img src="{{ public_path('images/UCSLogo1.png') }}" height="120" style="width: auto;" alt="Logo">
+            </td>
+            <td style="width: 40%; text-align: right; vertical-align: middle;">
+                <p style="font-size: 14px; color: #333; margin: 0;">
+                    Tracking Date:</strong>
+                </p>
+                <p style="font-size: 14px; color: #333; margin: 0;">
+                    {{ now()->format('F j, Y, g:i a') }}
+                </p>
+                {{-- <p class="fw-bold">
+                    Tracking done by: {{ auth('api')->user()->name }}
+                </p> --}}
 
-    <section class="py-2">
+            </td>
+        </tr>
+    </table>
+    <div class="head">
+        <h2 class="mb-2 fw-bold text-primary">
+
+            Tracking Results For <strong>{{ $trackingData['requestId'] }}</strong>
+            Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
+        </h2>
+    </div>
+    <section class="mb-3">
+        <table width="100%" cellpadding="10" cellspacing="0"
+            style="border-collapse: collapse; font-family: sans-serif;">
+            <tr>
+                <td class="td">
+                    <p class="p">
+                        Origin: <span style="color: #212529;">{{ $data['origin_office'] }}</span>
+                    </p>
+                    <p class="p">
+                        Destination: <span style="color: #212529;">{{ $data['destination_name'] }}</span>
+                    </p>
+                </td>
+                <td class="td">
+                    <p class="p">
+                        Sender: <span style="color: #212529;">{{ $data['sender_name'] }}</span>
+                    </p>
+                    <p class="p">
+                        Receiver: <span style="color: #212529;">{{ $data['receiver_name'] }}</span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="">
         <ul class="timeline-with-icons">
             @foreach ($trackingData['tracking_infos'] as $info)
                 <li class="timeline-item">
-                    <span class="timeline-icon">&#10003;</span>
-                    <h5 class="fw-bold">{{ $info['details'] }}</h5>
-                    <p class="text-muted mb-2 fw-bold">{{ \Carbon\Carbon::parse($info['date'])->format('d M Y, H:i') }}
+                    <span class="timeline-icon"></span>
+                    <h3 class="fw-bold text-primary">{{ $info['details'] }}</h3>
+                    <p class="text-muted format">{{ \Carbon\Carbon::parse($info['date'])->format('d M Y, H:i') }}
                     </p>
                     @if (!empty($info['remarks']))
-                        <p class="text-muted">{{ $info['remarks'] }}</p>
+                        <p class="text-muted format">{{ $info['remarks'] }}</p>
+                    @endif
+                    @if ($loop->last)
+                        <p class="text-success p-0 m-0 fst-italic format"><strong>Current Status:
+                                {{ $trackingData['current_status'] }}</strong></p>
                     @endif
                 </li>
             @endforeach

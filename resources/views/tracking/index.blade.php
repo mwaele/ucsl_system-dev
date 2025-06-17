@@ -49,10 +49,10 @@
 <body class="p-4">
 
     <div class="container ">
-        <div class="row justify-content-center">
+        <div class="row format justify-content-center">
 
             <h2 class="mb-2 text-primary  justify-content-center">
-                <img src="{{ asset('images/UCSLogo1.png') }}" height="200px" width="auto" alt="">
+
                 Track Your Parcel
             </h2>
         </div>
@@ -62,7 +62,7 @@
                     <div class="card shadow rounded-4">
                         <div class="card-body p-4">
                             <h3 class="text-center text-success mb-2">Client Sign In</h3>
-                            <form method="POST" action="{{ route('signin.process') }}">
+                            <form id="clientLoginForm">
                                 @csrf
                                 <div class="mb-3">
                                     <label class="text-dark">Email</label>
@@ -84,12 +84,50 @@
                                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
                                 <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-2">Continue as Guest</a>
                             </form>
+
+                            <div id="loginError" class="text-danger mt-2"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('clientLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = {
+                email: form.email.value,
+                password: form.password.value
+            };
+
+            fetch('/api/client/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Only needed for web routes
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw data;
+
+                    // ✅ Save token to localStorage/sessionStorage
+                    localStorage.setItem('client_token', data.access_token);
+
+                    // ✅ Redirect to tracker
+                    window.location.href = '/tracker';
+                })
+                .catch(err => {
+                    document.getElementById('loginError').innerText = err.message || 'Login failed.';
+                });
+        });
+    </script>
+
 </body>
+
 
 </html>

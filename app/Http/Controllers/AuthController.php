@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function showSignIn()
     {
-        return view('auth.signin');
+        return view('tracking.index');
     }
 
     public function processSignIn(Request $request)
@@ -22,7 +22,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::guard('client')->attempt($request->only('email', 'password'))) {
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/tracker');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials.']);
@@ -30,7 +30,7 @@ class AuthController extends Controller
 
     public function showGuest()
     {
-        return view('auth.guest');
+        return view('tracking.guest');
     }
 
     public function processGuest(Request $request)

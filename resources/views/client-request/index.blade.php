@@ -33,7 +33,8 @@
                     <div>
                         <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
                             data-target="#createClientRequest">
-                            <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client Request</span>
+                            <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
+                                Request</span>
                         </button>
                     </div>
                 </div>
@@ -177,7 +178,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table text-dark table-bordered results display" id="ucsl-table" width="100%" cellspacing="0" style="font-size: 14px;">
+                <table class="table text-primary table-bordered results display" id="ucsl-table" width="100%"
+                    cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
                             <th>#</th>
@@ -380,10 +382,11 @@
                                     </div>
 
                                     @if ($request->status === 'pending collection')
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
-                                        data-toggle="modal" data-target="#deleteClientRequest-{{ $request->requestId }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                        <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                            data-toggle="modal"
+                                            data-target="#deleteClientRequest-{{ $request->requestId }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     @endif
 
                                     <!-- Delete Modal-->

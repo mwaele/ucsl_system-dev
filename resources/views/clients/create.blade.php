@@ -263,7 +263,7 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label>Type</label>
-                        <select name="type" id="type">
+                        <select name="type" class="form-control" id="type">
                             <option value="">Select Account Type</option>
                             <option value="COD">COD</option>
                             <option value="Walkin">Walkin</option>
@@ -308,8 +308,14 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="special_rates">Client Have Special Rates?</label>
+                        <input type="checkbox" name="special_rates_status">
+                    </div>
+                </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Register Client Account</button>
+                <button type="submit" class="btn btn-primary btn-block"><strong>Register Client Account</strong></button>
             </form>
         </div>
     </div>
