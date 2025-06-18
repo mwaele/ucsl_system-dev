@@ -12,6 +12,9 @@
                 <div class="d-flex align-items-center justify-content-end flex-wrap ml-auto">
                     <!-- Middle: Stats -->
                     <div class="d-flex align-items-center flex-wrap mr-3">
+                        <a href="{{ route('client-requests.export.pdf', request()->query()) }}" class="btn btn-danger mb-3">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
                         <span class="rounded badge-primary p-2 mx-1">
                             Today's Requests: <strong>{{ $totalRequests }}</strong>
                         </span>
@@ -178,7 +181,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table text-primary table-bordered results display" id="ucsl-table" width="100%"
+                <table class="table text-primary table-bordered table-striped table-hover" id="ucsl-table" width="100%"
                     cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
@@ -192,11 +195,6 @@
                             <th>Description of goods</th>
                             <th>Status</th>
                             <th>Action</th>
-                        </tr>
-                        <tr class="table-warning no-result text-center" style="display: none;">
-                            <td colspan="10">
-                                <i class="fa fa-warning text-danger"></i> No result found.
-                            </td>
                         </tr>
                     </thead>
                     <tfoot>

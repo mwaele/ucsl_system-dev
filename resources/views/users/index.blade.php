@@ -11,11 +11,8 @@
         </button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <table class="table table-bordered table-striped table-hover">
+    <table class="table table-bordered table-striped table-hover" id="ucsl-table" width="100%"
+                    cellspacing="0" style="font-size: 14px;">
         <thead class="thead-dark">
             <tr>
                 <th>#</th>
@@ -26,6 +23,7 @@
                 <th>Station</th>
                 <th>Status</th>
                 <th>Created At</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -47,10 +45,79 @@
                         </span>
                     </td>
                     <td>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d H:i') }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#editUserModal-{{ $user->id }}">
+                            Edit
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    @foreach($users as $user)
+        <div class="modal fade" id="editUserModal-{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel-{{ $user->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <form method="POST" action="{{ route('users.update', $user->id) }}">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="editUserModalLabel-{{ $user->id }}">Edit User: {{ $user->name }}</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+
+                <div class="modal-body row">
+
+                <div class="form-group col-md-6">
+                    <label>Name</label>
+                    <input name="name" class="form-control" value="{{ $user->name }}" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Email</label>
+                    <input name="email" type="email" class="form-control" value="{{ $user->email }}" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Phone Number</label>
+                    <input name="phone_number" class="form-control" value="{{ $user->phone_number }}">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Station</label>
+                    <input name="station" class="form-control" value="{{ $user->station }}">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Role</label>
+                    <select name="role" class="form-control">
+                        <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Status</label>
+                    <select name="status" class="form-control">
+                        <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+                </div>
+
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update User</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+            </form>
+        </div>
+        </div>
+    @endforeach
 </div>
 
 <!-- Create User Modal -->
@@ -92,6 +159,7 @@
               <select name="role" class="form-control">
                   <option value="user" selected>User</option>
                   <option value="admin">Admin</option>
+                  <option value="driver">Driver</option>
               </select>
           </div>
 

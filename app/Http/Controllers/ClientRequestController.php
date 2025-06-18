@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client;
@@ -41,6 +42,8 @@ class ClientRequestController extends Controller
         $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
+        $user = Auth::user();
+
         $query = ClientRequest::with([
             'client', 
             'vehicle', 
@@ -48,9 +51,17 @@ class ClientRequestController extends Controller
             'shipmentCollection.items', 
             'shipmentCollection.items.subItems', 
             'createdBy'
-        ])->whereHas('createdBy', function ($q) use ($station) {
-            $q->where('station', $station);
-        });
+        ]);
+
+        if ($user->role !== 'admin') {
+            $query->whereHas('createdBy', function ($q) use ($user) {
+                $q->where('station', $user->station);
+            });
+        } elseif ($request->has('station')) {
+            $query->whereHas('createdBy', function ($q) use ($request) {
+                $q->where('station', $request->station);
+            });
+        }
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -62,11 +73,17 @@ class ClientRequestController extends Controller
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
         
-        // Summary counts filtered by station
-        $totalRequests = ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
-        $collected = ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
-        $verified = ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
-        $pending_collection = ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $station))->count();
+        if ($user->role === 'admin') {
+            $totalRequests = ClientRequest::count();
+            $collected = ClientRequest::where('status', 'collected')->count();
+            $verified = ClientRequest::where('status', 'verified')->count();
+            $pending_collection = ClientRequest::where('status', 'pending collection')->count();
+        } else {
+            $totalRequests = ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
+            $collected = ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
+            $verified = ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
+            $pending_collection = ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
+        }
 
         return view('client-request.index', compact(
             'clients', 
@@ -79,6 +96,29 @@ class ClientRequestController extends Controller
             'verified', 
             'pending_collection'
         ));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $user = Auth::user();
+        $station = $request->query('station', $user->station);
+        $status = $request->query('status');
+
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection'])
+            ->when($user->role !== 'admin', fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $user->station)))
+            ->when($user->role === 'admin' && $station, fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $station)))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->orderBy('created_at', 'desc');
+
+        $client_requests = $query->get();
+
+        $pdf = Pdf::loadView('pdf.client-requests', [
+            'client_requests' => $client_requests,
+            'station' => $station,
+            'status' => $status,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('client_requests.pdf');
     }
 
     /**
@@ -294,7 +334,7 @@ class ClientRequestController extends Controller
             'message' => $client_message,
         ]);
 
-        return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully');
+        return redirect()->back()->with('success', 'Client Request Saved and Tracked Successfully');
     }
 
 

@@ -30,16 +30,44 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'role' => $request->role,
-            'station' => $request->station,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
+        $user->station = $request->station;
+        $user->role = $request->role;
+        $user->status = $request->status;
+        $user->password = Hash::make($request->password);
+
+        $user->save();
 
         return redirect()->route('users.index')->with('success', 'User account created.');
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone_number' => 'nullable|string',
+            'station' => 'nullable|string',
+            'role' => 'required|in:admin,user',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
+        $user->station = $request->station;
+        $user->role = $request->role;
+        $user->status = $request->status;
+
+        $user->save();   
+
+        return redirect()->back()->with('success', 'User updated successfully.');
+    }
+
 }
 

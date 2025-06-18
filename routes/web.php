@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/save', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -73,6 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
+    Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
 
     //special rates
     Route::get('/get_destinations/{office_id}/{client_id}', [SpecialRateController::class, 'getDestinations']);

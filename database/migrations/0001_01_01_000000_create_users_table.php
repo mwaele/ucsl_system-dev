@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer("idNo")->nullable()->unique();
             $table->string("role")->default("user");
             $table->string("verityCode")->nullable();
-            $table->string("status")->default("inactive");
+            $table->string("status")->default("active");
             $table->string("company")->nullable();
             $table->string("station")->nullable();
             $table->json("permissions")->nullable();

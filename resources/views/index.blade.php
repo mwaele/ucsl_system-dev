@@ -151,15 +151,32 @@
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-3 mb-3">
-                    <div class="card border-left-primary shadow h-100 py-2 hover-card">
-                        <div class="card-body">
-                            <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>
-                            <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
-                            <p class="mb-1 text-success">Collected: <strong>{{ $stats['collected'] }}</strong></p>
-                            <p class="mb-1 text-info">Verified: <strong>{{ $stats['verified'] }}</strong></p>
-                            <p class="mb-1 text-warning">Pending Collection: <strong>{{ $stats['pending'] }}</strong></p>
+                    <a href="{{ route('client-requests.index', ['station' => $stationName]) }}" class="text-decoration-none text-dark">
+                        <div class="card border-left-primary shadow h-100 py-2 hover-card">
+                            <div class="card-body">
+                                <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>
+                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
+                                <p class="mb-1 text-success">
+                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'collected']) }}"
+                                    class="text-success text-decoration-none">
+                                    Collected: <strong>{{ $stats['collected'] }}</strong>
+                                    </a>
+                                </p>
+                                <p class="mb-1 text-info">
+                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'verified']) }}"
+                                    class="text-info text-decoration-none">
+                                    Verified: <strong>{{ $stats['verified'] }}</strong>
+                                    </a>
+                                </p>
+                                <p class="mb-1 text-warning">
+                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'pending']) }}"
+                                    class="text-warning text-decoration-none">
+                                    Pending Collection: <strong>{{ $stats['pending'] }}</strong>
+                                    </a>
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>
