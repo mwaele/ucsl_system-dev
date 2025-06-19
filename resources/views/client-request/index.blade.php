@@ -8,38 +8,16 @@
                 <!-- Left: Title -->
                 <span class="m-0 font-weight-bold text-success">All Client Requests</span>
 
-                <!-- Right: Stats + Button wrapper -->
-                <div class="d-flex align-items-center justify-content-end flex-wrap ml-auto">
-                    <!-- Middle: Stats -->
-                    <div class="d-flex align-items-center flex-wrap mr-3">
-                        <a href="{{ route('client-requests.export.pdf', request()->query()) }}" class="btn btn-danger mb-3">
-                            <i class="fas fa-file-pdf"></i> Download PDF
-                        </a>
-                        <span class="rounded badge-primary p-2 mx-1">
-                            Today's Requests: <strong>{{ $totalRequests }}</strong>
-                        </span>
-                        <span class="rounded badge-primary p-2 mx-1">
-                            Total Requests: <strong>{{ $totalRequests }}</strong>
-                        </span>
-                        <span class="rounded badge-info p-2 mx-1">
-                            Verified: <strong>{{ $verified }}</strong>
-                        </span>
-                        <span class="rounded badge-success p-2 mx-1">
-                            Collected: <strong>{{ $collected }}</strong>
-                        </span>
-                        <span class="rounded badge-secondary p-2 mx-1">
-                            Pending Collection: <strong>{{ $pending_collection }}</strong>
-                        </span>
-                    </div>
-
-                    <!-- Right: Button -->
-                    <div>
-                        <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
-                            data-target="#createClientRequest">
-                            <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
-                                Request</span>
-                        </button>
-                    </div>
+                <!-- Right: Button -->
+                <div>
+                    <a href="{{ route('client-requests.export.pdf', request()->query()) }}" class="btn btn-danger mr-1" title="Download PDF">
+                        <i class="fas fa-download"></i></i> 
+                    </a>
+                    <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
+                        data-target="#createClientRequest">
+                        <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
+                            Request</span>
+                    </button>
                 </div>
             </div>
 

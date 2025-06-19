@@ -33,7 +33,7 @@
                 @endif
             </td>
             <td style="text-align: right; vertical-align: top;">
-                <img src="{{ public_path('images/ucsl-logo.jpg') }}" alt="Logo" style="height: 60px;">
+                <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70;">
             </td>
         </tr>
     </table>

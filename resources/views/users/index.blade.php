@@ -4,7 +4,7 @@
 <div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>User Accounts</h2>
+        <h5>User Accounts</h5>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">
             + Create User
@@ -87,7 +87,14 @@
 
                 <div class="form-group col-md-6">
                     <label>Station</label>
-                    <input name="station" class="form-control" value="{{ $user->station }}">
+                    <select name="station" class="form-control" required>
+                        <option value="">-- Select Station --</option>
+                        @foreach ($stations as $station)
+                            <option value="{{ $station->id }}" {{ old('station') == $station ? 'selected' : '' }}>
+                                {{ $station->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group col-md-6">
@@ -151,7 +158,14 @@
 
           <div class="form-group col-md-6">
               <label>Station</label>
-              <input name="station" class="form-control">
+              <select name="station" class="form-control" required>
+                    <option value="">-- Select Station --</option>
+                    @foreach ($stations as $station)
+                        <option value="{{ $station->id }}">
+                            {{ $station->name }}
+                        </option>
+                    @endforeach
+                </select>
           </div>
 
           <div class="form-group col-md-6">

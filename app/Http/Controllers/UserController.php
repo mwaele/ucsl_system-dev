@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -10,8 +11,9 @@ class UserController extends Controller
 {
     public function index()
     {
+        $stations = Office::all();
         $users = User::all();
-        return view('users.index', compact('users'));
+        return view('users.index', compact('users', 'stations'));
     }
 
     public function create()

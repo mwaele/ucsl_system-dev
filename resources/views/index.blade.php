@@ -169,7 +169,7 @@
                                     </a>
                                 </p>
                                 <p class="mb-1 text-warning">
-                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'pending']) }}"
+                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'pending collection']) }}"
                                     class="text-warning text-decoration-none">
                                     Pending Collection: <strong>{{ $stats['pending'] }}</strong>
                                     </a>
