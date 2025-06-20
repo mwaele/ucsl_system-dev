@@ -385,33 +385,17 @@
                 </div>
                 <!-- End of Main Content -->
 
-                @php
-                    $toastTypes = [
-                        'success' => ['bg' => 'bg-success', 'title' => 'Success'],
-                        'error' => ['bg' => 'bg-danger', 'title' => 'Error'],
-                        'warning' => ['bg' => 'bg-warning text-dark', 'title' => 'Warning'],
-                        'info' => ['bg' => 'bg-info', 'title' => 'Info'],
-                    ];
-                @endphp
+                <!-- Footer -->
+                <footer class="sticky-footer bg-white">
+                    @if (session('success'))
+                        <div id="flash-message" class="alert alert-success text-center p-2">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-                @foreach ($toastTypes as $type => $props)
-                    @if (session($type))
-                        <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3"
-                            style="top: 1rem; right: 1rem; z-index: 1050;">
-                            <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert"
-                                aria-live="assertive" aria-atomic="true">
-                                <div class="toast-header {{ $props['bg'] }} text-white">
-                                    <strong class="mr-auto">{{ $props['title'] }}</strong>
-                                    <small>Just now</small>
-                                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast"
-                                        aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="toast-body">
-                                    {{ session($type) }}
-                                </div>
-                            </div>
+                    @if (session('error'))
+                        <div id="flash-message" class="alert alert-danger text-center p-2">
+                            {{ session('error') }}
                         </div>
                     @endif
 
@@ -430,8 +414,8 @@
                             <span>Copyright &copy; www.ufanisicourier.co.ke</span>
                         </div>
                     </div>
-                    </footer>
-                    <!-- End of Footer -->
+                </footer>
+                <!-- End of Footer -->
             </div>
             <!-- End of Content Wrapper -->
         </div>
@@ -506,19 +490,6 @@
         {{-- <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const toasts = document.querySelectorAll('.timeout-toast');
-                toasts.forEach(toast => {
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                        toast.classList.add('fade');
-                        setTimeout(() => toast.remove(), 300);
-                    }, 4000);
-                });
-            });
-        </script>
 
         <script>
             // Initialize Flatpickr
@@ -634,7 +605,6 @@
                 }
             });
         </script>
-
         <script>
             // Wait for DOM to load
             document.addEventListener("DOMContentLoaded", function() {
@@ -652,7 +622,6 @@
                 }
             });
         </script>
-
         <script>
             $(document).ready(function() {
                 $('.addRowBtn').on('click', function() {
@@ -796,7 +765,6 @@
 
             });
         </script>
-
         <script>
             // Handle form submission
             $(document).on('submit', '#shipmentForm', function(e) {

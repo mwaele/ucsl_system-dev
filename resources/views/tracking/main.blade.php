@@ -265,6 +265,8 @@
                     }
                 });
             });
+            // Update every second
+
 
             function updateDateTime() {
                 const now = new Date();
@@ -285,7 +287,7 @@
             }
 
             updateDateTime(); // Initial run
-            setInterval(updateDateTime, 1000); // Update every second
+            setInterval(updateDateTime, 1000);
 
         });
     </script>
