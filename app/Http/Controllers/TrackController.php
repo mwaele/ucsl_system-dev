@@ -65,11 +65,19 @@ class TrackController extends Controller
             ->where('id', $shipment->destination_id)
             ->value('destination');
 
+        // get shipment items
+        $shipment_items = DB::table('shipment_items')
+            ->where('id', $shipment->id)
+            ->get();
+
+
+
         // Attach them to the response
         $track->origin_office = $originOffice;
         $track->destination_name = $destinationName;
         $track->sender_name = $shipment->sender_name;
         $track->receiver_name = $shipment->receiver_name;
+        $track->shipment_items = $shipment_items;
     }
 
     return response()->json($track);
@@ -209,6 +217,11 @@ class TrackController extends Controller
         $destinationName = DB::table('rates')
             ->where('id', $shipment->destination_id)
             ->value('destination');
+
+        // get shipment items
+        $shipment_items = DB::table('shipment_items')
+            ->where('id', $shipment->id)
+            ->get();
     }
     $data = [
 
@@ -241,7 +254,8 @@ class TrackController extends Controller
 
         $pdf = Pdf::loadView('tracking.pdf_report' , [
             'trackingData' => $trackingData,
-            'data'=>$data
+            'data'=>$data,
+            'shipment_items'=>$shipment_items,
         ]);
         return $pdf->download("tracking-report-{$requestId}.pdf");
             // }

@@ -81,6 +81,10 @@
             margin-bottom: 0.5rem;
         }
 
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
         .py-2 {
             padding-top: 0.5rem;
             padding-bottom: 0.5rem;
@@ -124,11 +128,15 @@
         }
 
         .p {
-            color: #f57f3f;
-            margin-bottom: 4px;
+            color: #14489f;
+            margin-bottom: 2px;
+            font-weight: bold;
         }
 
         .td {
+            padding-left: 10;
+            padding-bottom: 10;
+            margin: 0;
             width: 50%;
             border: 1px solid #ccc;
             vertical-align: top;
@@ -140,13 +148,13 @@
     <table width="100%" style="border-collapse: collapse;">
         <tr>
             <td style="width: 60%;">
-                <img src="{{ public_path('images/UCSLogo1.png') }}" height="120" style="width: auto;" alt="Logo">
+                <img src="{{ public_path('images/UCSLogo1.png') }}" height="80" style="width: auto;" alt="Logo">
             </td>
-            <td style="width: 40%; text-align: right; vertical-align: middle;">
-                <p style="font-size: 14px; color: #333; margin: 0;">
-                    Tracking Date:</strong>
+            <td style="width: 40%; text-align: center; vertical-align: middle;">
+                <p style="font-size: 14px; color: #000; margin: 0;">
+                    Tracking Date</strong>
                 </p>
-                <p style="font-size: 14px; color: #333; margin: 0;">
+                <p style="font-size: 14px; color: #000; margin: 0;">
                     {{ now()->format('F j, Y, g:i a') }}
                 </p>
                 {{-- <p class="fw-bold">
@@ -157,14 +165,14 @@
         </tr>
     </table>
     <div class="head">
-        <h2 class="mb-2 fw-bold text-primary">
+        <h2 class="mb-2 mt-2 fw-bold text-primary">
 
             Tracking Results For <strong>{{ $trackingData['requestId'] }}</strong>
             Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
         </h2>
     </div>
     <section class="mb-3">
-        <table width="100%" cellpadding="10" cellspacing="0"
+        <table width="100%" cellpadding="1" cellspacing="0"
             style="border-collapse: collapse; font-family: sans-serif;">
             <tr>
                 <td class="td">
@@ -182,6 +190,12 @@
                     <p class="p">
                         Receiver: <span style="color: #212529;">{{ $data['receiver_name'] }}</span>
                     </p>
+                </td>
+                <td class="td">
+                    @foreach ($shipment_items as $shipment_item)
+                        <p> Item: {{ $shipment_item->item_name }}; Qty: {{ $shipment_item->packages_no }}; Weight:
+                            {{ $shipment_item->weight }} Kgs</p>
+                    @endforeach
                 </td>
             </tr>
         </table>

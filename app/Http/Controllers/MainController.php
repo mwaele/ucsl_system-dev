@@ -9,7 +9,7 @@ class MainController extends Controller
 {
 public function clients($id)
 {
-    $client = Client::select('contact', 'kraPin', 'contact_person_id_no', 'city', 'name', 'address','special_rates_status')
+    $client = Client::select('contact', 'kraPin', 'contact_person_id_no', 'city', 'name','email', 'address','special_rates_status')
         ->where('id', $id)
         ->first();
 

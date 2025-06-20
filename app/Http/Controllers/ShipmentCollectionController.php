@@ -14,6 +14,7 @@ use App\Services\SmsService;
 use App\Models\SentMessage;
 use App\Models\Client;
 use App\Models\User;
+use App\Helpers\EmailHelper;
 
 use Illuminate\Support\Facades\DB;
 
@@ -228,7 +229,9 @@ class ShipmentCollectionController extends Controller
             'total_cost' => 'required|string',
             'consignment_no' => 'string',
             'base_cost' => 'string',
-        //  'special_rates_state' => 'string',
+            'special_rates_state' => 'string',
+            'sender_email' => 'string',
+            'receiver_email' => 'string',
         ]);
         $consignment_no = $request->consignment_no;
         // Save main shipment
@@ -254,11 +257,11 @@ class ShipmentCollectionController extends Controller
             'collected_by' => Auth::user()->id,
             'consignment_no' => $consignment_no,
             'base_cost' => $request->base_cost,
+            'sender_email' => $request->senderEmail,
+            'receiver_email' => $request->receiverEmail,
+            'special_rates_status' => $request->special_rate_state,
             
         ]);
-
-        
-
         if($shipment){
             \Log::info('Saving shipment items', [
                 'items' => $request->item_name,
@@ -310,25 +313,7 @@ class ShipmentCollectionController extends Controller
                 'details' => 'Parcel Collected at Client Premises',
                 'remarks' => "Rider arrived at client premises for collection; Collected {$itemCount} {$text} with total weight of {$totalWeight} {$text2}. Generated Consignment Note Number {$consignment_no}",
             ]);
-            
-            // DB::table('tracking_infos')->insert([
-            //     'trackId' => $id,
-            //     'date' => now(),
-            //     'details' => 'Parcel Collected at Client Premises',
-            //     'remarks' => 'Rider arrived at client premises for collection; Collected ' . $itemCount . ' ' . $text . 
-            //                  ' with total weight of ' . $totalWeight . ' ' . $text2 . 
-            //                  '. Generated Consignment Note Number ' . $consignment_no,
-            //     'created_at' => now(),
-            //     'updated_at' => now()
-            // ]);
-            
-
-
-        // $shipment_collections = ShipmentCollection::with('shipment_items')->findOrFail($shipment->id);
-        // $pdf = Pdf::loadView('receipts.collection_receipt', compact('shipment_collections'))
-        // ->setPaper([0, 0, 226.77, 600], 'portrait'); // 80mm wide receipt
-
-        // return $pdf->stream("receipt_{$shipment->id}.pdf");
+         
         }
 
         // ---------------------------
@@ -340,6 +325,9 @@ class ShipmentCollectionController extends Controller
             $receiverName = $request->receiverContactPerson;
             $receiverPhone = $request->receiverPhone;
 
+            $senderName = $request->sender_name;
+            $senderEmail = $request->senderEmail;
+
             $itemText = $itemCount === 1 ? 'item' : 'items';
             $weightText = $totalWeight === 1 ? 'kg' : 'kgs';
 
@@ -349,7 +337,7 @@ class ShipmentCollectionController extends Controller
             $creatorName = $creator?->name ?? 'Staff';
 
             // Front Office Message
-            $frontMessage = "Parcel collected at client premises. {$itemCount} {$itemText} weighing {$totalWeight} {$weightText}. Consignment No: {$consignmentNo}.";
+            $frontMessage = "Parcel has been collected by {$riderName} at client premises. Details: Request ID: {$requestId}; {$itemCount} {$itemText} weighing {$totalWeight} {$weightText}. Consignment No: {$consignmentNo}.";
 
             $smsService->sendSms(
                 phone: $frontOfficeNumber,
@@ -369,26 +357,55 @@ class ShipmentCollectionController extends Controller
                 'message' => $frontMessage,
             ]);
 
+            // front office email
+            $office_subject = 'Parcel Collected';
+            $office_email = $creator->email;
+            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+            $fullOfficeMessage = $frontMessage . $footer;
+
+            $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
+
+            $riderName = Auth::user()->name;
+
+             // sender email
+            $senderMessage = "Dear {$senderName}, Your Parcel has been collected by {$riderName}. Details:  Request ID: {$requestId}; {$itemCount} {$itemText} weighing {$totalWeight} {$weightText}. Consignment No: {$consignmentNo}.";
+            $sender_subject = 'Parcel Collected';
+            $sender_email = $senderEmail;
+            $fullOfficeMessage = $senderMessage . $footer;
+
+            $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
+
             // Receiver Message
-            $receiverMessage = "Dear {$receiverName}, your parcel has been collected from the sender. Consignment No: {$consignmentNo}.";
+            // $receiverMessage = "Dear {$receiverName}, your parcel has been collected from the sender. Consignment No: {$consignmentNo}.";
 
-            $smsService->sendSms(
-                phone: $receiverPhone,
-                subject: 'Parcel Collection Notice',
-                message: $receiverMessage,
-                addFooter: true
-            );
+            // $smsService->sendSms(
+            //     phone: $receiverPhone,
+            //     subject: 'Parcel Collection Notice',
+            //     message: $receiverMessage,
+            //     addFooter: true
+            // );
 
-            SentMessage::create([
-                'request_id' => $requestId,
-                'client_id' => $request->client_id,
-                'rider_id' => Auth::id(),
-                'recipient_type' => 'receiver',
-                'recipient_name' => $receiverName,
-                'phone_number' => $receiverPhone,
-                'subject' => 'Parcel Collection Notice',
-                'message' => $receiverMessage,
-            ]);
+            // SentMessage::create([
+            //     'request_id' => $requestId,
+            //     'client_id' => $request->client_id,
+            //     'rider_id' => Auth::id(),
+            //     'recipient_type' => 'receiver',
+            //     'recipient_name' => $receiverName,
+            //     'phone_number' => $receiverPhone,
+            //     'subject' => 'Parcel Collection Notice',
+            //     'message' => $receiverMessage,
+            // ]);
+
+            // receiver  email
+            // $receiver_subject = 'Parcel Collection Notice';
+            // $receiver_email = $request->receiverEmail;
+            // $fullReceiverMessage = $receiverMessage . $footer;
+
+            // $emailResponse = EmailHelper::sendHtmlEmail($receiver_email, $receiver_subject, $fullReceiverMessage);
+
+
         } catch (\Exception $e) {
             \Log::error('SMS Notification Error: ' . $e->getMessage());
         }

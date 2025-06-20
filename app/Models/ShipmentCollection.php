@@ -34,6 +34,9 @@ class ShipmentCollection extends Model
         'actual_total_cost',
         'verified_by',
         'verified_at',
+        'sender_email',
+        'receiver_email',
+        'special_rates_status',
     ];
 
     public function clientRequest()
