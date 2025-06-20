@@ -170,7 +170,7 @@
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Description of goods</th>
+                            <th>Desc.</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -184,7 +184,7 @@
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Description of goods</th>
+                            <th>Desc.</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
