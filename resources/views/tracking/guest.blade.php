@@ -51,6 +51,29 @@
             font-size: 18px;
             color: green;
             display: none;
+            transform: translateY(-50%);
+        }
+
+        /* .valid-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            font-size: 1rem;
+            color: green;
+            display: none;
+        } */
+
+        input:valid~.valid-icon {
+            display: inline;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         .form-control.is-valid+.valid-feedback {
@@ -68,25 +91,25 @@
 </head>
 
 <body class="p-4">
+    <div class="container vh-100 d-flex align-items-center justify-content-center">
+        <div class="w-100">
+            <!-- Header Section -->
+            <div class="text-center mb-4">
+                <img src="{{ asset('images/UCSLogo1.png') }}" height="100" alt="Logo" class="mb-3">
+                <h2 class="text-primary fw-bold"><strong>Parcel Tracking</strong></h2>
+            </div>
 
-    <div class="container ">
-        <div class="row justify-content-center">
-
-            <h2 class="mb-2 text-primary  justify-content-center">
-                <img src="{{ asset('images/UCSLogo1.png') }}" height="200px" width="auto" alt="">
-                Track Your Parcel
-            </h2>
-        </div>
-        <div class=" mt-1">
+            <!-- Form Section -->
             <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card shadow rounded-4">
-                        <div class="card-body p-4">
-                            <h3 class="text-center text-success mb-2">Guest Sign In</h3>
+                <div class="col-md-6 col-lg-5">
+                    <div class="card shadow-lg rounded-4 border-0">
+                        <div class="card-body p-5">
+                            <h3 class="text-center text-success mb-4">Guest Sign In</h3>
+
                             <form id="guestForm">
                                 @csrf
 
-                                {{-- Name --}}
+                                <!-- Name -->
                                 <div class="mb-3 position-relative">
                                     <label>Name</label>
                                     <input type="text" name="name" minlength="3" maxlength="50"
@@ -100,10 +123,10 @@
                                         @enderror
                                     </div>
                                     <div class="valid-feedback" id="nameValid">Looks good!</div>
-                                    <span class="valid-icon" id="nameTick">✔️</span>
+                                    <span class="valid-icon" id="nameTick"></span>
                                 </div>
 
-                                {{-- Phone --}}
+                                <!-- Phone -->
                                 <div class="mb-3 position-relative">
                                     <label>Phone</label>
                                     <input type="text" name="phone"
@@ -117,11 +140,11 @@
                                         @enderror
                                     </div>
                                     <div class="valid-feedback" id="phoneValid">Looks good!</div>
-                                    <span class="valid-icon" id="phoneTick">✔️</span>
+                                    <span class="valid-icon" id="phoneTick"></span>
                                 </div>
 
-                                {{-- Email --}}
-                                <div class="mb-3 position-relative">
+                                <!-- Email -->
+                                <div class="mb-4 position-relative">
                                     <label class="text-dark">Email</label>
                                     <input type="email" name="email"
                                         class="form-control @error('email') is-invalid @enderror"
@@ -134,20 +157,19 @@
                                         @enderror
                                     </div>
                                     <div class="valid-feedback" id="emailValid">Looks good!</div>
-                                    <span class="valid-icon" id="emailTick">✔️</span>
+                                    <span class="valid-icon" id="emailTick"></span>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary w-100">Continue as Guest</button>
-                                <a href="{{ route('signin') }}" class="btn btn-link w-100 mt-2">Signin</a>
+                                <a href="{{ route('client_login') }}" class="btn btn-link w-100 mt-3">Signin</a>
                             </form>
-
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -225,7 +247,7 @@
 
         // Final validation on submit
         form.addEventListener('submit', function(e) {
-            const isValid = validateName() & validatePhone() & validateEmail();
+            const isValid = validateName() && validatePhone() && validateEmail();
             if (!isValid) e.preventDefault();
         });
     });
@@ -248,13 +270,13 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'same-origin' // ✅ Required to maintain session
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                // Show validation errors
                 if (data.errors) {
                     for (const field in data.errors) {
                         const input = form.querySelector(`[name="${field}"]`);
@@ -268,12 +290,8 @@
                 return;
             }
 
-            // ✅ Success: store token & redirect or show message
-            console.log('Access Token:', data.token);
-            localStorage.setItem('guest_token', data.token);
-            localStorage.setItem('guest_name', data.guest.name);
-            //alert('Guest access granted!');
-            window.location.href = '/tracker'; // or your dashboard
+            // ✅ Success - Redirect to tracker
+            window.location.href = '/tracker';
 
         } catch (error) {
             console.error('Error submitting form:', error);

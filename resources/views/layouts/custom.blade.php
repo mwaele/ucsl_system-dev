@@ -86,7 +86,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center bg-white shadow" href="/">
-                <img src="{{ asset('images/ucsl-logo.jpg') }}" alt="" height="50" width="auto"
+                <img src="{{ asset('images/UCSLogo1.png') }}" alt="" height="50" width="auto"
                     class="image-fluid">
                 {{-- <div class="sidebar-brand-icon">
                     <i class="fas fa-truck"></i>
@@ -343,7 +343,9 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-dark small">
-                                    {{ Auth::user()->name }} | UCSL - {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->station . ' Office' }} </span>
+                                    {{ Auth::user()->name }} | UCSL -
+                                    {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->station . ' Office' }}
+                                </span>
                                 <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
                             </a>
                             <!-- Dropdown - User Information -->
@@ -393,13 +395,16 @@
                 @endphp
 
                 @foreach ($toastTypes as $type => $props)
-                    @if(session($type))
-                        <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3" style="top: 1rem; right: 1rem; z-index: 1050;">
-                            <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert" aria-live="assertive" aria-atomic="true">
+                    @if (session($type))
+                        <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3"
+                            style="top: 1rem; right: 1rem; z-index: 1050;">
+                            <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert"
+                                aria-live="assertive" aria-atomic="true">
                                 <div class="toast-header {{ $props['bg'] }} text-white">
                                     <strong class="mr-auto">{{ $props['title'] }}</strong>
                                     <small>Just now</small>
-                                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast"
+                                        aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -409,17 +414,24 @@
                             </div>
                         </div>
                     @endif
-                @endforeach
 
-                <!-- Footer -->
-                <footer class="sticky-footer bg-white">
+                    @if (session('email_status.success'))
+                        <div class="alert alert-success">
+                            Email sent successfully.
+                        </div>
+                    @elseif(session('email_status.error'))
+                        <div class="alert alert-danger">
+                            {{ session('email_status.error') }}
+                        </div>
+                    @endif
+
                     <div class="container my-auto">
                         <div class="copyright text-center my-auto">
                             <span>Copyright &copy; www.ufanisicourier.co.ke</span>
                         </div>
                     </div>
-                </footer>
-                <!-- End of Footer -->
+                    </footer>
+                    <!-- End of Footer -->
             </div>
             <!-- End of Content Wrapper -->
         </div>
@@ -496,7 +508,7 @@
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const toasts = document.querySelectorAll('.timeout-toast');
                 toasts.forEach(toast => {
                     setTimeout(() => {
@@ -506,7 +518,7 @@
                     }, 4000);
                 });
             });
-        </script> 
+        </script>
 
         <script>
             // Initialize Flatpickr
@@ -548,7 +560,7 @@
                                 let val = select.value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                                 column
                                     .search(val ? val : '', true,
-                                    false) // true: regex, false: smart search
+                                        false) // true: regex, false: smart search
                                     .draw();
                             });
 
@@ -815,5 +827,6 @@
                 });
             });
         </script>
-    </body>
+</body>
+
 </html>

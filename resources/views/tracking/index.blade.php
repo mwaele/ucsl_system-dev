@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Tracking Status</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -48,50 +49,51 @@
 
 <body class="p-4">
 
-    <div class="container ">
-        <div class="row format justify-content-center">
-
-            <h2 class="mb-2 text-primary  justify-content-center">
-
-                Track Your Parcel
-            </h2>
+    <div class="container vh-100 d-flex flex-column justify-content-center">
+        <div class="row justify-content-center align-items-center mb-4">
+            <div class="text-center">
+                <img src="{{ asset('images/UCSLogo1.png') }}" height="100" alt="Logo" class="mb-3">
+                <h2 class="text-primary fw-bold"><strong>Parcel Tracking</strong></h2>
+            </div>
         </div>
-        <div class=" mt-1">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card shadow rounded-4">
-                        <div class="card-body p-4">
-                            <h3 class="text-center text-success mb-2">Client Sign In</h3>
-                            <form id="clientLoginForm">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="text-dark">Email</label>
-                                    <input type="email" name="email"
-                                        class="form-control @error('email') is-invalid @enderror"
-                                        value="{{ old('email') }}" required autofocus>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label>Password</label>
-                                    <input type="password" name="password"
-                                        class="form-control @error('password') is-invalid @enderror" required>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100">Sign In</button>
-                                <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-2">Continue as Guest</a>
-                            </form>
 
-                            <div id="loginError" class="text-danger mt-2"></div>
-                        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg rounded-4 border-0">
+                    <div class="card-body p-5">
+                        <h3 class="text-center text-success mb-4">Client Sign In</h3>
+                        <form id="clientLoginForm">
+                            @csrf
+                            <div class="mb-3">
+                                <label class="text-dark">Email</label>
+                                <input type="email" name="email"
+                                    class="form-control @error('email') is-invalid @enderror"
+                                    value="{{ old('email') }}" required autofocus>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-dark">Password</label>
+                                <input type="password" name="password"
+                                    class="form-control @error('password') is-invalid @enderror" required>
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                            <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-3">Continue as Guest</a>
+                        </form>
+
+                        <div id="loginError" class="text-danger mt-2"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
         document.getElementById('clientLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -102,23 +104,21 @@
                 password: form.password.value
             };
 
-            fetch('/api/client/login', {
+            fetch('/client/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Only needed for web routes
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
+                    credentials: 'same-origin' // Required to send session cookies
                 })
                 .then(async res => {
                     const data = await res.json();
                     if (!res.ok) throw data;
 
-                    // ✅ Save token to localStorage/sessionStorage
-                    localStorage.setItem('client_token', data.access_token);
-
-                    // ✅ Redirect to tracker
                     window.location.href = '/tracker';
                 })
                 .catch(err => {

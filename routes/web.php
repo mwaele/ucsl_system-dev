@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request; // ✅ Correct: the actual Request class, not the Facade
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ShipmentController;
@@ -17,6 +17,9 @@ use App\Http\Controllers\MainController;
 
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\SpecialRateController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\API\ClientAuthController;
+use App\Http\Controllers\GuestController;
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
@@ -25,16 +28,39 @@ Route::middleware('client.auth')->group(function () {
 
     Route::get('/tracking', function () {
         return view('tracking.index');
-    });
-
-    Route::get('/signin', [AuthController::class, 'showSignIn'])->name('signin');
-    Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');
-
-    Route::get('/guest', [AuthController::class, 'showGuest'])->name('guest');
-    Route::post('/guest', [AuthController::class, 'processGuest'])->name('guest.process');
+});
+     
 });
 
+Route::post('/client/login', [ClientAuthController::class, 'login']);
+// Route::middleware('client.auth')->group(function () {
+Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');
+
+
+
+Route::get('client_login', [AuthController::class, 'showSignIn'])->name('client_login');
+Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');
+
+Route::get('/guest', [AuthController::class, 'showGuest'])->name('guest');
+Route::post('/guest', [AuthController::class, 'processGuest'])->name('guest.process'); 
+
 Route::resource('guests','App\Http\Controllers\GuestController');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return response()->json(['message' => 'Logged out']);
+});
+
+Route::post('/client/logout', function (Request $request) {
+    Auth::guard('client')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return response()->json(['message' => 'Logged out']);
+})->middleware('web')->name('client.logout');
+
 
 // Route::get('/', function () {
 //     return view('index');

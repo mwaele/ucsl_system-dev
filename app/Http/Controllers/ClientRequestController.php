@@ -17,6 +17,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use App\Services\SmsService;
+use App\Mail\GenericMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\HtmlString;
+
+use App\Helpers\EmailHelper;
 
 class ClientRequestController extends Controller
 {
@@ -290,11 +295,14 @@ class ClientRequestController extends Controller
         $rider = User::find($clientRequest->userId);
         $rider_name = $rider?->name ?? 'Rider';
         $rider_phone = $rider?->phone_number;
+        $rider_email = $rider->email;
 
         // Client details
         $client = Client::find($clientRequest->clientId);
         $client_name = $client?->name ?? 'Client';
         $client_phone = $client?->contact;
+
+        $client_email = $client->email;
 
         // Rider SMS
         $rider_message = "Dear $rider_name, Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
@@ -315,6 +323,17 @@ class ClientRequestController extends Controller
             'message' => $rider_message,
         ]);
 
+        // rider email
+
+        $rider_subject = 'Client Collections Alert';
+        $rider_email = $client_email;
+        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                   <p>Thank you for using Ufanisi Courier Services.</p>";
+        $fullRiderMessage = $rider_message . $footer;
+
+        $emailResponse = EmailHelper::sendHtmlEmail($rider_email, $rider_subject, $fullRiderMessage);
+
         // Client SMS
         $client_message = "Dear $client_name, We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
         $smsService->sendSms(
@@ -334,7 +353,15 @@ class ClientRequestController extends Controller
             'message' => $client_message,
         ]);
 
-        return redirect()->back()->with('success', 'Client Request Saved and Tracked Successfully');
+        // send email
+
+        $subject = 'Parcel Collection Alert';
+        $message = $client_message;
+        $fullMessage = $message . $footer;
+
+        $emailResponse = EmailHelper::sendHtmlEmail($client_email, $subject, $fullMessage);
+
+        return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully')->with('email_status', $emailResponse->getData());
     }
 
 

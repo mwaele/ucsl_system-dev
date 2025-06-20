@@ -112,7 +112,7 @@
                                                                 <strong>From:</strong>
                                                                 {{ $collection->shipmentCollection->office->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
-                                                                {{ $collection->shipmentCollection->destination->destination }}
+                                                                {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                                             </div>
                                                             <div><strong>Total Items:</strong>
                                                                 {{ $collection->shipmentCollection->items->count() }}</div>
@@ -341,12 +341,21 @@
                                                                     <!-- Sender Details Form (Initially Hidden) -->
                                                                     <div>
                                                                         <div class="form-row">
-                                                                            <div class="form-group col-md-12">
+                                                                            <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Sender
                                                                                     Name <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="sender_name" id="sender_name">
+                                                                            </div>
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-dark">Sender
+                                                                                    Email <span
+                                                                                        class="text-danger">*</span>
+                                                                                </label>
+                                                                                <input type="email" class="form-control"
+                                                                                    name="senderEmail" id="senderEmail"
+                                                                                    required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
@@ -395,7 +404,7 @@
                                                                 <!-- RECEIVER DETAILS -->
                                                                 <div class="card-body">
                                                                     <div class="form-row">
-                                                                        <div class="form-group col-md-12">
+                                                                        <div class="form-group col-md-6">
                                                                             <label class="form-label text-dark">Receiver
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
@@ -407,6 +416,14 @@
                                                                                 value="{{ $collection->requestId }}">
 
 
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="form-label text-dark">Receiver
+                                                                                Email <span class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="email" class="form-control"
+                                                                                name="receiverEmail" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -458,8 +475,7 @@
                                                                 <div class="form-group col-md-6">
                                                                     <label class="form-label text-dark">Origin <span
                                                                             class="text-danger">*</span> </label>
-                                                                    <select name="origin_id_special"
-                                                                        id="origin_id_special"
+                                                                    <select name="origin_id" id="origin_id_special"
                                                                         class="form-control origin-dropdown-special">
                                                                         <option value="">Select</option>
                                                                         @foreach ($offices as $office)
@@ -471,12 +487,12 @@
                                                                 <div class="form-group col-md-6">
                                                                     <label class="form-label text-dark">Destination <span
                                                                             class="text-danger">*</span> </label>
-                                                                    <select name="destination_special"
+                                                                    <select name="destination"
                                                                         class="form-control destination-dropdown-special">
                                                                         <option value="">Select</option>
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id_special'
+                                                                <input type="hidden" name='destination_id'
                                                                     id="destination_id_special">
                                                             </div>
                                                             {{-- <input type="hidden" name='destination' id="destination_id">
@@ -508,15 +524,12 @@
                                                                 <input type="hidden" name='destination_id'
                                                                     id="destination_id">
 
-
-                                                                <input type="hidden"
-                                                                    value="{{ $collection->client->special_rates_status }}"
-                                                                    name='special_rate_state' id="special_rate_state">
                                                             </div>
                                                         @endif
 
-
-
+                                                        <input type="hidden"
+                                                            value="{{ $collection->client->special_rates_status }}"
+                                                            name='special_rate_state' id="special_rate_state">
 
                                                         <!-- Shipment Info Table -->
                                                         {{-- <div class="section-title"><b class="text-dark">Shipment Information</b></div> --}}
@@ -666,7 +679,7 @@
                     const sender_contact = document.getElementById('sender_contact');
                     const sender_town = document.getElementById('sender_town');
                     const sender_address = document.getElementById('sender_address');
-                    //const rates_status = document.getElementById('rates_status');
+                    const senderEmail = document.getElementById('senderEmail');
 
                     function clearForm() {
                         sender_name.value = '';
@@ -674,7 +687,7 @@
                         sender_contact.value = '';
                         sender_town.value = '';
                         sender_address.value = '';
-                        //   rates_status.textContent = '';
+                        senderEmail.value = '';
                     }
 
                     clientRadio.addEventListener('change', () => {
@@ -696,7 +709,7 @@
                                         sender_contact.value = client.contact || '';
                                         sender_town.value = client.city || '';
                                         sender_address.value = client.address || '';
-                                        //   rates_status.textContent = client.special_rates_status || '';
+                                        senderEmail.value = client.email || '';
                                     } else {
                                         alert('Client not found.');
                                     }
