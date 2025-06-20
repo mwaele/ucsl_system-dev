@@ -39,6 +39,6 @@ class ShipmentItem extends Model
 
     public function subItems()
     {
-        return $this->hasMany(ShipmentSubItem::class);
+        return $this->hasMany(ShipmentSubItem::class, 'shipment_item_id');
     }
 }

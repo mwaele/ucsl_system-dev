@@ -514,13 +514,12 @@ class ShipmentCollectionController extends Controller
         return redirect()->route('clientRequests.index')->with('success', 'Shipment collection verified successfully!');
     }
 
-    public function update_collections(Request $request, $id)
+
+    public function update_collections(Request $request, $id, SmsService $smsService)
     {
         $shipment = ShipmentCollection::where('requestId', $request->requestId)->firstOrFail();
 
-        if($shipment){
-
-            // Update main shipment
+        if ($shipment) {
             $shipment->update([
                 'actual_cost' => $request->cost,
                 'actual_vat' => $request->vat,
@@ -529,99 +528,131 @@ class ShipmentCollectionController extends Controller
                 'verified_at' => now(),
             ]);
 
-            // Update shipment items
-        if ($request->has('items')) {
-            foreach ($request->items as $itemData) {
-                $item = ShipmentItem::find($itemData['id']);
-                if ($item) {
-                    $item->update([
-                        'actual_quantity' => $itemData['packages'],
-                        'actual_weight' => $itemData['weight'],
-                        'actual_length' => $itemData['length'],
-                        'actual_width'  => $itemData['width'],
-                        'actual_height' => $itemData['height'],
-                        'actual_volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
-                        'remarks' => $itemData['remarks'] ?? null,
-                    ]);
+            if ($request->has('items')) {
+                foreach ($request->items as $itemData) {
+                    $item = ShipmentItem::find($itemData['id']);
+                    if ($item) {
+                        $item->update([
+                            'actual_quantity' => $itemData['packages'],
+                            'actual_weight' => $itemData['weight'],
+                            'actual_length' => $itemData['length'],
+                            'actual_width' => $itemData['width'],
+                            'actual_height' => $itemData['height'],
+                            'actual_volume' => $itemData['length'] * $itemData['width'] * $itemData['height'],
+                            'remarks' => $itemData['remarks'] ?? null,
+                        ]);
+                        if (isset($itemData['sub_items']) && is_array($itemData['sub_items'])) {
+                            // Optional: Delete old sub-items if necessary
+                            ShipmentSubItem::where('shipment_item_id', $item->id)->delete();
+
+                            foreach ($itemData['sub_items'] as $subItemData) {
+                                $item->subItems()->create([
+                                    'shipment_item_id' => $item->id,
+                                    'item_name' => $subItemData['name'] ?? '',
+                                    'quantity' => $subItemData['quantity'] ?? 0,
+                                    'weight' => $subItemData['weight'] ?? 0,
+                                    'length' => $subItemData['length'] ?? null,
+                                    'width' => $subItemData['width'] ?? null,
+                                    'height' => $subItemData['height'] ?? null,
+                                    'remarks' => $subItemData['remarks'] ?? null,
+                                ]);
+                            }
+                        }
+                    }
                 }
             }
-        }
+
+            // Generate waybill number
             $prefix = 'UCSL';
             $suffix = 'KE';
             $padLength = 10;
-
             $latestWaybill = DB::table('shipment_collections')
                 ->whereNotNull('waybill_no')
                 ->orderByDesc('id')
                 ->value('waybill_no');
 
-            if ($latestWaybill) {
-                // Remove prefix and suffix
-                $waybill_no = substr($latestWaybill, strlen($prefix), -strlen($suffix));
+            $bill_no = $latestWaybill
+                ? (int)substr($latestWaybill, strlen($prefix), -strlen($suffix)) + 1
+                : 1;
 
-                // Convert to int and increment
-                $bill_no = (int)$waybill_no + 1;
-            } else {
-                // First waybill
-                $bill_no = 1;
-            }
+            $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
 
-            // Pad with zeros
-            $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
+            // Save waybill
+            ShipmentCollection::where('requestId', $request->requestId)
+                ->update(['waybill_no' => $waybill_no]);
 
-            $waybill_no = $prefix . $padded_no . $suffix;
+            // Update client request
+            ClientRequest::where('requestId', $request->requestId)
+                ->update(['status' => 'verified']);
 
-            
-
-            // Sync sub-items if any
-            if (isset($itemData['sub_items']) && is_array($itemData['sub_items'])) {
-            
-                foreach ($itemData['sub_items'] as $subItemData) {
-                    ShipmentSubItem::create([
-                        'shipment_item_id' => $shipment->id,
-                        'item_name' => $subItemData['name'],
-                        'quantity' => $subItemData['quantity'],
-                        'weight' => $subItemData['weight'],
-                        'remarks' => $subItemData['remarks'] ?? null,
-                        'length' => $subItemData['length'] ?? null,
-                        'width' => $subItemData['width'] ?? null,
-                        'height' => $subItemData['height'] ?? null,
-                    ]);
-                }
-            }
-        
-        // Update status in client_requests
-        ClientRequest::where('requestId', $request->requestId)
-        ->update(['status' => 'verified']);
-
-        ShipmentCollection::where('requestId', $request->requestId)
-        ->update(['waybill_no' => $waybill_no]);
-
+            // Track update
             DB::table('tracks')
-                ->where('requestId',$request->requestId)
+                ->where('requestId', $request->requestId)
                 ->update([
                     'current_status' => 'Awaiting Dispatch',
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
 
-        $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
+            $trackId = DB::table('tracks')
+                ->where('requestId', $request->requestId)
+                ->value('id');
 
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => 'Parcel Verified and ready for dispatch',
+                'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated ' . $waybill_no,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
-        // 3. Insert into tracking_infos
-        DB::table('tracking_infos')->insert([
-            'trackId' => $id,
-            'date' => now(),
-            'details' => 'Parcel Verified and ready for dispatch',
-            'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated '.$waybill_no,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-        return response()->json(['message' => 'Shipment and items updated successfully']);
-        }else{
-            return response()->json(['message' => 'Shipment and items not found']);
+            // ----------------------------
+            // ✅ SMS Notifications Logic
+            // ----------------------------
+            try {
+                $senderPhone = $shipment->sender_contact;
+                $senderName = $shipment->sender_name;
+                $receiverPhone = $shipment->receiver_phone;
+                $receiverName = $shipment->receiver_name;
+                $clientId = $shipment->client_id;
+
+                // Notify Sender
+                $senderMsg = "Hello {$senderName}, your parcel has been verified. Total cost: KES {$shipment->actual_total_cost}. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
+                $smsService->sendSms($senderPhone, 'Parcel Verified', $senderMsg, true);
+
+                SentMessage::create([
+                    'request_id' => $request->requestId,
+                    'client_id' => $clientId,
+                    'rider_id' => auth()->id(),
+                    'recipient_type' => 'sender',
+                    'recipient_name' => $senderName,
+                    'phone_number' => $senderPhone,
+                    'subject' => 'Parcel Verified',
+                    'message' => $senderMsg,
+                ]);
+
+                // Notify Receiver
+                $receiverMsg = "Hello {$receiverName}, your parcel has been booked with UCSL. We will notify when the parcel arrives. Waybill No: {$waybill_no}.";
+                $smsService->sendSms($receiverPhone, 'Parcel Booked', $receiverMsg, true);
+
+                SentMessage::create([
+                    'request_id' => $request->requestId,
+                    'client_id' => $clientId,
+                    'rider_id' => auth()->id(),
+                    'recipient_type' => 'receiver',
+                    'recipient_name' => $receiverName,
+                    'phone_number' => $receiverPhone,
+                    'subject' => 'Parcel Booked',
+                    'message' => $receiverMsg,
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
+            }
+            
+            return redirect()->back()->with('success', 'Shipment and items updated successfully');
         }
 
-        
+        return response()->json(['message' => 'Shipment and items not found']);
     }
 
     /**
