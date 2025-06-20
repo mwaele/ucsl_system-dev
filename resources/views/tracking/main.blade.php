@@ -71,9 +71,11 @@
             <!-- Date -->
             <div class="col-12 col-sm-12 col-md-5 col-lg-5">
                 <h5 class="text-dark mb-0">
-                    Tracking Date: {{ now()->format('F j, Y, g:i a') }}
+                    Tracking Date: <span id="liveDateTime"></span>
                 </h5>
-                <button class="btn btn-danger mt-2 logout">Logout</button>
+
+                <button class="btn btn-danger mt-2 logout">Logout:
+                    {{ auth('client')->user()->name ?? auth('guest')->user()->name }}</button>
                 {{-- <p class="fw-bold">
             Tracking done by: {{ auth('api')->user()->name }}
         </p> --}}
@@ -202,41 +204,89 @@
                 window.open(`/track/${requestId}/pdf`, '_blank');
             });
 
+            // $('.logout').on('click', function(e) {
+            //     e.preventDefault();
+
+            //     // Optional: Confirm before logout
+            //     if (!confirm("Are you sure you want to logout?")) return;
+
+            //     // Clear localStorage
+            //     localStorage.clear();
+
+            //     window.location.href =
+            //         "/tracking";
+
+            //     //location.reload();
+            //     // const token = localStorage.getItem('client_token') || localStorage.getItem('guest_token');
+
+
+            //     // Send logout request via AJAX
+            //     // Send logout request
+            //     // $.ajax({
+            //     //     url: "/client/logout", // or use `{{ route('client.logout') }}` in Blade
+            //     //     method: 'POST',
+            //     //     headers: {
+            //     //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     //     },
+            //     //     success: function(response) {
+            //     //         // Redirect after logout
+            //     //         window.location.href =
+            //     //             "/tracking"; // or `{{ route('client_login') }}`
+            //     //     },
+            //     //     error: function(xhr) {
+            //     //         console.error(xhr.responseText);
+            //     //         alert('Logout failed. Try again.');
+            //     //     }
+            //     // });
+            // });
             $('.logout').on('click', function(e) {
                 e.preventDefault();
 
-                // Optional: Confirm before logout
+                // Optional confirmation
                 if (!confirm("Are you sure you want to logout?")) return;
 
-                // Clear localStorage
-                localStorage.clear();
+                // Send logout request to Laravel
+                $.ajax({
+                    url: "/client/logout", // You can also use route() if you're in Blade
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Optional: Clear localStorage
+                        localStorage.clear();
 
-                window.location.href =
-                    "/tracking";
-
-                //location.reload();
-                // const token = localStorage.getItem('client_token') || localStorage.getItem('guest_token');
-
-
-                // Send logout request via AJAX
-                // Send logout request
-                // $.ajax({
-                //     url: "/client/logout", // or use `{{ route('client.logout') }}` in Blade
-                //     method: 'POST',
-                //     headers: {
-                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //     },
-                //     success: function(response) {
-                //         // Redirect after logout
-                //         window.location.href =
-                //             "/tracking"; // or `{{ route('client_login') }}`
-                //     },
-                //     error: function(xhr) {
-                //         console.error(xhr.responseText);
-                //         alert('Logout failed. Try again.');
-                //     }
-                // });
+                        // Redirect after logout
+                        window.location.href = "/tracking"; // Or wherever you want
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        alert('Logout failed. Try again.');
+                    }
+                });
             });
+
+            function updateDateTime() {
+                const now = new Date();
+
+                const options = {
+                    weekday: undefined,
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                };
+
+                const formatted = now.toLocaleString('en-US', options);
+                document.getElementById('liveDateTime').textContent = formatted;
+            }
+
+            updateDateTime(); // Initial run
+            setInterval(updateDateTime, 1000); // Update every second
+
         });
     </script>
 

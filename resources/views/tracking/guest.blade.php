@@ -270,13 +270,13 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'same-origin' // ✅ Required to maintain session
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                // Show validation errors
                 if (data.errors) {
                     for (const field in data.errors) {
                         const input = form.querySelector(`[name="${field}"]`);
@@ -290,12 +290,8 @@
                 return;
             }
 
-            // ✅ Success: store token & redirect or show message
-            console.log('Access Token:', data.token);
-            localStorage.setItem('guest_token', data.token);
-            localStorage.setItem('guest_name', data.guest.name);
-            //alert('Guest access granted!');
-            window.location.href = '/tracker'; // or your dashboard
+            // ✅ Success - Redirect to tracker
+            window.location.href = '/tracker';
 
         } catch (error) {
             console.error('Error submitting form:', error);

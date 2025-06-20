@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Tracking Status</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -103,23 +104,21 @@
                 password: form.password.value
             };
 
-            fetch('/api/client/login', {
+            fetch('/client/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Only needed for web routes
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
+                    credentials: 'same-origin' // Required to send session cookies
                 })
                 .then(async res => {
                     const data = await res.json();
                     if (!res.ok) throw data;
 
-                    // ✅ Save token to localStorage/sessionStorage
-                    localStorage.setItem('client_token', data.access_token);
-
-                    // ✅ Redirect to tracker
                     window.location.href = '/tracker';
                 })
                 .catch(err => {

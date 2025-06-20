@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request; // ✅ Correct: the actual Request class, not the Facade
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ShipmentController;
@@ -18,6 +18,8 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\SpecialRateController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\API\ClientAuthController;
+use App\Http\Controllers\GuestController;
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
@@ -29,6 +31,11 @@ Route::middleware('client.auth')->group(function () {
 });
      
 });
+
+Route::post('/client/login', [ClientAuthController::class, 'login']);
+// Route::middleware('client.auth')->group(function () {
+Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');
+
 
 
 Route::get('client_login', [AuthController::class, 'showSignIn'])->name('client_login');
@@ -52,7 +59,7 @@ Route::post('/client/logout', function (Request $request) {
     $request->session()->regenerateToken();
 
     return response()->json(['message' => 'Logged out']);
-})->name('client.logout');
+})->middleware('web')->name('client.logout');
 
 
 // Route::get('/', function () {

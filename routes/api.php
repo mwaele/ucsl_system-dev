@@ -12,9 +12,6 @@ use App\Http\Controllers\GuestController;
 
 
 
-Route::post('/client/login', [ClientAuthController::class, 'login']);
-// Route::middleware('client.auth')->group(function () {
-Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');
 
     
 // });
