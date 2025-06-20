@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserLog;
 
 class GuestController extends Controller
 {
@@ -33,7 +34,7 @@ class GuestController extends Controller
 {
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|min:3|max:50',
-        'phone' => 'required|string|size:12',
+        'phone' => 'required|string|size:13',
         'email' => 'required|email',
     ]);
 
@@ -46,6 +47,19 @@ class GuestController extends Controller
     // 🔐 Log in guest using session
     Auth::guard('guest')->login($guest);
     $request->session()->regenerate();
+
+    if(auth('guest')->user()->name){
+            $table = 'guests';
+            $id = auth('guest')->user()->id;
+            $name = auth('guest')->user()->name;
+        }
+        UserLog::create([
+        'name' =>  $name,
+        'actions' => 'Logged in for tracking',
+        'url' => $request->fullUrl(),
+        'reference_id' => $id,
+        'table' => $table,
+    ]);
 
     return response()->json([
         'message' => 'Guest logged in successfully.',

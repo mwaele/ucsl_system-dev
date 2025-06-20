@@ -53,14 +53,16 @@ Route::post('/logout', function () {
     return response()->json(['message' => 'Logged out']);
 });
 
-Route::post('/client/logout', function (Request $request) {
-    Auth::guard('client')->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+// Route::post('/client/logout', function (Request $request) {
+//     Auth::guard('client')->logout();
+//     $request->session()->invalidate();
+//     $request->session()->regenerateToken();
 
-    return response()->json(['message' => 'Logged out']);
-})->middleware('web')->name('client.logout');
-
+//     return response()->json(['message' => 'Logged out']);
+// })->middleware('web')->name('client.logout');
+Route::post('/client/logout', [AuthController::class, 'logout'])
+    ->middleware('web')
+    ->name('client.logout');
 
 // Route::get('/', function () {
 //     return view('index');

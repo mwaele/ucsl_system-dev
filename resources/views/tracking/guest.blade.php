@@ -129,14 +129,14 @@
                                 <!-- Phone -->
                                 <div class="mb-3 position-relative">
                                     <label>Phone</label>
-                                    <input type="text" name="phone"
+                                    <input type="text" name="phone" maxlength="13"
                                         class="form-control @error('phone') is-invalid @enderror"
                                         value="{{ old('phone') }}" required>
                                     <div class="invalid-feedback" id="phoneError">
                                         @error('phone')
                                             {{ $message }}
                                         @else
-                                            Phone must be exactly 10 digits.
+                                            Phone must be exactly 13 digits.
                                         @enderror
                                     </div>
                                     <div class="valid-feedback" id="phoneValid">Looks good!</div>
@@ -214,17 +214,18 @@
 
         function validatePhone() {
             const value = fields.phone.value.trim();
-            const valid = /^\d{12}$/.test(value);
+            const valid = /^\+\d{12}$/.test(value); // '+' followed by exactly 12 digits
             if (!valid) {
                 fields.phone.classList.add('is-invalid');
                 fields.phone.classList.remove('is-valid');
-                errors.phone.textContent = 'Phone must be exactly 12 digits.';
+                errors.phone.textContent = 'Phone must start with "+" followed by exactly 12 digits.';
                 return false;
             }
             fields.phone.classList.remove('is-invalid');
             fields.phone.classList.add('is-valid');
             return true;
         }
+
 
         function validateEmail() {
             const value = fields.email.value.trim();

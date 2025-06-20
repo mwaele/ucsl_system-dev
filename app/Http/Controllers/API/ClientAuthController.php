@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserLog;
 
 class ClientAuthController extends Controller
 {
@@ -44,6 +45,21 @@ class ClientAuthController extends Controller
         'password' => $request->password,
     ])) {
         $request->session()->regenerate();
+
+         if(auth('client')->user()->name ?? ''){
+            $table = 'clients';
+            $id = auth('client')->user()->id;
+        }else if(auth('guest')->user()->name){
+            $table = 'guests';
+            $id = auth('guest')->user()->id;
+        }
+        UserLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Logged in the tracking app',
+        'url' => $request->fullUrl(),
+        'reference_id' => $id,
+        'table' => $table,
+    ]);
 
         return response()->json([
             'success' => true,

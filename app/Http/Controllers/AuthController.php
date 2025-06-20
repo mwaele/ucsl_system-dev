@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Models\UserLog;
 
 class AuthController extends Controller
 {
@@ -19,6 +20,20 @@ class AuthController extends Controller
         $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
+        ]);
+        if(auth('client')->user()->name ?? ''){
+            $table = 'clients';
+            $id = auth('client')->user()->id;
+        }else if(auth('guest')->user()->name){
+            $table = 'guests';
+            $id = auth('guest')->user()->id;
+        }
+        UserLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Logged in the tracking app',
+        'url' => $request->fullUrl(),
+        'reference_id' => $id,
+        'table' => $table,
         ]);
 
         if (Auth::guard('client')->attempt($request->only('email', 'password'))) {
@@ -46,6 +61,44 @@ class AuthController extends Controller
             'guest' => $request->only('name', 'email', 'phone')
         ]);
 
+         if(auth('client')->user()->name ?? ''){
+            $table = 'clients';
+            $id = auth('client')->user()->id;
+        }else if(auth('guest')->user()->name){
+            $table = 'guests';
+            $id = auth('guest')->user()->id;
+        }
+        UserLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Logged in the tracking app',
+        'url' => $request->fullUrl(),
+        'reference_id' => $id,
+        'table' => $table,
+    ]);
+
         return redirect('/dashboard')->with('success', 'Welcome, guest!');
+    }
+
+    public function logout(Request $request)
+    {
+         if(auth('client')->user()->name ?? ''){
+            $table = 'clients';
+            $id = auth('client')->user()->id;
+        }else if(auth('guest')->user()->name){
+            $table = 'guests';
+            $id = auth('guest')->user()->id;
+        }
+        UserLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Logged out the tracking app',
+        'url' => $request->fullUrl(),
+        'reference_id' => $id,
+        'table' => $table,
+    ]);
+        Auth::guard('client')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logged out']);
     }
 }

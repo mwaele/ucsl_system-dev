@@ -192,8 +192,10 @@
                     </p>
                 </td>
                 <td class="td">
+                    <?php count($shipment_items); ?>
                     @foreach ($shipment_items as $shipment_item)
-                        <p> Item: {{ $shipment_item->item_name }}; Qty: {{ $shipment_item->packages_no }}; Weight:
+                        <p class="p"> Item: {{ $shipment_item->item_name }}; Qty:
+                            {{ $shipment_item->packages_no }}; Weight:
                             {{ $shipment_item->weight }} Kgs</p>
                     @endforeach
                 </td>

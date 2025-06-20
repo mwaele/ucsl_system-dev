@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('user_logs', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->text('actions');
+            $table->string('url');
+             $table->unsignedBigInteger('reference_id')->nullable();
+            $table->string('table');
             $table->timestamps();
         });
     }
