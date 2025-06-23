@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client;
+use App\Models\Office;
 use App\Models\Vehicle;
 use App\Models\SentMessage;
 use App\Models\ShipmentCollection;
@@ -28,11 +29,12 @@ class ClientRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request) 
-    {
-        $station = Auth::user()->station;
 
-        // Generate Unique request ID
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+
+        // Generate Unique Request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
             ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
             ->value('requestId');
@@ -43,62 +45,103 @@ class ClientRequestController extends Controller
 
         $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
         $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-
         $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
-        $user = Auth::user();
-
+        // Prepare query
         $query = ClientRequest::with([
-            'client', 
-            'vehicle', 
-            'user', 
-            'shipmentCollection.items', 
-            'shipmentCollection.items.subItems', 
+            'client',
+            'vehicle',
+            'user',
+            'shipmentCollection.items.subItems',
             'createdBy'
         ]);
 
-        if ($user->role !== 'admin') {
-            $query->whereHas('createdBy', function ($q) use ($user) {
-                $q->where('station', $user->station);
-            });
-        } elseif ($request->has('station')) {
-            $query->whereHas('createdBy', function ($q) use ($request) {
-                $q->where('station', $request->station);
-            });
+        // Apply filters
+        $stationName = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+
+        // Time filter
+        $dateRange = match ($timeFilter) {
+            'daily' => [now()->startOfDay(), now()->endOfDay()],
+            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+            'biweekly' => [now()->subDays(14), now()],
+            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+            'yearly' => [now()->startOfYear(), now()->endOfYear()],
+            default => null
+        };
+
+        if ($user->role === 'admin') {
+            // If station filter is present, convert name to ID
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $query->where('office_id', $officeId);
+                }
+            }
+        } else {
+            // Non-admin users only see their assigned office data
+            $query->where('office_id', $user->station);
         }
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+        // Apply status filter
+        if ($status) {
+            $query->where('status', $status);
         }
 
+        // Apply date range
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        // Final data
         $client_requests = $query->orderBy('created_at', 'desc')->get();
 
         $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
-        
+
+        // Summary counts
         if ($user->role === 'admin') {
-            $totalRequests = ClientRequest::count();
-            $collected = ClientRequest::where('status', 'collected')->count();
-            $verified = ClientRequest::where('status', 'verified')->count();
-            $pending_collection = ClientRequest::where('status', 'pending collection')->count();
+            $baseQuery = ClientRequest::query();
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $baseQuery->where('office_id', $officeId);
+                }
+            }
+
+            if ($dateRange) {
+                $baseQuery->whereBetween('created_at', $dateRange);
+            }
+
+            $totalRequests = (clone $baseQuery)->count();
+            $collected = (clone $baseQuery)->where('status', 'collected')->count();
+            $verified = (clone $baseQuery)->where('status', 'verified')->count();
+            $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+
         } else {
-            $totalRequests = ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
-            $collected = ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
-            $verified = ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
-            $pending_collection = ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $user->station))->count();
+            $baseQuery = ClientRequest::where('office_id', $user->station);
+            if ($dateRange) {
+                $baseQuery->whereBetween('created_at', $dateRange);
+            }
+
+            $totalRequests = (clone $baseQuery)->count();
+            $collected = (clone $baseQuery)->where('status', 'collected')->count();
+            $verified = (clone $baseQuery)->where('status', 'verified')->count();
+            $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
         }
 
         return view('client-request.index', compact(
-            'clients', 
-            'vehicles', 
-            'drivers', 
-            'client_requests', 
-            'request_id', 
-            'totalRequests', 
-            'collected', 
-            'verified', 
+            'clients',
+            'vehicles',
+            'drivers',
+            'client_requests',
+            'request_id',
+            'totalRequests',
+            'collected',
+            'verified',
             'pending_collection'
         ));
     }
@@ -108,11 +151,26 @@ class ClientRequestController extends Controller
         $user = Auth::user();
         $station = $request->query('station', $user->station);
         $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
 
-        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection'])
+        // Determine date range
+        $dateRange = match ($timeFilter) {
+            'daily' => [now()->startOfDay(), now()->endOfDay()],
+            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+            'biweekly' => [now()->subDays(14), now()],
+            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+            'yearly' => [now()->startOfYear(), now()->endOfYear()],
+            default => null
+        };
+
+        $queryWithDate = fn($q) => $dateRange ? $q->whereBetween('created_at', $dateRange) : $q;
+
+        // Build query
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy'])
             ->when($user->role !== 'admin', fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $user->station)))
             ->when($user->role === 'admin' && $station, fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $station)))
             ->when($status, fn($q) => $q->where('status', $status))
+            ->when($dateRange, $queryWithDate)
             ->orderBy('created_at', 'desc');
 
         $client_requests = $query->get();
@@ -121,8 +179,10 @@ class ClientRequestController extends Controller
             'client_requests' => $client_requests,
             'station' => $station,
             'status' => $status,
+            'timeFilter' => $timeFilter,
         ])->setPaper('a4', 'landscape');
 
+        // Add page numbers
         $pdf->getDomPDF()->get_canvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
             $font = $fontMetrics->getFont('Helvetica', 'normal');
             $canvas->text(420, 580, "Page $pageNumber of $pageCount", $font, 10);

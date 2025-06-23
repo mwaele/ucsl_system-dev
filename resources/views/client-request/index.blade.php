@@ -10,7 +10,7 @@
 
                 <!-- Right: Button -->
                 <div>
-                    <a href="{{ route('client-requests.export.pdf', request()->query()) }}" class="btn btn-danger mr-1" title="Download PDF">
+                    <a href="{{ route('client-requests.export.pdf', request()->only(['station', 'status', 'time'])) }}" class="btn btn-danger mr-1" title="Download PDF">
                         <i class="fas fa-download"></i></i> 
                     </a>
                     <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"

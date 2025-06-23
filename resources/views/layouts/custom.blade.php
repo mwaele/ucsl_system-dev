@@ -381,7 +381,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid h-100 text-primary">
+                <div class="container-fluid text-primary">
                     <!-- Page Heading -->
                     @yield('content')
                     @stack('scripts')
@@ -512,7 +512,6 @@
             });
 
             new DataTable('#ucsl-table', {
-                
                 initComplete: function() {
                     this.api()
                         .columns()

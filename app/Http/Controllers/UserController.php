@@ -36,23 +36,22 @@ class UserController extends Controller
 
         // Email Details
         $loginUrl = url('/login');
-        $resetUrl = url('/forgot-password'); // Or use route('password.request')
         $terms = env('TERMS_AND_CONDITIONS', '#');
 
         $subject = "Your UCS Account Has Been Created";
         $message = "
             Dear {$user->name},<br><br>
-            Your user account has been created successfully.<br>
-            <strong>Login Email:</strong> {$user->email}<br>
-            <strong>Temporary Password:</strong> Default123 <br><br>
+            Your user account has been created successfully.<br><br>
 
-            You are required to reset your password within <strong>24 hours</strong> using the link below:<br>
-            <a href=\"{$resetUrl}\" target=\"_blank\">Reset Your Password</a><br><br>
+            Here are your login credentials:<br>
+            <strong>Email:</strong> {$user->email}<br>
+            <strong>Password:</strong> {$request->password}<br><br>
 
-            You can log in here: <a href=\"{$loginUrl}\" target=\"_blank\">Login to UCS Portal</a><br><br>
+            You can log in to the UCS Portal using the link below:<br>
+            <a href=\"{$loginUrl}\" target=\"_blank\">Login to UCS Portal</a><br><br>
 
             <p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-            <p>Thank you for using Ufanisi Courier Services.</p>
+            <p>Thank you for using Ufanisi Courier Services. For we are Fast, Reliable and Secure.</p>
         ";
 
         try {
@@ -66,15 +65,6 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone_number' => 'nullable|string',
-            'station' => 'nullable|string',
-            'role' => 'required|in:admin,user',
-            'status' => 'required|in:active,inactive',
-        ]);
-
         $user = User::findOrFail($id);
 
         $user->name = $request->name;

@@ -33,13 +33,16 @@
             <tr>
                 <td style="text-align: left;">
                     <h2>Client Requests Report</h2>
-                    @if ($station)
+                    @if (!empty($station))
                         <p><strong>Station:</strong> {{ $station }}</p>
                     @endif
-                    @if ($status)
+                    @if (!empty($status))
                         <p><strong>Status:</strong> {{ ucfirst($status) }}</p>
                     @endif
-                    <p><strong>As of:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                    @if (!empty($timeFilter) && $timeFilter !== 'all')
+                        <p><strong>Time Filter:</strong> {{ ucfirst($timeFilter) }}</p>
+                    @endif
+                    <p><strong>Generated:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
                     <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
@@ -54,14 +57,14 @@
                     <th style="width: 3%;">#</th>
                     <th style="width: 10%;">Request ID</th>
                     <th style="width: 15%;">Client</th>
-                    <th style="width: 15%;">Status</th>
+                    <th style="width: 12%;">Status</th>
                     <th style="width: 15%;">Created By</th>
                     <th style="width: 20%;">Created At</th>
                     <th style="width: 25%;">Remarks</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($client_requests as $i => $request)
+                @forelse ($client_requests as $i => $request)
                     <tr>
                         <td>{{ $loop->iteration }}.</td>
                         <td>{{ $request->requestId }}</td>
@@ -69,9 +72,15 @@
                         <td>{{ ucfirst($request->status) }}</td>
                         <td>{{ $request->createdBy->name ?? '-' }}</td>
                         <td>{{ $request->created_at->format('F j, Y \a\t g:i A') }}</td>
-                        <td></td>
+                        <td>
+                            {{ $request->shipmentCollection->remarks ?? '-' }}
+                        </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="7" style="text-align: center;">No client requests found for this filter.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

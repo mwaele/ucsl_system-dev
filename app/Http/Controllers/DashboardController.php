@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
-use App\Models\ClientRequest; // example model
+use App\Models\ClientRequest; 
 use App\Models\ShipmentCollection;
 use App\Models\User;
+use App\Models\Office;
 
 class DashboardController extends Controller
 {
@@ -35,30 +36,32 @@ class DashboardController extends Controller
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
 
-            // Per-station stats
-            $stations = ['Mombasa', 'Nairobi'];
+            // Per-station stats based on office_id directly
+            $stations = Office::pluck('name', 'id');
             $stationStats = [];
-            foreach ($stations as $stn) {
-                $stationStats[$stn] = [
-                    'total' => ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $stn))
-                        ->when($dateRange, $queryWithDate)->count(),
-                    'collected' => ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $stn))
-                        ->when($dateRange, $queryWithDate)->count(),
-                    'verified' => ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $stn))
-                        ->when($dateRange, $queryWithDate)->count(),
-                    'pending' => ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $stn))
-                        ->when($dateRange, $queryWithDate)->count(),
+
+            foreach ($stations as $id => $name) {
+            $stationStats[$name] = [
+                'total' => ClientRequest::where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
+                'collected' => ClientRequest::where('status', 'collected')->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
+                'verified' => ClientRequest::where('status', 'verified')->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
+                'pending' => ClientRequest::where('status', 'pending collection')->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
                 ];
             }
         } else {
-            $totalRequests = ClientRequest::whereHas('createdBy', fn($q) => $q->where('station', $station))
+            $totalRequests = ClientRequest::where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
-            $collected = ClientRequest::where('status', 'collected')->whereHas('createdBy', fn($q) => $q->where('station', $station))
+            $collected = ClientRequest::where('status', 'collected')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
-            $verified = ClientRequest::where('status', 'verified')->whereHas('createdBy', fn($q) => $q->where('station', $station))
+            $verified = ClientRequest::where('status', 'verified')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
-            $pendingCollection = ClientRequest::where('status', 'pending collection')->whereHas('createdBy', fn($q) => $q->where('station', $station))
+            $pendingCollection = ClientRequest::where('status', 'pending collection')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
+
             $stationStats = null;
         }
 
