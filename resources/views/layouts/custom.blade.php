@@ -56,6 +56,10 @@
             color: black;
         }
 
+        .table .text-primary {
+            color: #14489f !important;
+        }
+
         /* Highlight collapsed child item (e.g., inside dropdown) */
         .collapse-item.active {
             font-weight: bold;
@@ -508,6 +512,7 @@
             });
 
             new DataTable('#ucsl-table', {
+                
                 initComplete: function() {
                     this.api()
                         .columns()

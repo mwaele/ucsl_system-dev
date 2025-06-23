@@ -1,27 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Client Requests PDF</title>
-        <style>
-            body { font-family: sans-serif; font-size: 12px; }
+<head>
+    <title>Client Requests PDF</title>
+    <style>
+        body { font-family: sans-serif; font-size: 12px; margin: 0; padding: 0; }
 
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 
-            /* Only apply borders to explicitly marked table */
-            table.bordered th, table.bordered td {
-                border: 1px solid #000;
-                padding: 6px;
-                text-align: left;
-            }
+        table.bordered th, table.bordered td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: left;
+        }
 
-            th { background-color: #f2f2f2; }
-            h2 { margin-bottom: 0; }
-        </style>
-    </head>
+        th { background-color: #f2f2f2; }
+        h2 { margin-bottom: 0; }
 
-    <body>
-        <!-- No border table for heading -->
-        <table class="no-border" style="width: 100%; margin-top: 10px;">
+        @page {
+            margin: 50px 30px;
+        }
+
+        .content {
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <!-- Report Header -->
+        <table>
             <tr>
                 <td style="text-align: left;">
                     <h2>Client Requests Report</h2>
@@ -34,36 +42,38 @@
                     <p><strong>As of:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
-                    <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70;">
+                    <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
                 </td>
             </tr>
         </table>
 
-        <!-- Add `bordered` class explicitly -->
+        <!-- Main Table -->
         <table class="bordered">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Request ID</th>
-                    <th>Client</th>
-                    <th>Status</th>
-                    <th>Created By</th>
-                    <th>Created At</th>
+                    <th style="width: 3%;">#</th>
+                    <th style="width: 10%;">Request ID</th>
+                    <th style="width: 15%;">Client</th>
+                    <th style="width: 15%;">Status</th>
+                    <th style="width: 15%;">Created By</th>
+                    <th style="width: 20%;">Created At</th>
+                    <th style="width: 25%;">Remarks</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($client_requests as $i => $request)
                     <tr>
-                        <td>{{ $i + 1 }}</td>
+                        <td>{{ $loop->iteration }}.</td>
                         <td>{{ $request->requestId }}</td>
                         <td>{{ $request->client->name ?? '-' }}</td>
                         <td>{{ ucfirst($request->status) }}</td>
                         <td>{{ $request->createdBy->name ?? '-' }}</td>
                         <td>{{ $request->created_at->format('F j, Y \a\t g:i A') }}</td>
+                        <td></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-
-    </body>
+    </div>
+</body>
 </html>

@@ -123,6 +123,11 @@ class ClientRequestController extends Controller
             'status' => $status,
         ])->setPaper('a4', 'landscape');
 
+        $pdf->getDomPDF()->get_canvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
+            $font = $fontMetrics->getFont('Helvetica', 'normal');
+            $canvas->text(420, 580, "Page $pageNumber of $pageCount", $font, 10);
+        });
+
         return $pdf->download('client_requests.pdf');
     }
 
@@ -248,6 +253,7 @@ class ClientRequestController extends Controller
             $clientRequest->vehicleId = $validated['vehicleId'];
             $clientRequest->requestId = $validated['requestId'];
             $clientRequest->created_by = Auth::id();
+            $clientRequest->office_id = Auth::user()->station;
             $clientRequest->save();
 
             // 2. Save Track

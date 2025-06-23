@@ -38,7 +38,7 @@
                             {{ ucfirst($user->role) }}
                         </span>
                     </td>
-                    <td>{{ $user->station ?? 'Unassigned' }}</td>
+                    <td>{{ $user->office->name ?? 'Unassigned' }}</td>
                     <td>
                         <span class="badge badge-{{ $user->status == 'active' ? 'success' : 'warning' }}">
                             {{ ucfirst($user->status) }}
@@ -100,9 +100,11 @@
                 <div class="form-group col-md-6">
                     <label>Role</label>
                     <select name="role" class="form-control">
-                        <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
-                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
                         <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver</option>
+                        <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
+                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="super-admin" {{ $user->role == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
                     </select>
                 </div>
 
@@ -172,16 +174,18 @@
               <label>Role</label>
               <select name="role" class="form-control">
                   <option value="user" selected>User</option>
-                  <option value="admin">Admin</option>
                   <option value="driver">Driver</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                  <option value="super-admin">Super Admin</option>
               </select>
           </div>
 
           <div class="form-group col-md-6">
               <label>Status</label>
               <select name="status" class="form-control">
-                  <option value="active">Active</option>
-                  <option value="inactive" selected>Inactive</option>
+                  <option value="active" selected>Active</option>
+                  <option value="inactive">Inactive</option>
               </select>
           </div>
 

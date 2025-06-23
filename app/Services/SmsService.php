@@ -14,7 +14,7 @@ class SmsService
         $apiUrl = config('services.bitwise_sms.url');
         $terms = config('services.bitwise_sms.terms_and_conditions');
 
-        $footer = "Terms & Conditions: {$terms} \r\nThank you for using Ufanisi Courier Services";
+        $footer = "Terms & Conditions: {$terms} \r\n\nFast . Reliable . Secure";
 
         $payload = [
             'senderID' => $senderId,
