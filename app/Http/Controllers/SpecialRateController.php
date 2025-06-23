@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Office;
 use App\Models\Zone;
 use Auth;
+use Carbon\Carbon;
 
 class SpecialRateController extends Controller
 {
@@ -68,7 +69,13 @@ class SpecialRateController extends Controller
 
      public function getDestinations($office_id, $client_id)
     {
-        $destinations = SpecialRate::where(['office_id' => $office_id,'client_id' => $client_id])->get(['destination','id']);
+        $today = Carbon::today(); // or use now() if time matters
+        $destinations = SpecialRate::where([
+        'office_id' => $office_id,
+        'client_id' => $client_id,
+        'status' => 'active'
+    ])
+    ->whereDate('applicableTo', '>=', $today)->get(['destination', 'id']);
 
         return response()->json($destinations);
     }

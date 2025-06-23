@@ -13,6 +13,11 @@
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css" />
 
+    <!-- Bootstrap Multiselect CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.css">
+
+
 
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -266,6 +271,20 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('categories.index') }}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->routeIs('sub_categories.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('sub_categories.index') }}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Sub Categories</span>
+                </a>
+            </li>
+
 
             <!-- Nav Item - Pages Collapse Menu -->
 
@@ -457,7 +476,7 @@
         <!-- Datatable JS -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> --}}
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap4.js"></script>
 
@@ -467,6 +486,9 @@
 
         <!-- Core plugin JavaScript-->
         <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+        <!-- Bootstrap Multiselect JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>
 
         <!-- Custom scripts for all pages-->
         <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
@@ -628,6 +650,14 @@
         </script>
         <script>
             $(document).ready(function() {
+
+                $('#categories-multiselect').multiselect({
+                    includeSelectAllOption: true,
+                    enableFiltering: true,
+                    buttonWidth: '100%', // 👈 Ensures dropdown matches form-control width
+                    nonSelectedText: 'Select categories'
+                });
+
                 $('.addRowBtn').on('click', function() {
                     let newRow = $('#shipmentTable tbody tr:first').clone();
                     newRow.find('input').val(''); // clear inputs
@@ -795,6 +825,58 @@
                     error: function(xhr) {
                         alert('Error verifying shipment');
                         console.error(xhr.responseText);
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).ready(function() {
+
+                // When client is selected
+                $('#clientId').on('change', function() {
+                    let clientId = $(this).val();
+                    if (clientId) {
+                        $.ajax({
+                            url: '/get-client-categories/' + clientId,
+                            type: 'GET',
+                            success: function(data) {
+                                $('#clientCategories').empty().append(
+                                    '<option value="">Select Client Categories</option>');
+                                $('#subCategories').empty().append(
+                                    '<option value="">Select Sub Categories</option>');
+                                $.each(data, function(key, category) {
+                                    $('#clientCategories').append('<option value="' +
+                                        category.category_id + '">' + category
+                                        .category_name + '</option>');
+                                });
+                            }
+                        });
+                    } else {
+                        $('#clientCategories').empty().append(
+                            '<option value="">Select Client Categories</option>');
+                        $('#subCategories').empty().append('<option value="">Select Sub Categories</option>');
+                    }
+                });
+
+                // When category is selected
+                $('#clientCategories').on('change', function() {
+                    let categoryId = $(this).val();
+                    if (categoryId) {
+                        $.ajax({
+                            url: '/get-sub-categories/' + categoryId,
+                            type: 'GET',
+                            success: function(data) {
+                                $('#subCategories').empty().append(
+                                    '<option value="">Select Sub Categories</option>');
+                                $.each(data, function(key, sub) {
+                                    $('#subCategories').append('<option value="' + sub.id +
+                                        '">' + sub.sub_category_name + '</option>');
+                                });
+                            }
+                        });
+                    } else {
+                        $('#subCategories').empty().append('<option value="">Select Sub Categories</option>');
                     }
                 });
             });

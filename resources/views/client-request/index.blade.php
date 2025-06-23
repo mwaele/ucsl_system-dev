@@ -10,8 +10,9 @@
 
                 <!-- Right: Button -->
                 <div>
-                    <a href="{{ route('client-requests.export.pdf', request()->only(['station', 'status', 'time'])) }}" class="btn btn-danger mr-1" title="Download PDF">
-                        <i class="fas fa-download"></i></i> 
+                    <a href="{{ route('client-requests.export.pdf', request()->only(['station', 'status', 'time'])) }}"
+                        class="btn btn-danger mr-1" title="Download PDF">
+                        <i class="fas fa-download"></i></i>
                     </a>
                     <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
                         data-target="#createClientRequest">
@@ -58,6 +59,26 @@
                                                 Location</label>
                                             <input type="text" class="form-control" name="collectionLocation"
                                                 id="collectionLocation">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+
+                                            <label for="clientCategories" class="form-label text-primary">Client
+                                                Categories</label>
+                                            <!-- Client's Categories -->
+                                            <select class="form-control mt-3" id="clientCategories" name="category_id">
+                                                <option value="">Select Client Categories</option>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="subCategories" class="form-label text-primary">Client
+                                                Sub Categories </label>
+                                            <!-- Sub Categories -->
+                                            <select class="form-control mt-3" id="subCategories" name="sub_category_id">
+                                                <option value="">Select Sub Categories</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -267,6 +288,10 @@
                                                                 value="{{ $request->collectionLocation }}">
                                                         </div>
 
+
+
+
+
                                                         <div class="form-group">
                                                             <label class="text-primary">Date Requested</label>
                                                             <div class="input-group">
@@ -453,6 +478,8 @@
                         </div>
                     </div>
                 </div>
+
+
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
 
@@ -674,6 +701,7 @@
                         container.appendChild(row);
                     }
                 </script>
+
             </div>
         </div>
     </div>

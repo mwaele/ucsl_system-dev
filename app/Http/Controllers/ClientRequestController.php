@@ -6,6 +6,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ClientRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client;
+use App\Models\ClientCategory;
+use App\Models\SubCategory;
 use App\Models\Office;
 use App\Models\Vehicle;
 use App\Models\SentMessage;
@@ -191,6 +193,22 @@ class ClientRequestController extends Controller
         return $pdf->download('client_requests.pdf');
     }
 
+    public function getClientCategories($clientId)
+    {
+        $categories = ClientCategory::where('client_id', $clientId)
+            ->join('categories', 'client_categories.category_id', '=', 'categories.id')
+            ->select('categories.id as category_id', 'categories.category_name')
+            ->get();
+
+        return response()->json($categories);
+    }
+
+    public function getSubCategories($categoryId)
+    {
+        $subCategories = SubCategory::where('category_id', $categoryId)->get();
+        return response()->json($subCategories);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -297,6 +315,8 @@ class ClientRequestController extends Controller
             'dateRequested' => 'required|date',
             'userId' => 'required|integer',
             'vehicleId' => 'required|integer',
+            'category_id'=>'required|integer',
+            'sub_category_id'=>'required|integer',
             'requestId' => 'required|string|unique:client_requests,requestId',
         ]);
 
@@ -311,7 +331,9 @@ class ClientRequestController extends Controller
             $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
             $clientRequest->userId = $validated['userId'];
             $clientRequest->vehicleId = $validated['vehicleId'];
-            $clientRequest->requestId = $validated['requestId'];
+            $clientRequest->requestId = $validated['requestId'];;
+            $clientRequest->category_id = $validated['category_id'];
+            $clientRequest->sub_category_id = $validated['sub_category_id'];
             $clientRequest->created_by = Auth::id();
             $clientRequest->office_id = Auth::user()->station;
             $clientRequest->save();
@@ -395,8 +417,10 @@ class ClientRequestController extends Controller
         $rider_email = $client_email;
         $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
         $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                   <p>Thank you for using Ufanisi Courier Services.</p>";
-        $fullRiderMessage = $rider_message . $footer;
+                   <p>Thank you for using Ufanisi Courier Services for we are <strong>Fast, Reliable and Secure</strong></p>";
+        
+        $rider_email_message = "Dear $rider_name, <br><br> Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
+        $fullRiderMessage = $rider_email_message . $footer;
 
         $emailResponse = EmailHelper::sendHtmlEmail($rider_email, $rider_subject, $fullRiderMessage);
 
@@ -422,7 +446,7 @@ class ClientRequestController extends Controller
         // send email
 
         $subject = 'Parcel Collection Alert';
-        $message = $client_message;
+        $message = "Dear $client_name, <br><br> We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
         $fullMessage = $message . $footer;
 
         $emailResponse = EmailHelper::sendHtmlEmail($client_email, $subject, $fullMessage);

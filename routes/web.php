@@ -104,6 +104,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
 
+    Route::get('/get-client-categories/{clientId}', [ClientRequestController::class, 'getClientCategories']);
+    Route::get('/get-sub-categories/{categoryId}', [ClientRequestController::class, 'getSubCategories']);
+
     //special rates
     Route::get('/get_destinations/{office_id}/{client_id}', [SpecialRateController::class, 'getDestinations']);
 
@@ -132,6 +135,12 @@ Route::middleware('auth')->group(function () {
 
     //Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);
     
+      Route::resource('categories','App\Http\Controllers\CategoryController');
+
+      Route::resource('sub_categories','App\Http\Controllers\SubCategoryController');
+
+      Route::resource('client_categories','App\Http\Controllers\ClientCategoryController');
+   
 
 });
 

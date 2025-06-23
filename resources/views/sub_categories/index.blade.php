@@ -3,14 +3,16 @@
 @section('content')
     <!-- DataTales Example -->
     <div class="card">
+        {{-- Success Message --}}
+
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <a href="{{ route('clients.create') }}" class="btn btn-success"><i class="fas fa-plus-circle"></i>
-                    Create New Client</a>
-                <h4 class="m-0 font-weight-bold text-success">All Clients Lists</h4>
+                <a href="{{ route('sub_categories.create') }}" class="btn btn-success"><i class="fas fa-plus-circle"></i>
+                    Create Sub Category</a>
+                <h4 class="m-0 font-weight-bold text-success">Sub Categories Lists</h4>
 
 
-                <a href="/clients_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                <a href="/sub_categories_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
         </div>
@@ -19,60 +21,48 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Client Name</th>
-                            <th>Telephone Number</th>
-                            <th>Email</th>
-                            <th>Physical Address</th>
+                            <th>Sub Category</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Client Name</th>
-                            <th>Telephone Number</th>
-                            <th>Email</th>
-                            <th>Physical Address</th>
+                            <th>Sub Category</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
                             <th>Action</th>
 
                         </tr>
                     </tfoot>
                     <tbody>
-                        @foreach ($clients as $client)
+                        @foreach ($sub_categories as $sub_category)
                             <tr>
-                                <td> {{ $client->name }} </td>
-                                <td> {{ $client->contactPersonPhone }} </td>
-                                <td> {{ $client->email }} </td>
-                                <td> {{ $client->address }} </td>
+                                <td> {{ $sub_category->sub_category_name }} </td>
+                                <td> {{ $sub_category->category->category_name }} </td>
+                                <td> {{ $sub_category->description }} </td>
                                 <td class="row pl-4">
-                                    <a href="{{ route('clients.edit', $client->id) }}">
+                                    <a href="{{ route('sub_categories.edit', $sub_category->id) }}">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </a>
-                                    <a href="{{ route('clients.show', $client->id) }}">
-                                        <button class="btn btn-sm btn-warning mr-1" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </a>
-                                    <a href="/client_report/{{ $client->id }}">
-                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                    </a>
                                     <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                        data-target="#delete_floor-{{ $client->id }}"><i
+                                        data-target="#delete_floor-{{ $sub_category->id }}"><i
                                             class="fas fa-trash"></i></button>
                                     <!-- Logout Modal-->
-                                    <div class="modal fade" id="delete_floor-{{ $client->id }}" tabindex="-1"
+                                    <div class="modal fade" id="delete_floor-{{ $sub_category->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $client->client_name }}.</p>
+                                                    <p>Are you sure you want to delete {{ $sub_category->sub_category }}.
+                                                    </p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <form
-                                                        action =" {{ route('clients.destroy', ['client' => $client->id]) }}"
+                                                        action =" {{ route('sub_categories.destroy', ['sub_category' => $sub_category->id]) }}"
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf

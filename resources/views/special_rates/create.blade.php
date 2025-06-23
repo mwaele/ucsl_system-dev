@@ -3,11 +3,11 @@
 @section('content')
     <div class="card mb-3">
         <div class="card-header pt-4 ">
-            <div class="row pt-2">
-                <div class="col-sm-4">
-                    <i class="fas fa-table text-white"></i>
-                    <b class="text-dark">Create Special Rate</b>
-                </div>
+            <div class="d-sm-flex align-items-center justify-content-between">
+                <h4 class="m-0 font-weight-bold text-success">Create New Special Rate </h4>
+
+                <a href="{{ route('categories.index') }}" class="btn btn-success"><i class="fas fa-bars"></i>
+                    All Special Rates List</a>
             </div>
         </div>
         <div class="card-body">

@@ -141,6 +141,16 @@
             border: 1px solid #ccc;
             vertical-align: top;
         }
+
+        .td-new {
+            width: 100%;
+            padding-left: 10;
+            padding-bottom: 10;
+        }
+
+        .pp {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 
@@ -150,12 +160,16 @@
             <td style="width: 60%;">
                 <img src="{{ public_path('images/UCSLogo1.png') }}" height="80" style="width: auto;" alt="Logo">
             </td>
-            <td style="width: 40%; text-align: center; vertical-align: middle;">
+
+            <td style="width: 40%; text-align: right; vertical-align: middle;">
                 <p style="font-size: 14px; color: #000; margin: 0;">
                     Tracking Date</strong>
                 </p>
                 <p style="font-size: 14px; color: #000; margin: 0;">
                     {{ now()->format('F j, Y, g:i a') }}
+                </p>
+                <p style="font-size: 14px; color: #000; margin: 0;">
+                    Tracked By: {{ auth('client')->user()->name ?? auth('guest')->user()->name }}
                 </p>
                 {{-- <p class="fw-bold">
                     Tracking done by: {{ auth('api')->user()->name }}
@@ -165,11 +179,14 @@
         </tr>
     </table>
     <div class="head">
-        <h2 class="mb-2 mt-2 fw-bold text-primary">
+        <h3 class="mb-2 mt-2 fw-bold text-primary">
 
-            Tracking Results For <strong>{{ $trackingData['requestId'] }}</strong>
-            Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }}</strong>
-        </h2>
+            Tracking Report For Request ID: <strong>{{ $trackingData['requestId'] }}</strong>
+            Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }} for
+                {{ count($shipment_items) }} {{ Str::plural('item', count($shipment_items)) }}
+
+            </strong>
+        </h3>
     </div>
     <section class="mb-3">
         <table width="100%" cellpadding="1" cellspacing="0"
@@ -191,11 +208,19 @@
                         Receiver: <span style="color: #212529;">{{ $data['receiver_name'] }}</span>
                     </p>
                 </td>
+
+            </tr>
+
+        </table>
+        <table width="100%" style="border-collapse: collapse; font-family: sans-serif;">
+            <tr>
                 <td class="td">
-                    <?php count($shipment_items); ?>
-                    @foreach ($shipment_items as $shipment_item)
-                        <p class="p"> Item: {{ $shipment_item->item_name }}; Qty:
-                            {{ $shipment_item->packages_no }}; Weight:
+                    <p class="p">Items Description</p>
+                    @foreach ($shipment_items as $index => $shipment_item)
+                        <p class="pp">
+                            {{ $index + 1 }}.) {{ $shipment_item->packages_no }}
+                            {{ $shipment_item->item_name }}
+                            Weighing
                             {{ $shipment_item->weight }} Kgs</p>
                     @endforeach
                 </td>

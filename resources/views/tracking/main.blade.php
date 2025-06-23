@@ -125,8 +125,8 @@
                         let html =
                             `<h5 class="text-primary mb-2">Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</h5> 
                         <section class="mb-3">
-                        <div class="row">
-                            <div class="col-md-4">
+                        <div class="row mb-1">
+                            <div class="col-md-6">
                                 <div class="shadow-sm p-3">
                                     <p class="text-primary mb-1">
                                         Origin: <span class="text-dark">${data.origin_office}</span>
@@ -136,7 +136,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="shadow-sm p-3">
                                     <p class="text-primary mb-1">
                                         Sender: <span class="text-dark">${data.sender_name}</span>
@@ -146,9 +146,11 @@
                                     </p>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-4">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="shadow-sm p-3">
+                                    <p class="text-dark">Item Description</p>
                                      ${shipmentItemsHtml}
                                 </div>
                             </div>
