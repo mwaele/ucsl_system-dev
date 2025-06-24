@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use App\Models\ClientRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -88,16 +89,24 @@ class UserController extends Controller
 
         $today = Carbon::today();
 
-        $drivers = User::where('role', 'driver')
-            ->where('users.station', Auth::user()->station)
-            ->whereHas('clientRequests', function ($query) use ($location, $today) {
-                $query->where('collectionLocation', $location)
-                    ->whereIn('status', ['pending collection', 'collected'])
-                    ->whereDate('dateRequested', $today);
-            })
-            ->join('stations', 'users.station', '=', 'stations.id')
-            ->select('users.id', 'users.name', 'stations.station_name as station')
-            ->get();
+        $drivers = DB::table('users')
+    ->join('client_requests', function ($join) use ($location, $today) {
+        $join->on('users.id', '=', 'client_requests.userId')
+             ->where('client_requests.collectionLocation', $location)
+             ->whereIn('client_requests.status', ['pending collection', 'collected'])
+             ->whereDate('client_requests.dateRequested', $today);
+    })
+    ->join('stations', 'users.station', '=', 'stations.id')
+    ->where('users.role', 'driver')
+    ->where('users.station', Auth::user()->station)
+    ->select(
+        'users.id',
+        'users.name',
+        'stations.station_name as station',
+        DB::raw("GROUP_CONCAT(DISTINCT client_requests.collectionLocation SEPARATOR ', ') as collectionLocations")
+    )
+    ->groupBy('users.id', 'users.name', 'stations.station_name')
+    ->get();
 
         return response()->json($drivers);
     }
@@ -124,12 +133,23 @@ class UserController extends Controller
 
     public function getAllDrivers()
     {
-        $drivers = User::where('role', 'driver')
-            ->where('station', Auth::user()->station) // Optional: limit to current user's station
-            ->join('stations', 'users.station', '=', 'stations.id')
-            ->select('users.id', 'users.name', 'stations.station_name as station')
-            ->get();
-
+        $drivers = DB::table('users')
+    ->leftJoin('client_requests', function ($join) {
+        $join->on('users.id', '=', 'client_requests.userId')
+            ->whereIn('client_requests.status', ['pending collection', 'collected'])
+            ->whereDate('client_requests.dateRequested', now());
+    })
+    ->join('stations', 'users.station', '=', 'stations.id')
+    ->where('users.role', 'driver')
+    ->where('users.station', Auth::user()->station)
+    ->select(
+        'users.id',
+        'users.name',
+        'stations.station_name as station',
+        DB::raw("GROUP_CONCAT(DISTINCT client_requests.collectionLocation SEPARATOR ', ') as collectionLocations")
+    )
+    ->groupBy('users.id', 'users.name', 'stations.station_name')
+    ->get();
         return response()->json($drivers);
     }
 

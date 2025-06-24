@@ -92,8 +92,16 @@
                                             placeholder="Fill in the description of goods."></textarea>
                                     </div>
 
-                                    <h6 class="text-muted text-primary">Fill in the Rider details.</h6>
-                                    <div class="row mb-2">
+                                    <h6 class="text-muted text-primary"> Rider Details.</h6>
+                                    <div class="row mb-2 bg-success">
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="riderOption"
+                                                    id="currentLocation" value="currentLocation">
+                                                <label class="form-check-label" for="allRiders"> Pickup
+                                                    Location</label>
+                                            </div>
+                                        </div>
                                         <div class="col-md-4">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="riderOption"
@@ -112,17 +120,14 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-12 mb-3">
                                             <label for="userId" class="form-label text-primary">Rider</label>
                                             <select class="form-control" id="userId" name="userId">
                                                 <option value="">Select Rider</option>
-                                                {{-- @foreach ($drivers as $driver)
-                                                    <option value="{{ $driver->id }}">{{ $driver->name }}
-                                                        ({{ $driver->station }})
-                                                    </option>
-                                                @endforeach --}}
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="row">
 
                                         <div class="col-md-4 mb-3">
                                             <label for="vehicle" class="form-label text-primary">Vehicle</label>

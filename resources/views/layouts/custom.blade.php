@@ -654,68 +654,40 @@
         <script>
             $(document).ready(function() {
 
-                // $('#collectionLocation').on('keyup', function() {
-                //     let query = $(this).val();
-
-                //     if (query.length > 1) {
-                //         $.ajax({
-                //             url: "{{ route('locations.search') }}",
-                //             data: {
-                //                 term: query
-                //             },
-                //             success: function(data) {
-                //                 let suggestions = $('#locationSuggestions');
-                //                 suggestions.empty().show();
-
-                //                 if (data.length > 0) {
-                //                     data.forEach(function(location) {
-                //                         suggestions.append(
-                //                             `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
-                //                         );
-                //                     });
-                //                 } else {
-                //                     suggestions.append(
-                //                         `<div class="list-group-item text-muted">No results for "${query}"</div>`
-                //                     );
-                //                 }
-                //             }
-                //         });
-                //     } else {
-                //         $('#locationSuggestions').hide();
-                //     }
-                // });
-
+                let debounceTimer;
                 $('#collectionLocation').on('keyup', function() {
+                    clearTimeout(debounceTimer);
                     const query = $(this).val().trim();
 
-                    if (query.length > 1) {
-                        $.ajax({
-                            url: "{{ route('locations.search') }}",
-                            data: {
-                                term: query
-                            },
-                            success: function(data) {
-                                let suggestions = $('#locationSuggestions');
-                                suggestions.empty().show();
+                    debounceTimer = setTimeout(() => {
+                        if (query.length > 1) {
+                            $.ajax({
+                                url: "{{ route('locations.search') }}",
+                                data: {
+                                    term: query
+                                },
+                                success: function(data) {
+                                    const suggestions = $('#locationSuggestions');
+                                    suggestions.empty();
 
-                                if (data.length > 0) {
-                                    data.forEach(function(location) {
-                                        suggestions.append(
-                                            `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
-                                        );
-                                    });
-                                } else {
-                                    suggestions.append(
-                                        `<div class="list-group-item text-muted">No results for "${query}"</div>`
-                                    );
-                                    //suggestions.hide();
+                                    if (data.length > 0) {
+                                        data.forEach(function(location) {
+                                            suggestions.append(
+                                                `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
+                                            );
+                                        });
+                                        suggestions.show();
+                                    } else {
+                                        suggestions.hide();
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        $('#locationSuggestions').hide();
-                    }
+                            });
+                        } else {
+                            $('#locationSuggestions').hide();
+                        }
+                    }, 300); // delay search by 300ms
                 });
+
 
 
                 // ⬅ Handle suggestion click
@@ -730,15 +702,9 @@
 
                 // ⬅ Handle focusout on input
                 $('#collectionLocation').on('focusout', function() {
-                    // const input = $(this);
-                    // setTimeout(() => {
-                    //     const location = input.val().trim();
-                    //     fetchDriversByLocation(location);
-                    //     // Hide suggestions after checking for click
                     $('#locationSuggestions').hide();
-                    // }, 100);
-                    //suggestions.hide();
                 });
+
                 $(document).on('mousedown', '#locationSuggestions a', function(e) {
                     e.preventDefault();
                     const selected = $(this).text();
@@ -795,7 +761,7 @@
                                 if (drivers.length > 0) {
                                     drivers.forEach(driver => {
                                         select.append(
-                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations})</option>`
                                         );
                                     });
                                 } else {
@@ -822,7 +788,7 @@
                                 if (drivers.length > 0) {
                                     drivers.forEach(driver => {
                                         select.append(
-                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                            `<option value="${driver.id}">${driver.name} (Unallocated)</option>`
                                         );
                                     });
                                 } else {
@@ -848,7 +814,7 @@
                                 if (drivers.length > 0) {
                                     drivers.forEach(driver => {
                                         select.append(
-                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations ?? 'Unallocated'})</option>`
                                         );
                                     });
                                 } else {
@@ -858,6 +824,19 @@
                         });
                     }
                 });
+
+                $('#currentLocation').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        const location = $('#collectionLocation').val().trim();
+
+                        if (location.length > 1) {
+                            fetchDriversByLocation(location);
+                        } else {
+                            alert('Please enter a collection location first.');
+                        }
+                    }
+                });
+
 
 
 
