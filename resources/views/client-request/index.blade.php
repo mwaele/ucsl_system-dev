@@ -58,7 +58,10 @@
                                             <label for="collectionLocation" class="form-label text-primary">Pickup
                                                 Location</label>
                                             <input type="text" class="form-control" name="collectionLocation"
-                                                id="collectionLocation">
+                                                id="collectionLocation" autocomplete="off">
+                                            <div id="locationSuggestions" class="list-group bg-white position-absolute w-80"
+                                                style="background-color: white;z-index: 1000;"></div>
+
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -74,10 +77,10 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label for="subCategories" class="form-label text-primary">Client
-                                                Sub Categories </label>
-                                            <!-- Sub Categories -->
+                                                Services </label>
+                                            <!-- Services -->
                                             <select class="form-control mt-3" id="subCategories" name="sub_category_id">
-                                                <option value="">Select Sub Categories</option>
+                                                <option value="">Select Services</option>
                                             </select>
                                         </div>
                                     </div>
@@ -90,24 +93,41 @@
                                     </div>
 
                                     <h6 class="text-muted text-primary">Fill in the Rider details.</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="riderOption"
+                                                    id="unallocatedRiders" value="unallocated">
+                                                <label class="form-check-label" for="unallocatedRiders">Unallocated
+                                                    Riders</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="riderOption"
+                                                    id="allRiders" value="all">
+                                                <label class="form-check-label" for="allRiders">All Riders</label>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label for="userId" class="form-label text-primary">Rider</label>
                                             <select class="form-control" id="userId" name="userId">
                                                 <option value="">Select Rider</option>
-                                                @foreach ($drivers as $driver)
+                                                {{-- @foreach ($drivers as $driver)
                                                     <option value="{{ $driver->id }}">{{ $driver->name }}
                                                         ({{ $driver->station }})
                                                     </option>
-                                                @endforeach
+                                                @endforeach --}}
                                             </select>
                                         </div>
 
                                         <div class="col-md-4 mb-3">
                                             <label for="vehicle" class="form-label text-primary">Vehicle</label>
-                                            <input type="text" id="vehicle" class="form-control" name="vehicle_display"
-                                                placeholder="Select rider to populate" readonly>
+                                            <input type="text" id="vehicle" class="form-control"
+                                                name="vehicle_display" placeholder="Select rider to populate" readonly>
                                             <input type="hidden" id="vehicleId" name="vehicleId">
                                         </div>
 
@@ -478,6 +498,8 @@
                         </div>
                     </div>
                 </div>
+
+
 
 
                 <script>

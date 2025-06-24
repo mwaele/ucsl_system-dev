@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Helpers\EmailHelper;
+use Illuminate\Support\Carbon;
+use App\Models\ClientRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -77,6 +80,57 @@ class UserController extends Controller
         $user->save();   
 
         return redirect()->back()->with('success', 'User updated successfully.');
+    }
+
+    public function getDriversByLocation(Request $request)
+    {
+        $location = $request->input('location');
+
+        $today = Carbon::today();
+
+        $drivers = User::where('role', 'driver')
+            ->where('users.station', Auth::user()->station)
+            ->whereHas('clientRequests', function ($query) use ($location, $today) {
+                $query->where('collectionLocation', $location)
+                    ->whereIn('status', ['pending collection', 'collected'])
+                    ->whereDate('dateRequested', $today);
+            })
+            ->join('stations', 'users.station', '=', 'stations.id')
+            ->select('users.id', 'users.name', 'stations.station_name as station')
+            ->get();
+
+        return response()->json($drivers);
+    }
+
+    public function getUnallocatedDrivers()
+    {
+        $today = Carbon::today();
+
+        // Get userIds who have requests today
+        $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
+            ->pluck('userId')
+            ->toArray();
+
+        $drivers = User::where('role', 'driver')
+            ->where('station', Auth::user()->station) // Optional: match current user's station
+            ->whereNotIn('users.id', $allocatedDriverIds)
+            ->join('stations', 'users.station', '=', 'stations.id')
+            ->select('users.id', 'users.name', 'stations.station_name as station')
+            ->get();
+
+        return response()->json($drivers);
+    }
+
+
+    public function getAllDrivers()
+    {
+        $drivers = User::where('role', 'driver')
+            ->where('station', Auth::user()->station) // Optional: limit to current user's station
+            ->join('stations', 'users.station', '=', 'stations.id')
+            ->select('users.id', 'users.name', 'stations.station_name as station')
+            ->get();
+
+        return response()->json($drivers);
     }
 
 }

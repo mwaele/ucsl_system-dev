@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
 
 use App\Helpers\EmailHelper;
+use App\Models\Location;
 
 class ClientRequestController extends Controller
 {
@@ -361,6 +362,10 @@ class ClientRequestController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            $locationName = $validated['collectionLocation'];
+
+            $location = Location::firstOrCreate(['location' => $locationName]);
 
             DB::commit();
 

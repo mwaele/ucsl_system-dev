@@ -327,7 +327,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span class="badge badge-danger badge-counter">0</span>
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -345,7 +345,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
+                                <span class="badge badge-danger badge-counter">0</span>
                             </a>
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -454,21 +454,24 @@
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <div class="modal-header bg-success">
+                        <h5 class="modal-title text-white" id="exampleModalLabel">Ready to Leave?</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        Select "Logout" below if you are ready to end your current session.
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            Select "Logout" below if you are ready to end your current session.
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                            Cancel
-                        </button>
-                        <a class="btn btn-primary" href="login.html">Logout</a>
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">Cancel</button>
+
+                        <button class="btn btn-primary" type="submit">Logout</button>
+
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -650,6 +653,216 @@
         </script>
         <script>
             $(document).ready(function() {
+
+                // $('#collectionLocation').on('keyup', function() {
+                //     let query = $(this).val();
+
+                //     if (query.length > 1) {
+                //         $.ajax({
+                //             url: "{{ route('locations.search') }}",
+                //             data: {
+                //                 term: query
+                //             },
+                //             success: function(data) {
+                //                 let suggestions = $('#locationSuggestions');
+                //                 suggestions.empty().show();
+
+                //                 if (data.length > 0) {
+                //                     data.forEach(function(location) {
+                //                         suggestions.append(
+                //                             `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
+                //                         );
+                //                     });
+                //                 } else {
+                //                     suggestions.append(
+                //                         `<div class="list-group-item text-muted">No results for "${query}"</div>`
+                //                     );
+                //                 }
+                //             }
+                //         });
+                //     } else {
+                //         $('#locationSuggestions').hide();
+                //     }
+                // });
+
+                $('#collectionLocation').on('keyup', function() {
+                    const query = $(this).val().trim();
+
+                    if (query.length > 1) {
+                        $.ajax({
+                            url: "{{ route('locations.search') }}",
+                            data: {
+                                term: query
+                            },
+                            success: function(data) {
+                                let suggestions = $('#locationSuggestions');
+                                suggestions.empty().show();
+
+                                if (data.length > 0) {
+                                    data.forEach(function(location) {
+                                        suggestions.append(
+                                            `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
+                                        );
+                                    });
+                                } else {
+                                    suggestions.append(
+                                        `<div class="list-group-item text-muted">No results for "${query}"</div>`
+                                    );
+                                    //suggestions.hide();
+                                }
+                            }
+                        });
+                    } else {
+                        $('#locationSuggestions').hide();
+                    }
+                });
+
+
+                // ⬅ Handle suggestion click
+                $(document).on('click', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
+
+                    fetchDriversByLocation(selected); // ✅ fetch drivers on selection
+                });
+
+                // ⬅ Handle focusout on input
+                $('#collectionLocation').on('focusout', function() {
+                    // const input = $(this);
+                    // setTimeout(() => {
+                    //     const location = input.val().trim();
+                    //     fetchDriversByLocation(location);
+                    //     // Hide suggestions after checking for click
+                    $('#locationSuggestions').hide();
+                    // }, 100);
+                    //suggestions.hide();
+                });
+                $(document).on('mousedown', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
+                    fetchDriversByLocation(selected);
+                });
+
+
+
+                // $('#collectionLocation').on('focusout', function() {
+                //     const location = $(this).val().trim();
+                //     //alert(location);
+
+                //     if (location.length > 1) {
+                //         $.ajax({
+                //             url: "{{ route('drivers.byLocation') }}",
+                //             method: "GET",
+                //             data: {
+                //                 location: location
+                //             },
+                //             success: function(data) {
+                //                 const userSelect = $('#userId');
+                //                 userSelect.empty();
+                //                 userSelect.append(`<option value="">Select Rider</option>`);
+
+                //                 if (data.length > 0) {
+                //                     data.forEach(driver => {
+                //                         userSelect.append(
+                //                             `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                //                         );
+                //                     });
+                //                 } else {
+                //                     userSelect.append(
+                //                         `<option disabled>No drivers found for this location</option>`
+                //                     );
+                //                 }
+                //             }
+                //         });
+                //     }
+                // });
+
+                function fetchDriversByLocation(location) {
+                    if (location.length > 1) {
+                        $.ajax({
+                            url: "{{ route('drivers.byLocation') }}",
+                            data: {
+                                location: location
+                            },
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append(
+                                        '<option disabled>No drivers found for this location</option>');
+                                }
+                            }
+                        });
+                    }
+                }
+
+
+
+                // un allocated riders 
+                $('#unallocatedRiders').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.unallocated') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append(
+                                        '<option disabled>No unallocated riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // all riders
+
+                $('#allRiders').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.all') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append('<option disabled>No riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+
+
+
+
 
                 $('#categories-multiselect').multiselect({
                     includeSelectAllOption: true,
