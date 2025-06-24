@@ -28,7 +28,7 @@
 
         <!-- Total Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index') }}" title="View All Client Requests"
+            <a href="{{ route('client-requests.index', ['time' => $timeFilter]) }}" title="View All Client Requests"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -52,7 +52,7 @@
 
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Collected Parcels"
+            <a href="{{ route('client-requests.index', ['status' => 'collected', 'time' => $timeFilter]) }}" title="View Collected Parcels"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -76,7 +76,7 @@
 
         <!-- Verified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'verified']) }}" title="View Verified Collections"
+            <a href="{{ route('client-requests.index', ['status' => 'verified', 'time' => $timeFilter]) }}" title="View Verified Collections"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -100,7 +100,7 @@
 
         <!-- Unverified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected']) }}" title="View Unverified Parcels"
+            <a href="{{ route('client-requests.index', ['status' => 'collected', 'time' => $timeFilter]) }}" title="View Unverified Parcels"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -124,7 +124,7 @@
 
         <!-- Pending Collections Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'pending collection']) }}"
+            <a href="{{ route('client-requests.index', ['status' => 'pending collection', 'time' => $timeFilter]) }}"
                 title="View Pending Collections" class="text-decoration-none text-dark">
                 <div class="card border-left-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -151,7 +151,7 @@
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-3 mb-3">
-                    <a href="{{ route('client-requests.index', ['station' => $stationName]) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'time' => $timeFilter]) }}" class="text-decoration-none text-dark">
                         <div class="card border-left-primary shadow h-100 py-2 hover-card">
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>

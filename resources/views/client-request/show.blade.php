@@ -12,7 +12,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="ucsl-table" width="100%" cellspacing="0">
+                <table class="table text-primary table-bordered" id="ucsl-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>#</th>

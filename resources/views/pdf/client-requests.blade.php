@@ -43,6 +43,7 @@
                         <p><strong>Time Filter:</strong> {{ ucfirst($timeFilter) }}</p>
                     @endif
                     <p><strong>Generated:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                    <p><strong>Records:</strong> {{ $client_requests->count() }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
                     <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
@@ -73,7 +74,7 @@
                         <td>{{ $request->createdBy->name ?? '-' }}</td>
                         <td>{{ $request->created_at->format('F j, Y \a\t g:i A') }}</td>
                         <td>
-                            {{ $request->shipmentCollection->remarks ?? '-' }}
+                            
                         </td>
                     </tr>
                 @empty

@@ -149,11 +149,16 @@ class ClientRequestController extends Controller
     public function exportPdf(Request $request)
     {
         $user = Auth::user();
-        $station = $request->query('station', $user->station);
+        $stationParam = $request->query('station');
+        if ($user->role === 'admin') {
+            $station = $stationParam ?: 'All';
+        } else {
+            $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
+        }
+
         $status = $request->query('status');
         $timeFilter = $request->query('time', 'all');
 
-        // Determine date range
         $dateRange = match ($timeFilter) {
             'daily' => [now()->startOfDay(), now()->endOfDay()],
             'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
@@ -163,17 +168,28 @@ class ClientRequestController extends Controller
             default => null
         };
 
-        $queryWithDate = fn($q) => $dateRange ? $q->whereBetween('created_at', $dateRange) : $q;
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy']);
 
-        // Build query
-        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy'])
-            ->when($user->role !== 'admin', fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $user->station)))
-            ->when($user->role === 'admin' && $station, fn($q) => $q->whereHas('createdBy', fn($q2) => $q2->where('station', $station)))
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($dateRange, $queryWithDate)
-            ->orderBy('created_at', 'desc');
+        if ($user->role === 'admin') {
+            if ($station) {
+                $officeId = Office::where('name', $station)->value('id');
+                if ($officeId) {
+                    $query->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $query->where('office_id', $user->station);
+        }
 
-        $client_requests = $query->get();
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
 
         $pdf = Pdf::loadView('pdf.client-requests', [
             'client_requests' => $client_requests,
@@ -182,14 +198,17 @@ class ClientRequestController extends Controller
             'timeFilter' => $timeFilter,
         ])->setPaper('a4', 'landscape');
 
-        // Add page numbers
-        $pdf->getDomPDF()->get_canvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
+        $dompdf = $pdf->getDomPDF();
+        $canvas = $dompdf->get_canvas();
+
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
             $font = $fontMetrics->getFont('Helvetica', 'normal');
-            $canvas->text(420, 580, "Page $pageNumber of $pageCount", $font, 10);
+            $canvas->text(270, 560, "Page $pageNumber of $pageCount", $font, 10);
         });
 
         return $pdf->download('client_requests.pdf');
     }
+
 
     /**
      * Show the form for creating a new resource.
