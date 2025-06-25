@@ -32,17 +32,35 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <h2>Client Requests Report</h2>
-                    @if (!empty($station))
-                        <p><strong>Station:</strong> {{ $station }}</p>
+                    @php
+                        $stationName = (!empty($station) && strtolower($station) !== 'all') ? ucfirst($station) : 'All Stations';
+
+                        $timeLabel = match($timeFilter) {
+                            'daily' => 'Daily',
+                            'weekly' => 'Weekly',
+                            'biweekly' => 'Biweekly',
+                            'monthly' => 'Monthly',
+                            'yearly' => 'Yearly',
+                            default => 'Comprehensive'
+                        };
+
+                        $showOfficeColumn = ($stationName === 'All Stations');
+                    @endphp
+                    <h2>{{ $timeLabel }} Report for {{ ucfirst($status ?? 'All') }} Client Requests in {{ $stationName }}</h2>
+                    @if (!empty($timeFilter) && $timeFilter !== 'all' && !empty($reportingPeriod))
+                        @php
+                            [$start, $end] = $reportingPeriod;
+                        @endphp
+
+                        @if ($timeFilter === 'daily')
+                            <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::parse($start)->format('F j, Y') }}</p>
+                        @elseif ($timeFilter === 'yearly')
+                            <p><strong>Reporting Period:</strong> Year {{ \Carbon\Carbon::parse($start)->format('Y') }}</p>
+                        @else
+                            <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::parse($start)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($end)->format('F j, Y') }}</p>
+                        @endif
                     @endif
-                    @if (!empty($status))
-                        <p><strong>Status:</strong> {{ ucfirst($status) }}</p>
-                    @endif
-                    @if (!empty($timeFilter) && $timeFilter !== 'all')
-                        <p><strong>Time Filter:</strong> {{ ucfirst($timeFilter) }}</p>
-                    @endif
-                    <p><strong>Generated:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                    <p><strong>As at:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                     <p><strong>Records:</strong> {{ $client_requests->count() }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
@@ -55,10 +73,13 @@
         <table class="bordered">
             <thead>
                 <tr>
-                    <th style="width: 3%;">#</th>
+                    <th style="width: 5%;">#</th>
                     <th style="width: 10%;">Request ID</th>
                     <th style="width: 15%;">Client</th>
-                    <th style="width: 12%;">Status</th>
+                    <th style="width: 15%;">Status</th>
+                    @if ($showOfficeColumn)
+                        <th style="width: 15%;">Office</th>
+                    @endif
                     <th style="width: 15%;">Created By</th>
                     <th style="width: 20%;">Created At</th>
                     <th style="width: 25%;">Remarks</th>
@@ -71,15 +92,18 @@
                         <td>{{ $request->requestId }}</td>
                         <td>{{ $request->client->name ?? '-' }}</td>
                         <td>{{ ucfirst($request->status) }}</td>
+                        @if ($showOfficeColumn)
+                            <td>{{ $request->office->name ?? '-' }}</td>
+                        @endif
                         <td>{{ $request->createdBy->name ?? '-' }}</td>
                         <td>{{ $request->created_at->format('F j, Y \a\t g:i A') }}</td>
-                        <td>
-                            
-                        </td>
+                        <td></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center;">No client requests found for this filter.</td>
+                        <td colspan="{{ $showOfficeColumn ? 8 : 7 }}" style="text-align: center;">
+                            No client requests found for this filter.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

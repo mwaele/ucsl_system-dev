@@ -195,6 +195,7 @@ class ClientRequestController extends Controller
             'client_requests' => $client_requests,
             'station' => $station,
             'status' => $status,
+            'reportingPeriod' => $dateRange,
             'timeFilter' => $timeFilter,
         ])->setPaper('a4', 'landscape');
 
@@ -203,7 +204,14 @@ class ClientRequestController extends Controller
 
         $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
             $font = $fontMetrics->getFont('Helvetica', 'normal');
-            $canvas->text(270, 560, "Page $pageNumber of $pageCount", $font, 10);
+            $text = "Page $pageNumber of $pageCount";
+
+            // Get width and height of the page
+            $w = $canvas->get_width();
+            $h = $canvas->get_height();
+
+            // Draw at bottom center, 30 points above bottom edge
+            $canvas->text($w / 2, $h - 30, $text, $font, 10);
         });
 
         return $pdf->download('client_requests.pdf');
