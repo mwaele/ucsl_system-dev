@@ -21,6 +21,7 @@ use App\Http\Controllers\SpecialRateController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\API\ClientAuthController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\TransporterController;
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
@@ -147,6 +148,12 @@ Route::middleware('auth')->group(function () {
     
       Route::resource('categories','App\Http\Controllers\CategoryController');
 
+      Route::resource('transporters','App\Http\Controllers\TransporterController');
+      Route::resource('dispatchers','App\Http\Controllers\DispatcherController');
+      Route::get('transporter/trucks/{id}', [TransporterController::class, 'fetchTrucks']);
+
+      Route::resource('transporter_trucks','App\Http\Controllers\TransporterTrucksController');
+       
       Route::resource('sub_categories','App\Http\Controllers\SubCategoryController');
 
       Route::resource('client_categories','App\Http\Controllers\ClientCategoryController');
