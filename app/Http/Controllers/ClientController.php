@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\SubCategory;
+use App\Models\Category;
+use App\Models\ClientCategory;
 
 class ClientController extends Controller
 {
@@ -22,12 +25,14 @@ class ClientController extends Controller
      */
     public function create()
     {
+        $sub_categories = SubCategory::all();
+        $categories = Category::all();
         do {
             $number = 'UCSL-' . mt_rand(10000, 99999);
         } while (Client::where('accountNo', $number)->exists());
 
         
-        return view('clients.create')->with('accountNo',$number);
+        return view('clients.create')->with(['accountNo'=>$number, 'categories'=>$categories]);
     }
 
     private function normalizePhoneNumber($phone)
@@ -52,6 +57,7 @@ class ClientController extends Controller
     
     public function store(Request $request)
     {
+        //dd($request);
         // Validate the incoming request
         $validated = $request->validate([
             'accountNo' => 'required|unique:clients|max:255',
@@ -63,9 +69,8 @@ class ClientController extends Controller
             'city' => 'required|string|max:255',
             'building' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            //'category_id' => 'required|string|max:11',
             'type' => 'required|string|max:255',
-            'industry' => 'required|string|max:255',
             'contactPerson' => 'required|string|max:255',
             'contactPersonPhone' => 'required|string|max:255',
             'contactPersonEmail' => 'required|email|max:255',
@@ -89,9 +94,9 @@ class ClientController extends Controller
         $client->city = $validated['city'];
         $client->building = $validated['building'];
         $client->country = $validated['country'];
-        $client->category = $validated['category'];
+        $client->category = 'NULL';
+        //$client->category_id = $validated['category_id'];
         $client->type = $validated['type'];
-        $client->industry = $validated['industry'];
         $client->contactPerson = $validated['contactPerson'];
         $client->contactPersonPhone = $validated['contactPersonPhone'];
         $client->contactPersonEmail = $validated['contactPersonEmail'];
@@ -102,6 +107,17 @@ class ClientController extends Controller
 
         //dd($client);
         $client->save();  // Save the client to the database
+
+        // Get selected category IDs
+        $categoryIds = $request->input('category_id');
+
+        // Save to pivot table client_categories
+        foreach ($categoryIds as $catId) {
+            ClientCategory::create([
+                'client_id' => $client->id,
+                'category_id' => $catId,
+            ]);
+        }
 
 
         return redirect()->route('clients.index')->with('success', 'Client created successfully!');

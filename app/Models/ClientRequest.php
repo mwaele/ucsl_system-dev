@@ -16,7 +16,9 @@ class ClientRequest extends Model
         'requestId',
         'collected_by',
         'consignment_no',
-        'created_by'
+        'created_by',
+        'category_id',
+        'sub_category_id',
     ];
 
     public function client()

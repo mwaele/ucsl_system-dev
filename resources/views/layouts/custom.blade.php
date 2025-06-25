@@ -13,6 +13,11 @@
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css" />
 
+    <!-- Bootstrap Multiselect CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.css">
+
+
 
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -266,6 +271,20 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('categories.index') }}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->routeIs('sub_categories.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('sub_categories.index') }}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Sub Categories</span>
+                </a>
+            </li>
+
 
             <!-- Nav Item - Pages Collapse Menu -->
 
@@ -308,7 +327,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span class="badge badge-danger badge-counter">0</span>
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -326,7 +345,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
+                                <span class="badge badge-danger badge-counter">0</span>
                             </a>
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -435,21 +454,24 @@
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <div class="modal-header bg-success">
+                        <h5 class="modal-title text-white" id="exampleModalLabel">Ready to Leave?</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        Select "Logout" below if you are ready to end your current session.
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            Select "Logout" below if you are ready to end your current session.
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                            Cancel
-                        </button>
-                        <a class="btn btn-primary" href="login.html">Logout</a>
+                        <button class="btn btn-danger" type="button" data-dismiss="modal">Cancel</button>
+
+                        <button class="btn btn-primary" type="submit">Logout</button>
+
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -457,7 +479,7 @@
         <!-- Datatable JS -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> --}}
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
         <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap4.js"></script>
 
@@ -467,6 +489,9 @@
 
         <!-- Core plugin JavaScript-->
         <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+        <!-- Bootstrap Multiselect JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>
 
         <!-- Custom scripts for all pages-->
         <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
@@ -628,6 +653,203 @@
         </script>
         <script>
             $(document).ready(function() {
+
+                let debounceTimer;
+                $('#collectionLocation').on('keyup', function() {
+                    clearTimeout(debounceTimer);
+                    const query = $(this).val().trim();
+
+                    debounceTimer = setTimeout(() => {
+                        if (query.length > 1) {
+                            $.ajax({
+                                url: "{{ route('locations.search') }}",
+                                data: {
+                                    term: query
+                                },
+                                success: function(data) {
+                                    const suggestions = $('#locationSuggestions');
+                                    suggestions.empty();
+
+                                    if (data.length > 0) {
+                                        data.forEach(function(location) {
+                                            suggestions.append(
+                                                `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
+                                            );
+                                        });
+                                        suggestions.show();
+                                    } else {
+                                        suggestions.hide();
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#locationSuggestions').hide();
+                        }
+                    }, 300); // delay search by 300ms
+                });
+
+
+
+                // ⬅ Handle suggestion click
+                $(document).on('click', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
+
+                    fetchDriversByLocation(selected); // ✅ fetch drivers on selection
+                });
+
+                // ⬅ Handle focusout on input
+                $('#collectionLocation').on('focusout', function() {
+                    $('#locationSuggestions').hide();
+                });
+
+                $(document).on('mousedown', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
+                    fetchDriversByLocation(selected);
+                });
+
+
+
+                // $('#collectionLocation').on('focusout', function() {
+                //     const location = $(this).val().trim();
+                //     //alert(location);
+
+                //     if (location.length > 1) {
+                //         $.ajax({
+                //             url: "{{ route('drivers.byLocation') }}",
+                //             method: "GET",
+                //             data: {
+                //                 location: location
+                //             },
+                //             success: function(data) {
+                //                 const userSelect = $('#userId');
+                //                 userSelect.empty();
+                //                 userSelect.append(`<option value="">Select Rider</option>`);
+
+                //                 if (data.length > 0) {
+                //                     data.forEach(driver => {
+                //                         userSelect.append(
+                //                             `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                //                         );
+                //                     });
+                //                 } else {
+                //                     userSelect.append(
+                //                         `<option disabled>No drivers found for this location</option>`
+                //                     );
+                //                 }
+                //             }
+                //         });
+                //     }
+                // });
+
+                function fetchDriversByLocation(location) {
+                    if (location.length > 1) {
+                        $.ajax({
+                            url: "{{ route('drivers.byLocation') }}",
+                            data: {
+                                location: location
+                            },
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append(
+                                        '<option disabled>No drivers found for this location</option>');
+                                }
+                            }
+                        });
+                    }
+                }
+
+
+
+                // un allocated riders 
+                $('#unallocatedRiders').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.unallocated') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (Unallocated)</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append(
+                                        '<option disabled>No unallocated riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // all riders
+
+                $('#allRiders').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.all') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                const select = $('#userId');
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations ?? 'Unallocated'})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append('<option disabled>No riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+                $('#currentLocation').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        const location = $('#collectionLocation').val().trim();
+
+                        if (location.length > 1) {
+                            fetchDriversByLocation(location);
+                        } else {
+                            alert('Please enter a collection location first.');
+                        }
+                    }
+                });
+
+
+
+
+
+
+
+                $('#categories-multiselect').multiselect({
+                    includeSelectAllOption: true,
+                    enableFiltering: true,
+                    buttonWidth: '100%', // 👈 Ensures dropdown matches form-control width
+                    nonSelectedText: 'Select categories'
+                });
+
                 $('.addRowBtn').on('click', function() {
                     let newRow = $('#shipmentTable tbody tr:first').clone();
                     newRow.find('input').val(''); // clear inputs
@@ -795,6 +1017,58 @@
                     error: function(xhr) {
                         alert('Error verifying shipment');
                         console.error(xhr.responseText);
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).ready(function() {
+
+                // When client is selected
+                $('#clientId').on('change', function() {
+                    let clientId = $(this).val();
+                    if (clientId) {
+                        $.ajax({
+                            url: '/get-client-categories/' + clientId,
+                            type: 'GET',
+                            success: function(data) {
+                                $('#clientCategories').empty().append(
+                                    '<option value="">Select Client Categories</option>');
+                                $('#subCategories').empty().append(
+                                    '<option value="">Select Sub Categories</option>');
+                                $.each(data, function(key, category) {
+                                    $('#clientCategories').append('<option value="' +
+                                        category.category_id + '">' + category
+                                        .category_name + '</option>');
+                                });
+                            }
+                        });
+                    } else {
+                        $('#clientCategories').empty().append(
+                            '<option value="">Select Client Categories</option>');
+                        $('#subCategories').empty().append('<option value="">Select Sub Categories</option>');
+                    }
+                });
+
+                // When category is selected
+                $('#clientCategories').on('change', function() {
+                    let categoryId = $(this).val();
+                    if (categoryId) {
+                        $.ajax({
+                            url: '/get-sub-categories/' + categoryId,
+                            type: 'GET',
+                            success: function(data) {
+                                $('#subCategories').empty().append(
+                                    '<option value="">Select Sub Categories</option>');
+                                $.each(data, function(key, sub) {
+                                    $('#subCategories').append('<option value="' + sub.id +
+                                        '">' + sub.sub_category_name + '</option>');
+                                });
+                            }
+                        });
+                    } else {
+                        $('#subCategories').empty().append('<option value="">Select Sub Categories</option>');
                     }
                 });
             });

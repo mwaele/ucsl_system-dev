@@ -3,11 +3,12 @@
 @section('content')
     <div class="card shadow-sm">
         <div class="card-header pt-4">
-            <div class="row pt-2">
-                <div class="col-sm-4">
-                    <i class="fas fa-table text-success"></i>
-                    Add New Client
-                </div>
+            <div class="d-sm-flex align-items-center justify-content-between">
+
+                <h4 class="m-0 font-weight-bold text-success"> <i class="fas fa-plus-circle"></i> Create New Client </h4>
+
+                <a href="{{ route('clients.index') }}" class="btn btn-success"><i class="fas fa-bars"></i>
+                    All Clients List</a>
             </div>
         </div>
         <div class="card-body">
@@ -258,8 +259,15 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>Category</label>
-                        <input type="text" name="category" class="form-control">
+                        <label>Category (Select single or multiple)</label>
+                        {{-- <input type="text" name="category" class="form-control"> --}}
+                        <select name="category_id[]" class="form-control" id="categories-multiselect"
+                            multiple="multiple">
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                            @endforeach
+                        </select>
+
                     </div>
                     <div class="form-group col-md-4">
                         <label>Type</label>
@@ -269,10 +277,10 @@
                             <option value="Walkin">Walkin</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-4">
+                    {{-- <div class="form-group col-md-4">
                         <label>Industry</label>
                         <input type="text" name="industry" class="form-control">
-                    </div>
+                    </div> --}}
                 </div>
 
                 <h5 class="mt-4">Contact Person Details</h5>
