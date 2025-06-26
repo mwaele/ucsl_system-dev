@@ -469,10 +469,11 @@
                                     @endif
 
                                     @if ($request->status === 'verified')
-                                        <button class="btn btn-sm btn-success mr-1" title="Generate waybill"
-                                            data-toggle="modal" data-target="">
+                                        <a href="{{ route('waybill.generate', $request->shipmentCollection->id) }}" 
+                                        class="btn btn-sm btn-success mr-1" 
+                                        title="Generate Waybill" target="_blank">
                                             <i class="fas fa-file-invoice"></i>
-                                        </button>
+                                        </a>
                                     @endif
 
                                     @if ($request->status === 'verified')

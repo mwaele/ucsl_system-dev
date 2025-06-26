@@ -149,6 +149,14 @@ class ClientRequestController extends Controller
         ));
     }
 
+    public function generateWaybill($id)
+    {
+        $collection = ShipmentCollection::with(['clientRequest', 'items'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('pdf.waybill', compact('collection'));
+        return $pdf->download('waybill_'.$collection->waybill_number.'.pdf');
+    }
+    
     public function exportPdf(Request $request)
     {
         $user = Auth::user();
