@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoadingSheet;
+use App\Models\Office;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -14,9 +16,10 @@ class LoadingSheetController extends Controller
     public function index()
     {
         //
+        $offices = Office::where('id',Auth::user()->station)->get();
         $sheets = LoadingSheet::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('loading-sheet.index', compact('sheets', 'drivers'));
+        return view('loading-sheet.index', with(['sheets'=>$sheets, 'drivers'=>$drivers, 'offices'=>$offices]));
     }
 
     /**

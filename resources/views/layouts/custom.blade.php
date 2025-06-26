@@ -285,6 +285,20 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('transporters.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('transporters.index') }}">
+                    <i class="fas fa-fw fa-truck"></i>
+                    <span>Transporters</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->routeIs('dispatchers.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('dispatchers.index') }}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Dispatch Clerks</span>
+                </a>
+            </li>
+
 
             <!-- Nav Item - Pages Collapse Menu -->
 
@@ -400,7 +414,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid text-primary">
+                <div class="container-fluid text-primary h-100">
                     <!-- Page Heading -->
                     @yield('content')
                     @stack('scripts')
