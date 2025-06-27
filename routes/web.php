@@ -106,6 +106,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
     Route::get('/waybill/generate/{id}', [ClientRequestController::class, 'generateWaybill'])->name('waybill.generate');
+    Route::get('/waybill/preview/{id}', [ClientRequestController::class, 'preview'])->name('waybill.preview');
     Route::get('/get-client-categories/{clientId}', [ClientRequestController::class, 'getClientCategories']);
     Route::get('/get-sub-categories/{categoryId}', [ClientRequestController::class, 'getSubCategories']);
 

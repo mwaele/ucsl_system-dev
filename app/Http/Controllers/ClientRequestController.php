@@ -149,12 +149,17 @@ class ClientRequestController extends Controller
         ));
     }
 
-    public function generateWaybill($id)
-    {
-        $collection = ShipmentCollection::with(['clientRequest', 'items'])->findOrFail($id);
+    public function generateWaybill($id) {
+        $collection = ShipmentCollection::with(['items', 'office', 'destination'])->findOrFail($id);
+        $pdf = PDF::loadView('pdf.waybill', compact('collection'))
+            ->setPaper('a5', 'portrait');
+        return $pdf->stream('Waybill_'.$collection->waybill_no.'.pdf');
+    }
 
-        $pdf = Pdf::loadView('pdf.waybill', compact('collection'));
-        return $pdf->download('waybill_'.$collection->waybill_number.'.pdf');
+    public function preview($id)
+    {
+        $collection = ShipmentCollection::with(['items', 'office', 'destination'])->findOrFail($id);
+        return view('pdf.waybill', compact('collection'));
     }
     
     public function exportPdf(Request $request)

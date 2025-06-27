@@ -469,12 +469,36 @@
                                     @endif
 
                                     @if ($request->status === 'verified')
-                                        <a href="{{ route('waybill.generate', $request->shipmentCollection->id) }}" 
-                                        class="btn btn-sm btn-success mr-1" 
-                                        title="Generate Waybill" target="_blank">
+                                        <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
+                                            data-toggle="modal" data-target="#waybillModal{{ $request->id }}">
                                             <i class="fas fa-file-invoice"></i>
-                                        </a>
+                                        </button>
+                                    
+                                        <div class="modal fade" id="waybillModal{{ $request->id }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                    <iframe src="{{ route('waybill.preview', $request->shipmentCollection->id) }}" width="100%" height="450" frameborder="0"></iframe>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    <a href="{{ route('waybill.generate', $request->shipmentCollection->id) }}"
+                                                    target="_blank"
+                                                    class="btn btn-primary">
+                                                    Generate
+                                                    </a>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
+
 
                                     @if ($request->status === 'verified')
                                         <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
