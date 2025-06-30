@@ -12,7 +12,8 @@ class TransporterTrucks extends Model
     'driver_contact',
     'driver_id_no',
     'truck_type',
-    'transporter_id'
+    'transporter_id',
+    'status'
   ];
   public function transporter(){
     return $this->belongsTO('App\Models\Transporter');

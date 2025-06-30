@@ -15,6 +15,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LoadingSheetController;
 
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\SpecialRateController;
@@ -154,6 +155,19 @@ Route::middleware('auth')->group(function () {
       Route::get('transporter/trucks/{id}', [TransporterController::class, 'fetchTrucks']);
 
       Route::resource('transporter_trucks','App\Http\Controllers\TransporterTrucksController');
+
+      Route::get('/get-trucks/{transporterId}', [TransporterController::class, 'getTrucks']);
+
+      Route::get('/loadingsheet_waybills/{id}', [LoadingSheetController::class, 'loadingsheet_waybills'])->name('loadingsheet_waybills');
+
+      Route::get('/shipment-collection/{id}', [LoadingSheetController::class, 'show']);
+
+      Route::get('/generate_loading_sheet/{id}', [LoadingSheetController::class, 'generate_loading_sheet']);
+
+      Route::post('/get-shipment-items', [ShipmentItemController::class, 'getItems']);
+
+    Route::resource('loading_sheet_waybills','App\Http\Controllers\LoadingSheetWaybillController');
+
        
       Route::resource('sub_categories','App\Http\Controllers\SubCategoryController');
 

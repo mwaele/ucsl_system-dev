@@ -86,6 +86,21 @@
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
 
+
+    <!-- Datatable JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> --}}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap4.js"></script>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
 </head>
 
 <body id="page-top">
@@ -153,7 +168,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Loading Sheets</a>
+                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                         <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a>
                     </div>
@@ -490,19 +505,7 @@
             </div>
         </div>
 
-        <!-- Datatable JS -->
-        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> --}}
-        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-        <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap4.js"></script>
 
-        <!-- Bootstrap core JavaScript-->
-        <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-        <!-- Core plugin JavaScript-->
-        <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
         <!-- Bootstrap Multiselect JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/js/bootstrap-multiselect.min.js"></script>

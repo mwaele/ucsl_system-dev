@@ -37,6 +37,10 @@ class ShipmentCollection extends Model
         'sender_email',
         'receiver_email',
         'special_rates_status',
+        'total_weight',
+        'total_quantity',
+        'manifest_generated_status',
+        'status'
     ];
 
     public function clientRequest()
@@ -57,6 +61,10 @@ class ShipmentCollection extends Model
     public function destination()
     {
         return $this->belongsTo(Rate::class, 'destination_id');
+    }
+    public function special_destination()
+    {
+        return $this->belongsTo(SpecialRate::class, 'destination_id');
     }
 
     public function client()
