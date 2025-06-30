@@ -122,7 +122,7 @@
 </head>
 <body>
     <div class="waybill-container">
-        <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 8px; color: #14489f">
             <tr valign="top">
                 <!-- Left Column -->
                 <td style="width: 50%; padding-right: 5px;">
@@ -136,25 +136,27 @@
                 <!-- ROW 1: Tracking + Insurance and Office Info + Billing -->
                 <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
                     <tr valign="top">
-                    <td style="width: 50%; padding-right: 3px;">
+                    <td style="width: 50%; padding-right: 2px;">
                         <div class="waybill-title">
                         <span style="color: #FF0000; font-size: 14px;">{{ $collection->waybill_no ?? 'TRACKING NO' }}</span><br>
                         WAYBILL/TRACKING NUMBER
                         </div>
-                        @include('pdf.partials.service_level')
                         @include('pdf.partials.insurance')
+                        @include('pdf.partials.service_level')
                     </td>
                     <td style="width: 50%;">
-                        <div class="section">
-                        <div class="logo-container">
-                            <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Ufanisi Courier Services Logo">
-                        </div>
-                        <div class="section-body">
-                            HEAD OFFICE: Pokomo Rd., off Shimo La Tewa Rd.<br>
-                            P.O. Box 44357 - 00100, Nairobi, Kenya<br>
-                            Tel: +254 758 560 560 / +254 761 508 560<br>
-                            Email: enquiries@ufanisicourier.co.ke
-                        </div>
+                        <div class="section" style="text-align: right;">
+                          <div class="logo-container">
+                              <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Ufanisi Courier Services Logo">
+                          </div>
+                          <div class="section-body" style="font-size: 4px;">
+                              <b>HEAD OFFICE:</b> Pokomo Rd., off Shimo La Tewa Rd.,<br>
+                              off Lusaka Rd., Industrial Area<br>
+                              P.O. Box 44357 - 00100, Nairobi, Kenya<br>
+                              <b>Telephone:</b> +254 758 560 560, +254 761 508 560<br>
+                              <b>OUR OFFICE:</b> MOMBASA, BUNGOMA, NAKURU, ELDORET, KISUMU, KERICHO, KAKAMEGA, MACHAKOS, NYERI, NANYUKI, KILIFI, MALINDI, KITUI, BUSIA, MIGORI, HOMA BAY<br>
+                              <b>Email:</b> enquiries@ufanisicourier.co.ke
+                          </div>
                         </div>
                         @include('pdf.partials.billing')
                         @include('pdf.partials.payment_mode')

@@ -484,7 +484,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                    <iframe src="{{ route('waybill.preview', $request->shipmentCollection->id) }}" width="100%" height="450" frameborder="0"></iframe>
+                                                    <iframe src="{{ route('waybill.preview', $request->shipmentCollection->id) }}" width="100%" height="500" frameborder="0"></iframe>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
