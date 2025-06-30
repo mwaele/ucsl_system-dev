@@ -8,27 +8,53 @@
                 class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
     </div>
 
-    <!-- Time Filter -->
+    <!-- Time Filter & Date Range Filter -->
     <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
-        <div class="form-inline">
-            <label for="time" class="mr-2 font-weight-bold">Filter by Time:</label>
-            <select name="time" id="time" class="form-control mr-2" onchange="this.form.submit()">
-                <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
-                <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
-                <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
-                <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days</option>
-                <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
-                <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
-            </select>
+        <div class="form-row align-items-end">
+            <div class="col-auto">
+                <label for="time" class="font-weight-bold">Quick Filter:</label>
+                <select name="time" id="time" class="form-control" onchange="this.form.submit()">
+                    <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
+                    <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
+                    <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
+                    <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days</option>
+                    <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
+                    <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="start_date" class="font-weight-bold">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+            </div>
+            <div class="col-auto">
+                <label for="end_date" class="font-weight-bold">End Date:</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+            <div class="col-auto">
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Clear</a>
+            </div>
         </div>
     </form>
 
+
     <!-- Content Row -->
+     @php
+        $queryParams = ['time' => $timeFilter];
+
+        if (request('start_date') && request('end_date')) {
+            $queryParams['start_date'] = request('start_date');
+            $queryParams['end_date'] = request('end_date');
+        }
+    @endphp
+
     <div class="row">
 
         <!-- Total Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['time' => $timeFilter]) }}" title="View All Client Requests"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}" title="View All Client Requests"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -52,7 +78,7 @@
 
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected', 'time' => $timeFilter]) }}" title="View Collected Parcels"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}" title="View Collected Parcels"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -76,7 +102,7 @@
 
         <!-- Verified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'verified', 'time' => $timeFilter]) }}" title="View Verified Collections"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}" title="View Verified Collections"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -100,7 +126,7 @@
 
         <!-- Unverified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'collected', 'time' => $timeFilter]) }}" title="View Unverified Parcels"
+            <a href="{{ route('client-requests.index', array_merge($queryParams,['status' => 'collected', 'time' => $timeFilter])) }}" title="View Unverified Parcels"
                 class="text-decoration-none text-dark">
                 <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -124,7 +150,7 @@
 
         <!-- Pending Collections Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', ['status' => 'pending collection', 'time' => $timeFilter]) }}"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
                 title="View Pending Collections" class="text-decoration-none text-dark">
                 <div class="card border-left-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -151,25 +177,25 @@
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-3 mb-3">
-                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'time' => $timeFilter]) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'time' => $timeFilter])) }}" class="text-decoration-none text-dark">
                         <div class="card border-left-primary shadow h-100 py-2 hover-card">
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>
                                 <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
                                 <p class="mb-1 text-success">
-                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'collected', 'time' => $timeFilter]) }}"
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'collected', 'time' => $timeFilter])) }}"
                                     class="text-success text-decoration-none">
                                         Collected: <strong>{{ $stats['collected'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-info">
-                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter]) }}"
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter])) }}"
                                     class="text-info text-decoration-none">
                                         Verified: <strong>{{ $stats['verified'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-warning">
-                                    <a href="{{ route('client-requests.index', ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter]) }}"
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
                                     class="text-warning text-decoration-none">
                                         Pending Collection: <strong>{{ $stats['pending'] }}</strong>
                                     </a>

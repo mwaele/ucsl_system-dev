@@ -125,19 +125,19 @@
         <table style="width: 100%; border-collapse: collapse; font-size: 8px; color: #14489f">
             <tr valign="top">
                 <!-- Left Column -->
-                <td style="width: 50%; padding-right: 5px;">
+                <td style="width: 40%; padding-right: 5px;">
                 @include('pdf.partials.sender_info')
                 @include('pdf.partials.goods_description')
                 @include('pdf.partials.shipment_info')
                 </td>
 
                 <!-- Right Column -->
-                <td style="width: 50%;">
+                <td style="width: 60%;">
                 <!-- ROW 1: Tracking + Insurance and Office Info + Billing -->
                 <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
                     <tr valign="top">
                     <td style="width: 50%; padding-right: 2px;">
-                        <div class="waybill-title">
+                        <div class="waybill-title" style="font-size: 9px;">
                         <span style="color: #FF0000; font-size: 14px;">{{ $collection->waybill_no ?? 'TRACKING NO' }}</span><br>
                         WAYBILL/TRACKING NUMBER
                         </div>

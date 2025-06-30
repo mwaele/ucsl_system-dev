@@ -8,6 +8,8 @@ use App\Models\ClientRequest;
 use App\Models\ShipmentCollection;
 use App\Models\User;
 use App\Models\Office;
+use Carbon\Carbon;
+
 
 class DashboardController extends Controller
 {
@@ -17,14 +19,23 @@ class DashboardController extends Controller
         $station = $user->station;
         $timeFilter = $request->query('time', 'all'); // default to all
 
-        $dateRange = match ($timeFilter) {
-            'daily' => [now()->startOfDay(), now()->endOfDay()],
-            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
-            'biweekly' => [now()->subDays(14), now()],
-            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
-            'yearly' => [now()->startOfYear(), now()->endOfYear()],
-            default => null
-        };
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
 
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)
@@ -76,7 +87,9 @@ class DashboardController extends Controller
             'recentRequests',
             'userCount',
             'stationStats',
-            'timeFilter'
+            'timeFilter',
+            'startDate',
+            'endDate'
         ));
     }
 }

@@ -10,10 +10,10 @@
 
                 <!-- Right: Button -->
                 <div>
-                    <a href="{{ route('client-requests.export.pdf', request()->only(['station', 'status', 'time'])) }}"
-                        class="btn btn-danger mr-1" title="Download PDF">
-                        <i class="fas fa-download"></i></i>
+                    <a href="{{ $exportPdfUrl }}" class="btn btn-danger mr-1" title="Download PDF">
+                        <i class="fas fa-download"></i>
                     </a>
+
                     <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
                         data-target="#createClientRequest">
                         <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client

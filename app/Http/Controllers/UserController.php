@@ -123,8 +123,8 @@ class UserController extends Controller
         $drivers = User::where('role', 'driver')
             ->where('station', Auth::user()->station) // Optional: match current user's station
             ->whereNotIn('users.id', $allocatedDriverIds)
-            ->join('stations', 'users.station', '=', 'stations.id')
-            ->select('users.id', 'users.name', 'stations.station_name as station')
+            ->join('offices', 'users.station', '=', 'offices.id')
+            ->select('users.id', 'users.name', 'offices.name as station')
             ->get();
 
         return response()->json($drivers);
@@ -139,16 +139,16 @@ class UserController extends Controller
             ->whereIn('client_requests.status', ['pending collection', 'collected'])
             ->whereDate('client_requests.dateRequested', now());
     })
-    ->join('stations', 'users.station', '=', 'stations.id')
+    ->join('offices', 'users.station', '=', 'offices.id')
     ->where('users.role', 'driver')
     ->where('users.station', Auth::user()->station)
     ->select(
         'users.id',
         'users.name',
-        'stations.station_name as station',
+        'offices.name as station',
         DB::raw("GROUP_CONCAT(DISTINCT client_requests.collectionLocation SEPARATOR ', ') as collectionLocations")
     )
-    ->groupBy('users.id', 'users.name', 'stations.station_name')
+    ->groupBy('users.id', 'users.name', 'offices.name')
     ->get();
         return response()->json($drivers);
     }

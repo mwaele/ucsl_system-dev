@@ -47,19 +47,22 @@
                         $showOfficeColumn = ($stationName === 'All Stations');
                     @endphp
                     <h2>{{ $timeLabel }} Report for {{ ucfirst($status ?? 'All') }} Client Requests in {{ $stationName }}</h2>
-                    @if (!empty($timeFilter) && $timeFilter !== 'all' && !empty($reportingPeriod))
+                    @if (!empty($reportingPeriod))
                         @php
                             [$start, $end] = $reportingPeriod;
+                            $start = \Carbon\Carbon::parse($start);
+                            $end = \Carbon\Carbon::parse($end);
                         @endphp
 
-                        @if ($timeFilter === 'daily')
-                            <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::parse($start)->format('F j, Y') }}</p>
-                        @elseif ($timeFilter === 'yearly')
-                            <p><strong>Reporting Period:</strong> Year {{ \Carbon\Carbon::parse($start)->format('Y') }}</p>
+                        @if ($start->eq($end))
+                            <p><strong>Reporting Date:</strong> {{ $start->format('F j, Y') }}</p>
+                        @elseif ($timeFilter === 'yearly' && $start->isStartOfYear() && $end->isEndOfYear())
+                            <p><strong>Reporting Period:</strong> Year {{ $start->format('Y') }}</p>
                         @else
-                            <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::parse($start)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($end)->format('F j, Y') }}</p>
+                            <p><strong>Reporting Period:</strong> {{ $start->format('F j, Y') }} - {{ $end->format('F j, Y') }}</p>
                         @endif
                     @endif
+
                     <p><strong>As at:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                     <p><strong>Records:</strong> {{ $client_requests->count() }}</p>
                 </td>

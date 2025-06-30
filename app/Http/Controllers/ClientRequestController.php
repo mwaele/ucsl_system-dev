@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Auth;
@@ -64,16 +65,26 @@ class ClientRequestController extends Controller
         $stationName = $request->query('station');
         $status = $request->query('status');
         $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-        // Time filter
-        $dateRange = match ($timeFilter) {
-            'daily' => [now()->startOfDay(), now()->endOfDay()],
-            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
-            'biweekly' => [now()->subDays(14), now()],
-            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
-            'yearly' => [now()->startOfYear(), now()->endOfYear()],
-            default => null
-        };
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+        ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
 
         if ($user->role === 'admin') {
             // If station filter is present, convert name to ID
@@ -97,6 +108,18 @@ class ClientRequestController extends Controller
         if ($dateRange) {
             $query->whereBetween('created_at', $dateRange);
         }
+
+        // Prepare export query parameters
+        $queryParams = [
+            'station' => $request->query('station'),
+            'status' => $request->query('status'),
+            'time' => $request->query('time'),
+            'start_date' => $request->query('start_date'),
+            'end_date' => $request->query('end_date'),
+        ];
+
+        // Generate full URL
+        $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
 
         // Final data
         $client_requests = $query->orderBy('created_at', 'desc')->get();
@@ -145,7 +168,11 @@ class ClientRequestController extends Controller
             'totalRequests',
             'collected',
             'verified',
-            'pending_collection'
+            'pending_collection',
+            'timeFilter',
+            'startDate',
+            'endDate',
+            'exportPdfUrl'
         ));
     }
 
@@ -166,28 +193,42 @@ class ClientRequestController extends Controller
     {
         $user = Auth::user();
         $stationParam = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Station logic
         if ($user->role === 'admin') {
             $station = $stationParam ?: 'All';
         } else {
             $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
         }
 
-        $status = $request->query('status');
-        $timeFilter = $request->query('time', 'all');
+        // Determine the date range
+        $dateRange = null;
 
-        $dateRange = match ($timeFilter) {
-            'daily' => [now()->startOfDay(), now()->endOfDay()],
-            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
-            'biweekly' => [now()->subDays(14), now()],
-            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
-            'yearly' => [now()->startOfYear(), now()->endOfYear()],
-            default => null
-        };
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
 
-        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy']);
+        // Query
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office']);
 
         if ($user->role === 'admin') {
-            if ($station) {
+            if ($station && strtolower($station) !== 'all') {
                 $officeId = Office::where('name', $station)->value('id');
                 if ($officeId) {
                     $query->where('office_id', $officeId);
@@ -207,6 +248,7 @@ class ClientRequestController extends Controller
 
         $client_requests = $query->orderBy('created_at', 'desc')->get();
 
+        // PDF generation
         $pdf = Pdf::loadView('pdf.client-requests', [
             'client_requests' => $client_requests,
             'station' => $station,
@@ -221,12 +263,8 @@ class ClientRequestController extends Controller
         $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
             $font = $fontMetrics->getFont('Helvetica', 'normal');
             $text = "Page $pageNumber of $pageCount";
-
-            // Get width and height of the page
             $w = $canvas->get_width();
             $h = $canvas->get_height();
-
-            // Draw at bottom center, 30 points above bottom edge
             $canvas->text($w / 2, $h - 30, $text, $font, 10);
         });
 
