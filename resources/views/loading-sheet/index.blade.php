@@ -27,13 +27,14 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form action="{{ route('loading_sheets.store') }}" method="POST">
                                 {{-- <h6 class="fw-bold text-black">Loading Sheet Information</h6> --}}
+                                @csrf
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="origin" class="form-label">Origin Office</label>
-                                        <select name="station_id" id="" class="form-control">
+                                        <select name="origin_station_id" id="" class="form-control">
                                             <option value="">Select Origin Office</option>
                                             @foreach ($offices as $office)
                                                 <option value="{{ $office->id }}">{{ $office->name }}</option>
@@ -42,55 +43,82 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="destination" class="form-label">Destination</label>
-                                        <input type="text" class="form-control" id="destination"
-                                            placeholder="Destination">
+                                        <select name="destination" id="" class="form-control">
+                                            <option value="">Select Destination</option>
+                                            <option value="Various">Various</option>
+                                            @foreach ($destinations as $destination)
+                                                <option
+                                                    value="{{ $destination->destination_id ?? $destination->special_destination->destination_id }}">
+                                                    {{ $destination->destination->destination ?? $destination->special_destination->destination }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="origin" class="form-label">Transporter</label>
+                                        <select name="transporter_id" id="transporter_id" class="form-control">
+                                            <option value="">Select Transporter</option>
+                                            @foreach ($transporters as $transporter)
+                                                <option value="{{ $transporter->id }}">{{ $transporter->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="truck" class="form-label">Vehicle</label>
+                                        <select name="reg_no" id="truck_id" class="form-control">
+                                            <option value="">Select Vehicle</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="vehicleNo" class="form-label">Vehicle Number</label>
-                                    <input type="vehicleNo" class="form-control" id="vehicleNo" placeholder="e.g KCT 458T">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="country" class="form-label">Driver</label>
-                                    <select class="form-select" id="country">
-                                        <option value="">Select Driver</option>
-                                        @foreach ($drivers as $driver)
-                                            <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->status }})
-                                            </option>
-                                        @endforeach
-                                        <!-- More countries if needed -->
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="street" class="form-label">Street address</label>
-                                    <input type="text" class="form-control" id="street" placeholder="1234 Main St">
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="city" class="form-label">City</label>
-                                        <input type="text" class="form-control" id="city" placeholder="City">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="origin" class="form-label">Dispatcher </label>
+                                        <select name="dispatcher_id" id="" class="form-control">
+                                            <option value="">Select Dispatcher</option>
+                                            @foreach ($dispatchers as $dispatcher)
+                                                <option value="{{ $dispatcher->id }}">{{ $dispatcher->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="state" class="form-label">State / Province</label>
-                                        <input type="text" class="form-control" id="state"
-                                            placeholder="State / Province">
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="zip" class="form-label">ZIP / Postal code</label>
-                                        <input type="text" class="form-control" id="zip"
-                                            placeholder="ZIP / Postal code">
+                                    <div class="col-md-6">
+                                        <label for="destination" class="form-label">Batch No</label>
+                                        <input type="text" value="{{ $batch_no }}" name="batch_no"
+                                            class="form-control">
                                     </div>
                                 </div>
-                            </form>
+                                {{-- 
+                                <div class="row mb-3">
+
+                                    <div class="col-md-6">
+                                        <label for="received_by" class="form-label">Receiver Name</label>
+                                        <input type="text" name="received_by" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="receiver_phone" class="form-label">Receiver Phone</label>
+                                        <input type="text" name="receiver_phone" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="receiver_id_no" class="form-label">ID No.</label>
+                                        <input type="text" name="receiver_id_no" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="receiver_signature" class="form-label">Receiver Signature</label>
+                                        <input type="file" name="receiver_signature" class="form-control">
+                                    </div>
+                                </div> --}}
+
+
                         </div>
                         <div class="modal-footer d-flex justify-content-between ">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -101,7 +129,7 @@
                     <thead>
                         <tr>
                             <th>Dispatch date</th>
-                            <th>Origin</th>
+                            <th>Office of Origin</th>
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
@@ -111,7 +139,7 @@
                     <tfoot>
                         <tr>
                             <th>Dispatch date</th>
-                            <th>Origin</th>
+                            <th>Office of Origin</th>
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
@@ -121,18 +149,21 @@
                     <tbody>
                         @foreach ($sheets as $sheet)
                             <tr>
-                                <td> {{ $sheet->dispatchDate }} </td>
-                                <td> {{ $sheet->origin }} </td>
-                                <td> {{ $sheet->destination }} </td>
-                                <td> {{ $sheet->vehicleNo }} </td>
-                                <td> {{ $sheet->transporter }} </td>
+                                <td> {{ $sheet->dispatchDate ?? 'Pending Dispatch' }} </td>
+                                <td> {{ $sheet->office->name }} </td>
+                                <td> {{ $destination->destination->destination ?? ($destination->special_destination->destination ?? '') }}
+                                </td>
+                                <td> {{ $sheet->transporter_truck->reg_no }} </td>
+                                <td> {{ $sheet->transporter->name }} </td>
                                 <td class="row pl-4">
+                                    <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button
+                                            class="btn btn-primary btn-sm mr-1">Add Waybills</button></a>
                                     <a href="">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </a>
-                                    <a href="">
+                                    <a href="{{ route('loading_sheets.show', $sheet->id) }}">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -175,4 +206,25 @@
             </div>
         </div>
     </div>
+    <script>
+        $('#transporter_id').on('change', function() {
+
+            var transporterId = $(this).val();
+            if (transporterId) {
+                $.ajax({
+                    url: '/get-trucks/' + transporterId,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#truck_id').empty().append('<option value="">Select Truck</option>');
+                        $.each(data, function(key, truck) {
+                            $('#truck_id').append('<option value="' + truck.id + '">' + truck
+                                .reg_no + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#truck_id').empty().append('<option value="">Select Truck</option>');
+            }
+        });
+    </script>
 @endsection

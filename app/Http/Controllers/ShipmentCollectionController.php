@@ -416,10 +416,19 @@ class ShipmentCollectionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ShipmentCollection $shipmentCollection)
+    public function show($id)
     {
-        //
+        $shipment = ShipmentCollection::with('destination')->findOrFail($id);
+
+        return response()->json([
+            'waybill_no' => $shipment->waybill_no,
+            'destination_name' => $shipment->destination->destination ?? '',
+            'weight' => $shipment->weight,
+            'packages_no' => $shipment->packages_no,
+            // Add more fields as needed
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -12,7 +12,7 @@
 
         </div>
         <div class="card-body">
-            <form action="  {{ route('transporters.store') }} " method="post">
+            <form action="  {{ route('transporters.store') }} " method="post" enctype="multipart/form-data">
 
                 <div class="row">
                     @csrf
@@ -69,8 +69,15 @@
 
 
                 <div class="row">
-                    <div class="col-md-4 pt-2">
-                        <label for=""></label>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Signature <span class="text-danger">*</span></label>
+                            <input type="file" id="signature" name="signature" class="form-control">
+                            <span id="signature_feedback"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 ">
+                        <label for="">.</label>
                         <button type="submit" id='submit-btn' class="form-control btn btn-primary btn-sm submit">
                             <i class="fas fa-save text-white"></i>
                             Save</button>

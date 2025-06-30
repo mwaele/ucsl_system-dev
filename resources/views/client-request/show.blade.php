@@ -634,6 +634,14 @@
                                                                         class="form-control" name="total_cost" required
                                                                         readonly>
                                                                 </div>
+                                                                <div class="form-group col-md-4">
+                                                                    <label class="form-label text-dark">Total Cost <span
+                                                                            class="text-danger">*</span>
+                                                                    </label>
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="total_cost" required
+                                                                        readonly>
+                                                                </div>
                                                             </div>
 
                                                             <!-- Submit -->

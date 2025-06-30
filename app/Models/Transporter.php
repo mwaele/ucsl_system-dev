@@ -13,5 +13,6 @@ class Transporter extends Model
         'reg_details',
         'account_no',
         'cbv_no',
+        'signature'
     ];
 }

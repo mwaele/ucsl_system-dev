@@ -42,7 +42,13 @@ class TransporterController extends Controller
             'reg_details'=>'required|string|max:255',
             'account_no'=>'required',
             'cbv_no' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
+            if ($request->hasFile('signature')) {
+            $path = $request->file('signature')->store('signatures', 'public');
+            $validatedData['signature'] = $path;
+        }
+        
 
         $transporter = new Transporter($validatedData);
         $transporter->save();
@@ -53,9 +59,15 @@ class TransporterController extends Controller
     public function fetchTrucks($id){
        $name = Transporter::find($id)?->name;
         
-        $transporter_trucks = TransporterTrucks::where('transporter_id',$id)->get();
+        $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id,'status'=>'available'])->get();
         return view('transporter_trucks.trucks')->with(['trucks'=>$transporter_trucks,'id'=>$id,'name'=>$name]);
     
+    }
+
+    public function getTrucks($transporterId)
+    {
+        $trucks = TransporterTrucks::where(['transporter_id'=> $transporterId,'status'=>'available'])->get(['id', 'reg_no']);
+        return response()->json($trucks);
     }
 
     /**
