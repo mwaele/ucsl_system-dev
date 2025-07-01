@@ -4,7 +4,7 @@
     <div class="card mb-3">
         <div class="card-header pt-4">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h4 class="m-0 font-weight-bold text-success">Create New Transporter </h4>
+                <h4 class="m-0 font-weight-bold text-success">Edit Transporter Details </h4>
 
                 <a href="{{ route('transporters.index') }}" class="btn btn-success"><i class="fas fa-bars"></i>
                     All Transporters</a>
@@ -12,7 +12,8 @@
 
         </div>
         <div class="card-body">
-            <form action="  {{ route('transporters.store') }} " method="post" enctype="multipart/form-data">
+            <form action="  {{ route('transporters.update', $transporter->id) }} " method="post"
+                enctype="multipart/form-data">
 
                 <div class="row">
                     @csrf
@@ -79,7 +80,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Type <span class="text-danger">*</span></label>
-                            <select id="type" name="transporter_type" class="form-control">
+                            <select id="type" name="tranporter_type" class="form-control">
                                 <option value="">Select Transporter Type</option>
                                 <option value="self">Self</option>
                                 <option value="third_party">Third Party</option>

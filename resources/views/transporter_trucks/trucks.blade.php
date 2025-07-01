@@ -12,7 +12,8 @@
                 <h4 class="m-0 font-weight-bold text-success">Truck Lists for {{ $name }}</h4>
 
 
-                <a href="/transporter_truck_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                <a href="/transporter_trucks_report/{{ $id }}"
+                    class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
 

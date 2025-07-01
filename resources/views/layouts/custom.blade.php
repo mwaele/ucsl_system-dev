@@ -168,9 +168,11 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
                         <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
+
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                         <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a>
+
+                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
                     </div>
                 </div>
             </li>
@@ -545,6 +547,7 @@
             });
         </script>
 
+
         <script>
             // Initialise the datatable
             new DataTable('#example', {
@@ -671,6 +674,7 @@
         <script>
             $(document).ready(function() {
 
+                $('#dataTable').DataTable();
                 let debounceTimer;
                 $('#collectionLocation').on('keyup', function() {
                     clearTimeout(debounceTimer);

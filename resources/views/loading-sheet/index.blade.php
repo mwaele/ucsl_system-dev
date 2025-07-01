@@ -47,15 +47,12 @@
                                             <option value="">Select Destination</option>
                                             <option value="Various">Various</option>
                                             @foreach ($destinations as $destination)
-                                                <option
-                                                    value="{{ $destination->destination_id ?? $destination->special_destination->destination_id }}">
-                                                    {{ $destination->destination->destination ?? $destination->special_destination->destination }}
+                                                <option value="{{ $destination->destination_name ?? '' }}">
+                                                    {{ $destination->destination_name ?? '' }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="origin" class="form-label">Transporter</label>
                                         <select name="transporter_id" id="transporter_id" class="form-control">
@@ -151,7 +148,7 @@
                             <tr>
                                 <td> {{ $sheet->dispatchDate ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
-                                <td> {{ $destination->destination->destination ?? ($destination->special_destination->destination ?? '') }}
+                                <td> {{ $destination->destination_name }}
                                 </td>
                                 <td> {{ $sheet->transporter_truck->reg_no }} </td>
                                 <td> {{ $sheet->transporter->name }} </td>

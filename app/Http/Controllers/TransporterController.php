@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Transporter;
 use App\Models\TransporterTrucks;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class TransporterController extends Controller
 {
@@ -15,7 +17,7 @@ class TransporterController extends Controller
     {
         
 
-        $transporters = Transporter::all();
+        $transporters = Transporter::orderBy('created_at', 'desc')->get();
         return view('transporters.index')->with(['transporters'=>$transporters]);
     }
 
@@ -43,6 +45,7 @@ class TransporterController extends Controller
             'account_no'=>'required',
             'cbv_no' => 'nullable|string',
             'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'transporter_type' => 'required'
         ]);
             if ($request->hasFile('signature')) {
             $path = $request->file('signature')->store('signatures', 'public');
@@ -59,8 +62,8 @@ class TransporterController extends Controller
     public function fetchTrucks($id){
        $name = Transporter::find($id)?->name;
         
-        $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id,'status'=>'available'])->get();
-        return view('transporter_trucks.trucks')->with(['trucks'=>$transporter_trucks,'id'=>$id,'name'=>$name]);
+        $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id])->get();
+        return view('transporter_trucks.trucks')->with(['trucks'=>$transporter_trucks,'id'=>$id,'name'=>$name, 'id'=>$id]);
     
     }
 
@@ -68,6 +71,28 @@ class TransporterController extends Controller
     {
         $trucks = TransporterTrucks::where(['transporter_id'=> $transporterId,'status'=>'available'])->get(['id', 'reg_no']);
         return response()->json($trucks);
+    }
+
+    public function transporter_report(){
+
+        $transporters = Transporter::orderBy('created_at', 'desc')->get();
+        $pdf = Pdf::loadView('transporters.truck_list_report' , [
+            'transporters'=>$transporters
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("transporters_report.pdf");
+       
+    }
+
+    public function transporterTrucksReport($id){
+       $name = Transporter::find($id)?->name;
+        
+        $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id])->get();
+        //dd($transporter_trucks);
+        $pdf = Pdf::loadView('transporter_trucks.trucks_report' , [
+            'trucks'=>$transporter_trucks,'name'=>$name
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("transporter_trucks_report.pdf");
+    
     }
 
     /**
@@ -81,7 +106,7 @@ class TransporterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Transporter $transporter)
+    public function edit($id)
     {
         //
     }
