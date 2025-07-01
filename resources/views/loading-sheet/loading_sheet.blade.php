@@ -81,6 +81,7 @@
                     <thead>
                         <tr>
                             <th>WAYBILL NO.</th>
+                            <th>CLIENT</th>
                             <th>DESCRIPTION</th>
                             <th>DESTINATION</th>
                             <th>QTY</th>
@@ -91,8 +92,10 @@
                     <tbody>
                         @foreach ($data as $item)
                             <tr>
+
                                 <td>{{ $item->waybill_no }}</td>
-                                <td>{{ $item->item_names }} - {{ $item->client_name }}</td>
+                                <td>{{ $item->client_name }}</td>
+                                <td>{{ $item->item_names }}</td>
                                 <td>{{ $item->destination ?? '' }}</td>
                                 <td>{{ $item->total_quantity }}</td>
                                 <td>{{ $item->total_weight }}</td>
@@ -100,7 +103,7 @@
                             </tr>
                         @endforeach
                         <tr>
-                            <td colspan="3" style="text-align: right;font-weight:bold;">TOTAL</td>
+                            <td colspan="4" style="text-align: right;font-weight:bold;">TOTAL</td>
                             <td>{{ $totals->total_quantity_sum }}</td>
                             <td>{{ $totals->total_weight_sum }}</td>
                             <td>{{ number_format($totals->total_cost_sum, 2) }}</td>
@@ -143,7 +146,7 @@
                 </div>
                 <div class="col-md-6">
                     <p>SIGNATURE: <img class="img-fluid" style="height: 20px"
-                            src="{{ asset('storage/' . $loading_sheet->transporter->signature) }}"></p>
+                            src="{{ asset('storage/' . $loading_sheet->transporter->signature) ?? '' }}"></p>
                     </p>
 
 

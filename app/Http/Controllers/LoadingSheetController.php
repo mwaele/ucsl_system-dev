@@ -31,8 +31,8 @@ class LoadingSheetController extends Controller
         ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
         ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
         ->where('client_requests.status', 'verified')
-        ->select('rates.destination as destination_name', DB::raw('count(shipment_collections.id) as total_shipments'))
-        ->groupBy('rates.destination')
+        ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
+        ->groupBy('rates.destination','rates.id')
         ->get();
 
         //dd($destinations);
@@ -40,7 +40,11 @@ class LoadingSheetController extends Controller
         
         $dispatchers = Dispatcher::all();
 
-        $sheets = LoadingSheet::orderBy('id', 'desc')->get();
+        $sheets = LoadingSheet::with('rate')
+        ->orderBy('id', 'desc')
+        ->get();
+        //dd($sheets);
+
         $count = LoadingSheet::count()+1; // Example: 1
         $number = str_pad($count, 5, '0', STR_PAD_LEFT); // Result: 00001
         $drivers = User::where('role', 'driver')->get();
@@ -64,7 +68,7 @@ class LoadingSheetController extends Controller
         $validatedData = $request->validate([
 
             'origin_station_id' => 'required|exists:stations,id',
-            'destination' => 'required|string|max:255',
+            'destination' => 'required|integer',
             'transporter_id' => 'required|exists:transporters,id',
             'reg_no' => 'required|string|max:100',
             'dispatcher_id' => 'required|exists:dispatchers,id',
@@ -76,6 +80,7 @@ class LoadingSheetController extends Controller
         $loadingSheet->office_id = $request->origin_station_id;
         $loadingSheet->station_id = Auth::user()->station;
         $loadingSheet->destination = $request->destination;
+        $loadingSheet->destination_id = $request->destination;
         $loadingSheet->transported_by = $request->transporter_id;
         $loadingSheet->vehicle_reg_no = $request->reg_no;
         $loadingSheet->dispatcher_id = $request->dispatcher_id;
@@ -91,17 +96,31 @@ class LoadingSheetController extends Controller
 
     public function loadingsheet_waybills($id){
         $loadingSheet = LoadingSheet::findOrFail($id);
+        //dd($loadingSheet);
         $shipment_collections = ShipmentCollection::join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
         ->where('client_requests.status', 'verified')
-        ->where('shipment_collections.destination_id', $loadingSheet->destination)
+        ->where('shipment_collections.destination_id', $loadingSheet->destination_id)
         ->where('shipment_collections.waybill_no', '!=', '') // Correct syntax
         ->select('shipment_collections.*') // Select whatever fields you need
         ->get();
 
+        $destination  = DB::table('loading_sheets')
+        ->join('rates', 'loading_sheets.destination', '=', 'rates.id')
+        ->where('loading_sheets.id', $id)
+        ->select('rates.destination as destination_name')
+        ->first();
+
+        //dd($destination);
+
+        $loadingSheets = DB::table('loading_sheets')
+        ->join('transporters', 'loading_sheets.transported_by', '=', 'transporters.id')
+        ->join('transporter_trucks', 'transporters.id', '=', 'transporter_trucks.transporter_id')
+        ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
+        ->first();
 
         //dd($shipment_collections);
         
-        return view('loading-sheet.loading_waybills')->with(['shipment_collections'=>$shipment_collections, 'ls_id'=>$id]);
+        return view('loading-sheet.loading_waybills')->with(['shipment_collections'=>$shipment_collections, 'ls_id'=>$id,'loadingSheet'=> $loadingSheets, 'loading_sheet'=>$loadingSheet, 'destination'=>$destination]);
     }
 
     public function generate_loading_sheet($id){
@@ -109,7 +128,10 @@ class LoadingSheetController extends Controller
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
         $destination = Rate::where('id',$loadingSheet->destination)->first();
 
-        $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])->get();
+        $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])
+        ->where('loading_sheet_id', $id)
+        ->get();
+
 
        $data = DB::table('loading_sheet_waybills as lsw')
         ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
@@ -125,8 +147,9 @@ class LoadingSheetController extends Controller
             DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
             DB::raw('SUM(si.actual_quantity) as total_quantity'),
             DB::raw('SUM(si.actual_weight) as total_weight')
-        )
+        )->where('lsw.loading_sheet_id',$id)
         ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost')
+        
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')
@@ -136,7 +159,7 @@ class LoadingSheetController extends Controller
             DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
             DB::raw('SUM(si.actual_weight) as total_weight_sum'),
             DB::raw('SUM(sc.total_cost) as total_cost_sum')
-        )
+        )->where('lsw.loading_sheet_id',$id)
         ->first();
         //dd($data);
     
@@ -173,6 +196,7 @@ class LoadingSheetController extends Controller
             DB::raw('SUM(si.actual_quantity) as total_quantity'),
             DB::raw('SUM(si.actual_weight) as total_weight')
         )
+        ->where('lsw.loading_sheet_id', $id)
         ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost')
         ->get();
 
@@ -183,7 +207,7 @@ class LoadingSheetController extends Controller
             DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
             DB::raw('SUM(si.actual_weight) as total_weight_sum'),
             DB::raw('SUM(sc.total_cost) as total_cost_sum')
-        )
+        )->where('lsw.loading_sheet_id',$id)
         ->first();
         //dd($data);
 
