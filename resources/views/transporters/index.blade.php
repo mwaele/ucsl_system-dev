@@ -26,6 +26,7 @@
                             <th>Email</th>
                             <th>Account No</th>
                             <th>Reg. Details</th>
+                            <th>Type</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -36,6 +37,7 @@
                             <th>Email</th>
                             <th>Account No</th>
                             <th>Reg. Details</th>
+                            <th>Type</th>
                             <th>Action</th>
 
                         </tr>
@@ -48,6 +50,13 @@
                                 <td> {{ $transporter->email }} </td>
                                 <td> {{ $transporter->account_no }} </td>
                                 <td> {{ $transporter->reg_details }} </td>
+                                <td>
+                                    @if ($transporter->transporter_type == 'third_party')
+                                        {{ 'Third Party' }}
+                                    @elseif($transporter->transporter_type == 'self')
+                                        {{ 'Self' }}
+                                    @endif
+                                </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('transporters.edit', $transporter->id) }}">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">

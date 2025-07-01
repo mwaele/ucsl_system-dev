@@ -166,6 +166,11 @@ Route::middleware('auth')->group(function () {
 
       Route::post('/get-shipment-items', [ShipmentItemController::class, 'getItems']);
 
+      Route::get('/transporters_report', [TransporterController::class, 'transporter_report']);
+
+      Route::get('/transporter_trucks_report/{id}', [TransporterController::class, 'transporterTrucksReport']);
+
+
     Route::resource('loading_sheet_waybills','App\Http\Controllers\LoadingSheetWaybillController');
 
        
