@@ -470,11 +470,11 @@
 
                                     @if ($request->status === 'verified')
                                         <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
-                                            data-toggle="modal" data-target="#waybillModal{{ $request->id }}">
+                                            data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i>
                                         </button>
                                     
-                                        <div class="modal fade" id="waybillModal{{ $request->id }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
+                                        <div class="modal fade" id="waybillModal{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
                                                 <div class="modal-content">
                                                 <div class="modal-header">
@@ -484,11 +484,11 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                    <iframe src="{{ route('waybill.preview', $request->shipmentCollection->id) }}" width="100%" height="500" frameborder="0"></iframe>
+                                                    <iframe src="{{ route('waybill.preview', $request->requestId) }}" width="100%" height="500" frameborder="0"></iframe>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <a href="{{ route('waybill.generate', $request->shipmentCollection->id) }}"
+                                                    <a href="{{ route('waybill.generate', $request->requestId) }}"
                                                     target="_blank"
                                                     class="btn btn-primary">
                                                     Generate

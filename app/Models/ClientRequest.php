@@ -50,4 +50,9 @@ class ClientRequest extends Model
     {
         return $this->belongsTo(Office::class, 'office_id');
     }
+
+    public function serviceLevel()
+    {
+        return $this->hasOne(SubCategory::class, 'id', 'sub_category_id');
+    }
 }

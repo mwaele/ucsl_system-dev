@@ -118,6 +118,25 @@
       font-weight: bold;
       color: #14489F;
     }
+
+    .field {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 4px;
+      align-items: center;
+    }
+
+    .field label {
+      font-weight: bold;
+      min-width: 50px; /* adjust as needed */
+    }
+
+    .field .value {
+      flex: 1;
+      border-bottom: 1px solid #000;
+      min-height: 10px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>

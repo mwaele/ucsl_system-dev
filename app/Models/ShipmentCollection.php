@@ -48,6 +48,11 @@ class ShipmentCollection extends Model
         return $this->belongsTo(ClientRequest::class, 'requestId');
     }
 
+    public function clientRequestById()
+    {
+        return $this->hasOne(ClientRequest::class, 'requestId', 'requestId');
+    }
+
     public function items()
     {
         return $this->hasMany(ShipmentItem::class, 'shipment_id');

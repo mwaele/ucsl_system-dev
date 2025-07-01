@@ -85,6 +85,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 
 
     <!-- Datatable JS -->
@@ -527,6 +528,10 @@
         <!-- Core plugin JavaScript-->
         <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
+        <!-- Toast notification -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
         <!-- Custom scripts for all pages-->
         <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script> --}}
 
@@ -536,6 +541,25 @@
         {{-- <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
+
+        <!-- Toast JS -->
+        <script>
+            @if(session('success'))
+                toastr.success("{{ session('success') }}");
+            @endif
+
+            @if(session('error'))
+                toastr.error("{{ session('error') }}");
+            @endif
+
+            @if(session('info'))
+                toastr.info("{{ session('info') }}");
+            @endif
+
+            @if(session('warning'))
+                toastr.warning("{{ session('warning') }}");
+            @endif
+        </script>
 
         <script>
             // Initialize Flatpickr
@@ -651,6 +675,7 @@
                 }
             });
         </script>
+
         <script>
             // Wait for DOM to load
             document.addEventListener("DOMContentLoaded", function() {
@@ -668,6 +693,7 @@
                 }
             });
         </script>
+
         <script>
             $(document).ready(function() {
 
@@ -1008,6 +1034,7 @@
 
             });
         </script>
+
         <script>
             // Handle form submission
             $(document).on('submit', '#shipmentForm', function(e) {

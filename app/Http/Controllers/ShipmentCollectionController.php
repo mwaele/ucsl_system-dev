@@ -537,7 +537,7 @@ class ShipmentCollectionController extends Controller
                 'updated_at' => now()
             ]);
 
-        return redirect()->route('clientRequests.index')->with('success', 'Shipment collection verified successfully!');
+        return redirect()->back()->with('success', 'Shipment collection verified successfully!');
     }
 
 

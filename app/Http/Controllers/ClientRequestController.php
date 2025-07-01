@@ -176,16 +176,16 @@ class ClientRequestController extends Controller
         ));
     }
 
-    public function generateWaybill($id) {
-        $collection = ShipmentCollection::with(['items', 'office', 'destination'])->findOrFail($id);
+    public function generateWaybill($requestId) {
+        $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
         $pdf = PDF::loadView('pdf.waybill', compact('collection'))
             ->setPaper('a5', 'portrait');
         return $pdf->stream('Waybill_'.$collection->waybill_no.'.pdf');
     }
 
-    public function preview($id)
+    public function preview($requestId)
     {
-        $collection = ShipmentCollection::with(['items', 'office', 'destination'])->findOrFail($id);
+        $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
         return view('pdf.waybill', compact('collection'));
     }
     
@@ -533,7 +533,7 @@ class ClientRequestController extends Controller
 
         $emailResponse = EmailHelper::sendHtmlEmail($client_email, $subject, $fullMessage);
 
-        return redirect()->back()->with('Success', 'Client Request Saved and Tracked Successfully')->with('email_status', $emailResponse->getData());
+        return redirect()->back()->with('success', 'Client Request Saved and Tracked Successfully')->with('email_status', $emailResponse->getData());
     }
 
 
