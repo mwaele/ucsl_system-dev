@@ -40,7 +40,10 @@ class ShipmentCollection extends Model
         'total_weight',
         'total_quantity',
         'manifest_generated_status',
-        'status'
+        'status',
+        'billing_party',
+        'payment_mode',
+        'reference'
     ];
 
     public function clientRequest()

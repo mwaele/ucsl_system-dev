@@ -610,19 +610,47 @@
                                     </div>
 
                                     <div class="form-row">
-                                    <div class="form-group col-md-2">
-                                        <label class="text-dark"><small>Cost *</small></label>
-                                        <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
-                                    </div>
-                                    <input type="hidden" name="base_cost" id="baseCost" value="">
-                                    <div class="form-group col-md-2">
-                                        <label class="text-dark"><small>Tax (16%)*</small></label>
-                                        <input type="number" class="form-control" name="vat" id="vat" readonly>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <label class="text-dark"><small>Total Cost*</small></label>
-                                        <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
-                                    </div>
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Cost *</small></label>
+                                            <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
+                                        </div>
+
+                                        <input type="hidden" name="base_cost" id="baseCost" value="">
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Tax (16%)*</small></label>
+                                            <input type="number" class="form-control" name="vat" id="vat" readonly>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Total Cost*</small></label>
+                                            <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Billing Party</small></label>
+                                            <select name="billing_party" class="form-control">
+                                                <option value="" selected>-- Select --</option>
+                                                <option value="Sender">Sender</option>
+                                                <option value="Receiver">Receiver</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Payment Mode</small></label>
+                                            <select name="payment_mode" class="form-control">
+                                                <option value="" selected>-- Select --</option>
+                                                <option value="M-Pesa">M-Pesa</option>
+                                                <option value="Cash">Cash</option>
+                                                <option value="Cheque">Cheque</option>
+                                                <option value="Invoice">Invoice</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-dark"><small>Reference</small></label>
+                                            <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                                        </div>
                                     </div>
 
                                     <div class="modal-footer">

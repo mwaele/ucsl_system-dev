@@ -550,6 +550,9 @@ class ShipmentCollectionController extends Controller
                 'actual_cost' => $request->cost,
                 'actual_vat' => $request->vat,
                 'actual_total_cost' => $request->total_cost,
+                'billing_party' => $request->billing_party,
+                'payment_mode' => $request->payment_mode,
+                'reference' => $request->reference,
                 'verified_by' => auth()->id(),
                 'verified_at' => now(),
             ]);
