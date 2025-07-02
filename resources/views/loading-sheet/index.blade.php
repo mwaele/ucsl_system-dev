@@ -45,9 +45,9 @@
                                         <label for="destination" class="form-label">Destination</label>
                                         <select name="destination" id="" class="form-control">
                                             <option value="">Select Destination</option>
-                                            <option value="Various">Various</option>
+                                            <option value="0">Various</option>
                                             @foreach ($destinations as $destination)
-                                                <option value="{{ $destination->destination_name ?? '' }}">
+                                                <option value="{{ $destination->destination_id ?? '' }}">
                                                     {{ $destination->destination_name ?? '' }}
                                                 </option>
                                             @endforeach
@@ -148,7 +148,9 @@
                             <tr>
                                 <td> {{ $sheet->dispatchDate ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
-                                <td> {{ $destination->destination_name }}
+                                <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')
+                                        {{ 'Various' }}
+                                    @endif
                                 </td>
                                 <td> {{ $sheet->transporter_truck->reg_no }} </td>
                                 <td> {{ $sheet->transporter->name }} </td>

@@ -257,6 +257,7 @@
             <thead>
                 <tr>
                     <th>WAYBILL NO.</th>
+                    <th>CLIENT</th>
                     <th>DESCRIPTION</th>
                     <th>DESTINATION</th>
                     <th>QTY</th>
@@ -268,7 +269,8 @@
                 @foreach ($data as $item)
                     <tr>
                         <td>{{ $item->waybill_no }}</td>
-                        <td>{{ $item->item_names }} - {{ $item->client_name }}</td>
+                        <td>{{ $item->client_name }}</td>
+                        <td>{{ $item->item_names }}</td>
                         <td>{{ $item->destination ?? '' }}</td>
                         <td>{{ $item->total_quantity }}</td>
                         <td>{{ $item->total_weight }}</td>
@@ -276,7 +278,7 @@
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="3" style="text-align: right;font-weight:bold;">TOTAL</td>
+                    <td colspan="4" style="text-align: right;font-weight:bold;">TOTAL</td>
                     <td>{{ $totals->total_quantity_sum }}</td>
                     <td>{{ $totals->total_weight_sum }}</td>
                     <td>{{ number_format($totals->total_cost_sum, 2) }}</td>
@@ -305,8 +307,13 @@
 
                 <div class="signature-row">
                     <p class="signature-text">SIGNATURE:</p>
-                    <img class="signature-img"
-                        src="{{ public_path('storage/' . $loading_sheet->dispatcher->signature) }}">
+                    @php
+                        $signaturePath = public_path('storage/' . $loading_sheet->dispatcher->signature);
+                    @endphp
+
+                    @if (file_exists($signaturePath) && is_file($signaturePath))
+                        <img class="signature-img" src="{{ $signaturePath }}">
+                    @endif
                 </div>
 
 
@@ -333,8 +340,13 @@
 
                 <div class="signature-row">
                     <p class="signature-text">SIGNATURE:</p>
-                    <img class="signature-img"
-                        src="{{ public_path('storage/' . $loading_sheet->transporter->signature) }}">
+                    @php
+                        $signaturePath2 = public_path('storage/' . $loading_sheet->transporter->signature);
+                    @endphp
+
+                    @if (file_exists($signaturePath2) && is_file($signaturePath2))
+                        <img class="signature-img" src="{{ $signaturePath2 }}">
+                    @endif
                 </div>
             </td>
         </table>

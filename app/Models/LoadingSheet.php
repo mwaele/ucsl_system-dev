@@ -25,7 +25,8 @@ class LoadingSheet extends Model
         'receiver_signature   ',
         'date_closed  ',
         'remarks    ',
-        'description' 
+        'description',
+        'destination_id', 
     ];
     public function office()
     {
@@ -43,9 +44,9 @@ class LoadingSheet extends Model
     {
         return $this->belongsTo(TransporterTrucks::class, 'vehicle_reg_no');
     }
-    public function destination()
+    public function rate()
     {
-        return $this->belongsTo(Rate::class, 'destination');
+        return $this->belongsTo(Rate::class, 'destination_id');
     }
     public function special_destination()
     {
