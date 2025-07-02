@@ -178,15 +178,17 @@ class ClientRequestController extends Controller
 
     public function generateWaybill($requestId) {
         $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
-        $pdf = PDF::loadView('pdf.waybill', compact('collection'))
-            ->setPaper('a5', 'portrait');
+        $pdf = PDF::loadView('pdf.waybill', [
+            'collection' => $collection,
+            'isPdf' => true
+        ])->setPaper('a5', 'portrait');
         return $pdf->stream('Waybill_'.$collection->waybill_no.'.pdf');
     }
 
     public function preview($requestId)
     {
         $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
-        return view('pdf.waybill', compact('collection'));
+        return view('pdf.waybill', ['collection' => $collection, 'isPdf' => false]);
     }
     
     public function exportPdf(Request $request)
