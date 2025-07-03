@@ -6,7 +6,7 @@
     <div class="row"><div class="col"><label>CITY:</label> <span class="value">{{ $collection->receiver_town ?? '' }}</span></div></div>
     <table style="width: 100%; font-size: 6px;">
       <tr>
-        <td style="width: 50%;"><strong>CONTACT PERSON:</strong> <span style="border-bottom: 1px solid #000; display: inline-block; width: 70%;">{{ $collection->receiver_contact_person ?? '' }}</span></td>
+        <td style="width: 50%;"><strong>CONTACT PERSON:</strong> <span style="border-bottom: 1px solid #000; display: inline-block; width: 70%;">{{ $collection->receiver_name ?? '' }}</span></td>
         <td style="width: 50%;"><strong>ID NUMBER:</strong> <span style="border-bottom: 1px solid #000; display: inline-block; width: 70%;">{{ $collection->receiver_id_no ?? '' }}</span></td>
       </tr>
     </table>
