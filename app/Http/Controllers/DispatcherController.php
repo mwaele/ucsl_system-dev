@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dispatcher;
+use App\Models\Office;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -13,8 +14,9 @@ class DispatcherController extends Controller
      */
     public function index()
     {
+        $offices = Office::all();
         $dispatchers = Dispatcher::where('office_id', Auth::user()->station)->get();
-        return view('dispatchers.index')->with('dispatchers', $dispatchers);
+        return view('dispatchers.index')->with(['dispatchers'=> $dispatchers,'offices'=>$offices]);
     }
 
     /**

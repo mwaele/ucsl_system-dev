@@ -17,6 +17,11 @@ use Illuminate\Http\Request;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use App\Services\SmsService;
+use App\Models\SentMessage;
+use App\Models\Client;
+use App\Helpers\EmailHelper;
 
 class LoadingSheetController extends Controller
 {
@@ -41,7 +46,7 @@ class LoadingSheetController extends Controller
         $dispatchers = Dispatcher::all();
 
         $sheets = LoadingSheet::with('rate')
-        ->orderBy('id', 'desc')
+        ->orderBy('id', 'asc')
         ->get();
         //dd($sheets);
 
@@ -143,14 +148,17 @@ class LoadingSheetController extends Controller
             'lsw.waybill_no',
             'r.destination', // Destination from rates
             'sc.total_cost',
+            'sc.payment_mode',
             'c.name as client_name',
             DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
             DB::raw('SUM(si.actual_quantity) as total_quantity'),
             DB::raw('SUM(si.actual_weight) as total_weight')
         )->where('lsw.loading_sheet_id',$id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost')
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
         
         ->get();
+
+        
 
         $totals = DB::table('loading_sheet_waybills as lsw')
         ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
@@ -192,12 +200,13 @@ class LoadingSheetController extends Controller
             'r.destination', // Destination from rates
             'sc.total_cost',
             'c.name as client_name',
+            'sc.payment_mode',
             DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
             DB::raw('SUM(si.actual_quantity) as total_quantity'),
             DB::raw('SUM(si.actual_weight) as total_weight')
         )
         ->where('lsw.loading_sheet_id', $id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost')
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')
@@ -227,9 +236,12 @@ class LoadingSheetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, LoadingSheet $loadingSheet)
+    public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'dispatch_date'=>'required',
+        ]);
+        $loadingSheet = LoadingSheet::find($id);
     }
 
     /**
@@ -239,4 +251,105 @@ class LoadingSheetController extends Controller
     {
         //
     }
+    public function dispatch($id, SmsService $smsService)
+{
+    $sheet = LoadingSheet::findOrFail($id);
+
+    $shipment_ids = LoadingSheetWaybill::where('loading_sheet_id', $id)
+    ->pluck('shipment_id')->groupBy('loading_sheet_id')
+    ->toArray();
+    $shipmentIds = collect($shipment_ids[""])->unique()->values();
+    $shipments = ShipmentCollection::with('client')
+    ->whereIn('id', $shipmentIds)
+    ->get();
+    foreach ($shipments as $shipment) {
+       // dd($shipment->receiver_phone); 
+    $client = $shipment->client;
+    $waybill_no = $shipment->waybill_no;
+    $requestId = $shipment->requestId;
+
+    $existingTrack = DB::table('tracks')->where('requestId', $shipment->requestId)->first();
+
+    if ($existingTrack) {
+        $trackingId = $existingTrack->id;
+        DB::table('tracks')
+        ->where('id', $trackingId)
+        ->update([
+            'current_status' => 'Parcel Dispatched',
+            'updated_at' => now(),
+        ]);
+    } else {
+        $trackingId = DB::table('tracks')->insertGetId([
+            'requestId' => $shipment->requestId,
+            'clientId' => $shipment->client->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    
+
+    DB::table('tracking_infos')->insert([
+        'trackId' => $trackingId,
+        'date' => now(),
+        'details' => 'Parcel dispatched',
+        'remarks' => ''.$sheet->dispatcher->name.' dispatched the parcel '.' from '.$shipment->client->name.', request ID '.$shipment->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$shipment->consignment_no.'',
+        'created_at' => now(),
+        'updated_at' => now()
+    ]);
+     // Send receiver SMS
+            $receiverPhone = $shipment->receiver_phone;
+            $parcelMessage = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
+
+            $smsService->sendSms(
+                phone: $receiverPhone,
+                subject: 'Parcel Dispatched Alert',
+                message: $parcelMessage,
+                addFooter: true
+            );
+
+            SentMessage::create([
+                'request_id' => $requestId,
+                'client_id' => $shipment->client->id,
+                'recipient_type' => 'receiver',
+                'recipient_name' => $shipment->receiver_name ?? 'Receiver',
+                'phone_number' => $receiverPhone,
+                'subject' => 'Parcel Dispatched Alert',
+                'message' => $parcelMessage,
+            ]);
+
+            // send sender message
+
+            $senderPhone = $shipment->receiver_phone;
+            $parcelMessageSender = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
+
+            $smsService->sendSms(
+                phone: $senderPhone,
+                subject: 'Parcel Dispatched Alert',
+                message: $parcelMessageSender,
+                addFooter: true
+            );
+
+            SentMessage::create([
+                'request_id' => $requestId,
+                'client_id' => $shipment->client->id,
+                'recipient_type' => 'sender',
+                'recipient_name' => $shipment->receiver_name ?? 'Sender',
+                'phone_number' => $senderPhone,
+                'subject' => 'Parcel Dispatched Alert',
+                'message' => $parcelMessageSender,
+            ]);
+
+
+        $sheet->dispatch_date = Carbon::now(); // or now()
+        $sheet->save();
+}
+
+
+    
+
+    
+
+    return response()->json(['message' => 'Dispatch date updated', 'dispatch_date' => $sheet->dispatch_date,  'redirect' => route('loading_sheets.index')]);
+}
 }

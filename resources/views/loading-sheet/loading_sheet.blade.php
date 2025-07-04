@@ -87,6 +87,7 @@
                             <th>QTY</th>
                             <th>WEIGHT</th>
                             <th>AMOUNT</th>
+                            <th>ACCOUNT</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,6 +101,7 @@
                                 <td>{{ $item->total_quantity }}</td>
                                 <td>{{ $item->total_weight }}</td>
                                 <td>{{ number_format($item->total_cost, 2) }}</td>
+                                <td>{{ $item->payment_mode }}</td>
                             </tr>
                         @endforeach
                         <tr>
@@ -171,6 +173,43 @@
                     <P>SIGNATURE:</P>
                 </div>
             </div>
+            @if ($loading_sheet->dispatch_date == '')
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <button class="btn btn-primary btn-lg px-5 py-3" id="dispatch_loading_sheet">
+                            DISPATCH NOW
+                        </button>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
+    <script>
+        document.getElementById('dispatch_loading_sheet').addEventListener('click', function() {
+            const urlSegments = window.location.pathname.split('/');
+            const loadingSheetId = urlSegments[urlSegments.length - 1]; // gets the last segment    
+
+
+            fetch(`/loading-sheets/${loadingSheetId}/dispatch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Dispatch updated successfully!');
+                    window.location.href = response.redirect;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to dispatch.');
+                });
+        });
+    </script>
 @endsection
