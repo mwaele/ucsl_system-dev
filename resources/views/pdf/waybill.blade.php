@@ -144,7 +144,7 @@
                   @include('pdf.partials.service_level')
               </td>
               <td style="width: 60%;">
-                  <div style="text-align: right;">
+                  <div class="section" style="text-align: right;">
                     <div class="logo-container">
                         <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Ufanisi Courier Services Logo">
                     </div>
@@ -244,7 +244,7 @@
                               MPESA CODE
                             </label>
                             @if ($collection->payment_mode === 'M-Pesa' && $collection->reference)
-                              <div style="font-size: 6px; margin-top: 2px; color: #000000">{{ $collection->reference }}</div>
+                              <div style="font-size: 6px; margin-top: 2px; color: #000000; font-weight: bold;">{{ $collection->reference }}</div>
                             @endif
                           </td>
                         </tr>
@@ -261,7 +261,7 @@
       <tr>
         <td colspan="2" style="padding-top: 2px;">
           <div style="font-size: 6px; text-align: center; color: #14489F;">
-            CARRIAGE OF THIS SHIPMENT IS SUBJECT TO THE TERMS AND CONDITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAYBILL NO: 820214 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        WAYBILL/TRACKING NUMBER <span style="color: #FF0000; font-size: 8px;">{{ $collection->waybill_no ?? 'TRACKING NO' }}</span>
+            CARRIAGE OF THIS SHIPMENT IS SUBJECT TO THE TERMS AND CONDITIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="font-size: 7px;">M-PESA PAYBILL NO: 820214</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAYBILL/TRACKING NUMBER <strong style="color: #FF0000; font-size: 8px;">{{ $collection->waybill_no ?? 'TRACKING NO' }}</strong>
           </div>
         </td>
       </tr>

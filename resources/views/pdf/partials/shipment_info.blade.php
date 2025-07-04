@@ -19,11 +19,11 @@
 
         @foreach ($rows as $item)
         <tr>
-          <td style="height: 7px; min-height: 7px; color: #000;">{{ $item->packages_no }}</td>
-          <td style="height: 7px; min-height: 7px; color: #000;">{{ $item->weight }}</td>
-          <td style="height: 7px; min-height: 7px; color: #000;">{{ $item->length }}</td>
-          <td style="height: 7px; min-height: 7px; color: #000;">{{ $item->width }}</td>
-          <td style="height: 7px; min-height: 7px; color: #000;">{{ $item->height }}</td>
+          <td style="height: 7px; min-height: 7px; color: #000; text-align: right;">{{ $item->packages_no }}</td>
+          <td style="height: 7px; min-height: 7px; color: #000; text-align: right;">{{ $item->weight }}</td>
+          <td style="height: 7px; min-height: 7px; color: #000; text-align: right;">{{ $item->length }}</td>
+          <td style="height: 7px; min-height: 7px; color: #000; text-align: right;">{{ $item->width }}</td>
+          <td style="height: 7px; min-height: 7px; color: #000; text-align: right;">{{ $item->height }}</td>
         </tr>
         @endforeach
 
@@ -43,10 +43,10 @@
 
         <tr style="font-weight: bold;">
           <td>Total</td>
-          <td style="color: #000;">{{ $collection->items->sum('weight') ?? '' }}</td>
-          <td style="color: #000;">{{ $collection->items->sum('length') ?? '' }}</td>
-          <td style="color: #000;">{{ $collection->items->sum('width') ?? '' }}</td>
-          <td style="color: #000;">{{ $collection->items->sum('height') ?? '' }}</td>
+          <td style="color: #000; text-align: right;">{{ $collection->items->sum('weight') ?? '' }}</td>
+          <td style="color: #000; text-align: right;">{{ $collection->items->sum('length') ?? '' }}</td>
+          <td style="color: #000; text-align: right;">{{ $collection->items->sum('width') ?? '' }}</td>
+          <td style="color: #000; text-align: right;">{{ $collection->items->sum('height') ?? '' }}</td>
         </tr>
       </tbody>
     </table>
