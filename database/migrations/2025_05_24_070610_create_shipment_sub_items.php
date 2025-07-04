@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('shipment_item_id')->constrained()->onDelete('cascade');
             $table->string('item_name');
-            $table->integer('quantity')->nullable();
             $table->float('weight')->nullable();
             $table->float('length')->nullable();
             $table->float('width')->nullable();

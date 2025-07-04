@@ -19,12 +19,6 @@ return new class extends Migration
             $table->integer('weight');
             $table->integer('length')->nullable();
             $table->integer('height')->nullable();
-            $table->integer('actual_weight')->nullable();
-            $table->integer('actual_quantity')->nullable();
-            $table->integer('actual_length')->nullable();
-            $table->integer('actual_width')->nullable();
-            $table->integer('actual_height')->nullable();
-            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }
