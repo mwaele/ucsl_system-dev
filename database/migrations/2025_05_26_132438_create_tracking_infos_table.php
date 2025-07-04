@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('tracking_infos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('trackId');
+            $table->foreignId('user_id')->nullable();
+            $table->foreignId('vehicle_id')->nullable();
             $table->dateTime('date');
             $table->text('details');
             $table->integer('qty')->nullable();

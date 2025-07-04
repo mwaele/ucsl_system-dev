@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('driver_contact');
             $table->string('driver_id_no');
             $table->string('truck_type');
+            $table->string('status')->default('available');
             $table->timestamps();
         });
     }

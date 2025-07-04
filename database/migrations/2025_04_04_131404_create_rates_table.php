@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer("approvedBy")->nullable();
              // Add the foreign key column 'added_by'
             $table->foreignId('added_by')->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignId('office_id');
+            $table->foreignId('zone_id');
             $table->string("routeFrom")->nullable();
             $table->string("zone")->nullable();
             $table->string("origin")->nullable();

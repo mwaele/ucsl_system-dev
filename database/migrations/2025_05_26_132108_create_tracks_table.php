@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('clientId');
             $table->string('requestId');
+            $table->string('current_status')->nullable();
             $table->timestamps();
         });
     }

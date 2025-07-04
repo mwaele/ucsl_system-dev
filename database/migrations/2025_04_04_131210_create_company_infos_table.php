@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('location');
             $table->string('address');
             $table->string('pin');
+            $table->string('logo')->nullable();
+            $table->text('slogan')->nullable();
             $table->string('contact');
             $table->string('email');
             $table->timestamps();

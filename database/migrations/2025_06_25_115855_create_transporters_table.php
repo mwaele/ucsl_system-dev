@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone_no');
             $table->string('reg_details');
+            $table->string('transporter_type');
             $table->string('cbv_no')->nullable();
             $table->string('signature')->nullable();
             $table->string('email')->unique();

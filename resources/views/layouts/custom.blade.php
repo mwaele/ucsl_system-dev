@@ -399,7 +399,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-dark small">
                                     {{ Auth::user()->name }} | UCSL -
-                                    {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->office->name }}
+                                    {{ Auth::user()->role === 'admin' ? 'All Stations' : (Auth::user()->office->name ?? 'No Office') }}
                                 </span>
                                 <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
                             </a>

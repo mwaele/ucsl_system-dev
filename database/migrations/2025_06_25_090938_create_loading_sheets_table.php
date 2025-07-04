@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('dispatcher_id');
             $table->foreignId('office_id');
             $table->foreignId('station_id');
+            $table->foreignId('destination_id');
             $table->string('destination');
             $table->integer('batch_no')->unique();
             $table->string('dispatched_by');

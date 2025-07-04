@@ -26,11 +26,13 @@ return new class extends Migration
             $table->string("contactPerson");
             $table->string("contactPersonPhone")->nullable();
             $table->string("contactPersonEmail")->nullable();
+            $table->integer('contact_person_id_no')->nullable();
             $table->string("type");
             $table->string("industry")->nullable();
             $table->string("kraPin")->nullable();
             $table->string("postalCode")->nullable();
             $table->string("status")->nullable();
+            $table->string('special_rates_status')->nullable();
             $table->string("verificationCode")->nullable();
             $table->timestamps();
         });
