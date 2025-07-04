@@ -170,6 +170,7 @@ Route::middleware('auth')->group(function () {
 
       Route::get('/transporter_trucks_report/{id}', [TransporterController::class, 'transporterTrucksReport']);
 
+    Route::post('/loading-sheets/{id}/dispatch', [LoadingSheetController::class, 'dispatch']);
 
     Route::resource('loading_sheet_waybills','App\Http\Controllers\LoadingSheetWaybillController');
 

@@ -43,6 +43,18 @@
                             <input type="text" name="description" class="form-control" required>
                         </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Office <span class="text-danger">*</span></label>
+                            <select id="category" name="category_id" class="form-control" required="">
+                                @foreach ($offices as $office)
+                                    <option value="{{ $office->id }}">{{ $office->office_name }}</option>
+                                @endforeach
+                            </select>
+                            <span id="office_name_feedback"></span> <!-- Correct placement -->
+                        </div>
+                    </div>
                 </div>
 
 

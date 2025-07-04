@@ -85,7 +85,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 
     <!-- Datatable JS -->
@@ -167,8 +167,8 @@
                 <div id="collapseTwo" class="collapse {{ request()->routeIs('shipments.*') ? 'active' : '' }}"
                     aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
-                        <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a>
+                        {{-- <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
+                        <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a> --}}
 
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                         <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a>
@@ -546,19 +546,19 @@
 
         <!-- Toast JS -->
         <script>
-            @if(session('success'))
+            @if (session('success'))
                 toastr.success("{{ session('success') }}");
             @endif
 
-            @if(session('error'))
+            @if (session('error'))
                 toastr.error("{{ session('error') }}");
             @endif
 
-            @if(session('info'))
+            @if (session('info'))
                 toastr.info("{{ session('info') }}");
             @endif
 
-            @if(session('warning'))
+            @if (session('warning'))
                 toastr.warning("{{ session('warning') }}");
             @endif
         </script>

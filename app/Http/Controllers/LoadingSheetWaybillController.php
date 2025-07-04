@@ -57,7 +57,7 @@ class LoadingSheetWaybillController extends Controller
         }
     }
 
-    return redirect()->back()->with('success', 'Waybill items successfully assigned to loading sheet.');
+    return redirect()->route('loading_sheets.index')->with('success', 'Waybill items successfully assigned to loading sheet.');
 }
 
 

@@ -191,6 +191,17 @@
             padding: 4px;
             /* optional spacing inside cells */
         }
+
+        .text {
+            font-size: 12px;
+            color: #000;
+            margin: 0;
+            font-family: Arial;
+        }
+
+        .border {
+            border-bottom: 1px solid #000 !important;
+        }
     </style>
 </head>
 
@@ -203,23 +214,23 @@
 
             <td style="width: 50%; text-align: right; vertical-align: middle;">
                 <div class="top">
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p class="text">
                         Pokomo Road, Industrial Area</strong>
                     </p>
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p class="text">
                         P.O. Box 43357 - 00100, Nairobi
                     </p>
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p class="text">
                         Tel: +254 756 504 560 0202592118 </p>
                 </div>
                 <div class="bottom">
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p class="text">
                         Jomo Kenyatta Avenue - Sparki Area</strong>
                     </p>
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p style="font-size: 12px;  #000; margin: 0;">
                         P.O. Box 980 - 80100 Mombasa
                     </p>
-                    <p style="font-size: 14px; color: #000; margin: 0;">
+                    <p class="text">
                         Tel: +254 751 505 560 +254 104 100 101 </p>
                 </div>
 
@@ -227,10 +238,10 @@
         </tr>
     </table>
     <div class="head">
-        <h4 class="text-danger mb-3 " style="text-align: right">
+        <h1 class="text-danger mb-3 " style="text-align: right">
             <strong>No. {{ str_pad($loading_sheet->batch_no, 4, '0', STR_PAD_LEFT) }}
             </strong>
-        </h4>
+        </h1>
     </div>
     <section class="mb-3">
         <table width="100%" cellpadding="1" cellspacing="0"
@@ -263,6 +274,7 @@
                     <th>QTY</th>
                     <th>WEIGHT</th>
                     <th>AMOUNT</th>
+                    <th>ACCOUNT</th>
                 </tr>
             </thead>
             <tbody>
@@ -272,16 +284,18 @@
                         <td>{{ $item->client_name }}</td>
                         <td>{{ $item->item_names }}</td>
                         <td>{{ $item->destination ?? '' }}</td>
-                        <td>{{ $item->total_quantity }}</td>
-                        <td>{{ $item->total_weight }}</td>
-                        <td>{{ number_format($item->total_cost, 2) }}</td>
+                        <td style="text-align:right">{{ $item->total_quantity }}</td>
+                        <td style="text-align:right">{{ $item->total_weight }}</td>
+                        <td style="text-align:right"> {{ number_format($item->total_cost, 2) }}</td>
+                        <td>{{ $item->payment_mode }}</td>
                     </tr>
                 @endforeach
                 <tr>
                     <td colspan="4" style="text-align: right;font-weight:bold;">TOTAL</td>
-                    <td>{{ $totals->total_quantity_sum }}</td>
-                    <td>{{ $totals->total_weight_sum }}</td>
-                    <td>{{ number_format($totals->total_cost_sum, 2) }}</td>
+                    <td style="text-align:right">{{ $totals->total_quantity_sum }}</td>
+                    <td style="text-align:right">{{ $totals->total_weight_sum }}</td>
+                    <td style="text-align:right">{{ number_format($totals->total_cost_sum, 2) }}</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
@@ -290,18 +304,25 @@
     <section class="">
 
         <table width="100%" style=" font-family: sans-serif;">
-            <tr width="100%">
-                <td>
-                    <h4><strong>DISPATCHER</strong></h4>
+
+            <tr width="100%" style="padding-bottom:0; margin-top:0;margin-bottom:0; padding-bottom:0">
+                <td style="padding-bottom:0; margin-top:0;margin-bottom:0; padding-bottom:0" class="border"
+                    colspan="2">
+                    <h3 class="text-primary" style="padding-bottom:0; margin-top:0;margin-bottom:0; padding-bottom:3">
+                        <strong>DISPATCHER DETAILS</strong>
+                    </h3>
+
                 </td>
+
             </tr>
-            <td width="70%">
+
+            <td width="59%">
 
                 <p>NAME: {{ $loading_sheet->dispatcher->name }}</p>
 
                 <p>ID NUMBER: {{ $loading_sheet->dispatcher->id_no }}</p>
             </td>
-            <td width="30%">
+            <td width="41%">
 
                 <p>PHONE NUMBER: {{ $loading_sheet->dispatcher->phone_no }}</p>
 
@@ -321,13 +342,18 @@
         </table>
         <table width="100%" style=" font-family: sans-serif;">
             <tr width="100%">
-                <td>
-                    <h4><strong>TRANSPORTER</strong></h4>
+                <td class="border" colspan="2">
+                    <h3 class="text-primary"
+                        style="padding-bottom:0; margin-top:0;margin-bottom:0; padding-bottom:3px; ">
+                        <strong>TRANSPORTER DETAILS</strong>
+                    </h3>
+
+
                 </td>
             </tr>
 
 
-            <td width="70%">
+            <td width="59%">
 
                 <p>NAME: {{ $loading_sheet->transporter->name }}</p>
 
@@ -335,7 +361,7 @@
             </td>
 
 
-            <td width="30%">
+            <td width="41%">
                 <p>REG. DETAILS: {{ $loading_sheet->transporter->reg_details }}</p>
 
                 <div class="signature-row">
@@ -351,19 +377,24 @@
             </td>
         </table>
         <table width="100%" style=" font-family: sans-serif;">
-            <tr width="100%">
-                <td>
-                    <h4><strong>RECEIVER/AGENT</strong></h4>
+            <tr width="100%"
+                style="padding-bottom:0 !important; margin-top:0 !important;margin-bottom:0 !important; padding-bottom:0 !important">
+                <td class="border" colspan="2">
+                    <h3 class="text-primary"
+                        style="padding-bottom:0 !important; margin-top:0 !important;margin-bottom:0 !important; padding-bottom:3px !important">
+                        <strong>RECEIVER/AGENT DETAILS</strong>
+                    </h3>
                 </td>
             </tr>
-            <td width="70%">
+            <td width="65%"
+                style="padding-bottom:0 !important; margin-top:0 !important;margin-bottom:0 !important; padding-bottom:0 !important">
 
-                <p>NAME:</p>
-                <p>ID NUMBER:</p>
+                <p>NAME: ______________________</p>
+                <p>ID NUMBER: _________________</p>
             </td>
-            <td width="30%">
-                <p>PHONE NUMBER:</p>
-                <P>DATE:</P>
+            <td width="45%">
+                <p>PHONE NUMBER: ____________________</p>
+                <P>DATE: ______________________________</P>
             </td>
             <tr width="100%" style="margin:0 padding:0">
                 <td style="margin:0 padding:0"></td>

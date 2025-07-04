@@ -146,7 +146,7 @@
                     <tbody>
                         @foreach ($sheets as $sheet)
                             <tr>
-                                <td> {{ $sheet->dispatchDate ?? 'Pending Dispatch' }} </td>
+                                <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
                                 <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')
                                         {{ 'Various' }}
@@ -155,8 +155,10 @@
                                 <td> {{ $sheet->transporter_truck->reg_no }} </td>
                                 <td> {{ $sheet->transporter->name }} </td>
                                 <td class="row pl-4">
-                                    <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button
-                                            class="btn btn-primary btn-sm mr-1">Add Waybills</button></a>
+                                    @if (!$sheet->dispatch_date)
+                                        <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button
+                                                class="btn btn-primary btn-sm mr-1">Add Waybills</button></a>
+                                    @endif
                                     <a href="">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -167,13 +169,13 @@
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </a>
-                                    <a href="">
-                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                    <a href="/generate_loading_sheet/{{ $sheet->id }}">
+                                        <button class="btn btn-sm btn-danger mr-1" title="PDF Download">
                                             <i class="fas fa-file-pdf"></i>
                                         </button>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                        data-target=""><i class="fas fa-trash"></i></button>
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                        data-target=""><i class="fas fa-trash"></i></button> --}}
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="" tabindex="-1" role="dialog"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -127,7 +127,21 @@
                                             <input type="file" name="signature" class="form-control">
                                         </div>
 
-                                        <input type="hidden" name="office_id" value="{{ Auth::user()->station }}">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Office <span class="text-danger">*</span></label>
+                                                <select id="office" name="office_id" class="form-control"
+                                                    required="">
+                                                    @foreach ($offices as $office)
+                                                        <option value="{{ $office->id }}">{{ $office->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <span id="office_name_feedback"></span> <!-- Correct placement -->
+                                            </div>
+                                        </div>
+
+                                        {{-- <input type="hidden" name="office_id" value="{{ Auth::user()->station }}"> --}}
                                     </div>
 
                             </div>
