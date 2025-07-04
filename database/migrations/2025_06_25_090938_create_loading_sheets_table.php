@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('batch_no')->unique();
             $table->string('dispatched_by');
             $table->string('transported_by');
-            $table->string('transporter_phone');
+            $table->string('transporter_phone')->nullable();
             $table->string('reg_details')->nullable();
             $table->text('transporter_signature')->nullable();
             $table->string('vehicle_reg_no');

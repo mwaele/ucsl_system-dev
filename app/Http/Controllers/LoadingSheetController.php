@@ -65,16 +65,7 @@ class LoadingSheetController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-
-            'origin_station_id' => 'required|exists:stations,id',
-            'destination' => 'required|integer',
-            'transporter_id' => 'required|exists:transporters,id',
-            'reg_no' => 'required|string|max:100',
-            'dispatcher_id' => 'required|exists:dispatchers,id',
-            'batch_no' => 'required|string|max:50',
-        ]);
-        //dd($request->reg_no);
+        
 
         $loadingSheet = new LoadingSheet();
         $loadingSheet->office_id = $request->origin_station_id;
