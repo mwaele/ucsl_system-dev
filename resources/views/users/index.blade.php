@@ -45,10 +45,41 @@
                         </span>
                     </td>
                     <td>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d H:i') }}</td>
-                    <td>
-                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#editUserModal-{{ $user->id }}">
+                    <td class="d-flex pl-2">
+                        <button class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editUserModal-{{ $user->id }}">
                             Edit
                         </button>
+                        <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                            data-toggle="modal"
+                            data-target="#deleteUser-{{ $user->id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <!-- Delete Modal-->
+                        <div class="modal fade" id="deleteUser-{{ $user->id }}"
+                            tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete {{ $user->name }}?
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sm btn-secondary"
+                                            data-dismiss="modal">Cancel</button>
+                                        <form
+                                            action =" {{ route('user.destroy', $user->id) }}"
+                                            method = "POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                title="Delete" value="DELETE">YES DELETE <i
+                                                    class="fas fa-trash"></i> </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             @endforeach

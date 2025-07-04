@@ -153,5 +153,14 @@ class UserController extends Controller
         return response()->json($drivers);
     }
 
+    public function destroy($id)
+    {
+        //
+        $user = User::where('id', $id)->firstOrFail();
+        $user->delete();
+
+        return back()->with('success', 'User deleted successfully.');
+    }
+
 }
 
