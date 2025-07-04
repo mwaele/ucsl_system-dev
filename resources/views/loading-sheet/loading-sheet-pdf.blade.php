@@ -274,6 +274,7 @@
                     <th>QTY</th>
                     <th>WEIGHT</th>
                     <th>AMOUNT</th>
+                    <th>ACCOUNT</th>
                 </tr>
             </thead>
             <tbody>
@@ -286,6 +287,7 @@
                         <td style="text-align:right">{{ $item->total_quantity }}</td>
                         <td style="text-align:right">{{ $item->total_weight }}</td>
                         <td style="text-align:right"> {{ number_format($item->total_cost, 2) }}</td>
+                        <td>{{ $item->payment_mode }}</td>
                     </tr>
                 @endforeach
                 <tr>
@@ -293,6 +295,7 @@
                     <td style="text-align:right">{{ $totals->total_quantity_sum }}</td>
                     <td style="text-align:right">{{ $totals->total_weight_sum }}</td>
                     <td style="text-align:right">{{ number_format($totals->total_cost_sum, 2) }}</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
