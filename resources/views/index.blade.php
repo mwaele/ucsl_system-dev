@@ -56,14 +56,14 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}" title="View All Client Requests"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-primary shadow h-100 py-2 hover-card">
+                <div class="card border-left-primary bg-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                     Total Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $totalRequests }}
                                 </div>
                             </div>
@@ -80,14 +80,14 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}" title="View Collected Parcels"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-success shadow h-100 py-2 hover-card">
+                <div class="card border-left-success bg-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                     Collected Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $collected }}
                                 </div>
                             </div>
@@ -104,14 +104,14 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}" title="View Verified Collections"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-info shadow h-100 py-2 hover-card">
+                <div class="card border-left-info  bg-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                     Verified
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $verified }}
                                 </div>
                             </div>
@@ -128,14 +128,14 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams,['status' => 'collected', 'time' => $timeFilter])) }}" title="View Unverified Parcels"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-success shadow h-100 py-2 hover-card">
+                <div class="card border-left-success bg-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                     Unverified Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $collected }}
                                 </div>
                             </div>
@@ -152,14 +152,14 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
                 title="View Pending Collections" class="text-decoration-none text-dark">
-                <div class="card border-left-warning shadow h-100 py-2 hover-card">
+                <div class="card border-left-warning bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                     Pending Collections
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $pendingCollection }}
                                 </div>
                             </div>
