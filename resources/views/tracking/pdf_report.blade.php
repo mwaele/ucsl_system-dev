@@ -221,7 +221,7 @@
                             {{ $index + 1 }}.) {{ $shipment_item->packages_no }}
                             {{ $shipment_item->item_name }}
                             Weighing
-                            {{ $shipment_item->weight }} Kgs</p>
+                            {{ $shipment_item->actual_weight }} Kgs</p>
                     @endforeach
                 </td>
             </tr>

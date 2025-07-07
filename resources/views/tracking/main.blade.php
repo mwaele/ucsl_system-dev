@@ -113,7 +113,7 @@
                             data.shipment_items.forEach((item, index) => {
                                 shipmentItemsHtml += `
             <div class="mb-1">
-                <p class="text-primary fw-bold mb-1">Item: ${item.item_name}; <strong>Packages:</strong> ${item.packages_no}; <strong>Weight:</strong> ${item.weight} Kgs </p>
+                <p class="text-primary fw-bold mb-1">Item: ${item.item_name}; <strong>Packages:</strong> ${item.packages_no}; <strong>Weight:</strong> ${item.actual_weight} Kgs </p>
             </div>
         `;
                             });

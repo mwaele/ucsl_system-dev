@@ -56,7 +56,7 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}" title="View All Client Requests"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-primary bg-primary shadow h-100 py-2 hover-card">
+                <div class="card border-left-success bg-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -80,7 +80,7 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}" title="View Collected Parcels"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-success bg-success shadow h-100 py-2 hover-card">
+                <div class="card border-left-info bg-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -104,7 +104,7 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}" title="View Verified Collections"
                 class="text-decoration-none text-dark">
-                <div class="card border-left-info  bg-info shadow h-100 py-2 hover-card">
+                <div class="card border-left-warning  bg-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -152,7 +152,7 @@
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
                 title="View Pending Collections" class="text-decoration-none text-dark">
-                <div class="card border-left-warning bg-warning shadow h-100 py-2 hover-card">
+                <div class="card border-left-primary bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">

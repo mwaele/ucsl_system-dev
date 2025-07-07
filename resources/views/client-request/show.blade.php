@@ -600,7 +600,7 @@
                                                                 </select>
                                                             </div> --}}
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-4">
+                                                                <div class="form-group col-md-3">
                                                                     <label class="form-label text-dark">Total Weight (Kg)
                                                                         <span class="text-danger">*</span>
                                                                     </label>
@@ -608,7 +608,7 @@
                                                                         class="form-control" name="total_weight" required
                                                                         readonly>
                                                                 </div>
-                                                                <div class="form-group col-md-4">
+                                                                <div class="form-group col-md-3">
                                                                     <label class="form-label text-dark">Cost <span
                                                                             class="text-danger">*</span>
                                                                     </label>
@@ -618,7 +618,7 @@
                                                                 </div>
                                                                 <input type="hidden" name="base_cost" value="">
 
-                                                                <div class="form-group col-md-4">
+                                                                <div class="form-group col-md-3">
                                                                     <label class="form-label text-dark">Tax (16%) <span
                                                                             class="text-danger">*</span>
                                                                     </label>
@@ -626,7 +626,7 @@
                                                                         class="form-control" name="vat" required
                                                                         readonly>
                                                                 </div>
-                                                                <div class="form-group col-md-4">
+                                                                <div class="form-group col-md-3">
                                                                     <label class="form-label text-dark">Total Cost <span
                                                                             class="text-danger">*</span>
                                                                     </label>
@@ -634,14 +634,14 @@
                                                                         class="form-control" name="total_cost" required
                                                                         readonly>
                                                                 </div>
-                                                                <div class="form-group col-md-4">
+                                                                <!-- <div class="form-group col-md-4">
                                                                     <label class="form-label text-dark">Total Cost <span
                                                                             class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
                                                                         class="form-control" name="total_cost" required
                                                                         readonly>
-                                                                </div>
+                                                                </div> -->
                                                             </div>
 
                                                             <!-- Submit -->
@@ -652,11 +652,11 @@
 
                                                         </div>
                                                         <div class="modal-footer d-flex justify-content-between p-0">
-                                                            <button type="submit"
-                                                                class="btn btn-success text-dark">Submit
-                                                                Collection</button>
                                                             <button type="button" class="btn btn-danger"
                                                                 data-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit"
+                                                                class="btn btn-success text-white">Submit
+                                                                Collection</button>
                                                         </div>
                                                     </form>
                                                 </div>
