@@ -3,7 +3,7 @@
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <h1 class="h3 mb-0 text-primary">Dashboard</h1>
         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
     </div>
@@ -24,7 +24,8 @@
             </div>
             <div class="col-auto">
                 <label for="start_date" class="font-weight-bold">Start Date:</label>
-                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+                <input type="date" name="start_date" id="start_date" class="form-control"
+                    value="{{ request('start_date') }}">
             </div>
             <div class="col-auto">
                 <label for="end_date" class="font-weight-bold">End Date:</label>
@@ -41,7 +42,7 @@
 
 
     <!-- Content Row -->
-     @php
+    @php
         $queryParams = ['time' => $timeFilter];
 
         if (request('start_date') && request('end_date')) {
@@ -54,9 +55,9 @@
 
         <!-- Total Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}" title="View All Client Requests"
-                class="text-decoration-none text-dark">
-                <div class="card border-left-success bg-primary shadow h-100 py-2 hover-card">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}"
+                title="View All Client Requests" class="text-decoration-none text-dark">
+                <div class="card border-left-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -78,9 +79,9 @@
 
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}" title="View Collected Parcels"
-                class="text-decoration-none text-dark">
-                <div class="card border-left-info bg-success shadow h-100 py-2 hover-card">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
+                title="View Collected Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -102,9 +103,9 @@
 
         <!-- Verified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}" title="View Verified Collections"
-                class="text-decoration-none text-dark">
-                <div class="card border-left-warning  bg-info shadow h-100 py-2 hover-card">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}"
+                title="View Verified Collections" class="text-decoration-none text-dark">
+                <div class="card border-left-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -126,9 +127,9 @@
 
         <!-- Unverified Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams,['status' => 'collected', 'time' => $timeFilter])) }}" title="View Unverified Parcels"
-                class="text-decoration-none text-dark">
-                <div class="card border-left-success bg-primary shadow h-100 py-2 hover-card">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
+                title="View Unverified Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
@@ -177,26 +178,28 @@
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-3 mb-3">
-                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'time' => $timeFilter])) }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'time' => $timeFilter])) }}"
+                        class="text-decoration-none text-dark">
                         <div class="card border-left-primary shadow h-100 py-2 hover-card">
                             <div class="card-body">
-                                <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station</h6>
+                                <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station
+                                </h6>
                                 <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
                                 <p class="mb-1 text-success">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'collected', 'time' => $timeFilter])) }}"
-                                    class="text-success text-decoration-none">
+                                        class="text-success text-decoration-none">
                                         Collected: <strong>{{ $stats['collected'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-info">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter])) }}"
-                                    class="text-info text-decoration-none">
+                                        class="text-info text-decoration-none">
                                         Verified: <strong>{{ $stats['verified'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-warning">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
-                                    class="text-warning text-decoration-none">
+                                        class="text-warning text-decoration-none">
                                         Pending Collection: <strong>{{ $stats['pending'] }}</strong>
                                     </a>
                                 </p>
@@ -222,7 +225,7 @@
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-primary"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                             aria-labelledby="dropdownMenuLink">
@@ -254,7 +257,7 @@
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-primary"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                             aria-labelledby="dropdownMenuLink">
