@@ -4,7 +4,7 @@
     <!-- DataTales Example -->
     <div class="card">
         <div class="card-header py-3">
-            <div class="d-sm-flex align-items-center justify-content-between flex-wrap" style="font-size: 14px;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap" style="font-size: 14px;">
                 <!-- Left: Title -->
                 <span class="m-0 font-weight-bold text-success">All Client Requests</span>
 

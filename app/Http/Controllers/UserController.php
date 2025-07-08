@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Helpers\EmailHelper;
 use Illuminate\Support\Carbon;
 use App\Models\ClientRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -151,6 +152,16 @@ class UserController extends Controller
     ->groupBy('users.id', 'users.name', 'offices.name')
     ->get();
         return response()->json($drivers);
+    }
+
+    public function users_report(){
+
+        $users = User::orderBy('created_at', 'desc')->get();
+        $pdf = Pdf::loadView('users.user_report' , [
+            'users'=>$users
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("users_report.pdf");
+       
     }
 
     public function destroy($id)

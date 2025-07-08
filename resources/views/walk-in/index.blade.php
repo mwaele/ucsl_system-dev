@@ -4,7 +4,7 @@
     <!-- DataTables Example -->
     <div class="card mb-4">
         <div class="card-header py-3">
-            <div class="d-sm-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-success">Walk-in Parcels</h6>
                 <div class="d-flex align-items-center">
                     <!-- Counter positioned just before the search input -->
