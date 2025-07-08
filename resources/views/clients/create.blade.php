@@ -273,8 +273,8 @@
                         <label>Type</label>
                         <select name="type" class="form-control" id="type">
                             <option value="">Select Account Type</option>
-                            <option value="COD">COD</option>
-                            <option value="Walkin">Walkin</option>
+                            <option value="cod">COD</option>
+                            <option value="walkin">Walkin</option>
                         </select>
                     </div>
                     {{-- <div class="form-group col-md-4">

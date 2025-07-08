@@ -96,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('rates','App\Http\Controllers\RateController');
     Route::get('mombasa_rates', [RateController::class, 'mombasa_office'])->name('rates.mombasa_office');
     Route::get('nairobi_rates', [RateController::class, 'nairobi_office'])->name('rates.nairobi_office');
+    Route::get('/rates_report', [RateController::class, 'rates_report']);
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');

@@ -46,7 +46,7 @@
                         @foreach ($rates as $rate)
                             <tr>
                                 <td> {{ $rate->office->name }} </td>
-                                <td> {{ $rate->zone_id }} </td>
+                                <td> {{ $rate->zone }} </td>
 
                                 <td> {{ $rate->destination }} </td>
                                 <td> {{ $rate->rate }} </td>

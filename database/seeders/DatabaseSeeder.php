@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             OfficeSeeder::class,
             VehicleSeeder::class,
+            ZoneSeeder::class,
+            RateSeeder::class,
+            CategorySeeder::class,
+            SubCategorySeeder::class,
         ]);
     }
 }

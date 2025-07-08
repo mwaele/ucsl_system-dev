@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rate;
 use App\Models\Office;
 use App\Models\Zone;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -96,8 +97,17 @@ class RateController extends Controller
             $rate->save();
         
         return redirect()->route('rates.index')->with('Success', 'Vehicle saved successfully');
+    }
 
 
+    public function rates_report(){
+
+        $rates = Rate::orderBy('created_at', 'desc')->get();
+        $pdf = Pdf::loadView('rates.rate_report' , [
+            'rates'=>$rates
+        ])->setPaper('a4', 'landscape');
+        return $pdf->download("rates_report.pdf");
+       
     }
 
     /**

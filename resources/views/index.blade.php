@@ -4,8 +4,6 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-primary">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-primary-50"></i> Generate Reports </a>
     </div>
 
     <!-- Time Filter & Date Range Filter -->
@@ -177,12 +175,12 @@
     @if ($stationStats)
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
-                <div class="col-md-3 mb-3">
+                <div class="col-md-2 mb-3">
                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'time' => $timeFilter])) }}"
                         class="text-decoration-none text-dark">
                         <div class="card border-left-primary shadow h-100 py-2 hover-card">
                             <div class="card-body">
-                                <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }} Station
+                                <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }}
                                 </h6>
                                 <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
                                 <p class="mb-1 text-success">
