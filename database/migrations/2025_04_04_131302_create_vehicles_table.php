@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("status", 150)->default("available");
             $table->text("description");
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignId("ownedBy")->constrained("company_infos", "id")->onDelete("cascade");
+            $table->text("ownedBy");
             $table->timestamps();
         });
     }

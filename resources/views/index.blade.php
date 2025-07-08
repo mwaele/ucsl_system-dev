@@ -35,7 +35,7 @@
                 <button type="submit" class="btn btn-primary">Apply</button>
             </div>
             <div class="col-auto">
-                <a href="{{ route('dashboard') }}" class="btn btn-success">Clear</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Clear</a>
             </div>
         </div>
     </form>
