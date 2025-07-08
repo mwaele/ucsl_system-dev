@@ -5,7 +5,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-primary">Dashboard</h1>
         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Generate Reports </a>
+                class="fas fa-download fa-sm text-primary-50"></i> Generate Reports </a>
     </div>
 
     <!-- Time Filter & Date Range Filter -->
@@ -61,10 +61,10 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Total Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
+                                <div class="h5 mb-0 font-weight-bold text-primary">
                                     {{ $totalRequests }}
                                 </div>
                             </div>
@@ -85,10 +85,10 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Collected Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
+                                <div class="h5 mb-0 font-weight-bold text-primary">
                                     {{ $collected }}
                                 </div>
                             </div>
@@ -109,10 +109,10 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Verified
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
+                                <div class="h5 mb-0 font-weight-bold text-primary">
                                     {{ $verified }}
                                 </div>
                             </div>
@@ -133,10 +133,10 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Unverified Requests
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
+                                <div class="h5 mb-0 font-weight-bold text-primary">
                                     {{ $collected }}
                                 </div>
                             </div>
@@ -157,10 +157,10 @@
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Pending Collections
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
+                                <div class="h5 mb-0 font-weight-bold text-primary">
                                     {{ $pendingCollection }}
                                 </div>
                             </div>
