@@ -38,13 +38,19 @@ class ClientRequestController extends Controller
     {
         $user = Auth::user();
 
+        // Determine the correct CAST expression based on DB driver
+        $driver = DB::getDriverName();
+        $castExpression = $driver === 'pgsql'
+            ? "CAST(SUBSTRING(requestId FROM 5) AS INTEGER)"
+            : "CAST(SUBSTRING(requestId, 5) AS UNSIGNED)";
+
         // Generate Unique Request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->orderByRaw("$castExpression DESC")
             ->value('requestId');
 
         $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->orderByRaw("$castExpression DESC")
             ->value('requestId');
 
         $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
@@ -74,7 +80,7 @@ class ClientRequestController extends Controller
             $dateRange = [
                 Carbon::parse($startDate)->startOfDay(),
                 Carbon::parse($endDate)->endOfDay(),
-        ];
+            ];
         } else {
             $dateRange = match ($timeFilter) {
                 'daily' => [now()->startOfDay(), now()->endOfDay()],
@@ -87,7 +93,6 @@ class ClientRequestController extends Controller
         }
 
         if ($user->role === 'admin') {
-            // If station filter is present, convert name to ID
             if ($stationName) {
                 $officeId = Office::where('name', $stationName)->value('id');
                 if ($officeId) {
@@ -95,35 +100,28 @@ class ClientRequestController extends Controller
                 }
             }
         } else {
-            // Non-admin users only see their assigned office data
             $query->where('office_id', $user->station);
         }
 
-        // Apply status filter
         if ($status) {
             $query->where('status', $status);
         }
 
-        // Apply date range
         if ($dateRange) {
             $query->whereBetween('created_at', $dateRange);
         }
 
-        // Prepare export query parameters
         $queryParams = [
-            'station' => $request->query('station'),
-            'status' => $request->query('status'),
-            'time' => $request->query('time'),
-            'start_date' => $request->query('start_date'),
-            'end_date' => $request->query('end_date'),
+            'station' => $stationName,
+            'status' => $status,
+            'time' => $timeFilter,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ];
 
-        // Generate full URL
         $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
 
-        // Final data
         $client_requests = $query->orderBy('created_at', 'desc')->get();
-
         $clients = Client::where('type', 'COD')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
@@ -146,7 +144,6 @@ class ClientRequestController extends Controller
             $collected = (clone $baseQuery)->where('status', 'collected')->count();
             $verified = (clone $baseQuery)->where('status', 'verified')->count();
             $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
-
         } else {
             $baseQuery = ClientRequest::where('office_id', $user->station);
             if ($dateRange) {
