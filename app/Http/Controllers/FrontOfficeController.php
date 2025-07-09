@@ -19,40 +19,45 @@ class FrontOfficeController extends Controller
      */
     public function index()
     {
-        //
         $offices = Office::all();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
-        $walkInClients = Client::where('type', 'Walkin')->get();
+        $walkInClients = Client::where('type', 'walkin')->get();
+
+        // Determine DB driver for cross-DB SQL compatibility
+        $driver = DB::getDriverName();
+        $castExpression = $driver === 'pgsql'
+            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
+            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
 
         // 1. Get the latest requestId from both tables
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->orderByRaw("$castExpression DESC")
             ->value('requestId');
 
         $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("CAST(SUBSTRING(requestId, 5) AS UNSIGNED) DESC")
+            ->orderByRaw("$castExpression DESC")
             ->value('requestId');
 
         // 2. Extract numeric parts and determine the highest
         $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
         $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-
         $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
 
         // 4. Format requestId
         $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
+        // Walk-in collections
         $collections = ShipmentCollection::with('client')
-                ->whereHas('client', function ($query) {
-                    $query->where('type', 'Walkin'); // Only walk-in clients
-                })
-                ->orderBy('created_at', 'desc')
-                ->get();
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin'); // Only walk-in clients
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Get the latest consignment number
         $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
+            ->orderByDesc('id')
             ->first();
 
         if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
@@ -64,7 +69,15 @@ class FrontOfficeController extends Controller
 
         $consignment_no = 'CN-' . $newNumber;
 
-        return view('walk-in.index', compact('offices', 'loggedInUserId', 'destinations', 'walkInClients', 'collections', 'request_id', 'consignment_no'));
+        return view('walk-in.index', compact(
+            'offices',
+            'loggedInUserId',
+            'destinations',
+            'walkInClients',
+            'collections',
+            'request_id',
+            'consignment_no'
+        ));
     }
 
     /**

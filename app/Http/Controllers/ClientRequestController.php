@@ -122,7 +122,7 @@ class ClientRequestController extends Controller
         $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
 
         $client_requests = $query->orderBy('created_at', 'desc')->get();
-        $clients = Client::where('type', 'COD')->get();
+        $clients = Client::where('type', 'cod')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
 
