@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
                 'role' => $user['role'],
                 'status' => 'active',
                 'company' => 'Ufanisi Courier',
-                'station' => ['Mombasa', 'Nairobi', 'Kisumu', 'Nakuru', 'Malindi'][rand(0, 4)],
+                'station' => null,
                 'password' => Hash::make('password'), // Default password
                 'email_verified_at' => now(),
                 'created_at' => now(),
