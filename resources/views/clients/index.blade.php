@@ -22,6 +22,7 @@
                             <th>Client Name</th>
                             <th>Telephone Number</th>
                             <th>Email</th>
+                            <th>Type</th>
                             <th>Physical Address</th>
                             <th>Action</th>
                         </tr>
@@ -31,6 +32,7 @@
                             <th>Client Name</th>
                             <th>Telephone Number</th>
                             <th>Email</th>
+                            <th>Type</th>
                             <th>Physical Address</th>
                             <th>Action</th>
 
@@ -42,6 +44,7 @@
                                 <td> {{ $client->name }} </td>
                                 <td> {{ $client->contactPersonPhone }} </td>
                                 <td> {{ $client->email }} </td>
+                                <td> {{ $client->type }} </td>
                                 <td> {{ $client->address }} </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('clients.edit', $client->id) }}">

@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             RateSeeder::class,
             CategorySeeder::class,
             SubCategorySeeder::class,
+            ClientSeeder::class,
         ]);
     }
 }

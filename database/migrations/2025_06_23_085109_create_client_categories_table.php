@@ -13,11 +13,19 @@ return new class extends Migration
     {
         Schema::create('client_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id');
-            $table->foreignId('category_id');
+
+            $table->foreignId('client_id')
+                ->constrained('clients')
+                ->onDelete('cascade');
+
+            $table->foreignId('category_id')
+                ->constrained('categories')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
