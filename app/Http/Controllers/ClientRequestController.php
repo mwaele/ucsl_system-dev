@@ -41,8 +41,8 @@ class ClientRequestController extends Controller
         // Determine the correct CAST expression based on DB driver
         $driver = DB::getDriverName();
         $castExpression = $driver === 'pgsql'
-            ? "CAST(SUBSTRING(requestId FROM 5) AS INTEGER)"
-            : "CAST(SUBSTRING(requestId, 5) AS UNSIGNED)";
+            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
+            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
 
         // Generate Unique Request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
