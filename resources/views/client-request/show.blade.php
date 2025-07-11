@@ -126,7 +126,12 @@
 
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->client->name }}</div>
-                                                            <div>Phone: {{ $collection->client->contact }}</div>
+                                                            @php
+                                                                $phone = $collection->client->contact;
+                                                                $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                            @endphp
+
+                                                            <div>Phone: {{ $maskedPhone }}</div>
                                                             <div>Location: {{ $collection->client->building }}</div>
                                                             <div>Town: {{ $collection->client->city }}</div>
                                                             <hr style="margin: 4px 0;">
@@ -134,8 +139,13 @@
                                                             <div style="font-weight: bold;">Receiver:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->receiver_name }}
                                                             </div>
-                                                            <div>Phone:
-                                                                {{ $collection->shipmentCollection->receiver_phone }}</div>
+                                                            @php
+                                                                $phone = $collection->shipmentCollection->receiver_phone;
+                                                                $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                            @endphp
+
+                                                            <div>Phone: {{ $maskedPhone }}</div>
+
                                                             <div>Address:
                                                                 {{ $collection->shipmentCollection->receiver_address }}
                                                             </div>
@@ -209,12 +219,17 @@
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
-                                                                    <span> {{ $collection->user->phone_number }} </span>
+                                                                    @php
+                                                                        $phone = $collection->user->phone_number;
+                                                                        $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                                    @endphp
+                                                                    <span> {{ $maskedPhone }} </span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo }} </span>
                                                                 </div><br>
+                                                                These are provisional charges based on details provided by sender.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
                                                                 conditions overleaf.
@@ -364,7 +379,7 @@
                                                                                     Number <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="sender_id_no" id="sender_id_no">
+                                                                                    name="sender_id_no" id="sender_id_no" maxlength="8">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Phone
@@ -432,7 +447,7 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required>
+                                                                                name="receiverIdNo" required maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-dark">Phone

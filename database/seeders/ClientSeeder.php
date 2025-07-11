@@ -21,7 +21,7 @@ class ClientSeeder extends Seeder
             return;
         }
 
-        $types = ['cod', 'walkin'];
+        $types = ['on_account', 'walkin'];
         $specialRates = ['on', null];
         $cities = ['Nairobi', 'Mombasa', 'Kisumu', 'Eldoret', 'Nakuru'];
         $buildings = ['Kenyatta Avenue', 'Moi Plaza', 'Sarit Centre', 'Westgate', 'Thika Road Mall'];

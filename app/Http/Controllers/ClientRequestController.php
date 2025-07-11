@@ -122,7 +122,7 @@ class ClientRequestController extends Controller
         $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
 
         $client_requests = $query->orderBy('created_at', 'desc')->get();
-        $clients = Client::where('type', 'cod')->get();
+        $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
 
@@ -495,7 +495,7 @@ class ClientRequestController extends Controller
         // rider email
 
         $rider_subject = 'Client Collections Alert';
-        $rider_email = $client_email;
+        $rider_email = $rider_email;
         $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
         $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                    <p>Thank you for using Ufanisi Courier Services for we are <strong>Fast, Reliable and Secure</strong></p>";

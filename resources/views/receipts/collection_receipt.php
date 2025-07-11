@@ -60,7 +60,7 @@
 
         <div class="center">
             ------------------------------<br>
-            Thank you for sending parcel with us!<br>
+            Thank you for sending your parcel with us!<br>
         </div>
     </div>
 </body>

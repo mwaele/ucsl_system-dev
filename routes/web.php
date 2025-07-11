@@ -127,6 +127,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/shipment-collections/delete/{requestId}', [ShipmentCollectionController::class, 'delete'])->name('shipment-collections.delete');
 
 
+    Route::get('/overnight/walkin', [ClientRequestController::class, 'receipt'])->name('overnight.walkin');
+    Route::get('/overnight/onaccount', [ClientRequestController::class, 'receipt'])->name('overnight.onaccount');
+
+
     Route::get('/shipments/{id}/items', [ShipmentItemController::class, 'fetchItems']);
 
     //Route::resource('tracking','App\Http\Controllers\TrackingController');
@@ -138,12 +142,7 @@ Route::middleware('auth')->group(function () {
    Route::get('/drivers/by-location', [UserController::class, 'getDriversByLocation'])->name('drivers.byLocation');
 
    Route::get('/drivers/unallocated', [UserController::class, 'getUnallocatedDrivers'])->name('drivers.unallocated');
-
-
    Route::get('/drivers/all', [UserController::class, 'getAllDrivers'])->name('drivers.all');
-
-
-
 
     Route::put('/update_collections/{id}', [ShipmentCollectionController::class, 'update_collections'])->name('shipments.update_collections');
 

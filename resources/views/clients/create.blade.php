@@ -273,7 +273,7 @@
                         <label>Type</label>
                         <select name="type" class="form-control" id="type">
                             <option value="">Select Account Type</option>
-                            <option value="cod">COD</option>
+                            <option value="on_account">On Account</option>
                             <option value="walkin">Walkin</option>
                         </select>
                     </div>

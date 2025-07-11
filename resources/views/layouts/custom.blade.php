@@ -157,29 +157,47 @@
 
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li
-                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cogs"></i>
                     <span>Shipments</span>
                 </a>
-                <div id="collapseTwo" class="collapse {{ request()->routeIs('shipments.*') ? 'active' : '' }}"
+                <div id="collapseTwo" class="collapse {{ request()->routeIs('shipments.*') ? 'show' : '' }}"
                     aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        {{-- <a class="collapse-item" href="{{ route('shipments.index') }}">All Shipments</a>
-                        <a class="collapse-item" href="{{ route('shipments.create') }}">Create New Shipment</a> --}}
 
+                        {{-- Default Shipment Links --}}
                         <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                         <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a>
-
                         <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
+
+                        {{-- Collapsible: Overnight --}}
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center" href="#" data-toggle="collapse" data-target="#collapseOvernight"
+                            aria-expanded="false" aria-controls="collapseOvernight">
+                            Overnight
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight" data-parent="#collapseTwo">
+                            <a class="collapse-item" href="{{ route('overnight.walkin') }}">Walk-in</a>
+                            <a class="collapse-item" href="">On Account</a>
+                        </div>
+
+                        {{-- Collapsible: Same Day --}}
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center" href="#" data-toggle="collapse" data-target="#collapseSameDay"
+                            aria-expanded="false" aria-controls="collapseSameDay">
+                            Same Day
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseSameDay" class="collapse ml-3" aria-labelledby="headingSameDay" data-parent="#collapseTwo">
+                            <a class="collapse-item" href="">Walk-in</a>
+                            <a class="collapse-item" href="">On Account</a>
+                        </div>
                     </div>
                 </div>
             </li>
 
             <!-- Divider -->
-
 
             <!-- Nav Item - Clients Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
