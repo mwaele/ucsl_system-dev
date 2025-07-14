@@ -62,12 +62,20 @@ class ShipmentCollectionController extends Controller
             $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
 
             $waybill_no = $prefix . $padded_no . $suffix;
+            $client = Client::findOrFail($request->clientId);
 
             // 1. Save ShipmentCollection
             $collection = ShipmentCollection::create([
+                'sender_name' => $client->name,
+                'sender_contact' => $client->contact,
+                'sender_email' => $client->email,
+                'sender_address' => $client->address,
+                'sender_town' => $client->city,
+                'sender_id_no' => $client->contact_person_id_no,
                 'receiver_name' => $request->receiverContactPerson,
                 'receiver_id_no' => $request->receiverIdNo,
                 'receiver_phone' => $request->receiverPhone,
+                'receiver_email' => $request->receiverEmail,
                 'receiver_address' => $request->receiverAddress,
                 'receiver_town' => $request->receiverTown,
                 'requestId' => $request->requestId,
@@ -76,9 +84,18 @@ class ShipmentCollectionController extends Controller
                 'destination_id' => $request->destination_id,
                 'consignment_no' => $request->consignment_no,
                 'waybill_no' => $waybill_no,
+                'base_cost' => $request->base_cost,
                 'cost' => $request->cost,
                 'vat' => $request->vat,
                 'total_cost' => $request->total_cost,
+                'actual_cost' => $request->cost,
+                'actual_vat' => $request->vat,
+                'actual_total_cost' => $request->total_cost,
+                'verified_by' => auth()->id(),
+                'verified_at' => now(),
+                'billing_party' => $request->billing_party,
+                'payment_mode' => $request->payment_mode,
+                'reference' => $request->reference,
                 'collected_by' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now()

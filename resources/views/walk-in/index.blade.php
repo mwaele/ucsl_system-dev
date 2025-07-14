@@ -90,7 +90,7 @@
                                 </div>
 
                                 <div class="row mt-3">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <h6 for="receiverContactPerson" class="text-muted text-primary">Name</h6>
                                         <input type="text" id="receiverContactPerson" class="form-control"
                                             name="receiverContactPerson">
@@ -106,7 +106,12 @@
                                         <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
+                                        <h6 for="receiverEmail" class="text-muted text-primary">Email</h6>
+                                        <input type="text" id="receiverEmail" class="form-control" name="receiverEmail">
+                                    </div>
+
+                                    <div class="col-md-2">
                                         <h6 for="receiverAddress" class="text-muted text-primary">Address</h6>
                                         <input type="text" id="receiverAddress" class="form-control"
                                             name="receiverAddress">
@@ -193,26 +198,50 @@
                                 <label class="form-label text-primary mt-4">Cost Summary</label>
 
                                 <div class="row mb-3">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 class="text-muted text-primary">Total Weight (Kg)</h6>
                                         <input type="number" min="0" class="form-control" name="total_weight"
                                             readonly>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 for="itemCost" class="text-muted text-primary">Item Cost (KES)</h6>
                                         <input type="number" min="0" class="form-control" name="cost"
                                             required readonly>
                                     </div>
                                     <input type="hidden" name="base_cost" value="0">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 for="vatAmount" class="text-muted text-primary">Tax (16%)</h6>
                                         <input type="number" min="0" class="form-control" name="vat"
                                             required readonly>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 for="totalCost" class="text-muted text-primary">Total Cost (KES)</h6>
                                         <input type="number" min="0" class="form-control" name="total_cost"
                                             required readonly>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 for="billing_party" class="text-muted text-primary">Billing Party</h6>
+                                        <select name="billing_party" class="form-control">
+                                            <option value="" selected>-- Select --</option>
+                                            <option value="Sender">Sender</option>
+                                            <option value="Receiver">Receiver</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <h6 for="payment_mode" class="text-muted text-primary">Payment Mode</h6>
+                                        <select name="payment_mode" class="form-control">
+                                            <option value="" selected>-- Select --</option>
+                                            <option value="M-Pesa">M-Pesa</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Cheque">Cheque</option>
+                                            <option value="Invoice">Invoice</option>
+                                        </select>
+                                    </div>
+
+                                    <div class=" mt-2 col-md-2">
+                                        <h6 for="reference" class="text-muted text-primary">Reference</h6>
+                                        <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
                                     </div>
                                 </div>
 
@@ -369,8 +398,62 @@
                                 <td> {{ $collection->office->name }} </td>
                                 <td> {{ $collection->destination->destination }} </td>
                                 <td> {{ $collection->collectedBy->name ?? 'user' }} </td>
-                                <td> {{ $collection->clientRequestById->status ?? 'No status'}} </td>
                                 <td>
+                                    @php
+                                        $status = $collection->clientRequestById->status ?? null;
+                                    @endphp
+
+                                    @if ($status)
+                                        <span class="badge p-2
+                                            @if ($status === 'pending collection') bg-secondary
+                                            @elseif ($status === 'collected') bg-warning
+                                            @elseif ($status === 'verified') bg-primary
+                                            @else bg-dark
+                                            @endif
+                                            fs-5 text-white">
+                                            {{ \Illuminate\Support\Str::title($status) }}
+                                        </span>
+                                    @else
+                                        <span class="badge p-2 bg-light text-muted fs-5">No Status</span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @php
+                                        $status = $collection->clientRequestById->status ?? null;
+                                    @endphp
+
+                                    @if ($status === 'verified')
+                                        <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
+                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+
+                                        <div class="modal fade" id="waybillModal{{ $collection->requestId }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <iframe src="{{ route('waybill.preview', $collection->requestId) }}" width="100%" height="500" frameborder="0"></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <a href="{{ route('waybill.generate', $collection->requestId) }}"
+                                                        target="_blank"
+                                                        class="btn btn-primary">
+                                                            Generate
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <button class="btn btn-sm btn-primary" title="Print collection" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->requestId }}">
                                         <i class="fas fa-print"></i>

@@ -22,7 +22,6 @@ class ClientSeeder extends Seeder
         }
 
         $types = ['on_account', 'walkin'];
-        $specialRates = ['on', null];
         $cities = ['Nairobi', 'Mombasa', 'Kisumu', 'Eldoret', 'Nakuru'];
         $buildings = ['Kenyatta Avenue', 'Moi Plaza', 'Sarit Centre', 'Westgate', 'Thika Road Mall'];
         $streets = ['Ngong Road', 'Kenyatta Avenue', 'Moi Avenue', 'Tom Mboya Street', 'Waiyaki Way'];
@@ -66,7 +65,7 @@ class ClientSeeder extends Seeder
                 'kraPin' => 'A' . strtoupper(Str::random(8)),
                 'postalCode' => mt_rand(10000, 99999),
                 'status' => 'active',
-                'special_rates_status' => $faker->randomElement($specialRates),
+                'special_rates_status' => null,
                 'verificationCode' => strtoupper(Str::random(5)),
                 'created_at' => now(),
                 'updated_at' => now(),
