@@ -35,13 +35,13 @@
                                 </div>
 
                                 <div class="row mt-3 mb-3">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2">
                                         <h6 for="requestId" class="text-muted text-dark">Request ID</h6>
                                         <input type="text" value="{{ $request_id }}" name="requestId"
                                             class="form-control" id="request_id" readonly>
                                     </div>
                                     <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 for="clientId" class="text-muted text-primary">Client</h6>
                                         <select class="form-control" id="clientId" name="clientId">
                                             <option value="">Select Client</option>
@@ -52,7 +52,19 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
+                                        <h6 for="clientCategories" class="text-muted text-primary">Client Categories</h6>
+                                        <select class="form-control" id="clientCategories" name="category_id">
+                                            <option value="">Select Client Categories</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 for="subCategories" class="text-muted text-primary">Service Level</h6>
+                                        <select class="form-control" id="subCategories" name="sub_category_id">
+                                            <option value="">Select Service Level</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
                                         <h6 for="collectionLocation" class="text-muted text-primary">From</h6>
                                         <select name="origin_id" id="origin_id" class="form-control origin-dropdown"
                                             required>
@@ -63,7 +75,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <h6 for="collectionLocation" class="text-muted text-primary">To</h6>
                                         <select name="destination" class="form-control destination-dropdown">
                                             <option value="{{ $office->id }}" data-id="{{ $office->id }}">
@@ -77,30 +89,30 @@
                                     <h5 class=" text-white">Fill in the Receiver details.</h5>
                                 </div>
 
-                                <div class="row mt-3 mb-3">
+                                <div class="row mt-3">
                                     <div class="col-md-3 mb-3">
                                         <h6 for="receiverContactPerson" class="text-muted text-primary">Name</h6>
                                         <input type="text" id="receiverContactPerson" class="form-control"
                                             name="receiverContactPerson">
                                     </div>
 
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-md-2">
                                         <h6 for="receiverIdNo" class="text-muted text-primary">ID Number</h6>
                                         <input type="text" id="receiverIdNo" class="form-control" name="receiverIdNo">
                                     </div>
 
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-md-2">
                                         <h6 for="receiverPhone" class="text-muted text-primary">Phone Number</h6>
                                         <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-3">
                                         <h6 for="receiverAddress" class="text-muted text-primary">Address</h6>
                                         <input type="text" id="receiverAddress" class="form-control"
                                             name="receiverAddress">
                                     </div>
 
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-md-2">
                                         <h6 for="receiverTown" class="text-muted text-primary">Town</h6>
                                         <input type="text" id="receiverTown" class="form-control"
                                             name="receiverTown">
@@ -357,7 +369,7 @@
                                 <td> {{ $collection->office->name }} </td>
                                 <td> {{ $collection->destination->destination }} </td>
                                 <td> {{ $collection->collectedBy->name ?? 'user' }} </td>
-                                <td> {{ $collection->collected_by }} </td>
+                                <td> {{ $collection->clientRequestById->status ?? 'No status'}} </td>
                                 <td>
                                     <button class="btn btn-sm btn-primary" title="Print collection" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->requestId }}">

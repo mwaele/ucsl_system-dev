@@ -160,6 +160,26 @@ class ShipmentCollectionController extends Controller
                 'updated_at' => now()
             ]);
 
+            // 6. Save to client_requests table
+            DB::table('client_requests')->insert([
+                'clientId' => $request->clientId,
+                'category_id' => $request->category_id,
+                'sub_category_id' => $request->sub_category_id,
+                'requestId' => $request->requestId,
+                'collectionLocation' => null,
+                'parcelDetails' => 'Waybill No: '.$waybill_no.', Items: '.$itemCount.', Total Weight: '.$totalWeight.'kg',
+                'dateRequested' => now(),
+                'userId' => null,
+                'vehicleId' => null,
+                'created_by' => auth()->id(),
+                'office_id' => auth()->user()->station,
+                'status' => 'verified',
+                'collected_by' => auth()->id(),
+                'consignment_no' => $request->consignment_no,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             DB::commit();
 
             // Send receiver SMS
