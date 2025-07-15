@@ -14,7 +14,9 @@ class Dispatcher extends Model
         'signature',
         'status'
     ];
-    public function office(){
-    return $this->belongsTO('App\Models\Station');
-  }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
 }

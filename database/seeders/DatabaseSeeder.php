@@ -25,6 +25,9 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubCategorySeeder::class,
             ClientSeeder::class,
+            TransporterSeeder::class,
+            TransporterTruckSeeder::class,
+            DispatcherSeeder::class,
         ]);
     }
 }

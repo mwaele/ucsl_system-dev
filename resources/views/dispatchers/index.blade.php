@@ -44,7 +44,7 @@
                                 <td> {{ $dispatcher->name }} </td>
                                 <td> {{ $dispatcher->id_no }} </td>
                                 <td> {{ $dispatcher->phone_no }} </td>
-                                <td> {{ optional($dispatcher->office)->station_name ?? 'No Station' }} </td>
+                                <td> {{ $dispatcher->office->name ?? 'No Station' }} </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('dispatchers.edit', $dispatcher->id) }}">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">

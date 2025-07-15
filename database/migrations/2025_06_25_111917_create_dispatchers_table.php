@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('id_no');
             $table->string('phone_no');
             $table->text('signature')->nullable();
-            $table->foreignId('office_id');
+            $table->foreignId('office_id')->constrained()->onDelete('cascade');
             $table->string('status')->default('active');
             $table->timestamps();
         });
