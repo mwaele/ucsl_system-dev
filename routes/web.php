@@ -16,7 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoadingSheetController;
-
+use App\Http\Controllers\OvernightController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\SpecialRateController;
 use Illuminate\Support\Facades\Auth;
@@ -127,8 +127,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/shipment-collections/delete/{requestId}', [ShipmentCollectionController::class, 'delete'])->name('shipment-collections.delete');
 
 
-    Route::get('/overnight/walkin', [ClientRequestController::class, 'receipt'])->name('overnight.walkin');
-    Route::get('/overnight/onaccount', [ClientRequestController::class, 'receipt'])->name('overnight.onaccount');
+    Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');
+    Route::get('/overnight/on-account', [OvernightController::class, 'on_account'])->name('overnight.on-account');
 
 
     Route::get('/shipments/{id}/items', [ShipmentItemController::class, 'fetchItems']);

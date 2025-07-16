@@ -28,58 +28,65 @@
                 <thead>
                     <tr class="text-success">
                         <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Client Type</th>
-                        <th>Delivery Level</th>
+                        <th>Request ID</th>
+                        <th>Client</th>
+                        <th>Pick-up Location</th>
+                        <th>Date Requested</th>
+                        <th>Rider</th>
+                        <th>Vehicle</th>
+                        <th>Desc.</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($users as $index => $user)
+                    @foreach ($clientRequests as $request)
                         <tr>
-                            <td>{{ $loop->iteration }}.</td>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->phone_number ?? 'N/A' }}</td>
+                            <td> {{ $loop->iteration }}. </td>
+                            <td> {{ $request->requestId }} </td>
+                            <td> {{ $request->client->name }} </td>
+                            <td> {{ $request->collectionLocation }} </td>
+                            <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                            </td>
+                            <td> {{ $request->user->name ?? '—' }} </td>
+                            <td> {{ $request->vehicle->regNo ?? '—' }} </td>
+                            <td> {{ $request->parcelDetails }} </td>
                             <td>
-                                <span class="badge badge-{{ $user->role == 'admin' ? 'danger' : 'secondary' }}">
-                                    {{ ucfirst($user->role) }}
+                                <span
+                                    class="badge p-2
+                                    @if ($request->status == 'pending collection') bg-secondary
+                                    @elseif ($request->status == 'collected')
+                                        bg-warning
+                                    @elseif ($request->status == 'verified')
+                                        bg-primary @endif
+                                    fs-5 text-white">
+                                            {{ \Illuminate\Support\Str::title($request->status) }}
                                 </span>
                             </td>
-                            <td>{{ $user->office->name ?? 'Unassigned' }}</td>
-                            <td>
-                                <span class="badge badge-{{ $user->status == 'active' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($user->status) }}
-                                </span>
-                            </td>
-                            <td>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d H:i') }}</td>
                             <td class="d-flex pl-2">
-                                <button class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editUserModal-{{ $user->id }}">
+                                <button class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editUserModal-{{ $request->id }}">
                                     Edit
                                 </button>
                                 <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                     data-toggle="modal"
-                                    data-target="#deleteUser-{{ $user->id }}">
+                                    data-target="#deleteUser-{{ $request->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <!-- Delete Modal-->
-                                <div class="modal fade" id="deleteUser-{{ $user->id }}"
+                                <div class="modal fade" id="deleteUser-{{ $request->id }}"
                                     tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-body">
-                                                <p>Are you sure you want to delete {{ $user->name }}?
+                                                <p>Are you sure you want to delete {{ $request->name }}?
                                                 </p>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-sm btn-secondary"
                                                     data-dismiss="modal">Cancel</button>
                                                 <form
-                                                    action =" {{ route('user.destroy', $user->id) }}"
+                                                    action =" {{ route('user.destroy', $request->id) }}"
                                                     method = "POST">
                                                     @method('DELETE')
                                                     @csrf
