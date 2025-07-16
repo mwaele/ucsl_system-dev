@@ -103,7 +103,7 @@ class ClientController extends Controller
         $client->kraPin = $validated['kraPin'];
         $client->postalCode = $validated['postalCode'];
         $client->status = $validated['status'];
-        $client->special_rates_status = $validated['special_rates_status'];
+        $client->special_rates_status = $validated['special_rates_status'] ?? null;
 
         //dd($client);
         $client->save();  // Save the client to the database

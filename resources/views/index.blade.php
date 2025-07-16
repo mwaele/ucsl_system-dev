@@ -11,7 +11,7 @@
         <div class="form-row align-items-end">
             <div class="col-auto">
                 <label for="time" class="font-weight-bold">Quick Filter:</label>
-                <select name="time" id="time" class="form-control" onchange="this.form.submit()">
+                <select name="time" id="time" class="form-control text-primary" onchange="this.form.submit()">
                     <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
                     <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
                     <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
@@ -22,18 +22,19 @@
             </div>
             <div class="col-auto">
                 <label for="start_date" class="font-weight-bold">Start Date:</label>
-                <input type="date" name="start_date" id="start_date" class="form-control"
+                <input type="date" name="start_date" id="start_date" class="form-control text-primary"
                     value="{{ request('start_date') }}">
             </div>
             <div class="col-auto">
                 <label for="end_date" class="font-weight-bold">End Date:</label>
-                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+                <input type="date" name="end_date" id="end_date" class="form-control text-primary"
+                    value="{{ request('end_date') }}">
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Apply</button>
             </div>
             <div class="col-auto">
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary">Clear</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-warning">Clear</a>
             </div>
         </div>
     </form>
