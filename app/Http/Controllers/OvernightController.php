@@ -14,7 +14,7 @@ class OvernightController extends Controller
     {
         $clients = Client::where('type', 'on_account')->get();
 
-        $overnightSubCategory = \App\Models\SubCategory::where('sub_category_name', 'Overnight')->first();
+        $overnightSubCategory = SubCategory::where('sub_category_name', 'Overnight')->first();
 
         $clientRequests = [];
 
@@ -25,6 +25,21 @@ class OvernightController extends Controller
         }
 
         return view('overnight.on-account', compact('clients', 'clientRequests'));
+    }
+
+    public function walk_in()
+    {
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+
+
+        return view('overnight.walk-in', compact('clientRequests'));
     }
 
 }

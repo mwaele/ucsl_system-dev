@@ -358,7 +358,7 @@
                                                             <label class="text-primary">Vehicle</label>
                                                             <input type="text" class="form-control vehicle-input"
                                                                 name="vehicleDisplay"
-                                                                value="{{ $request->vehicle->regNo }}" readonly>
+                                                                value="{{ $request->vehicle->regNo ?? '—' }}" readonly>
                                                             <input type="hidden" name="vehicleId"
                                                                 class="vehicle-id-hidden"
                                                                 value="{{ $request->vehicleId }}">

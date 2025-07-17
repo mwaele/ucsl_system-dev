@@ -157,7 +157,7 @@
 
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cogs"></i>
@@ -179,7 +179,7 @@
                             <i class="fas fa-angle-down"></i>
                         </a>
                         <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight" data-parent="#collapseTwo">
-                            <a class="collapse-item" href="">Walk-in</a>
+                            <a class="collapse-item" href="{{ route('overnight.walk-in') }}">Walk-in</a>
                             <a class="collapse-item" href="{{ route('overnight.on-account') }}">On Account</a>
                         </div>
 

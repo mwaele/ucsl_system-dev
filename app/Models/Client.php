@@ -46,8 +46,15 @@ class Client extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
     public function tracks()
     {
         return $this->hasMany(Track::class, 'clientId');
     }
+
+    public function requests()
+    {
+        return $this->hasMany(ClientRequest::class, 'clientId');
+    }
+
 }
