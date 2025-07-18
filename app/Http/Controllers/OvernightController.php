@@ -12,19 +12,17 @@ class OvernightController extends Controller
     //
     public function on_account()
     {
-        $clients = Client::where('type', 'on_account')->get();
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
-        $overnightSubCategory = SubCategory::where('sub_category_name', 'Overnight')->first();
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'on_account');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
 
-        $clientRequests = [];
 
-        if ($overnightSubCategory) {
-            $clientRequests = ClientRequest::where('sub_category_id', $overnightSubCategory->id)
-                                        ->with('client') // optional: eager load
-                                        ->get();
-        }
-
-        return view('overnight.on-account', compact('clients', 'clientRequests'));
+        return view('same_day.walk_in', compact('clientRequests'));
     }
 
     public function walk_in()

@@ -17,6 +17,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoadingSheetController;
 use App\Http\Controllers\OvernightController;
+use App\Http\Controllers\SameDayController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\SpecialRateController;
 use Illuminate\Support\Facades\Auth;
@@ -130,6 +131,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');
     Route::get('/overnight/on-account', [OvernightController::class, 'on_account'])->name('overnight.on-account');
 
+    Route::get('/sameday/walk-in', [SameDayController::class, 'walk_in'])->name('sameday.walk-in');
+    Route::get('/sameday/on-account', [SameDayController::class, 'on_account'])->name('sameday.on-account');
 
     Route::get('/shipments/{id}/items', [ShipmentItemController::class, 'fetchItems']);
 

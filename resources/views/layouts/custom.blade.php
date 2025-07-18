@@ -190,8 +190,8 @@
                             <i class="fas fa-angle-down"></i>
                         </a>
                         <div id="collapseSameDay" class="collapse ml-3" aria-labelledby="headingSameDay" data-parent="#collapseTwo">
-                            <a class="collapse-item" href="">Walk-in</a>
-                            <a class="collapse-item" href="">On Account</a>
+                            <a class="collapse-item" href="{{ route('sameday.walk-in') }}">Walk-in</a>
+                            <a class="collapse-item" href="{{ route('sameday.on-account') }}">On Account</a>
                         </div>
                     </div>
                 </div>

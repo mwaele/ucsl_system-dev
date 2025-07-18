@@ -12,8 +12,8 @@
                     <i class="fas fa-download fa text-white"></i> Generate Report
                 </a>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">
-                    + Create User
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelrModal">
+                    + Create Parcel
                 </button>
             </div>
         </div>
