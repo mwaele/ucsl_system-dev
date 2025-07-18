@@ -132,6 +132,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');
     Route::get('/overnight/on-account', [OvernightController::class, 'on_account'])->name('overnight.on-account');
 
+    Route::get('/overnight_account_report', [OvernightController::class, 'overnight_account_report'])->name('overnight_account_report');
+    
+
     Route::get('/sameday/walk-in', [SameDayController::class, 'walk_in'])->name('sameday.walk-in');
     Route::get('/sameday/on-account', [SameDayController::class, 'on_account'])->name('sameday.on-account');
 
