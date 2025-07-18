@@ -10,17 +10,24 @@ use App\Models\SubCategory;
 use App\Models\ShipmentCollection;
 use App\Models\Vehicle;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class OvernightController extends Controller
 {
     //
-    public function on_account()
+    public function on_account(Request $request )
     {
         // Determine the correct CAST expression based on DB driver
         $driver = DB::getDriverName();
         $castExpression = $driver === 'pgsql'
             ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
             : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
+
+        $timeFilter = $request->query('time', 'all'); // default to all
+
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
         // Generate Unique Request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
@@ -51,7 +58,9 @@ class OvernightController extends Controller
             ->get();
 
 
-        return view('overnight.on-account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers', 'sub_categories'));
+        return view('overnight.on-account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers','timeFilter',
+            'startDate',
+            'endDate', 'sub_categories'));
     }
 
     public function walk_in()
@@ -67,6 +76,21 @@ class OvernightController extends Controller
 
 
         return view('overnight.walk-in', compact('clientRequests'));
+    }
+
+    public function overnight_account_report(){
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'on_account');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+        $pdf = Pdf::loadView('overnight.overnight_account_report' , [
+            'clientRequests'=>$clientRequests
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("overnight_account_report.pdf");
     }
 
 }
