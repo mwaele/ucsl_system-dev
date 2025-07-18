@@ -93,4 +93,19 @@ class OvernightController extends Controller
         return $pdf->download("overnight_account_report.pdf");
     }
 
+    public function walkin_report(){
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+        $pdf = Pdf::loadView('overnight.walkin_report' , [
+            'clientRequests'=>$clientRequests
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("walkin_report.pdf");
+    }
+
 }

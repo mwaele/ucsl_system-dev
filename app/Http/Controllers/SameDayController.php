@@ -38,4 +38,34 @@ class SameDayController extends Controller
 
         return view('same_day.walk_in', compact('clientRequests'));
     }
+    
+    public function sameday_walkin_report(){
+        $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+        $pdf = Pdf::loadView('same_day.sameday_walkin_report' , [
+            'clientRequests'=>$clientRequests
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("sameday_walkin_report.pdf");
+    }
+    
+    public function sameday_account_report(){
+        $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin');
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+        $pdf = Pdf::loadView('same_day.sameday_account_report' , [
+            'clientRequests'=>$clientRequests
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("sameday_account_report.pdf");
+    }
 }
