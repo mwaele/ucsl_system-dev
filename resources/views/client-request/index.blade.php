@@ -216,7 +216,7 @@
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Desc.</th>
+                            <th>Service Level</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -230,7 +230,7 @@
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Desc.</th>
+                            <th>Service Level</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -246,7 +246,7 @@
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
-                                <td> {{ $request->parcelDetails }} </td>
+                                <td> {{ $request->serviceLevel->sub_category_name }} </td>
                                 <td>
                                     <span
                                         class="badge p-2

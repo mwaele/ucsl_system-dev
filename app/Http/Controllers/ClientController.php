@@ -149,33 +149,11 @@ class ClientController extends Controller
     public function update(Request $request, $id)
     {
         
-        $validatedData = $request->validate([
-            'client_name'=>'required',
-            'postal_address'=>'required',
-            'physical_address'=>'',
-            'tel_number'=>'required',
-            'email'=>'required',
-            'postal_code'=>'required',
-            'finance_person'=>'required',
-            'f_phone'=>'required',
-            'f_email'=>'required',
-            'operations_person'=>'required',
-            'o_phone'=>'required',
-            'o_email'=>'required',
-        ]);
         $client = Client::find($id);
-        $client->client_name = $request->client_name;
-        $client->postal_address = $request->postal_address;
-        $client->physical_address = $request->physical_address;
-        $client->tel_number = $request->tel_number;
+        $client->name = $request->name;
         $client->email = $request->email;
-        $client->postal_code = $request->postal_code;
-        $client->finance_person = $request->finance_person;
-        $client->f_phone = $request->f_phone;
-        $client->f_email = $request->f_email;
-        $client->operations_person = $request->operations_person;
-        $client->o_phone = $request->o_phone;
-        $client->o_email = $request->o_email;
+        $client->contact = $request->contact;
+        $client->type = $request->type;
         $client->save();
         
         return redirect()->route('clients.index')->with('Success');

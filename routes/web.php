@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users_report', [UserController::class, 'users_report']);
+    Route::put('/client/{id}', [ClientController::class, 'update'])->name('clients.update');
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

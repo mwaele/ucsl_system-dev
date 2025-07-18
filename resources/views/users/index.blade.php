@@ -179,75 +179,75 @@
     </div>
     @foreach($users as $user)
         <div class="modal fade" id="editUserModal-{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel-{{ $user->id }}" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <form method="POST" action="{{ route('users.update', $user->id) }}">
-            @csrf
-            @method('PUT')
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="editUserModalLabel-{{ $user->id }}">Edit User: {{ $user->name }}</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
+            <div class="modal-dialog modal-lg" role="document">
+                <form method="POST" action="{{ route('users.update', $user->id) }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title" id="editUserModalLabel-{{ $user->id }}">Edit User: {{ $user->name }}</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
 
-                <div class="modal-body row">
+                        <div class="modal-body row">
 
-                <div class="form-group col-md-6">
-                    <label>Name</label>
-                    <input name="name" class="form-control" value="{{ $user->name }}" required>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Name</label>
+                            <input name="name" class="form-control" value="{{ $user->name }}" required>
+                        </div>
 
-                <div class="form-group col-md-6">
-                    <label>Email</label>
-                    <input name="email" type="email" class="form-control" value="{{ $user->email }}" required>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Email</label>
+                            <input name="email" type="email" class="form-control" value="{{ $user->email }}" required>
+                        </div>
 
-                <div class="form-group col-md-6">
-                    <label>Phone Number</label>
-                    <input name="phone_number" class="form-control" value="{{ $user->phone_number }}">
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Phone Number</label>
+                            <input name="phone_number" class="form-control" value="{{ $user->phone_number }}">
+                        </div>
 
-                <div class="form-group col-md-6">
-                    <label>Station</label>
-                    <select name="station" class="form-control" required>
-                        <option value="">-- Select Station --</option>
-                        @foreach ($stations as $station)
-                            <option value="{{ $station->id }}" {{ old('station') == $station ? 'selected' : '' }}>
-                                {{ $station->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Station</label>
+                            <select name="station" class="form-control" required>
+                                <option value="">-- Select Station --</option>
+                                @foreach ($stations as $station)
+                                    <option value="{{ $station->id }}" {{ $user->station == $station->id ? 'selected' : '' }}>
+                                        {{ $station->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                <div class="form-group col-md-6">
-                    <label>Role</label>
-                    <select name="role" class="form-control">
-                        <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver</option>
-                        <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
-                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="super-admin" {{ $user->role == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
-                    </select>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Role</label>
+                            <select name="role" class="form-control">
+                                <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                                <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver</option>
+                                <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
+                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="super-admin" {{ $user->role == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
+                            </select>
+                        </div>
 
-                <div class="form-group col-md-6">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+                        </div>
 
-                <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Update User</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </div>
+                        <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update User</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
 
+                    </div>
+                </form>
             </div>
-            </form>
-        </div>
         </div>
     @endforeach
 </div>

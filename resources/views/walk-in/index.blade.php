@@ -369,6 +369,7 @@
                             <th>Date</th>
                             <th>Origin</th>
                             <th>Destination</th>
+                            <th>Service Level</th>
                             <th>Received By</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -382,6 +383,7 @@
                             <th>Date</th>
                             <th>Origin</th>
                             <th>Destination</th>
+                            <th>Service Level</th>
                             <th>Received By</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -396,7 +398,8 @@
                                 <td> {{ \Carbon\Carbon::parse($collection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $collection->office->name }} </td>
-                                <td> {{ $collection->destination->destination }} </td>
+                                <td> {{ $collection->destination->destination }} </td> 
+                                <td> {{ $collection->clientRequestById->serviceLevel->sub_category_name }} </td> 
                                 <td> {{ $collection->collectedBy->name ?? 'user' }} </td>
                                 <td>
                                     @php
