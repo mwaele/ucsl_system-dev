@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\ClientRequest;
 use App\Models\SubCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class SameDayController extends Controller
 {
@@ -53,7 +55,7 @@ class SameDayController extends Controller
         ])->setPaper('a4', 'landscape');;
         return $pdf->download("sameday_walkin_report.pdf");
     }
-    
+
     public function sameday_account_report(){
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
