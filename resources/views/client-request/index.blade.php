@@ -70,7 +70,7 @@
                                             <label for="clientCategories" class="form-label text-primary">Client
                                                 Categories</label>
                                             <!-- Client's Categories -->
-                                            <select class="form-control mt-3" id="clientCategories" name="category_id">
+                                            <select class="form-control" id="clientCategories" name="category_id">
                                                 <option value="">Select Client Categories</option>
                                             </select>
 
@@ -79,8 +79,13 @@
                                             <label for="subCategories" class="form-label text-primary">Client
                                                 Services </label>
                                             <!-- Services -->
-                                            <select class="form-control mt-3" id="subCategories" name="sub_category_id">
-                                                <option value="">Select Services</option>
+                                            <select name="sub_category_id" class="form-control" required>
+                                                <option value="">-- Select Service Level --</option>
+                                                @foreach ($sub_categories as $sub_category)
+                                                    <option value="{{ $sub_category->id }}">
+                                                        {{ $sub_category->sub_category_name }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -312,10 +317,6 @@
                                                                 class="form-control"
                                                                 value="{{ $request->collectionLocation }}">
                                                         </div>
-
-
-
-
 
                                                         <div class="form-group">
                                                             <label class="text-primary">Date Requested</label>

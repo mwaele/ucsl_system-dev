@@ -15,18 +15,13 @@ class SubCategorySeeder extends Seeder
             ['sub_category_name' => 'Same Day', 'description' => 'Same Day Delivery'],
         ];
 
-        $categories = DB::table('categories')->get();
-
-        foreach ($categories as $category) {
-            foreach ($subCategories as $sub) {
-                DB::table('sub_categories')->insert([
-                    'sub_category_name' => $sub['sub_category_name'],
-                    'description' => $sub['description'],
-                    'category_id' => $category->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+        foreach ($subCategories as $sub) {
+            DB::table('sub_categories')->insert([
+                'sub_category_name' => $sub['sub_category_name'],
+                'description' => $sub['description'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

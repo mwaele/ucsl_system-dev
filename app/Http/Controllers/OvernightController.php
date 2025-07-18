@@ -39,6 +39,7 @@ class OvernightController extends Controller
         $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
+        $sub_categories = SubCategory::all();
 
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
@@ -50,7 +51,7 @@ class OvernightController extends Controller
             ->get();
 
 
-        return view('overnight.on-account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers'));
+        return view('overnight.on-account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers', 'sub_categories'));
     }
 
     public function walk_in()

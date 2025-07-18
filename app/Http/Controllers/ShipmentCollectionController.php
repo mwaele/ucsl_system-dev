@@ -158,7 +158,7 @@ class ShipmentCollectionController extends Controller
             DB::table('tracks')
             ->where('requestId',$request->requestId,)
             ->update([
-                'current_status' => 'Awaiting Verification',
+                'current_status' => 'Awaiting Dispatch',
                 'updated_at' => now()
             ]);
 

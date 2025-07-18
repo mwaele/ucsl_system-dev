@@ -129,9 +129,11 @@ class ClientRequestController extends Controller
             ->with('client') // eager load client relationship
             ->orderBy('created_at', 'desc')
             ->get();
+
         $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();
         $drivers = User::where('role', 'driver')->get();
+        $sub_categories = SubCategory::all();
 
         // Summary counts
         if ($user->role === 'admin') {
@@ -176,7 +178,8 @@ class ClientRequestController extends Controller
             'timeFilter',
             'startDate',
             'endDate',
-            'exportPdfUrl'
+            'exportPdfUrl',
+            'sub_categories'
         ));
     }
 

@@ -65,11 +65,19 @@
                                                 </select>
 
                                             </div>
+                                            
                                             <div class="col-md-6">
-                                                <label for="subCategories" class="form-label text-primary">Service Level </label>
+                                                <label for="subCategories" class="form-label text-primary">Client
+                                                    Services </label>
                                                 <!-- Services -->
-                                                <input type="text" class="form-control mt-1" name="sub_category_label" value="Overnight" readonly>
-                                                <input type="hidden" name="sub_category_id" value="sub_category_id">
+                                                <select name="sub_category_id" class="form-control" required>
+                                                    <option value="">-- Select Service Level --</option>
+                                                    @foreach ($sub_categories as $sub_category)
+                                                        <option value="{{ $sub_category->id }}">
+                                                            {{ $sub_category->sub_category_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
 

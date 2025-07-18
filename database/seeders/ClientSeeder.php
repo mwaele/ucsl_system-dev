@@ -41,7 +41,7 @@ class ClientSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             $contactPerson = $faker->name;
             $accountNo = 'UCSL-' . mt_rand(10000, 99999);
-            $password = 'Client@123'; // default password
+            $password = 'password'; // default password
             $companyName = $faker->unique()->randomElement($kenyanCompanies);
             $email = strtolower(Str::slug($companyName)) . '@ucsl.co.ke'; // Local business-style email
 

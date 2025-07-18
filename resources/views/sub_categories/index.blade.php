@@ -22,7 +22,6 @@
                     <thead>
                         <tr>
                             <th>Sub Category</th>
-                            <th>Category Name</th>
                             <th>Description</th>
                             <th>Action</th>
                         </tr>
@@ -30,7 +29,6 @@
                     <tfoot>
                         <tr>
                             <th>Sub Category</th>
-                            <th>Category Name</th>
                             <th>Description</th>
                             <th>Action</th>
 
@@ -40,7 +38,6 @@
                         @foreach ($sub_categories as $sub_category)
                             <tr>
                                 <td> {{ $sub_category->sub_category_name }} </td>
-                                <td> {{ $sub_category->category->category_name }} </td>
                                 <td> {{ $sub_category->description }} </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('sub_categories.edit', $sub_category->id) }}">
