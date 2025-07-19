@@ -116,17 +116,12 @@
                                             </div>
                                             
                                             <div class="col-md-6">
-                                                <label for="subCategories" class="form-label text-primary">Client
-                                                    Services </label>
-                                                <!-- Services -->
-                                                <select name="sub_category_id" class="form-control" required>
-                                                    <option value="">-- Select Service Level --</option>
-                                                    @foreach ($sub_categories as $sub_category)
-                                                        <option value="{{ $sub_category->id }}">
-                                                            {{ $sub_category->sub_category_name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                <label for="subCategories" class="form-label text-primary">Service Level </label>
+                                                <!-- Readonly input to display the name -->
+                                                <input type="text" class="form-control" value="{{ $sub_category->sub_category_name }}" readonly>
+
+                                                <!-- Hidden input to store the ID -->
+                                                <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
                                             </div>
                                         </div>
 
