@@ -373,38 +373,59 @@
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
-                            <th>Pick-up Location</th>
-                            <th>Date Requested</th>
-                            <th>Rider</th>
-                            <th>Vehicle</th>
-                            <th>Desc.</th>
+                            <th>Date</th>
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Service Level</th>
+                            <th>Received By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th>#</th>
+                            <th>Request ID</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Service Level</th>
+                            <th>Received By</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
                     <tbody>
                         @foreach ($clientRequests as $request)
                             <tr>
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                <td> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
-                                <td> {{ $request->user->name ?? '—' }} </td>
-                                <td> {{ $request->vehicle->regNo ?? '—' }} </td>
-                                <td> {{ $request->parcelDetails }} </td>
+                                <td> {{ $request->shipmentCollection->office->name }} </td>
+                                <td> {{ $request->shipmentCollection->destination->destination }} </td> 
+                                <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }} </td> 
+                                <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
                                 <td>
-                                    <span
-                                        class="badge p-2
-                                    @if ($request->status == 'pending collection') bg-secondary
-                                    @elseif ($request->status == 'collected')
-                                        bg-warning
-                                    @elseif ($request->status == 'verified')
-                                        bg-primary @endif
-                                    fs-5 text-white">
-                                        {{ \Illuminate\Support\Str::title($request->status) }}
-                                    </span>
+                                    @php
+                                        $status = $request->shipmentCollection->clientRequestById->status ?? null;
+                                    @endphp
+
+                                    @if ($status)
+                                        <span class="badge p-2
+                                            @if ($status === 'pending collection') bg-secondary
+                                            @elseif ($status === 'collected') bg-warning
+                                            @elseif ($status === 'verified') bg-primary
+                                            @else bg-dark
+                                            @endif
+                                            fs-5 text-white">
+                                            {{ \Illuminate\Support\Str::title($status) }}
+                                        </span>
+                                    @else
+                                        <span class="badge p-2 bg-light text-muted fs-5">No Status</span>
+                                    @endif
                                 </td>
                                 <td class="d-flex pl-2">
                                     <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
