@@ -6,6 +6,7 @@ use App\Models\SameDayRate;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SameDayRateController extends Controller
 {
@@ -23,6 +24,18 @@ class SameDayRateController extends Controller
  
         return view('rates.nairobi_rates_sameday')->with(['rates'=>$rates,'offices'=>$offices]); 
     }
+
+    
+    public function nrb_rates_sameday_report(){
+
+        $rates = SameDayRate::where('office_id',2)->orderBy('created_at', 'desc')->get();
+        $pdf = Pdf::loadView('rates.nrb_rates_sameday_report' , [
+            'rates'=>$rates
+        ])->setPaper('a4', 'landscape');
+        return $pdf->download("nrb_rates_sameday_report.pdf");
+       
+    }
+    
 
     /**
      * Show the form for creating a new resource.

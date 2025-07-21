@@ -22,8 +22,8 @@
                             <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                                 <div class="modal-content">
                                     <div class="modal-header bg-gradient-primary">
-                                        <h5 class="modal-title text-white" id="exampleModalLabel">Create Same Day
-                                            On-account Request</h5>
+                                        <h3 class="modal-title text-white" id="exampleModalLabel">Create Same Day
+                                            On-account Request</h3>
                                         <button type="button" class="text-white close" data-dismiss="modal"
                                             aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
@@ -49,11 +49,20 @@
                                                 <div class="col-md-6">
                                                     <label for="collectionLocation" class="form-label text-primary">Pickup
                                                         Location</label>
-                                                    <input type="text" class="form-control" name="collectionLocation"
+                                                    <select name="collectionLocation" id="collectionLocation"
+                                                        class="form-control selectpicker" data-live-search="true">
+                                                        <option value="">-- Select Location --</option>
+                                                        @foreach ($locations as $location)
+                                                            <option value="{{ $location->destination }}">
+                                                                {{ $location->destination }}</option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    {{-- <input type="text" class="form-control" name="collectionLocation"
                                                         id="collectionLocation" autocomplete="off">
                                                     <div id="locationSuggestions"
                                                         class="list-group bg-white position-absolute w-80"
-                                                        style="background-color: white;z-index: 1000;"></div>
+                                                        style="background-color: white;z-index: 1000;"></div> --}}
 
                                                 </div>
                                             </div>
@@ -68,17 +77,20 @@
                                                         <option value="">Select Client Categories</option>
                                                     </select>
 
-                                            </div>
-                                            
-                                            <div class="col-md-6">
-                                                <label for="subCategories" class="form-label text-primary">Service Level </label>
-                                                <!-- Readonly input to display the name -->
-                                                <input type="text" class="form-control" value="{{ $sub_category->sub_category_name }}" readonly>
+                                                </div>
 
-                                                <!-- Hidden input to store the ID -->
-                                                <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
+                                                <div class="col-md-6">
+                                                    <label for="subCategories" class="form-label text-primary">Service Level
+                                                    </label>
+                                                    <!-- Readonly input to display the name -->
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $sub_category->sub_category_name }}" readonly>
+
+                                                    <!-- Hidden input to store the ID -->
+                                                    <input type="hidden" name="sub_category_id"
+                                                        value="{{ $sub_category->id }}">
+                                                </div>
                                             </div>
-                                        </div>
 
                                             <div class="mb-3">
                                                 <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
@@ -191,9 +203,9 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
+                                    <div class="modal-footer d-sm-flex align-items-center justify-content-between">
+                                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close
+                                            X</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
@@ -273,8 +285,9 @@
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
                                                     </form>
                                                 </div>
                                             </div>

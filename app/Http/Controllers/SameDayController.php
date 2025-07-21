@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\FrontOffice;
 use App\Models\Office;
 use App\Models\Rate;
+use App\Models\SameDayRate;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,8 @@ class SameDayController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
+        $locations = SameDayRate::where('office_id',2)->get();
+
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
@@ -63,7 +66,7 @@ class SameDayController extends Controller
 
         return view('same_day.on_account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers','timeFilter',
             'startDate',
-            'endDate', 'sub_category'));
+            'endDate', 'sub_category','locations'));
     }
 
     public function walk_in()

@@ -18,6 +18,11 @@
         href="https://cdn.jsdelivr.net/npm/bootstrap-multiselect@1.1.0/dist/css/bootstrap-multiselect.css">
 
 
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+
+
 
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -627,6 +632,9 @@
         <!-- Flatpickr JS -->
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+        <!-- Bootstrap Select JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
         {{-- <!-- Page level plugins -->
         <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
@@ -801,6 +809,8 @@
         <script>
             $(document).ready(function() {
 
+                $('.selectpicker').selectpicker();
+
                 //$('#dataTable').DataTable();
                 $('#dataTable').DataTable({
                     language: {
@@ -816,64 +826,71 @@
                         // Add other customizations if needed
                     }
                 });
-                let debounceTimer;
-                $('#collectionLocation').on('keyup', function() {
-                    clearTimeout(debounceTimer);
-                    const query = $(this).val().trim();
 
-                    debounceTimer = setTimeout(() => {
-                        if (query.length > 1) {
-                            $.ajax({
-                                url: "{{ route('locations.search') }}",
-                                data: {
-                                    term: query
-                                },
-                                success: function(data) {
-                                    const suggestions = $('#locationSuggestions');
-                                    suggestions.empty();
-
-                                    if (data.length > 0) {
-                                        data.forEach(function(location) {
-                                            suggestions.append(
-                                                `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
-                                            );
-                                        });
-                                        suggestions.show();
-                                    } else {
-                                        suggestions.hide();
-                                    }
-                                }
-                            });
-                        } else {
-                            $('#locationSuggestions').hide();
-                        }
-                    }, 300); // delay search by 300ms
+                // Listen for change
+                $('#collectionLocation').on('changed.bs.select', function() {
+                    const location = $(this).val();
+                    //alert('Selected: ' + location);
+                    fetchDriversByLocation(location);
                 });
+                // let debounceTimer;
+                // $('#collectionLocation').on('keyup', function() {
+                //     clearTimeout(debounceTimer);
+                //     const query = $(this).val().trim();
+
+                //     debounceTimer = setTimeout(() => {
+                //         if (query.length > 1) {
+                //             $.ajax({
+                //                 url: "{{ route('locations.search') }}",
+                //                 data: {
+                //                     term: query
+                //                 },
+                //                 success: function(data) {
+                //                     const suggestions = $('#locationSuggestions');
+                //                     suggestions.empty();
+
+                //                     if (data.length > 0) {
+                //                         data.forEach(function(location) {
+                //                             suggestions.append(
+                //                                 `<a href="#" class="list-group-item list-group-item-action">${location}</a>`
+                //                             );
+                //                         });
+                //                         suggestions.show();
+                //                     } else {
+                //                         suggestions.hide();
+                //                     }
+                //                 }
+                //             });
+                //         } else {
+                //             $('#locationSuggestions').hide();
+                //         }
+                //     }, 300); // delay search by 300ms
+                // });
 
 
 
-                // ⬅ Handle suggestion click
-                $(document).on('click', '#locationSuggestions a', function(e) {
-                    e.preventDefault();
-                    const selected = $(this).text();
-                    $('#collectionLocation').val(selected);
-                    $('#locationSuggestions').hide();
+                // // ⬅ Handle suggestion click
+                // $(document).on('click', '#locationSuggestions a', function(e) {
+                //     e.preventDefault();
+                //     const selected = $(this).text();
+                //     $('#collectionLocation').val(selected);
+                //     $('#locationSuggestions').hide();
 
-                    fetchDriversByLocation(selected); // ✅ fetch drivers on selection
-                });
+                //     fetchDriversByLocation(selected); // ✅ fetch drivers on selection
+                // });
 
-                // ⬅ Handle focusout on input
-                $('#collectionLocation').on('focusout', function() {
-                    $('#locationSuggestions').hide();
-                });
+                // // ⬅ Handle focusout on input
+                // $('#collectionLocation').on('focusout', function() {
+                //     $('#locationSuggestions').hide();
+                // });
 
-                $(document).on('mousedown', '#locationSuggestions a', function(e) {
-                    e.preventDefault();
-                    const selected = $(this).text();
-                    $('#collectionLocation').val(selected);
-                    $('#locationSuggestions').hide();
-                    fetchDriversByLocation(selected);
-                });
+                // $(document).on('mousedown', '#locationSuggestions a', function(e) {
+                //     e.preventDefault();
+                //     const selected = $(this).text();
+                //     $('#collectionLocation').val(selected);
+                //     $('#locationSuggestions').hide();
+                //     fetchDriversByLocation(selected);
+                // });
 
 
 

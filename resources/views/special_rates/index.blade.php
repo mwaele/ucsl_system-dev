@@ -7,7 +7,9 @@
 
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-danger">Special Rates Lists</h6>
+                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#add"> Add
+                    Rate <i class="fas fa-plus"></i></button>
+                <h4 class="m-0 font-weight-bold text-warning">Special Rates Lists</h4>
                 <a href="/rates_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>

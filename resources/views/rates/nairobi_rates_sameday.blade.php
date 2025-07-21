@@ -7,10 +7,11 @@
 
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#add"> Add
-                    Rate <i class="fas fa-plus"></i></button>
-                <h4 class="m-0 font-weight-bold text-danger">Same Day Rates From Nairobi to other Destinations </h4>
-                <a href="/nrb_rates_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#add">
+                    Add Rate <i class="fas fa-plus"></i>
+                </button>
+                <h4 class="m-0 font-weight-bold text-warning">Same Day Rates From Nairobi to other Destinations </h4>
+                <a href="/nrb_rates_sameday_report" class="d-none d-sm-inline-block btn btn-sm btn-danger btn-lg shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
         </div>
@@ -23,13 +24,13 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Band</th>
-                            <th>Rate</th>
+                            <th class="text-right">Rate</th>
                             <th>From</th>
                             <th>To</th>
-                            <th>Additional KG</th>
+                            <th class="text-right">Additional KG</th>
                             <th>Approval Status</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            {{-- <th>Action</th> --}}
                         </tr>
                     </thead>
                     <tfoot>
@@ -37,13 +38,13 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Band</th>
-                            <th>Rate</th>
+                            <th class="text-right">Rate</th>
                             <th>From</th>
                             <th>To</th>
-                            <th>Additional KG</th>
+                            <th class="text-right">Additional KG</th>
                             <th>Approval Status</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            {{-- <th>Action</th> --}}
 
                         </tr>
                     </tfoot>
@@ -54,13 +55,13 @@
 
                                 <td> {{ $rate->destination }} </td>
                                 <td>{{ $rate->bands }}</td>
-                                <td> {{ $rate->rate }} </td>
+                                <td class="text-right"> {{ number_format($rate->rate, 2) }} </td>
                                 <td> {{ $rate->applicableFrom }} </td>
                                 <td> {{ $rate->applicableTo }} </td>
-                                <td> {{ $rate->additional_kg }} </td>
+                                <td class="text-right"> {{ number_format($rate->additional_kg, 2) }} </td>
                                 <td> {{ $rate->approvalStatus }} </td>
                                 <td> {{ $rate->status }} </td>
-                                <td class="row pl-4">
+                                {{-- <td class="row pl-4">
                                     <a href="{{ route('rates.edit', $rate->id) }}">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -93,7 +94,7 @@
                                         </div>
                                     </div>
 
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
 
@@ -109,9 +110,9 @@
                 <div class="modal-content">
                     <div class="modal-header bg-success">
 
-                        <h5 class="modal-title text-white" id="exampleModalLabel"> <strong>Add Nairobi Rate Same
+                        <h3 class="modal-title text-white" id="exampleModalLabel"> <strong>Add Nairobi Rate Same
                                 Day</strong>
-                        </h5>
+                        </h3>
 
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -163,7 +164,7 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="text-primary" for="longitude">Rate <span
+                                        <label class="text-primary" for="longitude">Rate (Kes)<span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="rate" required class="form-control">
                                     </div>
@@ -192,25 +193,25 @@
                                 <div class="col-md-4">
                                     <div class="form-group"><label class="text-primary">Approval Status</label>
                                         <select name="approvalStatus" class="form-control">
-                                            <option value="">Select Status</option>
-                                            <option value="pending">Pending</option>
                                             <option value="approved">Approved</option>
+                                            <option value="pending">Pending</option>
+
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group"><label class="text-primary">Status</label>
                                         <select name="status" class="form-control">
-                                            <option value="">Select Status</option>
                                             <option value="active">Active</option>
+
                                             <option value="closed">Closed</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="text-primary" for="applicableFrom">Additional Per KG</label>
-                                        <input type="number" name="additional_kg" class="form-control">
+                                        <label class="text-primary" for="applicableFrom">Additional Kg Above 5Kgs </label>
+                                        <input type="number" value="50" name="additional_kg" class="form-control">
                                     </div>
                                 </div>
 
@@ -224,7 +225,7 @@
 
                                 <div class="col-md-4 pt-2">
                                     <label class="text-primary" for=""></label>
-                                    <button type="submit" class="form-control btn btn-primary btn-sm submit">
+                                    <button type="submit" class="form-control btn btn-lg btn-primary btn-sm submit">
                                         <i class="fas fa-save text-white"></i>
                                         Save</button>
                                 </div>

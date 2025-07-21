@@ -32,7 +32,7 @@
                     <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                         <div class="modal-content">
                             <div class="modal-header bg-gradient-primary">
-                                <h5 class="modal-title text-white" id="exampleModalLabel">Create Client Request</h5>
+                                <h3 class="modal-title text-white" id="exampleModalLabel">Create Client Request</h3>
                                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -453,7 +453,7 @@
                                             data-id="{{ $request->shipmentCollection->id }}"
                                             data-request-id="{{ $request->requestId }}"
                                             data-rider="{{ $request->user->name }}"
-                                            data-vehicle="{{ $request->vehicle->regNo }}"
+                                            data-vehicle="{{ $request->vehicle ?? '—' }}"
                                             data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
                                             data-cost="{{ $request->shipmentCollection->cost }}"
                                             data-total-cost="{{ $request->shipmentCollection->total_cost }}"
@@ -474,27 +474,32 @@
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i>
                                         </button>
-                                    
-                                        <div class="modal fade" id="waybillModal{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
+
+                                        <div class="modal fade" id="waybillModal{{ $request->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
                                                 <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title text-primary">Waybill Preview</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                    <iframe src="{{ route('waybill.preview', $request->requestId) }}" width="100%" height="500" frameborder="0"></iframe>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <a href="{{ route('waybill.generate', $request->requestId) }}"
-                                                    target="_blank"
-                                                    class="btn btn-primary">
-                                                    Generate
-                                                    </a>
-                                                </div>
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body"
+                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <iframe src="{{ route('waybill.preview', $request->requestId) }}"
+                                                            width="100%" height="500" frameborder="0"></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+                                                        <a href="{{ route('waybill.generate', $request->requestId) }}"
+                                                            target="_blank" class="btn btn-primary">
+                                                            Generate
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
