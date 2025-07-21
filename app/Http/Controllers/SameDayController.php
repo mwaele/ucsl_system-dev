@@ -10,6 +10,7 @@ use App\Models\ShipmentCollection;
 use App\Models\Vehicle;
 use App\Models\User;
 use App\Models\FrontOffice;
+use App\Models\SameDayRate;
 use App\Models\Office;
 use App\Models\Rate;
 use App\Models\SameDayRate;
@@ -73,7 +74,7 @@ class SameDayController extends Controller
     {
         $offices = Office::all();
         $loggedInUserId = Auth::user()->id;
-        $destinations = Rate::where('type', 'normal')->get();
+        $destinations = SameDayRate::all();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 

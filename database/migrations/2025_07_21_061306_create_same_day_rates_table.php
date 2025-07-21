@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('office_id');
             $table->string('destination');
             $table->string('bands');
-            $table->integer('additional_kg')->nullable();
-            $table->integer('intercity_additional_kg')->nullable();
+            $table->integer('additional_cost_per_kg')->nullable();
+            $table->integer('intercity_additional_cost_per_kg')->nullable();
             $table->integer('rate');
             $table->dateTime("applicableFrom")->nullable();
             $table->dateTime("applicableTo")->nullable();

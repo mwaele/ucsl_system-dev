@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             TransporterSeeder::class,
             TransporterTruckSeeder::class,
             DispatcherSeeder::class,
+            SameDayRateSeeder::class,
         ]);
     }
 }

@@ -80,8 +80,7 @@
                     <th style="width: 15%;">Destination</th>
                     <th style="width: 15%;">Zone</th>
                     <th style="width: 15%;">Rate</th>
-                    <th style="width: 15%;">From</th>
-                    <th style="width: 15%;">To</th>
+                    <th style="width: 15%;">Type</th>
                     <th style="width: 15%;">Approval Status</th>
                     <th style="width: 15%;">Status</th>
                 </tr>
@@ -89,16 +88,14 @@
             <tbody>
                 @foreach ($rates as $i => $rate)
                     <tr>
-                        <td>{{ $loop->iteration }}.</td>
+                        <td> {{ $loop->iteration }}. </td>
                         <td> {{ $rate->office->name }} </td>
                         <td> {{ $rate->destination }} </td>
-                        <td>{{ $rate->zone->zone_name }}</td>
+                        <td> {{ $rate->zone_name->zone_name }} </td>
                         <td> {{ $rate->rate }} </td>
-                        <td> {{ \Carbon\Carbon::parse($rate->applicableFrom)->toDateString() }} </td>
-                        <td> {{ $rate->applicableTo ? \Carbon\Carbon::parse($rate->applicableTo)->toDateString() : '' }}
-                        </td>
-                        <td> {{ $rate->approvalStatus }} </td>
-                        <td> {{ $rate->status }} </td>
+                        <td> {{ ucfirst($rate->type) }} </td>
+                        <td> {{ ucfirst($rate->approvalStatus) }} </td>
+                        <td> {{ ucfirst($rate->status) }} </td>
                     </tr>
                 @endforeach
             </tbody>
