@@ -24,6 +24,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\API\ClientAuthController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\TransporterController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CompanyInfoController;
+use App\Http\Controllers\SameDayRateController;
+
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
@@ -84,7 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users_report', [UserController::class, 'users_report']);
     Route::put('/client/{id}', [ClientController::class, 'update'])->name('clients.update');
-    Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
+
+     Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');
+   
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
@@ -93,12 +99,29 @@ Route::middleware('auth')->group(function () {
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');
     Route::resource('company_infos','App\Http\Controllers\CompanyInfoController');
+    
+    Route::get('/company_info_report', [CompanyInfoController::class, 'company_info_report'])->name('company_info_report');
+    
+    Route::get('/offices_report', [CompanyInfoController::class, 'offices_report'])->name('offices_report');
+    
+
     Route::resource('vehicles','App\Http\Controllers\VehicleController');
     Route::resource('offices','App\Http\Controllers\OfficeController');
     Route::resource('rates','App\Http\Controllers\RateController');
     Route::get('mombasa_rates', [RateController::class, 'mombasa_office'])->name('rates.mombasa_office');
+    Route::get('mombasa_rates_sameday', [RateController::class, 'mombasa_rates_sameday'])->name('rates.mombasa_rates_sameday');
+    Route::get('nairobi_rates_sameday', [SameDayRateController::class, 'nairobi_rates_sameday'])->name('rates.nairobi_rates_sameday');
+
+    Route::resource('rates_sameday','App\Http\Controllers\SameDayRateController');
+
+    Route::get('nrb_rates_sameday',[SameDayRateController::class,'nairobi_rates_sameday'])->name('rates.nrb_rates_sameday');
     Route::get('nairobi_rates', [RateController::class, 'nairobi_office'])->name('rates.nairobi_office');
     Route::get('/rates_report', [RateController::class, 'rates_report']);
+    
+    Route::get('/msa_rates_report', [RateController::class, 'msa_rates_report']);
+
+    Route::get('/nrb_rates_report', [RateController::class, 'nrb_rates_report']);
+
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');
@@ -107,6 +130,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/check_station_name', [StationController::class, 'checkStation']);
     Route::resource('zones','App\Http\Controllers\ZoneController');
     Route::get('/get-destinations/{office_id}', [RateController::class, 'getDestinations']);
+    Route::get('/nairobi_rates_sameday', [RateController::class, 'nairobi_rates_sameday']);
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
@@ -122,7 +146,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/get_cost/{originId}/{destinationId}/{client_id}', [SpecialRateController::class, 'getCost']);
 
     Route::get('/clientData/{cid}', [MainController::class, 'clients']);
+
+    //collections
+     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
+
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
+
+    Route::get('/collections_report', [MyCollectionController::class, 'collections_report'])->name('collections_report');
+
     Route::put('/shipment-collections/update/{requestId}', [ShipmentCollectionController::class, 'update'])->name('shipment-collections.update');
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
     Route::post('/shipment-collections/walkin', [ShipmentCollectionController::class, 'create'])->name('shipment-collections.create');

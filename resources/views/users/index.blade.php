@@ -1,255 +1,264 @@
 @extends('layouts.custom')
 
 @section('content')
-<div class="card">
+    <div class="card">
 
-    <div class="card-header py-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">User Accounts</h5>
-            
-            <div class="d-flex gap-2 ms-auto">
-                <a href="/users_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
-                    <i class="fas fa-download fa text-white"></i> Generate Report
-                </a>
+        <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">User Accounts</h5>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">
-                    + Create User
-                </button>
-            </div>
-        </div>
-    </div>
+                <div class="d-flex gap-2 ms-auto">
+                    <a href="/users_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                        <i class="fas fa-download fa text-white"></i> Generate Report
+                    </a>
 
-    <!-- Create User Modal -->
-    <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <form method="POST" action="{{ route('users.store') }}">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-                <div class="modal-body row">
-
-                <div class="form-group col-md-6">
-                    <label>Name</label>
-                    <input name="name" class="form-control" required>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Email</label>
-                    <input name="email" type="email" class="form-control" required>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Phone Number</label>
-                    <input name="phone_number" class="form-control">
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Station</label>
-                    <select name="station" class="form-control" required>
-                            <option value="">-- Select Station --</option>
-                            @foreach ($stations as $station)
-                                <option value="{{ $station->id }}">
-                                    {{ $station->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Role</label>
-                    <select name="role" class="form-control">
-                        <option value="user" selected>User</option>
-                        <option value="driver">Driver</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
-                        <option value="super-admin">Super Admin</option>
-                    </select>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option value="active" selected>Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Password</label>
-                    <input name="password" type="password" class="form-control" required>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label>Confirm Password</label>
-                    <input name="password_confirmation" type="password" class="form-control" required>
-                </div>
-
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Create User</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createUserModal">
+                        + Create User
+                    </button>
                 </div>
             </div>
-            </form>
         </div>
-    </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table text-primary table-bordered table-striped table-hover" id="ucsl-table" width="100%"
-                            cellspacing="0" style="font-size: 14px;">
-                <thead>
-                    <tr class="text-success">
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Station</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($users as $index => $user)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->phone_number ?? 'N/A' }}</td>
-                            <td>
-                                <span class="badge badge-{{ $user->role == 'admin' ? 'danger' : 'secondary' }}">
-                                    {{ ucfirst($user->role) }}
-                                </span>
-                            </td>
-                            <td>{{ $user->office->name ?? 'Unassigned' }}</td>
-                            <td>
-                                <span class="badge badge-{{ $user->status == 'active' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($user->status) }}
-                                </span>
-                            </td>
-                            <td>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d H:i') }}</td>
-                            <td class="d-flex pl-2">
-                                <button class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editUserModal-{{ $user->id }}">
-                                    Edit
-                                </button>
-                                <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
-                                    data-toggle="modal"
-                                    data-target="#deleteUser-{{ $user->id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <!-- Delete Modal-->
-                                <div class="modal fade" id="deleteUser-{{ $user->id }}"
-                                    tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <p>Are you sure you want to delete {{ $user->name }}?
-                                                </p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
-                                                <form
-                                                    action =" {{ route('user.destroy', $user->id) }}"
-                                                    method = "POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                        title="Delete" value="DELETE">YES DELETE <i
-                                                            class="fas fa-trash"></i> </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @foreach($users as $user)
-        <div class="modal fade" id="editUserModal-{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel-{{ $user->id }}" aria-hidden="true">
+        <!-- Create User Modal -->
+        <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
-                <form method="POST" action="{{ route('users.update', $user->id) }}">
+                <form method="POST" action="{{ route('users.store') }}">
                     @csrf
-                    @method('PUT')
                     <div class="modal-content">
-                        <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title" id="editUserModalLabel-{{ $user->id }}">Edit User: {{ $user->name }}</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-
                         <div class="modal-body row">
 
-                        <div class="form-group col-md-6">
-                            <label>Name</label>
-                            <input name="name" class="form-control" value="{{ $user->name }}" required>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Name</label>
+                                <input name="name" class="form-control" required>
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Email</label>
-                            <input name="email" type="email" class="form-control" value="{{ $user->email }}" required>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Email</label>
+                                <input name="email" type="email" class="form-control" required>
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Phone Number</label>
-                            <input name="phone_number" class="form-control" value="{{ $user->phone_number }}">
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Phone Number</label>
+                                <input name="phone_number" class="form-control">
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Station</label>
-                            <select name="station" class="form-control" required>
-                                <option value="">-- Select Station --</option>
-                                @foreach ($stations as $station)
-                                    <option value="{{ $station->id }}" {{ $user->station == $station->id ? 'selected' : '' }}>
-                                        {{ $station->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Station</label>
+                                <select name="station" class="form-control" required>
+                                    <option value="">-- Select Station --</option>
+                                    @foreach ($stations as $station)
+                                        <option value="{{ $station->id }}">
+                                            {{ $station->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Role</label>
-                            <select name="role" class="form-control">
-                                <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
-                                <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver</option>
-                                <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
-                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="super-admin" {{ $user->role == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
-                            </select>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Role</label>
+                                <select name="role" class="form-control">
+                                    <option value="user" selected>User</option>
+                                    <option value="driver">Driver</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="super-admin">Super Admin</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Status</label>
-                            <select name="status" class="form-control">
-                                <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                            </select>
-                        </div>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label>Status</label>
+                                <select name="status" class="form-control">
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
 
+                            <div class="form-group col-md-6">
+                                <label>Password</label>
+                                <input name="password" type="password" class="form-control" required>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label>Confirm Password</label>
+                                <input name="password_confirmation" type="password" class="form-control" required>
+                            </div>
+
+                        </div>
                         <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update User</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Create User</button>
                         </div>
-
                     </div>
                 </form>
             </div>
         </div>
-    @endforeach
-</div>
 
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table text-primary table-bordered table-striped table-hover" id="ucsl-table" width="100%"
+                    cellspacing="0" style="font-size: 14px;">
+                    <thead>
+                        <tr class="text-success">
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Station</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $index => $user)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->phone_number ?? 'N/A' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ $user->role == 'admin' ? 'danger' : 'primary' }}">
+                                        {{ ucfirst($user->role) }}
+                                    </span>
+                                </td>
+                                <td>{{ $user->office->name ?? 'Unassigned' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ $user->status == 'active' ? 'success' : 'warning' }}">
+                                        {{ ucfirst($user->status) }}
+                                    </span>
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d H:i') }}</td>
+                                <td class="d-flex pl-2">
+                                    <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
+                                        data-target="#editUserModal-{{ $user->id }}">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                        data-toggle="modal" data-target="#deleteUser-{{ $user->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <!-- Delete Modal-->
+                                    <div class="modal fade" id="deleteUser-{{ $user->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete {{ $user->name }}?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <form action =" {{ route('user.destroy', $user->id) }}"
+                                                        method = "POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @foreach ($users as $user)
+            <div class="modal fade" id="editUserModal-{{ $user->id }}" tabindex="-1" role="dialog"
+                aria-labelledby="editUserModalLabel-{{ $user->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form method="POST" action="{{ route('users.update', $user->id) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-content">
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title" id="editUserModalLabel-{{ $user->id }}">Edit User:
+                                    {{ $user->name }}</h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body row">
+
+                                <div class="form-group col-md-6">
+                                    <label>Name</label>
+                                    <input name="name" class="form-control" value="{{ $user->name }}" required>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Email</label>
+                                    <input name="email" type="email" class="form-control"
+                                        value="{{ $user->email }}" required>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Phone Number</label>
+                                    <input name="phone_number" class="form-control" value="{{ $user->phone_number }}">
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Station</label>
+                                    <select name="station" class="form-control" required>
+                                        <option value="">-- Select Station --</option>
+                                        @foreach ($stations as $station)
+                                            <option value="{{ $station->id }}"
+                                                {{ $user->station == $station->id ? 'selected' : '' }}>
+                                                {{ $station->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Role</label>
+                                    <select name="role" class="form-control">
+                                        <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff
+                                        </option>
+                                        <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver
+                                        </option>
+                                        <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager
+                                        </option>
+                                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin
+                                        </option>
+                                        <option value="super-admin" {{ $user->role == 'super-admin' ? 'selected' : '' }}>
+                                            Super Admin</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Status</label>
+                                    <select name="status" class="form-control">
+                                        <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active
+                                        </option>
+                                        <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>
+                                            Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Update User</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endforeach
+    </div>
 @endsection

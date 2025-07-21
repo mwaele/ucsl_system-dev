@@ -128,7 +128,10 @@
                                                             <div>Name: {{ $collection->client->name }}</div>
                                                             @php
                                                                 $phone = $collection->client->contact;
-                                                                $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                                $maskedPhone =
+                                                                    substr($phone, 0, 3) .
+                                                                    str_repeat('*', strlen($phone) - 6) .
+                                                                    substr($phone, -3);
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -140,8 +143,12 @@
                                                             <div>Name: {{ $collection->shipmentCollection->receiver_name }}
                                                             </div>
                                                             @php
-                                                                $phone = $collection->shipmentCollection->receiver_phone;
-                                                                $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                                $phone =
+                                                                    $collection->shipmentCollection->receiver_phone;
+                                                                $maskedPhone =
+                                                                    substr($phone, 0, 3) .
+                                                                    str_repeat('*', strlen($phone) - 6) .
+                                                                    substr($phone, -3);
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -221,15 +228,19 @@
                                                                     <strong>Contact:</strong>
                                                                     @php
                                                                         $phone = $collection->user->phone_number;
-                                                                        $maskedPhone = substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3);
+                                                                        $maskedPhone =
+                                                                            substr($phone, 0, 3) .
+                                                                            str_repeat('*', strlen($phone) - 6) .
+                                                                            substr($phone, -3);
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
-                                                                    <span> {{ $collection->vehicle->regNo }} </span>
+                                                                    <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div><br>
-                                                                These are provisional charges based on details provided by sender.<br><br>
+                                                                These are provisional charges based on details provided by
+                                                                sender.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
                                                                 conditions overleaf.
@@ -379,7 +390,8 @@
                                                                                     Number <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="sender_id_no" id="sender_id_no" maxlength="8">
+                                                                                    name="sender_id_no" id="sender_id_no"
+                                                                                    maxlength="8">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-dark">Phone
@@ -447,7 +459,8 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required maxlength="8">
+                                                                                name="receiverIdNo" required
+                                                                                maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-dark">Phone
@@ -650,13 +663,13 @@
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                    <label class="form-label text-dark">Total Cost <span
-                                                                            class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control" name="total_cost" required
-                                                                        readonly>
-                                                                </div> -->
+                                                                        <label class="form-label text-dark">Total Cost <span
+                                                                                class="text-danger">*</span>
+                                                                        </label>
+                                                                        <input type="number" min="0"
+                                                                            class="form-control" name="total_cost" required
+                                                                            readonly>
+                                                                    </div> -->
                                                             </div>
 
                                                             <!-- Submit -->

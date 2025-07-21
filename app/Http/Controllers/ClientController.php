@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use App\Models\SubCategory;
 use App\Models\Category;
 use App\Models\ClientCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class ClientController extends Controller
 {
@@ -18,6 +20,14 @@ class ClientController extends Controller
     {
         $clients = Client::all();
         return view('clients.index')->with('clients', $clients);
+    }
+
+    public function clients_report(){
+        $clients = Client::all();
+        $pdf = Pdf::loadView('clients.clients_report' , [
+            'clients'=>$clients
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("clients_report.pdf");
     }
 
     /**
@@ -154,6 +164,7 @@ class ClientController extends Controller
         $client->email = $request->email;
         $client->contact = $request->contact;
         $client->type = $request->type;
+        $client->password = bcrypt($request->password);
         $client->save();
         
         return redirect()->route('clients.index')->with('Success');

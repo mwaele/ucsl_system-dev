@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>{{ $head }} PDF</title>
+    <title>Clients Report PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
@@ -50,7 +50,7 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <p><strong>Report for {{ $title }}</strong></p>
+                    <p><strong>Report for all clients </strong></p>
                     <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
@@ -63,30 +63,23 @@
         <table class="bordered">
             <thead>
                 <tr>
-                    <th style="width: 5%;">#</th>
-                    <th style="width: 20%;">Origin</th>
-                    <th style="width: 15%;">Destination</th>
-                    <th style="width: 15%;">Zone</th>
-                    <th style="width: 15%;">Rate</th>
-                    <th style="width: 15%;">From</th>
-                    <th style="width: 15%;">To</th>
-                    <th style="width: 15%;">Approval Status</th>
-                    <th style="width: 15%;">Status</th>
+                    <th>#</th>
+                    <th>Client Name</th>
+                    <th>Telephone Number</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Physical Address</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($rates as $i => $rate)
+                @foreach ($clients as $client)
                     <tr>
-                        <td>{{ $loop->iteration }}.</td>
-                        <td> {{ $rate->office->name }} </td>
-                        <td> {{ $rate->destination }} </td>
-                        <td>{{ $rate->zone->zone_name }}</td>
-                        <td> {{ $rate->rate }} </td>
-                        <td> {{ \Carbon\Carbon::parse($rate->applicableFrom)->toDateString() }} </td>
-                        <td> {{ $rate->applicableTo ? \Carbon\Carbon::parse($rate->applicableTo)->toDateString() : '' }}
-                        </td>
-                        <td> {{ $rate->approvalStatus }} </td>
-                        <td> {{ $rate->status }} </td>
+                        <td> {{ $loop->iteration }}. </td>
+                        <td> {{ $client->name }} </td>
+                        <td> {{ $client->contact }} </td>
+                        <td> {{ $client->email }} </td>
+                        <td> {{ $client->type }} </td>
+                        <td> {{ $client->address }} </td>
                     </tr>
                 @endforeach
             </tbody>

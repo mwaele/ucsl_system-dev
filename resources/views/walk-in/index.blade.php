@@ -103,12 +103,14 @@
 
                                     <div class="col-md-2">
                                         <h6 for="receiverPhone" class="text-muted text-primary">Phone Number</h6>
-                                        <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
+                                        <input type="text" id="receiverPhone" class="form-control"
+                                            name="receiverPhone">
                                     </div>
 
                                     <div class="col-md-2">
                                         <h6 for="receiverEmail" class="text-muted text-primary">Email</h6>
-                                        <input type="text" id="receiverEmail" class="form-control" name="receiverEmail">
+                                        <input type="text" id="receiverEmail" class="form-control"
+                                            name="receiverEmail">
                                     </div>
 
                                     <div class="col-md-2">
@@ -128,7 +130,7 @@
                                     <h5 class=" text-white">Fill in the Parcel details.</h5>
                                 </div>
 
-                                <table class="table table-bordered" id="shipmentTable">
+                                <table class="table table-bordered text-primary" id="shipmentTable">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -241,7 +243,8 @@
 
                                     <div class=" mt-2 col-md-2">
                                         <h6 for="reference" class="text-muted text-primary">Reference</h6>
-                                        <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                                        <input type="text" name="reference" class="form-control"
+                                            placeholder="e.g. MPESA123XYZ">
                                     </div>
                                 </div>
 
@@ -398,8 +401,8 @@
                                 <td> {{ \Carbon\Carbon::parse($collection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $collection->office->name }} </td>
-                                <td> {{ $collection->destination->destination }} </td> 
-                                <td> {{ $collection->clientRequestById->serviceLevel->sub_category_name }} </td> 
+                                <td> {{ $collection->destination->destination }} </td>
+                                <td> {{ $collection->clientRequestById->serviceLevel->sub_category_name }} </td>
                                 <td> {{ $collection->collectedBy->name ?? 'user' }} </td>
                                 <td>
                                     @php
@@ -407,12 +410,12 @@
                                     @endphp
 
                                     @if ($status)
-                                        <span class="badge p-2
+                                        <span
+                                            class="badge p-2
                                             @if ($status === 'pending collection') bg-secondary
                                             @elseif ($status === 'collected') bg-warning
                                             @elseif ($status === 'verified') bg-primary
-                                            @else bg-dark
-                                            @endif
+                                            @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($status) }}
                                         </span>
@@ -432,23 +435,29 @@
                                             <i class="fas fa-file-invoice"></i>
                                         </button>
 
-                                        <div class="modal fade" id="waybillModal{{ $collection->requestId }}" tabindex="-1" role="dialog" aria-labelledby="waybillLabel" aria-hidden="true">
+                                        <div class="modal fade" id="waybillModal{{ $collection->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title text-primary">Waybill Preview</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                        <iframe src="{{ route('waybill.preview', $collection->requestId) }}" width="100%" height="500" frameborder="0"></iframe>
+                                                    <div class="modal-body"
+                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <iframe
+                                                            src="{{ route('waybill.preview', $collection->requestId) }}"
+                                                            width="100%" height="500" frameborder="0"></iframe>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
                                                         <a href="{{ route('waybill.generate', $collection->requestId) }}"
-                                                        target="_blank"
-                                                        class="btn btn-primary">
+                                                            target="_blank" class="btn btn-primary">
                                                             Generate
                                                         </a>
                                                     </div>
@@ -568,7 +577,8 @@
                                                             <hr style="margin: 4px 0;">
                                                             <div style="display: flex; justify-content: space-between;">
                                                                 <strong>Total Weight:</strong>
-                                                                <span>{{ number_format($totalWeight, 2) }} {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
+                                                                <span>{{ number_format($totalWeight, 2) }}
+                                                                    {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                             </div>
                                                             <div style="display: flex; justify-content: space-between;">
                                                                 <strong>Base Cost:</strong>

@@ -16,7 +16,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -50,7 +50,8 @@
                                 <td> {{ $client->type }} </td>
                                 <td> {{ $client->address }} </td>
                                 <td class="row pl-4">
-                                    <button class="btn btn-sm btn-info mr-1" data-toggle="modal" data-target="#editClientModal-{{ $client->id }}">
+                                    <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
+                                        data-target="#editClientModal-{{ $client->id }}">
                                         Edit
                                     </button>
                                     <a href="{{ route('clients.show', $client->id) }}">
@@ -98,18 +99,20 @@
                 </table>
             </div>
         </div>
-        @foreach($clients as $client)
-            <div class="modal fade" id="editClientModal-{{ $client->id }}" tabindex="-1" role="dialog" aria-labelledby="editClientModalLabel-{{ $client->id }}" aria-hidden="true">
+        @foreach ($clients as $client)
+            <div class="modal fade" id="editClientModal-{{ $client->id }}" tabindex="-1" role="dialog"
+                aria-labelledby="editClientModalLabel-{{ $client->id }}" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <form method="POST" action="{{ route('clients.update', $client->id) }}">
                         @csrf
                         @method('PUT')
                         <div class="modal-content">
                             <div class="modal-header bg-info text-white">
-                            <h5 class="modal-title" id="editUserModalLabel-{{ $client->id }}">Edit User: {{ $client->name }}</h5>
-                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                                <h5 class="modal-title" id="editUserModalLabel-{{ $client->id }}">Edit Client Details:
+                                    {{ $client->name }}</h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
 
                             <div class="modal-body row">
@@ -121,7 +124,8 @@
 
                                 <div class="form-group col-md-6">
                                     <label>Email</label>
-                                    <input name="email" type="email" class="form-control" value="{{ $client->email }}" required>
+                                    <input name="email" type="email" class="form-control" value="{{ $client->email }}"
+                                        required>
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -132,15 +136,23 @@
                                 <div class="form-group col-md-6">
                                     <label>Type</label>
                                     <select name="type" class="form-control">
-                                        <option value="on_account" {{ $client->type == 'on_account' ? 'selected' : '' }}>On Account</option>
-                                        <option value="walkin" {{ $client->type == 'walkin' ? 'selected' : '' }}>Walkin</option>
+                                        <option value="on_account" {{ $client->type == 'on_account' ? 'selected' : '' }}>On
+                                            Account</option>
+                                        <option value="walkin" {{ $client->type == 'walkin' ? 'selected' : '' }}>Walkin
+                                        </option>
                                     </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Password</label>
+                                    <input name="password" type="password" class="form-control"
+                                        value="{{ $client->password }}">
                                 </div>
                             </div>
 
-                            <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Update User</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <div class="modal-footer d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-primary">Update Client</button>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
                             </div>
 
                         </div>
