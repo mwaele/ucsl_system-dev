@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string("zone")->nullable();
             $table->string("origin")->nullable();
             $table->string("destination")->nullable();
-            $table->integer("rate")->default(0);
+            $table->decimal("rate", 8, 2)->default(0.00);
             $table->string("type")->default("normal"); 
             $table->dateTime("applicableFrom")->nullable();
             $table->dateTime("applicableTo")->nullable();

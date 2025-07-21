@@ -24,8 +24,7 @@
                             <th>Destination</th>
                             <th>Zone</th>
                             <th>Rate</th>
-                            <th>From</th>
-                            <th>To</th>
+                            <th>Type</th>
                             <th>Approval Status</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -37,8 +36,7 @@
                             <th>Destination</th>
                             <th>Zone</th>
                             <th>Rate</th>
-                            <th>From</th>
-                            <th>To</th>
+                            <th>Type</th>
                             <th>Approval Status</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -51,11 +49,10 @@
                                 <td> {{ $rate->office->name }} </td>
 
                                 <td> {{ $rate->destination }} </td>
-                                <td>{{ $rate->zone->zone_name }}</td>
+                                <td> {{ $rate->zone_name->zone_name }} </td>
                                 <td> {{ $rate->rate }} </td>
-                                <td> {{ $rate->applicableFrom }} </td>
-                                <td> {{ $rate->applicableTo }} </td>
-                                <td> {{ $rate->approvalStatus }} </td>
+                                <td> {{ ucfirst($rate->type) }}</td>
+                                <td> {{ ucfirst($rate->approvalStatus) }} </td>
                                 <td> {{ $rate->status }} </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('rates.edit', $rate->id) }}">
@@ -193,6 +190,15 @@
                                             <option value="">Select Status</option>
                                             <option value="active">Active</option>
                                             <option value="closed">Closed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                 <div class="col-md-4">
+                                    <div class="form-group"><label class="text-primary">Type</label>
+                                        <select name="type" class="form-control">
+                                            <option value="">Select rate type</option>
+                                            <option value="normal">Normal</option>
+                                            <option value="pharmaceutical">Pharmaceutical</option>
                                         </select>
                                     </div>
                                 </div>

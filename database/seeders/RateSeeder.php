@@ -25,18 +25,18 @@ class RateSeeder extends Seeder
                 'rate' => 500
             ],
             'Zone 2A' => [
-                'destinations' => ['Naivasha', 'Gilgil', 'Nakuru', 'Kericho', 'Kisumu', 'Narok', 'Bomet', 'Eldoret', 'Kakamega', 'Kisii', 'Kitale'],
+                'destinations' => ['Naivasha', 'Gilgil', 'Nakuru', 'Kericho', 'Kisumu', 'Narok', 'Bomet', 'Eldoret', 'Kakamega', 'Kisii', 'Kitale', 'Litein'],
                 'rate' => 500
             ],
             'Zone 3A' => [
-                'destinations' => ['Thika', 'Sagana', 'Muranga', 'Kerugoya', 'Karatina', 'Nyeri', 'Othaya', 'Nanyuki', 'Embu', 'Matuu', 'Nkubu', 'Nyahururu'],
+                'destinations' => ['Thika', 'Sagana', 'Muranga', 'Kerugoya', 'Karatina', 'Nyeri', 'Othaya', 'Nanyuki', 'Embu', 'Matuu', 'Nkubu', 'Nyahururu', 'Chuka'],
                 'rate' => 500
             ],
             'Zone 1B' => [
                 'destinations' => ['Diani(1000)', 'Malindi(1000)', 'Watamu(1000)', 'Kilifi(900)', 'Mtwapa(800)', 'Kwale(800)', 'Lamu(2500)', 'Namanga(650)']
             ],
             'Zone 2B' => [
-                'destinations' => ['Bungoma(600)', 'Kapsabet(600)', 'Migori(650)', 'Homabay(650)', 'Busia(650)', 'Siaya(650)']
+                'destinations' => ['Bungoma(600)', 'Kapsabet(600)', 'Migori(650)', 'Homabay(650)', 'Busia(650)', 'Siaya(650)', 'Awendo(650)', 'Muhoroni(650)', 'Bondo(650)']
             ],
             'Zone 3B' => [
                 'destinations' => ['Maua(650)', 'Isiolo(650)', 'Meru(650)', 'Garissa(650)', 'Mwingi(650)']
@@ -57,7 +57,7 @@ class RateSeeder extends Seeder
                 'rate' => 1000
             ],
             'Zone 3A' => [
-                'destinations' => ['Thika', 'Sagana', 'Muranga', 'Kerugoya', 'Karatina', 'Nyeri', 'Othaya', 'Nanyuki', 'Embu', 'Matuu', 'Nkubu', 'Nyahururu'],
+                'destinations' => ['Thika', 'Sagana', 'Muranga', 'Kerugoya', 'Karatina', 'Nyeri', 'Othaya', 'Nanyuki', 'Embu', 'Matuu', 'Nkubu', 'Nyahururu', 'Chuka'],
                 'rate' => 1000
             ],
             'Zone 1B' => [
@@ -111,7 +111,7 @@ class RateSeeder extends Seeder
                     'applicableFrom' => $now,
                     'applicableTo' => null,
                     'status' => 'active',
-                    'approvalStatus' => 'pending',
+                    'approvalStatus' => 'approved',
                     'dateApproved' => null,
                     'created_at' => $now,
                     'updated_at' => $now,
@@ -150,7 +150,7 @@ class RateSeeder extends Seeder
                     'applicableFrom' => $now,
                     'applicableTo' => null,
                     'status' => 'active',
-                    'approvalStatus' => 'pending',
+                    'approvalStatus' => 'approved',
                     'dateApproved' => null,
                     'created_at' => $now,
                     'updated_at' => $now,

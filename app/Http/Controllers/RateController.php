@@ -89,6 +89,7 @@ class RateController extends Controller
                 'applicableTo'=>'nullable|string',
                 'status'=>'required',
                 'approvalStatus'=>'required',
+                'type'=>'required',
                 'dateApproved'=>'nullable|string',
                 'office_id' =>'required',
                 'zone_id'=>'required'

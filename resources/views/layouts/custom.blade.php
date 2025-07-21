@@ -294,7 +294,7 @@
                     <span class="sized">Rates</span>
                 </a>
                 <div id="collapseRates"
-                    class="collapse  {{ request()->routeIs('rates.*') || request()->routeIs('special_rates.*') ? 'active' : '' }}"
+                    class="collapse  {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}"
                     aria-labelledby="headingRates" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         {{-- <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
