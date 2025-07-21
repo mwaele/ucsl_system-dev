@@ -21,7 +21,7 @@ class FrontOfficeController extends Controller
     {
         $offices = Office::all();
         $loggedInUserId = Auth::user()->id;
-        $destinations = Rate::all();
+        $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
 
         // Determine DB driver for cross-DB SQL compatibility

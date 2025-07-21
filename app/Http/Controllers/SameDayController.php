@@ -70,7 +70,7 @@ class SameDayController extends Controller
     {
         $offices = Office::all();
         $loggedInUserId = Auth::user()->id;
-        $destinations = Rate::all();
+        $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 

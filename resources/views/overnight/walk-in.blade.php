@@ -35,13 +35,13 @@
 
                                         <div class="row mt-3 mb-3">
                                             <div class="col-md-2">
-                                                <h6 for="requestId" class="text-muted text-dark">Request ID</h6>
+                                                <h6 for="requestId" class="text-primary">Request ID</h6>
                                                 <input type="text" value="{{ $request_id }}" name="requestId"
                                                     class="form-control" id="request_id" readonly>
                                             </div>
                                             <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                             <div class="col-md-2">
-                                                <h6 for="clientId" class="text-muted text-primary">Client</h6>
+                                                <h6 for="clientId" class="text-primary">Client</h6>
                                                 <select class="form-control" id="clientId" name="clientId">
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
@@ -52,13 +52,13 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="clientCategories" class="text-muted text-primary">Client Categories</h6>
+                                                <h6 for="clientCategories" class="text-primary">Client Categories</h6>
                                                 <select class="form-control" id="clientCategories" name="category_id">
                                                     <option value="">Select Client Categories</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="subCategories" class="text-muted text-primary">Service Level</h6>
+                                                <h6 for="subCategories" class="text-primary">Service Level</h6>
                                                 <!-- Readonly input to display the name -->
                                                 <input type="text" class="form-control" value="{{ $sub_category->sub_category_name }}" readonly>
 
@@ -66,7 +66,7 @@
                                                 <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="collectionLocation" class="text-muted text-primary">From</h6>
+                                                <h6 for="collectionLocation" class="text-primary">From</h6>
                                                 <select name="origin_id" id="origin_id" class="form-control origin-dropdown"
                                                     required>
                                                     <option value="">Select</option>
@@ -77,7 +77,7 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="collectionLocation" class="text-muted text-primary">To</h6>
+                                                <h6 for="collectionLocation" class="text-primary">To</h6>
                                                 <select name="destination" class="form-control destination-dropdown">
                                                     <option value="{{ $office->id }}" data-id="{{ $office->id }}">
                                                         {{ $office->name }}</option>
@@ -92,34 +92,34 @@
 
                                         <div class="row mt-3">
                                             <div class="col-md-2 mb-3">
-                                                <h6 for="receiverContactPerson" class="text-muted text-primary">Name</h6>
+                                                <h6 for="receiverContactPerson" class="text-primary">Name</h6>
                                                 <input type="text" id="receiverContactPerson" class="form-control"
                                                     name="receiverContactPerson">
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="receiverIdNo" class="text-muted text-primary">ID Number</h6>
+                                                <h6 for="receiverIdNo" class="text-primary">ID Number</h6>
                                                 <input type="text" id="receiverIdNo" class="form-control" name="receiverIdNo">
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="receiverPhone" class="text-muted text-primary">Phone Number</h6>
+                                                <h6 for="receiverPhone" class="text-primary">Phone Number</h6>
                                                 <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="receiverEmail" class="text-muted text-primary">Email</h6>
+                                                <h6 for="receiverEmail" class="text-primary">Email</h6>
                                                 <input type="text" id="receiverEmail" class="form-control" name="receiverEmail">
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="receiverAddress" class="text-muted text-primary">Address</h6>
+                                                <h6 for="receiverAddress" class="text-primary">Address</h6>
                                                 <input type="text" id="receiverAddress" class="form-control"
                                                     name="receiverAddress">
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="receiverTown" class="text-muted text-primary">Town</h6>
+                                                <h6 for="receiverTown" class="text-primary">Town</h6>
                                                 <input type="text" id="receiverTown" class="form-control"
                                                     name="receiverTown">
                                             </div>
@@ -132,16 +132,16 @@
                                         <table class="table table-bordered" id="shipmentTable">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Item Name</th>
-                                                    <th>Package No</th>
-                                                    <th>Weight (Kg)</th>
-                                                    <th>Length (cm)</th>
-                                                    <th>Width (cm)</th>
-                                                    <th>Height (cm)</th>
-                                                    <th>Vol (cm<sup>3</sup>)</th>
-                                                    <th>Remarks</th>
-                                                    <th>Action</th>
+                                                    <th class="text-primary">#</th>
+                                                    <th class="text-primary">Item Name</th>
+                                                    <th class="text-primary">Package No</th>
+                                                    <th class="text-primary">Weight (Kg)</th>
+                                                    <th class="text-primary">Length (cm)</th>
+                                                    <th class="text-primary">Width (cm)</th>
+                                                    <th class="text-primary">Height (cm)</th>
+                                                    <th class="text-primary">Vol (cm<sup>3</sup>)</th>
+                                                    <th class="text-primary">Remarks</th>
+                                                    <th class="text-primary">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="items-table-body">
@@ -176,11 +176,11 @@
                                                             <table class="table table-sm table-bordered mt-1">
                                                                 <thead class="thead-light">
                                                                     <tr>
-                                                                        <th>Sub Item Name</th>
-                                                                        <th>Quantity</th>
-                                                                        <th>Weight (Kg)</th>
-                                                                        <th>Remarks</th>
-                                                                        <th>Action</th>
+                                                                        <th class="text-primary">Sub Item Name</th>
+                                                                        <th class="text-primary">Quantity</th>
+                                                                        <th class="text-primary">Weight (Kg)</th>
+                                                                        <th class="text-primary">Remarks</th>
+                                                                        <th class="text-primary">Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="sub-items-0">
@@ -200,28 +200,28 @@
 
                                         <div class="row mb-3">
                                             <div class="col-md-2">
-                                                <h6 class="text-muted text-primary">Total Weight (Kg)</h6>
+                                                <h6 class="text-primary">Total Weight (Kg)</h6>
                                                 <input type="number" min="0" class="form-control" name="total_weight"
                                                     readonly>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="itemCost" class="text-muted text-primary">Item Cost (KES)</h6>
+                                                <h6 for="itemCost" class="text-primary">Item Cost (KES)</h6>
                                                 <input type="number" min="0" class="form-control" name="cost"
                                                     required readonly>
                                             </div>
                                             <input type="hidden" name="base_cost" value="0">
                                             <div class="col-md-2">
-                                                <h6 for="vatAmount" class="text-muted text-primary">Tax (16%)</h6>
+                                                <h6 for="vatAmount" class="text-primary">Tax (16%)</h6>
                                                 <input type="number" min="0" class="form-control" name="vat"
                                                     required readonly>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="totalCost" class="text-muted text-primary">Total Cost (KES)</h6>
+                                                <h6 for="totalCost" class="text-primary">Total Cost (KES)</h6>
                                                 <input type="number" min="0" class="form-control" name="total_cost"
                                                     required readonly>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="billing_party" class="text-muted text-primary">Billing Party</h6>
+                                                <h6 for="billing_party" class="text-primary">Billing Party</h6>
                                                 <select name="billing_party" class="form-control">
                                                     <option value="" selected>-- Select --</option>
                                                     <option value="Sender">Sender</option>
@@ -230,7 +230,7 @@
                                             </div>
 
                                             <div class="col-md-2">
-                                                <h6 for="payment_mode" class="text-muted text-primary">Payment Mode</h6>
+                                                <h6 for="payment_mode" class="text-primary">Payment Mode</h6>
                                                 <select name="payment_mode" class="form-control">
                                                     <option value="" selected>-- Select --</option>
                                                     <option value="M-Pesa">M-Pesa</option>
@@ -241,7 +241,7 @@
                                             </div>
 
                                             <div class=" mt-2 col-md-2">
-                                                <h6 for="reference" class="text-muted text-primary">Reference</h6>
+                                                <h6 for="reference" class="text-primary">Reference</h6>
                                                 <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
                                             </div>
                                         </div>
