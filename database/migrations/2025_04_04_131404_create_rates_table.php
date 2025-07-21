@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string("origin")->nullable();
             $table->string("destination")->nullable();
             $table->integer("rate")->default(0);
+            $table->string("type")->default("normal"); 
             $table->dateTime("applicableFrom")->nullable();
             $table->dateTime("applicableTo")->nullable();
             $table->string("status")->default("active"); //inactive
