@@ -7,6 +7,8 @@ use App\Models\ClientRequest;
 use App\Models\Rate;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 use Auth;
 
@@ -135,4 +137,21 @@ class MyCollectionController extends Controller
 
     //     return back()->with('success', 'Shipment saved successfully!');
     // }
+
+    
+    public function collections_report(){
+        $loggedInUserId = Auth::user()->id;
+        $collections = ClientRequest::with('shipmentCollection.office',
+                                            'shipmentCollection.destination',
+                                            'shipmentCollection.items')
+            ->where('userId', $loggedInUserId)
+            ->orderBy('created_at','desc')
+            ->get();
+        
+        $pdf = Pdf::loadView('client-request.collections_report' , [
+            'collections'=>$collections
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("collections_report.pdf");
+       
+    }
 }

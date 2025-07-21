@@ -9,7 +9,7 @@
             <div class="d-sm-flex align-items-center justify-content-between">
                 <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#add"> Add
                     Rate <i class="fas fa-plus"></i></button>
-                <h4 class="m-0 font-weight-bold text-danger">Overnight Rates From Nairobi to other Destinations </h4>
+                <h4 class="m-0 font-weight-bold text-danger">Same Day Rates From Nairobi to other Destinations </h4>
                 <a href="/nrb_rates_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
@@ -22,10 +22,11 @@
                         <tr>
                             <th>Origin</th>
                             <th>Destination</th>
-                            <th>Zone</th>
+                            <th>Band</th>
                             <th>Rate</th>
                             <th>From</th>
                             <th>To</th>
+                            <th>Additional KG</th>
                             <th>Approval Status</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -35,10 +36,11 @@
                         <tr>
                             <th>Origin</th>
                             <th>Destination</th>
-                            <th>Zone</th>
+                            <th>Band</th>
                             <th>Rate</th>
                             <th>From</th>
                             <th>To</th>
+                            <th>Additional KG</th>
                             <th>Approval Status</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -51,10 +53,11 @@
                                 <td> {{ $rate->office->name }} </td>
 
                                 <td> {{ $rate->destination }} </td>
-                                <td>{{ $rate->zone->zone_name }}</td>
+                                <td>{{ $rate->bands }}</td>
                                 <td> {{ $rate->rate }} </td>
                                 <td> {{ $rate->applicableFrom }} </td>
                                 <td> {{ $rate->applicableTo }} </td>
+                                <td> {{ $rate->additional_kg }} </td>
                                 <td> {{ $rate->approvalStatus }} </td>
                                 <td> {{ $rate->status }} </td>
                                 <td class="row pl-4">
@@ -106,7 +109,8 @@
                 <div class="modal-content">
                     <div class="modal-header bg-success">
 
-                        <h5 class="modal-title text-white" id="exampleModalLabel"> <strong>Add Nairobi Rate</strong>
+                        <h5 class="modal-title text-white" id="exampleModalLabel"> <strong>Add Nairobi Rate Same
+                                Day</strong>
                         </h5>
 
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -114,15 +118,15 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="  {{ route('rates.store') }} " method="post">
+                        <form action="  {{ route('rates_sameday.store') }} " method="post">
 
                             <div class="row">
                                 @csrf
                                 <div class="col-md-4">
                                     <div class="form-group"><label class="text-primary">Route From <span
                                                 class="text-danger">*</span></label>
-                                        <select name="office_id" class="form-control" required="">
-                                            <option value="">Select</option>
+                                        <select name="office_id" class="form-control" required="" readonly>
+                                            {{-- <option value="">Select</option> --}}
                                             @foreach ($offices as $office)
                                                 <option value="{{ $office->id }}">{{ $office->name }}</option>
                                             @endforeach
@@ -131,12 +135,19 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group"><label class="text-primary">Zone </label>
-                                        <select name="zone_id" class="form-control" required="">
+                                    <div class="form-group"><label class="text-primary">Bands </label>
+                                        <select name="bands" class="form-control" required="">
                                             <option value="">Select</option>
-                                            @foreach ($zones as $zone)
+                                            <option value="CBD to CBD">CBD to CBD</option>
+                                            <option value="Intercity">Intercity</option>
+                                            <option value="Upto 5KM">Upto 5KM</option>
+                                            <option value="6 to 15KM">6 to 15KM</option>
+                                            <option value="16 to 25KM">16 to 25KM</option>
+                                            <option value="25 to 50KM">25 to 50KM</option>
+
+                                            {{-- @foreach ($zones as $zone)
                                                 <option value="{{ $zone->id }}">{{ $zone->zone_name }}</option>
-                                            @endforeach
+                                            @endforeach --}}
 
                                         </select>
                                     </div>
@@ -194,6 +205,12 @@
                                             <option value="active">Active</option>
                                             <option value="closed">Closed</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-primary" for="applicableFrom">Additional Per KG</label>
+                                        <input type="number" name="additional_kg" class="form-control">
                                     </div>
                                 </div>
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanyInfo;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class CompanyInfoController extends Controller
 {
@@ -14,6 +16,15 @@ class CompanyInfoController extends Controller
     {
         $company_info = CompanyInfo::all();
         return view('companyInfo.index')->with('company_infos',$company_info);
+    }
+
+
+    public function company_info_report(){
+        $company_infos = CompanyInfo::all();
+        $pdf = Pdf::loadView('companyInfo.company_info_report' , [
+            'company_infos'=>$company_infos
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("company_info_report.pdf");
     }
 
     /**

@@ -48,11 +48,11 @@
 
             {{-- Actions --}}
             <div class="d-flex justify-content-between align-items-center">
-                {{-- @if (Route::has('password.request'))
+                @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" class="text-decoration-none small">
                         {{ __('Forgot your password?') }}
                     </a>
-                @endif --}}
+                @endif
 
                 <button type="submit" class="btn btn-primary px-4">
                     {{ __('Log in') }}
