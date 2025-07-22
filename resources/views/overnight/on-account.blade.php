@@ -5,7 +5,11 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Overnight - On-account parcels</h5>
+
+                <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#createParcelModal">
+                    + Create Parcel
+                </button>
+                <h4 class="mb-0 text-warning"> <strong>Overnight - On-account Parcels</strong></h4>
                 <!-- Time Filter & Date Range Filter -->
                 {{-- <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
                     <div class="form-row align-items-end">
@@ -53,14 +57,13 @@
                 @endphp --}}
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/overnight_account_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+
+                    <a href="/overnight_account_report" class="d-sm-inline-block   btn btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
-                        + Create Parcel
-                    </button>
-                    <form id="clientRequestForm" action="{{ route('clientRequests.store') }}" method="POST">
+
+                    <form action="{{ route('clientRequests.store') }}" method="POST">
                         @csrf
                         <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -75,166 +78,170 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <h6 class="text-muted text-primary">Fill in the client details.</h6>
+                                        <form>
+                                            <h6 class=" text-primary">Fill in the client details.</h6>
 
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label for="clientId" class="form-label text-primary">Client</label>
-                                                <select class="form-control" id="clientId" name="clientId">
-                                                    <option value="">Select Client</option>
-                                                    @foreach ($clients as $client)
-                                                        <option value="{{ $client->id }}">{{ $client->name }}
-                                                            ({{ $client->accountNo }})
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="collectionLocation" class="form-label text-primary">Pickup
-                                                    Location</label>
-                                                <input type="text" class="form-control" name="collectionLocation"
-                                                    id="collectionLocation" autocomplete="off">
-                                                <div id="locationSuggestions"
-                                                    class="list-group bg-white position-absolute w-80"
-                                                    style="background-color: white;z-index: 1000;"></div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-
-                                                <label for="clientCategories" class="form-label text-primary">Client
-                                                    Categories</label>
-                                                <!-- Client's Categories -->
-                                                <select class="form-control mt-1" id="clientCategories"
-                                                    name="category_id">
-                                                    <option value="">Select Client Categories</option>
-                                                </select>
-
-                                            </div>
-                                        
-                                            <div class="col-md-6">
-                                                <label for="subCategories" class="form-label text-primary">Service Level </label>
-                                                <!-- Readonly input to display the name -->
-                                                <input type="text" class="form-control" value="{{ $sub_category->sub_category_name }}" readonly>
-
-                                                <!-- Hidden input to store the ID -->
-                                                <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
-                                                Details</label>
-                                            <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
-                                                placeholder="Fill in the description of goods."></textarea>
-                                        </div>
-
-                                        <h6 class="text-muted text-primary"> Rider Details.</h6>
-                                        <div class="row mb-2 bg-success">
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                        id="currentLocation" value="currentLocation">
-                                                    <label class="form-check-label" for="allRiders"> Pickup
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="clientId" class="form-label text-primary">Client</label>
+                                                    <select class="form-control" id="clientId" name="clientId">
+                                                        <option value="">Select Client</option>
+                                                        @foreach ($clients as $client)
+                                                            <option value="{{ $client->id }}">{{ $client->name }}
+                                                                ({{ $client->accountNo }})
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="collectionLocation" class="form-label text-primary">Pickup
                                                         Location</label>
+                                                    <input type="text" class="form-control" name="collectionLocation"
+                                                        id="collectionLocation" autocomplete="off">
+                                                    <div id="locationSuggestions"
+                                                        class="list-group bg-white position-absolute w-80"
+                                                        style="background-color: white;z-index: 1000;"></div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                        id="unallocatedRiders" value="unallocated">
-                                                    <label class="form-check-label" for="unallocatedRiders">Unallocated
-                                                        Riders</label>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+
+                                                    <label for="clientCategories" class="form-label text-primary">Client
+                                                        Categories</label>
+                                                    <!-- Client's Categories -->
+                                                    <select class="form-control mt-1" id="clientCategories"
+                                                        name="category_id">
+                                                        <option value="">Select Client Categories</option>
+                                                    </select>
+
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label for="subCategories" class="form-label text-primary">Service Level
+                                                    </label>
+                                                    <!-- Readonly input to display the name -->
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $sub_category->sub_category_name }}" readonly>
+
+                                                    <!-- Hidden input to store the ID -->
+                                                    <input type="hidden" name="sub_category_id"
+                                                        value="{{ $sub_category->id }}">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                        id="allRiders" value="all">
-                                                    <label class="form-check-label" for="allRiders">All Riders</label>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label for="userId" class="form-label text-primary">Rider</label>
-                                                <select class="form-control" id="userId" name="userId">
-                                                    <option value="">Select Rider</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-
-                                            <div class="col-md-4 mb-3">
-                                                <label for="vehicle" class="form-label text-primary">Vehicle</label>
-                                                <input type="text" id="vehicle" class="form-control"
-                                                    name="vehicle_display" placeholder="Select rider to populate"
-                                                    readonly>
-                                                <input type="hidden" id="vehicleId" name="vehicleId">
+                                            <div class="mb-3">
+                                                <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
+                                                    Details</label>
+                                                <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
+                                                    placeholder="Fill in the description of goods."></textarea>
                                             </div>
 
-                                            <div class="col-md-4 mb-3">
-                                                <label for="requestId" class="form-label text-primary">Request
-                                                    ID</label>
-                                                <input type="text" value="{{ $request_id }}" name="requestId"
-                                                    class="form-control" id="request_id" readonly>
-                                            </div>
-                                            <script>
-                                                const vehicleMap = {
-                                                    @foreach ($vehicles as $vehicle)
-                                                        "{{ $vehicle->user_id }}": {
-                                                            id: "{{ $vehicle->id }}",
-                                                            regNo: "{{ $vehicle->regNo }}",
-                                                            status: "{{ $vehicle->status }}"
-                                                        },
-                                                    @endforeach
-                                                };
-
-                                                document.addEventListener('DOMContentLoaded', function() {
-                                                    const userSelect = document.getElementById('userId');
-                                                    const vehicleInput = document.getElementById('vehicle');
-                                                    const vehicleIdInput = document.getElementById('vehicleId');
-
-                                                    userSelect.addEventListener('change', function() {
-                                                        const selectedUserId = this.value;
-                                                        const vehicle = vehicleMap[selectedUserId];
-
-                                                        if (vehicle) {
-                                                            vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
-                                                            vehicleIdInput.value = vehicle.id;
-                                                        } else {
-                                                            vehicleInput.value = '';
-                                                            vehicleIdInput.value = '';
-                                                        }
-                                                    });
-                                                });
-                                            </script>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label for="datetime" class="text-primary">Date of Request</label>
-                                                <div class="input-group">
-                                                    <input type="text" name="dateRequested" id="datetime"
-                                                        class="form-control" placeholder="Select date & time">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text" id="calendar-trigger"
-                                                            style="cursor: pointer;">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </span>
+                                            <h6 class="text-muted text-primary"> Rider Details.</h6>
+                                            <div class="row mb-2 bg-success">
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="riderOption"
+                                                            id="currentLocation" value="currentLocation">
+                                                        <label class="form-check-label" for="allRiders"> Pickup
+                                                            Location</label>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="riderOption"
+                                                            id="unallocatedRiders" value="unallocated">
+                                                        <label class="form-check-label" for="unallocatedRiders">Unallocated
+                                                            Riders</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="riderOption"
+                                                            id="allRiders" value="all">
+                                                        <label class="form-check-label" for="allRiders">All Riders</label>
+                                                    </div>
+                                                </div>
+                                            </div>
 
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <label for="userId" class="form-label text-primary">Rider</label>
+                                                    <select class="form-control" id="userId" name="userId">
+                                                        <option value="">Select Rider</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="vehicle" class="form-label text-primary">Vehicle</label>
+                                                    <input type="text" id="vehicle" class="form-control"
+                                                        name="vehicle_display" placeholder="Select rider to populate"
+                                                        readonly>
+                                                    <input type="hidden" id="vehicleId" name="vehicleId">
+                                                </div>
+
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="requestId" class="form-label text-primary">Request
+                                                        ID</label>
+                                                    <input type="text" value="{{ $request_id }}" name="requestId"
+                                                        class="form-control" id="request_id" readonly>
+                                                </div>
                                                 <script>
-                                                    document.getElementById('calendar-trigger').addEventListener('click', function() {
-                                                        document.getElementById('datetime').focus();
+                                                    const vehicleMap = {
+                                                        @foreach ($vehicles as $vehicle)
+                                                            "{{ $vehicle->user_id }}": {
+                                                                id: "{{ $vehicle->id }}",
+                                                                regNo: "{{ $vehicle->regNo }}",
+                                                                status: "{{ $vehicle->status }}"
+                                                            },
+                                                        @endforeach
+                                                    };
+
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        const userSelect = document.getElementById('userId');
+                                                        const vehicleInput = document.getElementById('vehicle');
+                                                        const vehicleIdInput = document.getElementById('vehicleId');
+
+                                                        userSelect.addEventListener('change', function() {
+                                                            const selectedUserId = this.value;
+                                                            const vehicle = vehicleMap[selectedUserId];
+
+                                                            if (vehicle) {
+                                                                vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                                                                vehicleIdInput.value = vehicle.id;
+                                                            } else {
+                                                                vehicleInput.value = '';
+                                                                vehicleIdInput.value = '';
+                                                            }
+                                                        });
                                                     });
                                                 </script>
+
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="datetime" class="text-primary">Date of Request</label>
+                                                    <div class="input-group">
+                                                        <input type="text" name="dateRequested" id="datetime"
+                                                            class="form-control" placeholder="Select date & time">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text" id="calendar-trigger"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <script>
+                                                        document.getElementById('calendar-trigger').addEventListener('click', function() {
+                                                            document.getElementById('datetime').focus();
+                                                        });
+                                                    </script>
+                                                </div>
                                             </div>
-                                        </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
+                                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close
+                                            X</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
@@ -450,7 +457,7 @@
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                    <button type="button" class="btn btn-sm btn-warning"
                                                         data-dismiss="modal">Cancel</button>
                                                     <form
                                                         action =" {{ route('clientRequests.destroy', $request->requestId) }}"

@@ -158,9 +158,9 @@
                     <div class="bg-white py-2 collapse-inner rounded">
 
                         {{-- Default Shipment Links --}}
-                        <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
+                        {{-- <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
                         <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a>
+                        <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a> --}}
 
                         <hr class="sidebar-divide my-0" />
                         {{-- Collapsible: Overnight --}}
@@ -489,7 +489,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-white small">
+                                <span class="mr-2 d-none d-lg-inline text-white ">
+
                                     {{ Auth::user()->name }} | UCSL -
                                     {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->office->name ?? 'No Office' }}
                                 </span>
