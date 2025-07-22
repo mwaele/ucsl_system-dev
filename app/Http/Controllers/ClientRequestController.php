@@ -398,6 +398,7 @@ class ClientRequestController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request);
         $validated = $request->validate([
             'clientId' => 'required|integer',
             'collectionLocation' => 'required|string',
@@ -408,11 +409,13 @@ class ClientRequestController extends Controller
             'category_id' => 'required|integer',
             'sub_category_id' => 'required|integer',
             'requestId' => 'required|string|unique:client_requests,requestId',
+            //'rate_id'=>'nullable',
         ]);
 
         DB::beginTransaction();
 
         try {
+<<<<<<< HEAD
             // 1. Create client request
             $clientRequest = ClientRequest::create([
                 'clientId' => $validated['clientId'],
@@ -427,6 +430,23 @@ class ClientRequestController extends Controller
                 'created_by' => Auth::id(),
                 'office_id' => Auth::user()->station,
             ]);
+=======
+            // 1. Save Client Request
+            $clientRequest = new ClientRequest();
+            $clientRequest->clientId = $validated['clientId'];
+            $clientRequest->collectionLocation = $validated['collectionLocation'];
+            $clientRequest->parcelDetails = $validated['parcelDetails'];
+            $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
+            $clientRequest->userId = $validated['userId'];
+            $clientRequest->vehicleId = $validated['vehicleId'];
+            $clientRequest->requestId = $validated['requestId'];;
+            $clientRequest->category_id = $validated['category_id'];
+            $clientRequest->sub_category_id = $validated['sub_category_id'];
+            $clientRequest->created_by = Auth::id();
+            $clientRequest->office_id = Auth::user()->station;
+            //$clientRequest->rate_id = $validated['rate_id'] ?? '';
+            $clientRequest->save();
+>>>>>>> 4a09f62 (updates on same day)
 
             // 2. Create track
             $trackingId = DB::table('tracks')->insertGetId([

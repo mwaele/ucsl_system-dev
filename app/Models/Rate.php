@@ -21,7 +21,11 @@ class Rate extends Model
         'dateApproved',
         'office_id',
         'zone_id',
-        'zone'
+        'zone',
+        'bands',
+        'additional_cost_per_kg',
+        'intercity_additional_cost_per_kg',
+        'rate',
     ];
 
     

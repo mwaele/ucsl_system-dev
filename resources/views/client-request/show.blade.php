@@ -559,15 +559,15 @@
                                                             {{-- <input type="hidden" name='destination' id="destination_id">
 
                                                             <input type="hidden" name='origin_id' id="origin_id"> --}}
-                                                        @elseif($collection->service_level == 'Same Day')
+                                                        @elseif($collection->serviceLevel->sub_category_name == 'Same Day')
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label
                                                                         class="form-label text-primary text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
-                                                                    <select name="origin_id" id="origin_id"
-                                                                        class="form-control origin-dropdown" required
-                                                                        readonly>
+                                                                    <select name="origin_id" id="origin_idxz"
+                                                                        class="form-control origin-dropdownxz" required>
+                                                                        <option value="">Select</option>
                                                                         <option value="{{ $collection->office_id }}">
                                                                             {{ $collection->office->name }}</option>
 
@@ -584,14 +584,15 @@
 
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
-                                                                        class="form-control destination-dropdown" readonly>
-                                                                        <option
-                                                                            value="{{ $collection->collectionLocation }}">
+                                                                        class="form-control destination-dropdownxz">
+                                                                        <option value="">Select</option>
+                                                                        <option value="{{ $collection->rate_id }}">
                                                                             {{ $collection->collectionLocation }}
                                                                         </option>
                                                                     </select>
                                                                 </div>
-
+                                                                <input type="hidden" name="destination_id"
+                                                                    value="{{ $collection->rate_id }}">
 
                                                             </div>
                                                         @else
@@ -740,13 +741,13 @@
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                            class="text-danger">*</span>
-                                                                                                                                                                                                                                    </label>
-                                                                                                                                                                                                                                    <input type="number" min="0"
-                                                                                                                                                                                                                                        class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                        readonly>
-                                                                                                                                                                                                                                </div> -->
+                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
+                                                                                                                                                                                                                                                                                                                                                            </label>
+                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
+                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
+                                                                                                                                                                                                                                                                                                                                                                readonly>
+                                                                                                                                                                                                                                                                                                                                                        </div> -->
                                                             </div>
 
                                                             <!-- Submit -->
@@ -868,6 +869,8 @@
                         }
                     });
 
+
+
                     function recalculateCosts() {
                         let totalWeight = 0;
 
@@ -918,6 +921,34 @@
                                 });
                         }
                     });
+
+                    //  same day
+                    $(document).on('change', '.destination-dropdownxz', function() {
+
+                        const destinationId2 = $(this).val();
+
+                        // const selectedOption2 = $(this).find('option:selected');
+                        // const destination_id2 = selectedOption2.data('id');
+                        // $("#destination_id_special").val(destination_id2);
+                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
+                        const originId2 = modal.find('.origin-dropdownxz').val();
+                        //$('#destination_id').val(destination_id2);
+                        if (originId2 && destinationId2) {
+                            //alert('ok');
+
+                            $.get(`/get_cost/${originId2}/${destinationId2}`)
+                                .done(function(data) {
+                                    const baseCost = parseFloat(data.cost);
+                                    $('input[name="base_cost"]').val(baseCost);
+                                    recalculateCosts();
+                                })
+                                .fail(function() {
+                                    console.error("Failed to fetch base cost");
+                                    $('input[name="base_cost"]').val(0);
+                                });
+                        }
+                    });
+
 
                 });
             </script>

@@ -52,7 +52,7 @@ class SameDayController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
-        $locations = SameDayRate::where('office_id',2)->get();
+        $locations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
 
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
@@ -173,5 +173,170 @@ class SameDayController extends Controller
             'clientRequests'=>$clientRequests
         ])->setPaper('a4', 'landscape');;
         return $pdf->download("sameday_account_report.pdf");
+    }
+
+    public function getCost($originId, $destinationId)
+    {
+        $rate = Rate::where(['office_id'=>$originId,'id'=> $destinationId])->first();
+
+        if ($rate) {
+            return response()->json(['cost' => $rate->rate]);
+        }
+
+        return response()->json(['cost' => 'N/A'], 404);
+    }
+    public function store(Request $request, SmsService $smsService) 
+    {
+        //dd($request);
+        $validated = $request->validate([
+            'clientId' => 'required|integer',
+            'collectionLocation' => 'required|string',
+            'parcelDetails' => 'required|string',
+            'dateRequested' => 'required|date',
+            'userId' => 'required|integer',
+            'vehicleId' => 'required|integer',
+            'category_id'=>'required|integer',
+            'sub_category_id'=>'required|integer',
+            'requestId' => 'required|string|unique:client_requests,requestId',
+            'rate_id'=>'nullable',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // 1. Save Client Request
+            $clientRequest = new ClientRequest();
+            $clientRequest->clientId = $validated['clientId'];
+            $clientRequest->collectionLocation = $validated['collectionLocation'];
+            $clientRequest->parcelDetails = $validated['parcelDetails'];
+            $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
+            $clientRequest->userId = $validated['userId'];
+            $clientRequest->vehicleId = $validated['vehicleId'];
+            $clientRequest->requestId = $validated['requestId'];;
+            $clientRequest->category_id = $validated['category_id'];
+            $clientRequest->sub_category_id = $validated['sub_category_id'];
+            $clientRequest->created_by = Auth::id();
+            $clientRequest->office_id = Auth::user()->station;
+            $clientRequest->rate_id = $validated['rate_id'];
+            $clientRequest->save();
+
+            // 2. Save Track
+            $trackingId = DB::table('tracks')->insertGetId([
+                'requestId' =>  $clientRequest->requestId,
+                'clientId' => $clientRequest->clientId,
+                'current_status' => 'Awaiting Collection',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // 3. Save Tracking Info
+            $userName = User::find($validated['userId'])->name;
+            $regNo = Vehicle::find($validated['vehicleId'])->regNo;
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Client Request Submitted for Collection',
+                'user_id' => $validated['userId'],
+                'vehicle_id' => $validated['vehicleId'],
+                'remarks' => 'Received client collection request, generated client request ID '.$clientRequest->requestId.', allocated '.$userName .' '. $regNo .' for collection',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            $locationName = $validated['collectionLocation'];
+
+            $location = Location::firstOrCreate(['location' => $locationName]);
+
+            DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Tracking Info Insert Error', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+            }
+
+        // --------------------------
+        // ✅ SMS Logic After Commit
+        // --------------------------
+        $request_id = $clientRequest->requestId;
+        $location = $clientRequest->collectionLocation;
+
+        // Rider details
+        $rider = User::find($clientRequest->userId);
+        $rider_name = $rider?->name ?? 'Rider';
+        $rider_phone = $rider?->phone_number;
+        $rider_email = $rider->email;
+
+        // Client details
+        $client = Client::find($clientRequest->clientId);
+        $client_name = $client?->name ?? 'Client';
+        $client_phone = $client?->contact;
+
+        $client_email = $client->email;
+
+        // Rider SMS
+        $rider_message = "Dear $rider_name, Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
+        $smsService->sendSms(
+            phone: $rider_phone,
+            subject: 'Client Collections Alert',
+            message: $rider_message,
+            addFooter: true
+        );
+        SentMessage::create([
+            'request_id' => $request_id,
+            'client_id' => $clientRequest->clientId,
+            'rider_id' => $clientRequest->userId,
+            'recipient_type' => 'rider',
+            'recipient_name' => $rider_name,
+            'phone_number' => $rider_phone,
+            'subject' => 'Client Collections Alert',
+            'message' => $rider_message,
+        ]);
+
+        // rider email
+
+        $rider_subject = 'Client Collections Alert';
+        $rider_email = $rider_email;
+        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                   <p>Thank you for using Ufanisi Courier Services for we are <strong>Fast, Reliable and Secure</strong></p>";
+        
+        $rider_email_message = "Dear $rider_name, <br><br> Collect Parcel for client ($client_name) $client_phone Request ID: $request_id at $location";
+        $fullRiderMessage = $rider_email_message . $footer;
+
+        $emailResponse = EmailHelper::sendHtmlEmail($rider_email, $rider_subject, $fullRiderMessage);
+
+        // Client SMS
+        $client_message = "Dear $client_name, We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
+        $smsService->sendSms(
+            phone: $client_phone,
+            subject: 'Parcel Collection Alert',
+            message: $client_message,
+            addFooter: true
+        );
+        SentMessage::create([
+            'request_id' => $request_id,
+            'client_id' => $clientRequest->clientId,
+            'rider_id' => $clientRequest->userId,
+            'recipient_type' => 'client',
+            'recipient_name' => $client_name,
+            'phone_number' => $client_phone,
+            'subject' => 'Parcel Collection Alert',
+            'message' => $client_message,
+        ]);
+
+        // send email
+
+        $subject = 'Parcel Collection Alert';
+        $message = "Dear $client_name, <br><br> We have allocated $rider_name $rider_phone to collect your parcel Request ID: $request_id";
+        $fullMessage = $message . $footer;
+
+        $emailResponse = EmailHelper::sendHtmlEmail($client_email, $subject, $fullMessage);
+
+        return redirect()->back()->with('success', 'Client Request Saved and Tracked Successfully')->with('email_status', $emailResponse->getData());
     }
 }

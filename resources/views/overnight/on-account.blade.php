@@ -239,7 +239,7 @@
                                                 </div>
                                             </div>
                                     </div>
-                                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                                    <div class="modal-footer d-flex justify-content-between align-items-center ">
                                         <button type="button" class="btn btn-warning" data-dismiss="modal">Close
                                             X</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -428,9 +428,10 @@
                                                             <textarea name="parcelDetails" class="form-control">{{ $request->parcelDetails }}</textarea>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Cancel</button>
+                                                    <div
+                                                        class="modal-footer d-flex justify-content-between align-items-center">
+                                                        <button type="button" class="btn btn-warning"
+                                                            data-dismiss="modal">Cancel X</button>
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                     </div>
                                                 </div>
@@ -456,9 +457,10 @@
                                                     <p>Are you sure you want to delete {{ $request->requestId }}?
                                                     </p>
                                                 </div>
-                                                <div class="modal-footer">
+                                                <div
+                                                    class="modal-footer d-flex justify-content-between align-items-center">
                                                     <button type="button" class="btn btn-sm btn-warning"
-                                                        data-dismiss="modal">Cancel</button>
+                                                        data-dismiss="modal">Cancel X</button>
                                                     <form
                                                         action =" {{ route('clientRequests.destroy', $request->requestId) }}"
                                                         method = "POST">
@@ -483,7 +485,7 @@
                                             data-id="{{ $request->shipmentCollection->id }}"
                                             data-request-id="{{ $request->requestId }}"
                                             data-rider="{{ $request->user->name }}"
-                                            data-vehicle="{{ $request->vehicle ?? '—' }}"
+                                            data-vehicle="{{ $request->vehicle->regNo ?? '—' }}"
                                             data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
                                             data-cost="{{ $request->shipmentCollection->cost }}"
                                             data-total-cost="{{ $request->shipmentCollection->total_cost }}"
@@ -502,7 +504,7 @@
                                     @if ($request->status === 'verified')
                                         <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
-                                            <i class="fas fa-file-invoice"></i>
+                                            <i class="fas fa-file-invoice"></i> Generate Waybill
                                         </button>
 
                                         <div class="modal fade" id="waybillModal{{ $request->requestId }}"
@@ -522,8 +524,9 @@
                                                         <iframe src="{{ route('waybill.preview', $request->requestId) }}"
                                                             width="100%" height="500" frameborder="0"></iframe>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
+                                                    <div
+                                                        class="modal-footer d-flex justify-content-between align-items-center">
+                                                        <button type="button" class="btn btn-warning"
                                                             data-dismiss="modal">Close</button>
                                                         <a href="{{ route('waybill.generate', $request->requestId) }}"
                                                             target="_blank" class="btn btn-primary">
@@ -536,12 +539,12 @@
                                     @endif
 
 
-                                    @if ($request->status === 'verified')
+                                    {{-- @if ($request->status === 'verified')
                                         <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
                                             data-toggle="modal" data-target="">
                                             <i class="fas fa-truck"></i>
                                         </button>
-                                    @endif
+                                    @endif --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -554,8 +557,9 @@
                     <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header bg-success">
-                                <h5 class="modal-title text-white"><strong>Parcel Collection Details Verification</strong>
-                                </h5>
+                                <h4 class="modal-title text-white"><strong>Overnight - On-account Parcels
+                                        Verification</strong>
+                                </h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
                             <div class="modal-body" id="modalItemsBody">
@@ -612,7 +616,7 @@
                                     response.items.forEach((item, index) => {
                                         const volume = item.length * item.width * item.height;
 
-                                        itemsHtml += `<thead> <tr><th> Item No. </th> <th> Item Name </th> <th> Package No </th> <th> Weight(Kg) </th> <th> Length(cm) </th> <th> Width(cm) </th> <th> Height(cm) </th> <th> Volume(cm <sup> 3 </sup>)</th><th> Remarks </th> </tr> </thead>
+                                        itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(cm <sup> 3 </sup>)</th><th class="text-primary"> Remarks </th> </tr> </thead>
                                     <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
 
 
@@ -621,11 +625,11 @@
                                             <table class="table table-sm table-bordered mt-2">
                                                 <thead class="thead-light">
                                                     <tr>
-                                                        <th>Sub Item Name</th>
-                                                        <th>Quantity</th>
-                                                        <th>Weight (Kg)</th>
-                                                        <th>Remarks</th>
-                                                        <th>Action</th>
+                                                        <th class="text-warning">Sub Item Name</th>
+                                                        <th class="text-warning">Quantity</th>
+                                                        <th class="text-warning">Weight (Kg)</th>
+                                                        <th class="text-warning">Remarks</th>
+                                                        <th class="text-warning">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="sub_items-${index}">
@@ -644,24 +648,24 @@
 
                                     <div class="form-row">
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Cost *</small></label>
+                                            <label class="text-primary"><small>Cost *</small></label>
                                             <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
                                         </div>
 
                                         <input type="hidden" name="base_cost" id="baseCost" value="">
 
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Tax (16%)*</small></label>
+                                            <label class="text-primary"><small>Tax (16%)*</small></label>
                                             <input type="number" class="form-control" name="vat" id="vat" readonly>
                                         </div>
 
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Total Cost*</small></label>
+                                            <label class="text-primary"><small>Total Cost*</small></label>
                                             <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
                                         </div>
 
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Billing Party</small></label>
+                                            <label class="text-primary"><small>Billing Party</small></label>
                                             <select name="billing_party" class="form-control">
                                                 <option value="" selected>-- Select --</option>
                                                 <option value="Sender">Sender</option>
@@ -670,7 +674,7 @@
                                         </div>
 
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Payment Mode</small></label>
+                                            <label class="text-primary"><small>Payment Mode</small></label>
                                             <select name="payment_mode" class="form-control">
                                                 <option value="" selected>-- Select --</option>
                                                 <option value="M-Pesa">M-Pesa</option>
@@ -681,13 +685,13 @@
                                         </div>
 
                                         <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Reference</small></label>
+                                            <label class="text-primary"><small>Reference</small></label>
                                             <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
                                         </div>
                                     </div>
 
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
                                     <button type="submit" class="btn btn-primary">Submit Verification</button>
                                     </div></form>
                                     `;

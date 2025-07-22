@@ -230,7 +230,7 @@ class ShipmentCollectionController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Save on-account parcel details.
      */
     public function store(Request $request, SmsService $smsService)
     { 

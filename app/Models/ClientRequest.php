@@ -19,6 +19,7 @@ class ClientRequest extends Model
         'created_by',
         'category_id',
         'sub_category_id',
+        'rate_id',
     ];
 
     public function client()

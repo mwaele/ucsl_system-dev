@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SameDayRate;
+use App\Models\Rate;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Auth;
@@ -20,7 +21,7 @@ class SameDayRateController extends Controller
 
     public function nairobi_rates_sameday(){
         $offices = Office::where('id',2)->get();
-       $rates = SameDayRate::where('office_id',2)->get();
+       $rates = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
  
         return view('rates.nairobi_rates_sameday')->with(['rates'=>$rates,'offices'=>$offices]); 
     }
@@ -64,14 +65,17 @@ class SameDayRateController extends Controller
                 'dateApproved'=>'nullable|string',
                 'intercity_additional_kg'=>'nullable|string',
                 'office_id' =>'required',
-                'bands'=>'required'
+                'bands'=>'required',
+                
             ]
             );
            // dd($validatedDate);
             $validatedDate['added_by'] = Auth::user()->id;
+            $validatedDate['zone_id'] = 1;
+            $validatedDate['type'] = 'Same Day';
 
             //dd($validatedDate);
-            $rate = new SameDayRate($validatedDate);
+            $rate = new Rate($validatedDate);
             $rate->save();
         
         return redirect()->back()->with('Success', 'Rates saved successfully');

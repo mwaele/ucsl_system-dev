@@ -38,6 +38,14 @@
             margin: 50px 30px;
         }
 
+        h3 {
+            font-size: 20px !important;
+        }
+
+        .lead {
+            font-size: 16px;
+        }
+
         .content {
             margin-bottom: 50px;
         }
@@ -50,8 +58,9 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <p><strong>Report for All Overnight On-account List</strong></p>
-                    <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                    <h3><strong>Report for All Overnight On-account List</strong></h3>
+                    <p class="lead"><strong>Reporting Period:</strong>
+                        {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
                     <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">

@@ -15,7 +15,7 @@
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
                         + Create Parcel
                     </button>
-                    <form action="{{ route('clientRequests.store') }}" method="POST">
+                    <form action="{{ route('clientRequestSameDay.store') }}" method="POST">
                         @csrf
                         <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -53,10 +53,13 @@
                                                         class="form-control selectpicker" data-live-search="true">
                                                         <option value="">-- Select Location --</option>
                                                         @foreach ($locations as $location)
-                                                            <option value="{{ $location->destination }}">
+                                                            <option value="{{ $location->destination }}"
+                                                                data-id="{{ $location->id }}">
                                                                 {{ $location->destination }}</option>
                                                         @endforeach
                                                     </select>
+                                                    <input type="hidden" name='rate_id' id="rate_id" value="">
+
 
                                                     {{-- <input type="text" class="form-control" name="collectionLocation"
                                                         id="collectionLocation" autocomplete="off">
@@ -80,7 +83,7 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label for="subCategories" class="form-label text-primary">Service Level
+                                                    <label for="subCategories" class="form-label text-primary">Service Type
                                                     </label>
                                                     <!-- Readonly input to display the name -->
                                                     <input type="text" class="form-control"
@@ -107,6 +110,7 @@
                                                             id="currentLocation" value="currentLocation">
                                                         <label class="form-check-label" for="allRiders"> Pickup
                                                             Location</label>
+
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -449,7 +453,7 @@
                                             data-id="{{ $request->shipmentCollection->id }}"
                                             data-request-id="{{ $request->requestId }}"
                                             data-rider="{{ $request->user->name }}"
-                                            data-vehicle="{{ $request->vehicle ?? '—' }}"
+                                            data-vehicle="{{ $request->vehicle->regNo ?? '—' }}"
                                             data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
                                             data-cost="{{ $request->shipmentCollection->cost }}"
                                             data-total-cost="{{ $request->shipmentCollection->total_cost }}"
@@ -530,6 +534,20 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#collectionLocation').on('change', function() {
+                            // Get the selected option
+                            const selectedOption = $(this).find('option:selected');
+
+                            // Get the data-id attribute of the selected option
+                            const rateId = selectedOption.data('id');
+
+                            // Set the rate_id input value
+                            $('#rate_id').val(rateId);
+                        });
+                    });
+                </script>
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {

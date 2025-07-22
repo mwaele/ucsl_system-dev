@@ -15,7 +15,7 @@ use Auth;
 class MyCollectionController extends Controller
 {
     public function show(){
-        $offices = Office::all();
+        $offices = Office::where('id', Auth::user()->station)->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 

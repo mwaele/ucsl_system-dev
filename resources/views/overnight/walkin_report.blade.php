@@ -41,6 +41,14 @@
         .content {
             margin-bottom: 50px;
         }
+
+        h3 {
+            font-size: 20px !important;
+        }
+
+        .lead {
+            font-size: 16px;
+        }
     </style>
 </head>
 
@@ -50,8 +58,9 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <p><strong>Report for All Overnight On-account List</strong></p>
-                    <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                    <h3><strong>Report for All Overnight Walk-in List</strong></h3>
+                    <p class="lead"><strong>Reporting Period:</strong>
+                        {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
                     <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
@@ -66,11 +75,8 @@
                     <th>#</th>
                     <th>Request ID</th>
                     <th>Client</th>
-                    <th>Pick-up Location</th>
                     <th>Date Requested</th>
-                    <th>Rider</th>
-                    <th>Vehicle</th>
-                    <th>Desc.</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,11 +85,9 @@
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $request->requestId }} </td>
                         <td> {{ $request->client->name }} </td>
-                        <td> {{ $request->collectionLocation }} </td>
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
                         </td>
-                        <td> {{ $request->user->name ?? '—' }} </td>
-                        <td> {{ $request->vehicle->regNo ?? '—' }} </td>
+
                         <td> {{ $request->parcelDetails }} </td>
                     </tr>
                 @endforeach

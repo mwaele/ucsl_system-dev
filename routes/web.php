@@ -116,6 +116,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/nrb_rates_sameday_report', [SameDayRateController::class, 'nrb_rates_sameday_report']);
 
+    Route::post('/clientRequestSameDay', [SameDayRateController::class, 'clientRequestSameDay'])->name('clientRequestSameDay.store');
+
     Route::get('nrb_rates_sameday',[SameDayRateController::class,'nairobi_rates_sameday'])->name('rates.nrb_rates_sameday');
     Route::get('nairobi_rates', [RateController::class, 'nairobi_office'])->name('rates.nairobi_office');
     Route::get('/rates_report', [RateController::class, 'rates_report']);
@@ -144,6 +146,8 @@ Route::middleware('auth')->group(function () {
 
     //special rates
     Route::get('/get_destinations/{office_id}/{client_id}', [SpecialRateController::class, 'getDestinations']);
+
+    Route::get('/get_cost/{office_id}/{destinationId}', [SameDayController::class, 'getCost']);
 
     Route::get('/get_cost/{originId}/{destinationId}/{client_id}', [SpecialRateController::class, 'getCost']);
 

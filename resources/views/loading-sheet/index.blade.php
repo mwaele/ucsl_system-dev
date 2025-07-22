@@ -159,19 +159,19 @@
                                         <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button
                                                 class="btn btn-primary btn-sm mr-1">Add Waybills</button></a>
                                     @endif
-                                    <a href="">
+                                    {{-- <a href="">
                                         <button class="btn btn-sm btn-info mr-1" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                    </a>
+                                    </a> --}}
                                     <a href="{{ route('loading_sheets.show', $sheet->id) }}">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye"></i> View
                                         </button>
                                     </a>
                                     <a href="/generate_loading_sheet/{{ $sheet->id }}">
                                         <button class="btn btn-sm btn-danger mr-1" title="PDF Download">
-                                            <i class="fas fa-file-pdf"></i>
+                                            <i class="fas fa-file-pdf"> Generate Manifest</i>
                                         </button>
                                     </a>
                                     {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
