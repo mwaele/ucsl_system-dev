@@ -46,6 +46,7 @@ class RateController extends Controller
     {
         $destinations = Rate::where('office_id', $office_id)
                     ->where('type', 'normal')
+                    ->orderBy('destination', 'asc')
                     ->get(['destination', 'id']);
 
         return response()->json($destinations);

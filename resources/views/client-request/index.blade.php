@@ -518,7 +518,7 @@
                     </tbody>
                 </table>
 
-                <!-- Modal -->
+                <!-- Parcel Collection Details Verification Modal -->
                 <div class="modal fade" id="itemsModal" tabindex="-1" aria-labelledby="itemsModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-xl">
@@ -534,9 +534,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {

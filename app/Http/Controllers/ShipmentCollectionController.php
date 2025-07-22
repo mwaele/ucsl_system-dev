@@ -447,7 +447,7 @@ class ShipmentCollectionController extends Controller
             \Log::error('SMS Notification Error: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Shipment saved successfully!');
+        return redirect()->back()->with('success', 'Shipment saved successfully!');
     }
 
     /**
@@ -536,7 +536,7 @@ class ShipmentCollectionController extends Controller
                     // Sync sub-items if any
                     if (isset($itemData['sub_items']) && is_array($itemData['sub_items'])) {
                         foreach ($itemData['sub_items'] as $subItemData) {
-                            \App\Models\ShipmentSubItem::create([
+                            ShipmentSubItem::create([
                                 'shipment_item_id' => $item->id,
                                 'item_name' => $subItemData['name'],
                                 'quantity' => $subItemData['quantity'],
