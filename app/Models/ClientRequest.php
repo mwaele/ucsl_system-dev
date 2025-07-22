@@ -20,6 +20,7 @@ class ClientRequest extends Model
         'category_id',
         'sub_category_id',
         'rate_id',
+        'office_id'
     ];
 
     public function client()

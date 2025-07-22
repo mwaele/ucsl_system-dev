@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/nrb_rates_sameday_report', [SameDayRateController::class, 'nrb_rates_sameday_report']);
 
-    Route::post('/clientRequestSameDay', [SameDayRateController::class, 'clientRequestSameDay'])->name('clientRequestSameDay.store');
+    Route::post('/clientRequestSameDay', [SameDayController::class, 'store'])->name('clientRequestSameDay.store');
 
     Route::get('nrb_rates_sameday',[SameDayRateController::class,'nairobi_rates_sameday'])->name('rates.nrb_rates_sameday');
     Route::get('nairobi_rates', [RateController::class, 'nairobi_office'])->name('rates.nairobi_office');
