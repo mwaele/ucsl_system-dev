@@ -654,7 +654,7 @@
                         toast.classList.remove('show');
                         toast.classList.add('fade');
                         setTimeout(() => toast.remove(), 300);
-                    }, 4000);
+                    }, 22400);
                 });
             });
         </script> 

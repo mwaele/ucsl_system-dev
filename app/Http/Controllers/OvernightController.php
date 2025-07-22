@@ -58,6 +58,7 @@ class OvernightController extends Controller
             ->whereHas('client', function ($query) {
                 $query->where('type', 'on_account');
             })
+            ->orderBy('created_at', 'desc')
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
@@ -126,6 +127,7 @@ class OvernightController extends Controller
             ->whereHas('client', function ($query) {
                 $query->where('type', 'walkin');
             })
+            ->orderBy('created_at', 'desc')
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
