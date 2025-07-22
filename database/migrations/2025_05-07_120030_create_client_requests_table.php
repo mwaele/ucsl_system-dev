@@ -22,6 +22,7 @@ return new class extends Migration
             $table->dateTime('dateRequested')->nullable();
             $table->foreignId('userId')->nullable();
             $table->foreignId('vehicleId')->nullable();
+            $table->foreignId('rate_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->string('office_id')->nullable();
             $table->string('status')->default('pending collection');

@@ -17,13 +17,16 @@ return new class extends Migration
              // Add the foreign key column 'added_by'
             $table->foreignId('added_by')->constrained('users', 'id')->onDelete('cascade');
             $table->foreignId('office_id');
-            $table->foreignId('zone_id');
+            $table->foreignId('zone_id')->nullable();
             $table->string("routeFrom")->nullable();
             $table->string("zone")->nullable();
             $table->string("origin")->nullable();
             $table->string("destination")->nullable();
             $table->decimal("rate", 8, 2)->default(0.00);
             $table->string("type")->default("normal"); 
+            $table->string('bands')->nullable();
+            $table->integer('additional_cost_per_kg')->nullable();
+            $table->integer('intercity_additional_cost_per_kg')->nullable();
             $table->dateTime("applicableFrom")->nullable();
             $table->dateTime("applicableTo")->nullable();
             $table->string("status")->default("active"); //inactive
