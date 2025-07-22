@@ -49,7 +49,7 @@
                                 <td> {{ $rate->office->name }} </td>
 
                                 <td> {{ $rate->destination }} </td>
-                                <td> {{ $rate->zone_name->zone_name }} </td>
+                                <td> {{ $rate->zone_name->zone_name ?? null }} </td>
                                 <td> {{ $rate->rate }} </td>
                                 <td> {{ ucfirst($rate->type) }}</td>
                                 <td> {{ ucfirst($rate->approvalStatus) }} </td>
