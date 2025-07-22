@@ -70,7 +70,7 @@ class OvernightController extends Controller
 
     public function walk_in()
     {
-        $offices = Office::all();
+        $offices = Office::where('id',2)->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
