@@ -13,7 +13,6 @@ use App\Models\FrontOffice;
 use App\Models\SameDayRate;
 use App\Models\Office;
 use App\Models\Rate;
-use App\Models\SameDayRate;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;

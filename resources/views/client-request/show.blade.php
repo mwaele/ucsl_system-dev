@@ -18,6 +18,7 @@
                             <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
+                            <th>Service Type</th>
                             <th>Telephone Number</th>
                             <th>Date Allocated</th>
                             <th>Physical Address</th>
@@ -30,6 +31,7 @@
                             <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
+                            <th>Service Type</th>
                             <th>Client Telephone Number</th>
                             <th>Date Allocated</th>
                             <th>Physical Address</th>
@@ -43,6 +45,7 @@
                                 <td> {{ $loop->iteration }}.</td>
                                 <td> {{ $collection->requestId }} </td>
                                 <td> {{ $collection->client->name }} </td>
+                                <td> {{ $collection->serviceLevel->sub_category_name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->created_at }} </td>
                                 <td> {{ $collection->client->address }} </td>
@@ -82,8 +85,8 @@
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
                                                             Shipment Receipt</h5>
-                                                        <button type="button" class="text-dark close" data-dismiss="modal"
-                                                            aria-label="Close">
+                                                        <button type="button" class="text-primary close"
+                                                            data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
@@ -318,9 +321,12 @@
 
                                                         <!-- Radio Buttons -->
                                                         <div class="form-group mb-3">
-                                                            <div class="form-row">
-                                                                <div class="col-md-8">
-                                                                    <label class="form-label text-dark">Sender Type
+
+                                                            <div class="form-row shadow-sm">
+                                                                <div class="col-md-4">
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Sender
+                                                                        Type
                                                                     </label><br>
                                                                     <div class="form-check form-check-inline">
                                                                         <input type="hidden" name="cid"
@@ -343,7 +349,20 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
-                                                                    <label class=" form-label text-dark pull-right">Special
+
+                                                                    <label
+                                                                        class=" form-label text-primary text-primary pull-right">Service
+                                                                        Type:
+                                                                        <badge class="text-success" id="rates_status">
+                                                                            {{ $collection->serviceLevel->sub_category_name }}
+                                                                        </badge>
+                                                                    </label>
+
+
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label
+                                                                        class=" form-label text-primary text-primary pull-right">Special
                                                                         Rate Status:
                                                                         <badge class="text-success" id="rates_status">
                                                                             {{ $collection->client->special_rates_status ?? 'off' }}
@@ -368,14 +387,16 @@
                                                                     <div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Sender
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">Sender
                                                                                     Name <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="sender_name" id="sender_name">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Sender
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">Sender
                                                                                     Email <span
                                                                                         class="text-danger">*</span>
                                                                                 </label>
@@ -386,7 +407,8 @@
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">ID
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">ID
                                                                                     Number <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
@@ -394,7 +416,8 @@
                                                                                     maxlength="8">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Phone
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">Phone
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
@@ -404,14 +427,16 @@
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Town
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">Town
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="sender_town" id="sender_town">
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-dark">Address
+                                                                                <label
+                                                                                    class="form-label text-primary text-primary">Address
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
                                                                                 <input type="text" class="form-control"
@@ -432,7 +457,8 @@
                                                                 <div class="card-body">
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">Receiver
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Receiver
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
@@ -446,7 +472,8 @@
                                                                         </div>
 
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">Receiver
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Receiver
                                                                                 Email <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="email" class="form-control"
@@ -455,7 +482,8 @@
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">ID
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">ID
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
@@ -463,7 +491,8 @@
                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">Phone
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Phone
                                                                                 Number
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
@@ -473,14 +502,16 @@
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">Address
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Address
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverAddress" required>
                                                                         </div>
                                                                         <div class="form-group col-md-6">
-                                                                            <label class="form-label text-dark">Town
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Town
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
@@ -501,8 +532,9 @@
                                                             <div class="form-row">
 
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="form-label text-dark">Origin <span
-                                                                            class="text-danger">*</span> </label>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Origin
+                                                                        <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_id_special"
                                                                         class="form-control origin-dropdown-special">
                                                                         <option value="">Select</option>
@@ -513,8 +545,9 @@
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="form-label text-dark">Destination <span
-                                                                            class="text-danger">*</span> </label>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Destination
+                                                                        <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
                                                                         class="form-control destination-dropdown-special">
                                                                         <option value="">Select</option>
@@ -526,12 +559,48 @@
                                                             {{-- <input type="hidden" name='destination' id="destination_id">
 
                                                             <input type="hidden" name='origin_id' id="origin_id"> --}}
+                                                        @elseif($collection->service_level == 'Same Day')
+                                                            <div class="form-row">
+                                                                <div class="form-group col-md-6">
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Origin
+                                                                        <span class="text-danger">*</span> </label>
+                                                                    <select name="origin_id" id="origin_id"
+                                                                        class="form-control origin-dropdown" required
+                                                                        readonly>
+                                                                        <option value="{{ $collection->office_id }}">
+                                                                            {{ $collection->office->name }}</option>
+
+                                                                        {{-- @foreach ($offices as $office)
+                                                                            <option value="{{ $office->id }}">
+                                                                                {{ $office->name }}</option>
+                                                                        @endforeach --}}
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="form-group col-md-6">
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Destination
+
+                                                                        <span class="text-danger">*</span> </label>
+                                                                    <select name="destination"
+                                                                        class="form-control destination-dropdown" readonly>
+                                                                        <option
+                                                                            value="{{ $collection->collectionLocation }}">
+                                                                            {{ $collection->collectionLocation }}
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+
+                                                            </div>
                                                         @else
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="form-label text-dark">Origin <span
-                                                                            class="text-danger">*</span> </label>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Origin
+                                                                        <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_id"
                                                                         class="form-control origin-dropdown" required>
                                                                         <option value="">Select</option>
@@ -542,8 +611,9 @@
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="form-label text-dark">Destination <span
-                                                                            class="text-danger">*</span> </label>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Destination
+                                                                        <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
                                                                         class="form-control destination-dropdown">
                                                                         <option value="">Select</option>
@@ -560,12 +630,12 @@
                                                             name='special_rate_state' id="special_rate_state">
 
                                                         <!-- Shipment Info Table -->
-                                                        {{-- <div class="section-title"><b class="text-dark">Shipment Information</b></div> --}}
+                                                        {{-- <div class="section-title"><b class="text-primary">Shipment Information</b></div> --}}
                                                         <div class="table-responsive mt-3">
                                                             <table class="table table-bordered shipmentTable"
                                                                 id="shipmentTable">
                                                                 <thead class="thead-success">
-                                                                    <tr>
+                                                                    <tr class="text-primary">
                                                                         <th>Item Name</th>
                                                                         <th>Packages #</th>
                                                                         <th>Weight (kg)</th>
@@ -618,7 +688,7 @@
                                                         <div class="section-title"></div>
                                                         <div class="form-row">
                                                             {{-- <div class="form-group col-md-6">
-                                                                <label class="form-label text-dark">Select Service <span
+                                                                <label class="form-label text-primary text-primary">Select Service <span
                                                                         class="text-danger">*</span> </label>
                                                                 <select class="form-control" name="service" required>
                                                                     <option value="">-- Select Service --</option>
@@ -629,7 +699,10 @@
                                                             </div> --}}
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-3">
-                                                                    <label class="form-label text-dark">Total Weight (Kg)
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Total
+                                                                        Weight
+                                                                        (Kg)
                                                                         <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
@@ -637,39 +710,43 @@
                                                                         readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
-                                                                    <label class="form-label text-dark">Cost <span
-                                                                            class="text-danger">*</span>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Cost
+                                                                        <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="cost" required
-                                                                        readonly>
+                                                                        class="form-control"
+                                                                        value="{{ $collection->rate }}" name="cost"
+                                                                        required readonly>
                                                                 </div>
                                                                 <input type="hidden" name="base_cost" value="">
 
                                                                 <div class="form-group col-md-3">
-                                                                    <label class="form-label text-dark">Tax (16%) <span
-                                                                            class="text-danger">*</span>
+                                                                    <label class="form-label text-primary text-primary">Tax
+                                                                        (16%) <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
                                                                         class="form-control" name="vat" required
                                                                         readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
-                                                                    <label class="form-label text-dark">Total Cost <span
-                                                                            class="text-danger">*</span>
+                                                                    <label
+                                                                        class="form-label text-primary text-primary">Total
+                                                                        Cost
+                                                                        <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
                                                                         class="form-control" name="total_cost" required
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                        <label class="form-label text-dark">Total Cost <span
-                                                                                class="text-danger">*</span>
-                                                                        </label>
-                                                                        <input type="number" min="0"
-                                                                            class="form-control" name="total_cost" required
-                                                                            readonly>
-                                                                    </div> -->
+                                                                                                                                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                                                                                                            class="text-danger">*</span>
+                                                                                                                                                                                                                                    </label>
+                                                                                                                                                                                                                                    <input type="number" min="0"
+                                                                                                                                                                                                                                        class="form-control" name="total_cost" required
+                                                                                                                                                                                                                                        readonly>
+                                                                                                                                                                                                                                </div> -->
                                                             </div>
 
                                                             <!-- Submit -->

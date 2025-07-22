@@ -155,7 +155,7 @@
                                                         @foreach ($vehicles as $vehicle)
                                                             "{{ $vehicle->user_id }}": {
                                                                 id: "{{ $vehicle->id }}",
-                                                                regNo: "{{ $vehicle->regNo }}",
+                                                                regNo: "{{ $vehicle->regNo ?? '-' }}",
                                                                 status: "{{ $vehicle->status }}"
                                                             },
                                                         @endforeach
@@ -171,7 +171,7 @@
                                                             const vehicle = vehicleMap[selectedUserId];
 
                                                             if (vehicle) {
-                                                                vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                                                                vehicleInput.value = `${vehicle.regNo ?? '-'} (${vehicle.status})`;
                                                                 vehicleIdInput.value = vehicle.id;
                                                             } else {
                                                                 vehicleInput.value = '';
