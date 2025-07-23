@@ -5,17 +5,17 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Same Day - Walk-in Parcels</h5>
+                <button type="button" class="btn  btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">
+                    <i class="fas fa-plus fa-sm text-white"></i> Register parcel
+                </button>
+                <h4 class="mb-0 text-warning"><strong> Same Day - Walk-in Parcels</strong></h4>
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/sameday_walkin_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                    <a href="/sameday_walkin_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>
 
-                    <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                        data-target="#registerParcel">
-                        <i class="fas fa-plus fa-sm text-white"></i> Register parcel
-                    </button>
+
                     <form action="{{ route('shipment-collections.create') }}" method="POST">
                         @csrf
                         <div class="modal fade" id="registerParcel" tabindex="-1" role="dialog"
@@ -23,8 +23,10 @@
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-warning">
-                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register Same Day Walk-in Parcel</h5>
-                                        <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
+                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register Same Day Walk-in
+                                            Parcel</h5>
+                                        <button type="button" class="text-white close" data-dismiss="modal"
+                                            aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -60,10 +62,12 @@
                                             <div class="col-md-2">
                                                 <h6 for="subCategories" class="text-primary">Service Level</h6>
                                                 <!-- Readonly input to display the name -->
-                                                <input type="text" class="form-control" value="{{ $sub_category->sub_category_name }}" readonly>
+                                                <input type="text" class="form-control"
+                                                    value="{{ $sub_category->sub_category_name }}" readonly>
 
                                                 <!-- Hidden input to store the ID -->
-                                                <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
+                                                <input type="hidden" name="sub_category_id"
+                                                    value="{{ $sub_category->id }}">
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="collectionLocation" class="text-primary">From</h6>
@@ -99,17 +103,20 @@
 
                                             <div class="col-md-2">
                                                 <h6 for="receiverIdNo" class="text-primary">ID Number</h6>
-                                                <input type="text" id="receiverIdNo" class="form-control" name="receiverIdNo">
+                                                <input type="text" id="receiverIdNo" class="form-control"
+                                                    name="receiverIdNo">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <h6 for="receiverPhone" class="text-primary">Phone Number</h6>
-                                                <input type="text" id="receiverPhone" class="form-control" name="receiverPhone">
+                                                <input type="text" id="receiverPhone" class="form-control"
+                                                    name="receiverPhone">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <h6 for="receiverEmail" class="text-primary">Email</h6>
-                                                <input type="text" id="receiverEmail" class="form-control" name="receiverEmail">
+                                                <input type="text" id="receiverEmail" class="form-control"
+                                                    name="receiverEmail">
                                             </div>
 
                                             <div class="col-md-2">
@@ -148,9 +155,11 @@
                                                 <!-- First item row -->
                                                 <tr>
                                                     <td>1</td>
-                                                    <td><input type="text" name="item_name[]" class="form-control" required>
+                                                    <td><input type="text" name="item_name[]" class="form-control"
+                                                            required>
                                                     </td>
-                                                    <td><input type="number" name="packages[]" class="form-control" required>
+                                                    <td><input type="number" name="packages[]" class="form-control"
+                                                            required>
                                                     </td>
                                                     <td><input type="number" step="0.01" name="weight[]"
                                                             class="form-control" required></td>
@@ -161,7 +170,8 @@
                                                     <td><input type="number" name="height[]" class="form-control"
                                                             onchange="calculateVolume(this)"></td>
                                                     <td>
-                                                        <input type="number" name="volume[]" class="form-control" readonly>
+                                                        <input type="number" name="volume[]" class="form-control"
+                                                            readonly>
                                                     </td>
                                                     <td><input type="text" name="remarks[]" class="form-control"></td>
                                                     <td>
@@ -193,7 +203,8 @@
                                             </tbody>
                                         </table>
 
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addItem()">+ Add
+                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="addItem()">+ Add
                                             Another Item</button><br>
 
                                         <label class="form-label text-primary mt-4">Cost Summary</label>
@@ -201,8 +212,8 @@
                                         <div class="row mb-3">
                                             <div class="col-md-2">
                                                 <h6 class="text-primary">Total Weight (Kg)</h6>
-                                                <input type="number" min="0" class="form-control" name="total_weight"
-                                                    readonly>
+                                                <input type="number" min="0" class="form-control"
+                                                    name="total_weight" readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="itemCost" class="text-primary">Item Cost (KES)</h6>
@@ -217,8 +228,8 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="totalCost" class="text-primary">Total Cost (KES)</h6>
-                                                <input type="number" min="0" class="form-control" name="total_cost"
-                                                    required readonly>
+                                                <input type="number" min="0" class="form-control"
+                                                    name="total_cost" required readonly>
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="billing_party" class="text-primary">Billing Party</h6>
@@ -242,7 +253,8 @@
 
                                             <div class=" mt-2 col-md-2">
                                                 <h6 for="reference" class="text-primary">Reference</h6>
-                                                <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                                                <input type="text" name="reference" class="form-control"
+                                                    placeholder="e.g. MPESA123XYZ">
                                             </div>
                                         </div>
 
@@ -351,7 +363,8 @@
                                         @endpush
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
@@ -405,8 +418,9 @@
                                 <td> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
-                                <td> {{ $request->shipmentCollection->destination->destination }} </td> 
-                                <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }} </td> 
+                                <td> {{ $request->shipmentCollection->destination->destination }} </td>
+                                <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
+                                </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
                                 <td>
                                     @php
@@ -414,12 +428,12 @@
                                     @endphp
 
                                     @if ($status)
-                                        <span class="badge p-2
+                                        <span
+                                            class="badge p-2
                                             @if ($status === 'pending collection') bg-secondary
                                             @elseif ($status === 'collected') bg-warning
                                             @elseif ($status === 'verified') bg-primary
-                                            @else bg-dark
-                                            @endif
+                                            @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($status) }}
                                         </span>
@@ -452,8 +466,9 @@
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
                                                     </form>
                                                 </div>
                                             </div>

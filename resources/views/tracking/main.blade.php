@@ -102,7 +102,7 @@
                 if (!requestId) return alert('Please enter a Request ID.');
 
                 $.ajax({
-                    url: `https://ucsl-system-dev-main-wkauyv.laravel.cloud/track/${requestId}`,
+                    url: `/track/${requestId}`,
                     method: 'GET',
                     success: function(data) {
                         let clientName = data.client && data.client.name ? data.client.name :

@@ -5,17 +5,17 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-primary">Overnight - Walk-in Parcels</h5>
+                <button type="button" class="btn btn btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">
+                    <i class="fas fa-plus fa-sm text-white"></i> Register parcel
+                </button>
+                <h4 class="mb-0 text-warning"><strong>Overnight - Walk-in Parcels</strong> </h4>
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/walkin_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                    <a href="/walkin_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>
 
-                    <button type="button" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                        data-target="#registerParcel">
-                        <i class="fas fa-plus fa-sm text-white"></i> Register parcel
-                    </button>
+
                     <form action="{{ route('shipment-collections.create') }}" method="POST">
                         @csrf
                         <div class="modal fade" id="registerParcel" tabindex="-1" role="dialog"

@@ -5,16 +5,17 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-primary">Same Day - On-Account Parcels</h5>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
+                    + Create Parcel
+                </button>
+                <h4 class="mb-0 text-warning"><strong> Same Day - On-Account Parcels</strong></h4>
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/sameday_account_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                    <a href="/sameday_account_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
-                        + Create Parcel
-                    </button>
+
                     <form action="{{ route('clientRequestSameDay.store') }}" method="POST">
                         @csrf
                         <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"

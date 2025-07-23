@@ -288,6 +288,27 @@
                     </div>
                 </div>
             </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Zones Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
+                <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
+                    data-toggle="collapse" data-target="#collapseZones"
+                    aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
+                    aria-controls="collapseZones">
+                    <i class="fas fa-fw fa-map"></i>
+                    <span class="sized">Zones</span>
+                </a>
+                <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
+                    aria-labelledby="headingZones" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('zones.index') }}">All Zones</a>
+                        <hr class="sidebar-divide my-0" />
+                        <a class="collapse-item " href="{{ route('zones.create') }}">Add Station</a>
+                    </div>
+                </div>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -345,26 +366,8 @@
                     </div>
                 </div>
             </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-            <!-- Nav Item - Zones Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
-                <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
-                    data-toggle="collapse" data-target="#collapseZones"
-                    aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
-                    aria-controls="collapseZones">
-                    <i class="fas fa-fw fa-map"></i>
-                    <span class="sized">Zones</span>
-                </a>
-                <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
-                    aria-labelledby="headingZones" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('zones.index') }}">All Zones</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item " href="{{ route('zones.create') }}">Add Station</a>
-                    </div>
-                </div>
-            </li>
+
+
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -543,13 +546,16 @@
                 @endphp
 
                 @foreach ($toastTypes as $type => $props)
-                    @if(session($type))
-                        <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3" style="top: 1rem; right: 1rem; z-index: 1050;">
-                            <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert" aria-live="assertive" aria-atomic="true">
+                    @if (session($type))
+                        <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3"
+                            style="top: 1rem; right: 1rem; z-index: 1050;">
+                            <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert"
+                                aria-live="assertive" aria-atomic="true">
                                 <div class="toast-header {{ $props['bg'] }} text-white">
                                     <strong class="mr-auto">{{ $props['title'] }}</strong>
                                     <small>Just now</small>
-                                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                                    <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast"
+                                        aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -648,7 +654,7 @@
 
         <!-- Toast JS -->
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const toasts = document.querySelectorAll('.timeout-toast');
                 toasts.forEach(toast => {
                     setTimeout(() => {
@@ -658,7 +664,7 @@
                     }, 22400);
                 });
             });
-        </script> 
+        </script>
 
         <script>
             // Initialize Flatpickr

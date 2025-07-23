@@ -81,9 +81,9 @@ class SameDayController extends Controller
 
     public function walk_in()
     {
-        $offices = Office::where('id',2)->get();
+        $offices = Office::where(['id'=>2])->get();
         $loggedInUserId = Auth::user()->id;
-        $destinations = SameDayRate::all();
+        $destinations = Rate::where('type','Same Day')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
