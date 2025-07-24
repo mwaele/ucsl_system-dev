@@ -101,6 +101,7 @@ class ClientController extends Controller
         $client->password = bcrypt($validated['password']);  // Ensure password is hashed
         $client->contact = $this->normalizePhoneNumber($validated['contact']); 
         $client->address = $validated['address'];
+        $client->id_number = $validated['id_number'];
         $client->city = $validated['city'];
         $client->building = $validated['building'];
         $client->country = $validated['country'];

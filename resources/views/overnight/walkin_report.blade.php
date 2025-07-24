@@ -58,7 +58,7 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <h3><strong>Report for All Overnight Walk-in List</strong></h3>
+                    <h3><strong>Report for All Overnight Walk-in Parcel</strong></h3>
                     <p class="lead"><strong>Reporting Period:</strong>
                         {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
@@ -77,6 +77,7 @@
                     <th>Client</th>
                     <th>Date Requested</th>
                     <th>Description</th>
+                    <th>Amount</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,6 +90,7 @@
                         </td>
 
                         <td> {{ $request->parcelDetails }} </td>
+                        <td> {{ $request->shipmentCollection->actual_total_cost }} </td>
                     </tr>
                 @endforeach
             </tbody>

@@ -92,6 +92,20 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="longitude">Location</label>
+                            <input type="text" name="location" class="form-control">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="latitude">Street</label>
+                            <input type="text" name="street" class="form-control">
+                        </div>
+                    </div>
                     <div class="col-md-4 pt-2">
                         <label for=""></label>
                         <button type="submit" class="form-control btn btn-primary btn-sm submit">

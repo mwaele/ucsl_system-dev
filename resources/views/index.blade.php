@@ -183,7 +183,12 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }}
                                 </h6>
-                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
+                                <p class="mb-1 text-warning">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
+                                        class="text-warning text-decoration-none">
+                                        Pending Collection: <strong>{{ $stats['pending'] }}</strong>
+                                    </a>
+                                </p>
                                 <p class="mb-1 text-success">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'collected', 'time' => $timeFilter])) }}"
                                         class="text-success text-decoration-none">
@@ -196,12 +201,7 @@
                                         Verified: <strong>{{ $stats['verified'] }}</strong>
                                     </a>
                                 </p>
-                                <p class="mb-1 text-warning">
-                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
-                                        class="text-warning text-decoration-none">
-                                        Pending Collection: <strong>{{ $stats['pending'] }}</strong>
-                                    </a>
-                                </p>
+                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>    
                             </div>
                         </div>
                     </a>

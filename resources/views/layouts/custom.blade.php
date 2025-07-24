@@ -766,6 +766,46 @@
         </script>
 
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const accountTypeSelect = document.getElementById('type');
+
+                const idNumberInput = document.getElementById('id_number');
+                const kraPinInput = document.getElementById('kraPin');
+                const emailInput = document.getElementById('email');
+                const contactInput = document.getElementById('contact');
+
+                function toggleFieldRequirements() {
+                    const type = accountTypeSelect.value;
+
+                    // Reset all first
+                    idNumberInput.removeAttribute('required');
+                    kraPinInput.removeAttribute('required');
+                    emailInput.removeAttribute('required');
+                    contactInput.removeAttribute('required');
+
+                    if (type === 'walkin') {
+                        idNumberInput.setAttribute('required', 'required');
+                        contactInput.setAttribute('required', 'required');
+                    }
+
+                    if (type === 'on_account') {
+                        kraPinInput.setAttribute('required', 'required');
+                        emailInput.setAttribute('required', 'required');
+                        contactInput.setAttribute('required', 'required');
+                    }
+                }
+
+                // Run on page load
+                toggleFieldRequirements();
+
+                // Listen for changes
+                accountTypeSelect.addEventListener('change', toggleFieldRequirements);
+            });
+        </script>
+
+
+
+        <script>
             $('#station_name').on('focusout', function() {
                 let station_name = $(this).val();
 
