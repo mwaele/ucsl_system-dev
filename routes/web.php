@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Http\Request; // ✅ Correct: the actual Request class, not the Facade
+use App\Http\Controllers\SalesPersonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ShipmentController;
@@ -127,7 +128,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/nrb_rates_report', [RateController::class, 'nrb_rates_report']);
 
+    Route::get('/get-sales-person/{id}', [SalesPersonController::class, 'getSalesPerson']);
+
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
+    Route::resource('sales_person','App\Http\Controllers\SalesPersonController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');
     Route::resource('clientRequests','App\Http\Controllers\ClientRequestController');

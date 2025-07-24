@@ -91,6 +91,7 @@
                 </div>
 
                 <h5 class="mt-4">Contact Person Details</h5>
+                <hr>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label>Contact Person</label>
@@ -123,6 +124,31 @@
                         </select>
                     </div>
                 </div>
+                <h5 class="mt-4">Sales Person Details</h5>
+                <hr>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label>Sales Person</label>
+                        <select name="sales_person_id" id="salesPersonSelect" class="form-control">
+                            <option value="">Select Sales Person</option>
+                            @foreach ($sales_person as $sale_person)
+                                <option value="{{ $sale_person->id }}">{{ $sale_person->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Phone</label>
+                        <input type="text" id="phone_number" name="contactPersonPhone" class="form-control" readonly>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>ID Number</label>
+                        <input type="number" id="id_no" name="contactPersonEmail" class="form-control" readonly>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Email</label>
+                        <input type="email" id="email" name="contactPersonEmail" class="form-control" readonly>
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="special_rates">Client Have Special Rates?</label>
@@ -134,6 +160,31 @@
             </form>
         </div>
     </div>
+
+    <script>
+        $('#salesPersonSelect').on('change', function() {
+            const salesPersonId = $(this).val();
+
+            if (salesPersonId) {
+                $.ajax({
+                    url: '/get-sales-person/' + salesPersonId,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#phone_number').val(data.phone_number);
+                        $('#email').val(data.email);
+                        $('#id_no').val(data.id_no);
+                    },
+                    error: function() {
+                        alert('Could not fetch sales person details.');
+                        $('#phone_number, #email, #id_no').val('');
+                    }
+                });
+            } else {
+                $('#phone_number, #email, #id_no').val('');
+            }
+        });
+    </script>
+
     {{-- <div class="card mb-3">
         <div class="card-header pt-4">
             <div class="row pt-2">

@@ -323,7 +323,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
             <!-- Nav Item - Rates Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('rates.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
                     aria-expanded="true" aria-controls="collapseRates">
                     <i class="fas fa-fw fa-dollar-sign"></i>
@@ -377,17 +377,32 @@
                 </div>
             </li>
 
-
-
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
-            <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('users.index') }}">
-                    <i class="fas fa-fw fa-users"></i>
+            <!-- Nav Item - Zones Collapse Menu -->
+            <li
+                class="nav-item {{ request()->routeIs('users.*', 'sales_person.*', 'dispatchers.*') ? 'active' : '' }}">
+                <a class="nav-link {{ request()->routeIs('users.*') ? '' : 'collapsed' }}" href="#"
+                    data-toggle="collapse" data-target="#collapseUsers"
+                    aria-expanded="{{ request()->routeIs('users.*') ? 'true' : 'false' }}"
+                    aria-controls="collapseUsers">
+                    <i class="fas fa-fw fa-map"></i>
                     <span class="sized">Users</span>
                 </a>
+                <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"
+                    aria-labelledby="headingUsers" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('users.index') }}">All Users</a>
+                        <hr class="sidebar-divide my-0" />
+                        <a class="collapse-item" href="{{ route('sales_person.index') }}">Sales Person</a>
+                        <hr class="sidebar-divide my-0" />
+                        <a class="collapse-item" href="{{ route('dispatchers.index') }}">Dispatch Clerks</a>
+
+                    </div>
+                </div>
             </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
             <li class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
@@ -412,17 +427,6 @@
                     <span class="sized">Transporters</span>
                 </a>
             </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <li class="nav-item {{ request()->routeIs('dispatchers.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('dispatchers.index') }}">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span class="sized">Dispatch Clerks</span>
-                </a>
-            </li>
-
-
             <!-- Nav Item - Pages Collapse Menu -->
 
 
@@ -1130,6 +1134,29 @@
                     }
                 });
 
+                $(document).on('change', '.origin-dropdownx', function() {
+                    const originSelect = $(this);
+                    const selectedOfficeId = originSelect.val();
+                    const modal = originSelect.closest('.modal');
+                    const destinationSelect = modal.find('.destination-dropdownx');
+
+                    destinationSelect.html('<option value="">Select Destination</option>');
+
+                    if (selectedOfficeId) {
+                        $.get('/get-destinations/' + selectedOfficeId)
+                            .done(function(data) {
+                                data.forEach(function(item) {
+                                    destinationSelect.append(
+                                        `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                                    );
+                                });
+                            })
+                            .fail(function() {
+                                console.error("Failed to load destinations");
+                            });
+                    }
+                });
+
 
 
 
@@ -1200,6 +1227,28 @@
                     $("#destination_id").val(destination_id);
                     const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                     const originId = modal.find('.origin-dropdown').val();
+
+                    if (originId && destinationId) {
+                        $.get(`/get-cost/${originId}/${destinationId}`)
+                            .done(function(data) {
+                                const baseCost = parseFloat(data.cost);
+                                $('input[name="base_cost"]').val(baseCost);
+                                recalculateCosts();
+                            })
+                            .fail(function() {
+                                console.error("Failed to fetch base cost");
+                                $('input[name="base_cost"]').val(0);
+                            });
+                    }
+                });
+
+                $(document).on('change', '.destination-dropdownx', function() {
+                    const destinationId = $(this).val();
+                    const selectedOption = $(this).find('option:selected');
+                    const destination_id = selectedOption.data('id');
+                    $("#destination_id").val(destination_id);
+                    const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
+                    const originId = modal.find('.origin-dropdownx').val();
 
                     if (originId && destinationId) {
                         $.get(`/get-cost/${originId}/${destinationId}`)

@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\SubCategory;
 use App\Models\Category;
 use App\Models\ClientCategory;
+use App\Models\SalesPerson;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
@@ -37,12 +38,13 @@ class ClientController extends Controller
     {
         $sub_categories = SubCategory::all();
         $categories = Category::all();
+        $sales_person = SalesPerson::all();
         do {
             $number = 'UCSL-' . mt_rand(10000, 99999);
         } while (Client::where('accountNo', $number)->exists());
 
         
-        return view('clients.create')->with(['accountNo'=>$number, 'categories'=>$categories]);
+        return view('clients.create')->with(['accountNo'=>$number, 'categories'=>$categories,'sales_person'=>$sales_person]);
     }
 
     private function normalizePhoneNumber($phone)
@@ -88,6 +90,7 @@ class ClientController extends Controller
             'postalCode' => 'required|string|max:255',
             'status' => 'required|string|in:active,inactive',
             'special_rates_status'=>'nullable|string',
+            'sales_person_id'=>'nullable|string',
         ]);
     
 
@@ -115,6 +118,7 @@ class ClientController extends Controller
         $client->postalCode = $validated['postalCode'];
         $client->status = $validated['status'];
         $client->special_rates_status = $validated['special_rates_status'] ?? null;
+        $client->sales_person_id = $validated['sales_person_id'];
 
         //dd($client);
         $client->save();  // Save the client to the database

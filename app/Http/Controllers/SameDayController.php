@@ -24,6 +24,7 @@ use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
 
+
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 
@@ -81,9 +82,10 @@ class SameDayController extends Controller
 
     public function walk_in()
     {
-        $offices = Office::where(['id'=>2])->get();
+        $offices = Office::where('id',Auth::user()->station)->get();
         $loggedInUserId = Auth::user()->id;
-        $destinations = Rate::where('type','Same Day')->get();
+        
+        $destinations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 

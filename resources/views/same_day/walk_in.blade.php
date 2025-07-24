@@ -60,7 +60,7 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-2">
-                                                <h6 for="subCategories" class="text-primary">Service Level</h6>
+                                                <h6 for="subCategories" class="text-primary">Service Type</h6>
                                                 <!-- Readonly input to display the name -->
                                                 <input type="text" class="form-control"
                                                     value="{{ $sub_category->sub_category_name }}" readonly>
@@ -71,8 +71,8 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="collectionLocation" class="text-primary">From</h6>
-                                                <select name="origin_id" id="origin_id" class="form-control origin-dropdown"
-                                                    required>
+                                                <select name="origin_id" id="origin_id"
+                                                    class="form-control origin-dropdownx" required>
                                                     <option value="">Select</option>
                                                     @foreach ($offices as $office)
                                                         <option value="{{ $office->id }}">
@@ -82,9 +82,12 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="collectionLocation" class="text-primary">To</h6>
-                                                <select name="destination" class="form-control destination-dropdown">
-                                                    <option value="{{ $office->id }}" data-id="{{ $office->id }}">
-                                                        {{ $office->name }}</option>
+                                                <select name="destination" class="form-control destination-dropdownx">
+                                                    @foreach ($destinations as $destination)
+                                                        <option value="{{ $destination->id }}"
+                                                            data-id="{{ $destination->id }}">
+                                                            {{ $destination->destination }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                             <input type="hidden" name='destination_id' id="destination_id">
