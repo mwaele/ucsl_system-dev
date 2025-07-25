@@ -5,13 +5,11 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <a href="{{ route('clients.create') }}" class="btn btn-success"><i class="fas fa-plus-circle"></i>
-                    Create New Client</a>
-                <h4 class="m-0 font-weight-bold text-success">All Clients Lists</h4>
-
-
                 <a href="/clients_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
+                <h4 class="m-0 font-weight-bold text-success">All Clients Lists</h4>   
+                <a href="{{ route('clients.create') }}" class="btn btn-success"><i class="fas fa-plus-circle"></i>
+                    Create New Client</a>
             </div>
         </div>
         <div class="card-body">
@@ -73,7 +71,7 @@
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $client->client_name }}.</p>
+                                                    <p>Are you sure you want to delete {{ $client->name }}?</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <form
@@ -81,11 +79,12 @@
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                        
                                                     </form>
-                                                    <button type="button" class="btn btn-secondary"
+                                                    <button type="button" class="btn btn-sm btn-secondary"
                                                         data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete"
+                                                        value="DELETE">DELETE <i class="fas fa-trash"></i> </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -151,8 +150,8 @@
                             </div>
 
                             <div class="modal-footer d-flex justify-content-between align-items-center">
-                                <button type="submit" class="btn btn-primary">Update Client</button>
                                 <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
+                                <button type="submit" class="btn btn-primary">Update Client</button>
                             </div>
 
                         </div>

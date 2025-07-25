@@ -203,6 +203,16 @@
                     <span class="sized">My Collections</span>
                 </a>
             </li>
+            
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('my_deliveries.show') }}">
+                    <i class="fas fa-fw fa-shipping-fast"></i>
+                    <span class="sized">My Deliveries</span>
+                </a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
