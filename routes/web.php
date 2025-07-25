@@ -211,6 +211,8 @@ Route::middleware('auth')->group(function () {
     
       Route::resource('categories','App\Http\Controllers\CategoryController');
 
+      Route::resource('shipment_deliveries','App\Http\Controllers\shipmentDeliveriesController');
+
       Route::resource('transporters','App\Http\Controllers\TransporterController');
       Route::resource('dispatchers','App\Http\Controllers\DispatcherController');
       Route::get('transporter/trucks/{id}', [TransporterController::class, 'fetchTrucks']);
