@@ -37,6 +37,9 @@ class MyCollectionController extends Controller
                                             'shipmentCollection.destination',
                                             'shipmentCollection.items')
             ->where('userId', $loggedInUserId)
+            ->whereHas('serviceLevel', function ($query) {
+                $query->where('sub_category_name', 'Overnight');
+            })
             ->orderBy('created_at','desc')
             ->get();
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no]);

@@ -32,12 +32,13 @@ class MyDeliveryController extends Controller
 
         $consignment_no = 'CN-' . $newNumber;
 
-        $collections = ClientRequest::with('shipmentCollection.office',
-                                            'shipmentCollection.destination',
-                                            'shipmentCollection.items')
-            ->where('userId', $loggedInUserId)
-            ->orderBy('created_at','desc')
-            ->get();
+        $collections = ClientRequest::with('shipmentCollection.office', 'shipmentCollection.destination', 'shipmentCollection.items')
+                            ->whereHas('serviceLevel', function ($query) {
+                                $query->where('sub_category_name', 'Same Day');
+                            })
+                            ->where('userId', $loggedInUserId)
+                            ->orderBy('created_at','desc')
+                            ->get();
         return view('client-request.deliveries')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no]);
     }
 

@@ -20,8 +20,8 @@
                             <th>Client Name</th>
                             <th>Service Type</th>
                             <th>Telephone Number</th>
-                            <th>Date Allocated</th>
-                            <th>Physical Address</th>
+                            <th>Pickup Location</th>
+                            <th>Parcel Details</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -33,8 +33,8 @@
                             <th>Client Name</th>
                             <th>Service Type</th>
                             <th>Client Telephone Number</th>
-                            <th>Date Allocated</th>
-                            <th>Physical Address</th>
+                            <th>Pickup Location</th>
+                            <th>Parcel Details</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -47,8 +47,8 @@
                                 <td> {{ $collection->client->name }} </td>
                                 <td> {{ $collection->serviceLevel->sub_category_name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
-                                <td> {{ $collection->created_at }} </td>
-                                <td> {{ $collection->client->address }} </td>
+                                <td> {{ $collection->collectionLocation }} </td>
+                                <td> {{ $collection->parcelDetails }} </td>
                                 <td>
                                     <p
                                         class="badge
