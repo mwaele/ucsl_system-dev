@@ -208,9 +208,8 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="modal-footer d-sm-flex align-items-center justify-content-between">
-                                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close
-                                            X</button>
+                                    <div class="modal-footer d-sm-flex align-items-center">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>

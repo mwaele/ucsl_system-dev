@@ -131,7 +131,7 @@ class SameDayController extends Controller
         }
 
         $consignment_no = 'CN-' . $newNumber;
-
+        $locations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
@@ -150,7 +150,8 @@ class SameDayController extends Controller
             'collections',
             'request_id',
             'consignment_no',
-            'sub_category'
+            'sub_category',
+            'locations'
         ));
     }
     
