@@ -780,7 +780,7 @@
         </script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const accountTypeSelect = document.getElementById('type');
 
                 const idNumberInput = document.getElementById('id_number');
@@ -1143,7 +1143,7 @@
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/get-destinations/' + selectedOfficeId)
+                        $.get('/get-destination/' + selectedOfficeId)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(

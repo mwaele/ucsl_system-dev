@@ -52,6 +52,16 @@ class RateController extends Controller
         return response()->json($destinations);
     }
     
+    public function getDestinationSameDay($office_id)
+    {
+        $destinations = Rate::where('office_id', $office_id)
+                    ->where('type', 'Same Day')
+                    ->orderBy('destination', 'asc')
+                    ->get(['destination', 'id']);
+
+        return response()->json($destinations);
+    }
+    
     public function getCost($originId, $destinationId)
     {
         $rate = Rate::where('office_id', $originId)

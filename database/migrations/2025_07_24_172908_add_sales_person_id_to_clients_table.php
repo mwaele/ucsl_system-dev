@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('clients', function (Blueprint $table) {
             $table->foreignId('sales_person_id')->nullable();
+            $table->integer("id_number")->nullable();
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->dropColumn('sales_person_id');
+            $table->dropColumn(['sales_person_id','id_number']);
         });
     }
 };

@@ -91,6 +91,7 @@ class ClientController extends Controller
             'status' => 'required|string|in:active,inactive',
             'special_rates_status'=>'nullable|string',
             'sales_person_id'=>'nullable|string',
+            'id_number'=>'nullable|string',
         ]);
     
 
