@@ -221,7 +221,7 @@
             <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
                     aria-expanded="true" aria-controls="collapseClients">
-                    <i class="fas fa-fw fa-users"></i>
+                    <i class="fas fa-fw fa-user"></i>
                     <span class="sized">Client Registration</span>
                 </a>
                 <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"

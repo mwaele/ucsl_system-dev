@@ -10,6 +10,7 @@ use App\Http\Controllers\RateController;
 use App\Http\Controllers\ShipmentCollectionController;
 use App\Http\Controllers\ShipmentItemController;
 use App\Http\Controllers\MyCollectionController;
+use App\Http\Controllers\ShipmentDeliveriesController;
 use App\Http\Controllers\MyDeliveryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientRequestController;
@@ -164,6 +165,7 @@ Route::middleware('auth')->group(function () {
     //collections
      Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
      Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
+     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
 
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
 

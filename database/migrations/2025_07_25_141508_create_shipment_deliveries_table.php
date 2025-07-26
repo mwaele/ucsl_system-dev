@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('agent_name')->nullable();
             $table->string('agent_phone')->nullable();
             $table->integer('agent_id_no')->nullable();
-            $table->datetime('delivery_location');
+            $table->string('delivery_location');
             $table->datetime('delivery_datetime');
             $table->integer('delivered_by');
             $table->text('remark')->nullable();

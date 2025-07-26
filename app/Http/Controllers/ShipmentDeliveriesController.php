@@ -1,12 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 use App\Models\ShipmentDeliveries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
+use App\Models\Client;
+use App\Models\ClientRequest;
+use Illuminate\Support\Facades\DB;
+use App\Services\SmsService;
+use App\Models\SentMessage;
+use App\Helpers\EmailHelper;
 
 class ShipmentDeliveriesController extends Controller
 {
@@ -29,32 +36,11 @@ class ShipmentDeliveriesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, SmsService $smsService)
     {
-        $validator = Validator::make($request->all(), [
-            'requestId' => 'required|string|unique:deliveries,requestId',
-            'client_id' => 'required|exists:clients,id',
-            'receiver_name' => 'required|string|max:255',
-            'receiver_phone' => 'required|string|max:20',
-            'receiver_id_no' => 'nullable|string|max:20',
-            'receiver_type' => 'required|string|max:100',
-            'agent_name' => 'nullable|string|max:255',
-            'agent_phone' => 'nullable|string|max:20',
-            'agent_id_no' => 'nullable|string|max:20',
-            'delivery_datetime' => 'required|date',
-            'delivered_by' => 'required|string|max:255',
-            'remarks' => 'nullable|string',
-        ]);
-       
+        
 
-         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $delivery = Delivery::create([
+        $delivery = ShipmentDeliveries::create([
             'requestId' => $request->requestId,
             'client_id' => $request->client_id,
             'receiver_name' => $request->receiver_name,
@@ -64,16 +50,16 @@ class ShipmentDeliveriesController extends Controller
             'agent_name' => $request->agent_name,
             'agent_phone' => $request->agent_phone,
             'agent_id_no' => $request->agent_id_no,
-            'delivery_datetime' => $request->delivery_datetime,
-            'delivered_by' => $request->delivered_by,
-            'remarks' => $request->remarks,
+            'delivery_location' => $request->delivery_location,
+            'delivery_datetime' => now(),
+            'remark' => $request->remarks,
             'delivered_by'=> Auth::user()->id,
         ]);
 
           // 2. Create track
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' => $request->requestId,
-                'clientId' => $request->clientId,
+                'clientId' => $request->client_id,
                 'current_status' => 'Delivered',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -82,19 +68,21 @@ class ShipmentDeliveriesController extends Controller
             // 3. Create tracking info
             $rider = User::find(Auth::user()->name);
             //$vehicle = Vehicle::find($clientRequest->vehicleId);
-            if($request->receiver_type == 'agent'){
+            $delivered_to = 'Unknown Receiver'; // default fallback
+
+            if ($request->receiver_type == 'agent') {
                 $delivered_to = $request->agent_name;
-            }
-            if($request->receiver_type == 'client'){
+            } elseif ($request->receiver_type == 'client') {
                 $delivered_to = $request->receiver_name;
             }
+
 
 
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
                 'details' => 'Parcel Delivered',
-                'user_id' => $rider->id,
+                'user_id' => Auth::user()->id,
                 //'vehicle_id' => $vehicle->id,
                 'remarks' => "Parcel has been delivered to {$delivered_to} request ID {$request->requestId}. Delivered by {$rider}",
                 'created_at' => now(),
@@ -109,7 +97,7 @@ class ShipmentDeliveriesController extends Controller
             $creatorName = $creator?->name ?? 'Staff';
 
             // Front Office Message
-            $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$requestId};";
+            $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
 
             $smsService->sendSms(
                 phone: $frontOfficeNumber,
@@ -119,7 +107,7 @@ class ShipmentDeliveriesController extends Controller
             );
 
             SentMessage::create([
-                'request_id' => $requestId,
+                'request_id' => $request->requestId,
                 'client_id' => $request->client_id,
                 'rider_id' => Auth::id(),
                 'recipient_type' => 'staff',
@@ -142,9 +130,16 @@ class ShipmentDeliveriesController extends Controller
             $riderName = Auth::user()->name;
 
              // sender email
-            $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$requestId}; ";
+            $senderMessage = "Dear {$request->client_id}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
             $sender_subject = 'Parcel Delivered';
-            $sender_email = $senderEmail;
+            $client = Client::find($request->client_id); // or whatever key you have
+
+                if ($client) {
+                    $sender_email = $client->email; // or whatever column name is used for the email
+                } else {
+                    // handle case where client isn't found
+                    $sender_email = null; // or throw an error / log
+                }
             $fullOfficeMessage = $senderMessage . $footer;
 
             $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);

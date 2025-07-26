@@ -273,7 +273,7 @@
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header bg-warning">
-                                                    <h5 class="modal-title text-white" id="exampleModalLabel">Collection
+                                                    <h5 class="modal-title text-white" id="exampleModalLabel">Delivery
                                                         of
                                                         {{ $collection->parcelDetails }}. Request ID
                                                         {{ $collection->requestId }}
@@ -286,138 +286,9 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <form method="POST"
-                                                        action="{{ route('shipment_collections.store') }}">
+                                                        action="{{ route('my_deliveries.store') }}">
                                                         @csrf
 
-                                                        <!-- Radio Buttons -->
-                                                        <div class="form-group mb-3">
-
-                                                            <div class="form-row shadow-sm">
-                                                                <div class="col-md-4">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Sender
-                                                                        Type
-                                                                    </label><br>
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input type="hidden" name="cid"
-                                                                            id="cid"
-                                                                            value="{{ $collection->client->id }}">
-                                                                        <input type="hidden" name="rqid"
-                                                                            value="{{ $collection->requestId }}">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="sender_type" id="clientRadio"
-                                                                            value="client">
-                                                                        <label class="form-check-label"
-                                                                            for="clientRadio">Client</label>
-                                                                    </div>
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="sender_type" id="agentRadio"
-                                                                            value="agent">
-                                                                        <label class="form-check-label"
-                                                                            for="agentRadio">Agent</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-4">
-
-                                                                    <label
-                                                                        class=" form-label text-primary text-primary pull-right">Service
-                                                                        Type:
-                                                                        <badge class="text-success" id="rates_status">
-                                                                            {{ $collection->serviceLevel->sub_category_name }}
-                                                                        </badge>
-                                                                    </label>
-
-
-                                                                </div>
-                                                                <div class="col-md-4">
-                                                                    <label
-                                                                        class=" form-label text-primary text-primary pull-right">Special
-                                                                        Rate Status:
-                                                                        <badge class="text-success" id="rates_status">
-                                                                            {{ $collection->client->special_rates_status ?? 'off' }}
-                                                                        </badge>
-                                                                    </label>
-                                                                </div>
-
-                                                            </div>
-
-
-                                                        </div>
-
-                                                        <!-- Sender Panel -->
-                                                        <div class="col-md-12">
-                                                            <div class="card shadow-sm mb-4" id="senderForm"
-                                                                style="display: none;">
-                                                                <div class="card-header bg-primary text-white">Sender
-                                                                    Details</div>
-                                                                <!-- SENDER DETAILS -->
-                                                                <div class="card-body">
-                                                                    <!-- Sender Details Form (Initially Hidden) -->
-                                                                    <div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">Sender
-                                                                                    Name <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="sender_name" id="sender_name">
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">Sender
-                                                                                    Email <span
-                                                                                        class="text-danger">*</span>
-                                                                                </label>
-                                                                                <input type="email" class="form-control"
-                                                                                    name="senderEmail" id="senderEmail"
-                                                                                    required>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">ID
-                                                                                    Number <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="sender_id_no" id="sender_id_no"
-                                                                                    maxlength="8">
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">Phone
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="sender_contact"
-                                                                                    id="sender_contact">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">Town
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="sender_town" id="sender_town">
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label
-                                                                                    class="form-label text-primary text-primary">Address
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control"
-                                                                                    name="sender_address"
-                                                                                    id="sender_address">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                         <!-- Receiver Panel -->
                                                         <div class="col-md-12">
                                                             <div class="card shadow-sm mb-4">
@@ -432,22 +303,25 @@
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverContactPerson" required>
+                                                                                name="receiver_name" required>
                                                                             <input type="hidden" name='client_id'
                                                                                 value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId"
                                                                                 value="{{ $collection->requestId }}">
+                                                                            <input type="hidden" name="delivery_location"
+                                                                                value="{{ $collection->shipmentCollection->destination->destination }}">
 
 
                                                                         </div>
 
                                                                         <div class="form-group col-md-6">
                                                                             <label
-                                                                                class="form-label text-primary text-primary">Receiver
-                                                                                Email <span class="text-danger">*</span>
+                                                                                class="form-label text-primary text-primary">Phone
+                                                                                Number
+                                                                                <span class="text-danger">*</span>
                                                                             </label>
-                                                                            <input type="email" class="form-control"
-                                                                                name="receiverEmail" required>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiver_phone" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -457,271 +331,72 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required
+                                                                                name="receiver_id_no" required
                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
-                                                                                class="form-label text-primary text-primary">Phone
-                                                                                Number
+                                                                                class="form-label text-primary text-primary"> Receiver Type
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverPhone" required>
+                                                                                name="receiver_type" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Agent Panel -->
+                                                        <div class="col-md-12">
+                                                            <div class="card shadow-sm mb-4">
+                                                                <div class="card-header bg-primary text-white">Agent Details</div>
+                                                                <!-- RECEIVER DETAILS -->
+                                                                <div class="card-body">
+                                                                    <div class="form-row">
+                                                                        <div class="form-group col-md-6">
+                                                                            <label
+                                                                                class="form-label text-primary text-primary">Agent
+                                                                                Name
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="agent_name">
+                                                                        </div>
+
+                                                                        <div class="form-group col-md-6">
+                                                                            <label
+                                                                                class="form-label text-primary text-primary"> Agent Phone
+                                                                                Number
+                                                                            </label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="agent_phone">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label
-                                                                                class="form-label text-primary text-primary">Address
-                                                                                <span class="text-danger">*</span>
+                                                                                class="form-label text-primary text-primary">Agent ID
+                                                                                Number
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverAddress" required>
+                                                                                name="agent_id_no"
+                                                                                maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
-                                                                                class="form-label text-primary text-primary">Town
-                                                                                <span class="text-danger">*</span>
+                                                                                class="form-label text-primary text-primary">Remarks
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverTown" required>
-                                                                            <input type="hidden"
-                                                                                value="{{ $consignment_no }}"
-                                                                                name="consignment_no">
+                                                                                name="remarks"
+                                                                                maxlength="8">
                                                                         </div>
                                                                     </div>
-
-
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        @if ($collection->client->special_rates_status)
-                                                            <!-- Origin & Destination -->
-                                                            <div class="form-row">
-
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Origin
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="origin_id" id="origin_id_special"
-                                                                        class="form-control origin-dropdown-special">
-                                                                        <option value="">Select</option>
-                                                                        @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Destination
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="destination"
-                                                                        class="form-control destination-dropdown-special">
-                                                                        <option value="">Select</option>
-                                                                    </select>
-                                                                </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id_special">
-                                                            </div>
-                                                            {{-- <input type="hidden" name='destination' id="destination_id">
-
-                                                            <input type="hidden" name='origin_id' id="origin_id"> --}}
-                                                        @elseif($collection->serviceLevel->sub_category_name == 'Same Day')
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Origin
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="origin_id" id="origin_idxz"
-                                                                        class="form-control origin-dropdownxz" required>
-                                                                        <option value="">Select</option>
-                                                                        <option value="{{ $collection->office_id }}">
-                                                                            {{ $collection->office->name }}</option>
-
-                                                                        {{-- @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
-                                                                        @endforeach --}}
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Destination
-
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="destination"
-                                                                        class="form-control destination-dropdownxz">
-                                                                        <option value="">Select</option>
-                                                                        <option value="{{ $collection->rate_id }}">
-                                                                            {{ $collection->collectionLocation }}
-                                                                        </option>
-                                                                    </select>
-                                                                </div>
-                                                                <input type="hidden" name="destination_id"
-                                                                    value="{{ $collection->rate_id }}">
-
-                                                            </div>
-                                                        @else
-                                                            <!-- Origin & Destination -->
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Origin
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="origin_id" id="origin_id"
-                                                                        class="form-control origin-dropdown" required>
-                                                                        <option value="">Select</option>
-                                                                        @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Destination
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="destination"
-                                                                        class="form-control destination-dropdown">
-                                                                        <option value="">Select</option>
-                                                                    </select>
-                                                                </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id">
-
-                                                            </div>
-                                                        @endif
-
-                                                        <input type="hidden"
-                                                            value="{{ $collection->client->special_rates_status }}"
-                                                            name='special_rate_state' id="special_rate_state">
-
-                                                        <!-- Shipment Info Table -->
-                                                        {{-- <div class="section-title"><b class="text-primary">Shipment Information</b></div> --}}
-                                                        <div class="table-responsive mt-3">
-                                                            <table class="table table-bordered shipmentTable"
-                                                                id="shipmentTable">
-                                                                <thead class="thead-success">
-                                                                    <tr class="text-primary">
-                                                                        <th>Item Name</th>
-                                                                        <th>Packages #</th>
-                                                                        <th>Weight (kg)</th>
-                                                                        <th>Length (cm)</th>
-                                                                        <th>Width (cm)</th>
-                                                                        <th>Height (cm)</th>
-                                                                        <th>Volume (cm<sup>3</sup>)</th>
-                                                                        <th>Act</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td><input type="text" class="form-control"
-                                                                                name="item_name[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="packages[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="weight[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="length[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="width[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="height[]"></td>
-                                                                        <td class="volume-display text-muted"><input
-                                                                                type="number" min="0"
-                                                                                class="form-control" name="volume[]"
-                                                                                readonly></td>
-                                                                        <td><button type="button"
-                                                                                class="btn btn-danger btn-sm remove-row"
-                                                                                title="Delete Row"><i
-                                                                                    class="fas fa-trash"></i></button>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-
-                                                        <button type="button" class="btn btn-primary mb-3 addRowBtn"
-                                                            id="addRowBtn">Add
-                                                            Row</button>
-
-
-                                                        <!-- Service Level -->
-                                                        <div class="section-title"></div>
-                                                        <div class="form-row">
-                                                            {{-- <div class="form-group col-md-6">
-                                                                <label class="form-label text-primary text-primary">Select Service <span
-                                                                        class="text-danger">*</span> </label>
-                                                                <select class="form-control" name="service" required>
-                                                                    <option value="">-- Select Service --</option>
-                                                                    <option value="standard">Standard</option>
-                                                                    <option value="express">Express</option>
-                                                                    <option value="overnight">Overnight</option>
-                                                                </select>
-                                                            </div> --}}
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Total
-                                                                        Weight
-                                                                        (Kg)
-                                                                        <span class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control" name="total_weight" required
-                                                                        readonly>
-                                                                </div>
-                                                                <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Cost
-                                                                        <span class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control"
-                                                                        value="{{ $collection->rate }}" name="cost"
-                                                                        required readonly>
-                                                                </div>
-                                                                <input type="hidden" name="base_cost" value="">
-
-                                                                <div class="form-group col-md-3">
-                                                                    <label class="form-label text-primary text-primary">Tax
-                                                                        (16%) <span class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control" name="vat" required
-                                                                        readonly>
-                                                                </div>
-                                                                <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Total
-                                                                        Cost
-                                                                        <span class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control" name="total_cost" required
-                                                                        readonly>
-                                                                </div>
-                                                                <!-- <div class="form-group col-md-4">                                                                                                                                                                                                                                                                                           </div> -->
-                                                            </div>
-
-                                                            <!-- Submit -->
-
-                                                            {{-- <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                                value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button> --}}
-
-
-                                                        </div>
-                                                        <div class="modal-footer d-flex justify-content-between p-0">
-                                                            <button type="button" class="btn btn-danger"
+                                                        <div class="modal-footer d-flex p-0">
+                                                            <button type="button" class="btn btn-secondary"
                                                                 data-dismiss="modal" aria-label="Close">Cancel</button>
                                                             <button type="submit"
                                                                 class="btn btn-success text-white">Submit
