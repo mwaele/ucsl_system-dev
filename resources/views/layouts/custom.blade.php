@@ -387,7 +387,7 @@
                     data-toggle="collapse" data-target="#collapseUsers"
                     aria-expanded="{{ request()->routeIs('users.*') ? 'true' : 'false' }}"
                     aria-controls="collapseUsers">
-                    <i class="fas fa-fw fa-map"></i>
+                    <i class="fas fa-fw fa-users"></i>
                     <span class="sized">Users</span>
                 </a>
                 <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"

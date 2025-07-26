@@ -21,6 +21,7 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Band</th>
@@ -35,6 +36,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Band</th>
@@ -51,6 +53,7 @@
                     <tbody>
                         @foreach ($rates as $rate)
                             <tr>
+                                <td> {{ $loop->iteration }}.</td>
                                 <td> {{ $rate->office->name }} </td>
 
                                 <td> {{ $rate->destination }} </td>
