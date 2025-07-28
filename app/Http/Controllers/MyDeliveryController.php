@@ -39,7 +39,16 @@ class MyDeliveryController extends Controller
                             ->where('userId', $loggedInUserId)
                             ->orderBy('created_at','desc')
                             ->get();
-        return view('client-request.deliveries')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no]);
-    }
+                            
+        // If you're opening modal for a specific request, pass approval flag per request
+        $approvalStatuses = [];
+        foreach ($collections as $collection) {
+            $approvalStatuses[$collection->requestId] = session("agent_approval_{$collection->requestId}", false);
+        }
+
+        return view('client-request.deliveries', compact(
+            'collections', 'offices', 'destinations', 'loggedInUserId', 'consignment_no', 'approvalStatuses'
+        ));
+        }
 
 }

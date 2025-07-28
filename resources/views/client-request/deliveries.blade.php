@@ -284,126 +284,164 @@
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <form method="POST"
-                                                        action="{{ route('my_deliveries.store') }}">
+                                                <div class="modal-body"> 
+                                                    <form method="POST" action="{{ route('my_deliveries.store') }}">
                                                         @csrf
 
+                                                        <!-- Selection: Receiver or Agent -->
+                                                        <div class="form-group">
+                                                            <label class="text-primary">Select Delivery Type:</label><br>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="delivery_type" id="select_receiver" value="receiver">
+                                                                <label class="form-check-label" for="select_receiver">Receiver</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="delivery_type" id="select_agent" value="agent">
+                                                                <label class="form-check-label" for="select_agent">Agent</label>
+                                                            </div>
+                                                        </div>
+
                                                         <!-- Receiver Panel -->
-                                                        <div class="col-md-12">
+                                                        <div class="col-md-12" id="receiver_panel" style="display: none;">
                                                             <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-primary text-white">Receiver
-                                                                    Details</div>
-                                                                <!-- RECEIVER DETAILS -->
+                                                                <div class="card-header bg-primary text-white">Receiver Details</div>
                                                                 <div class="card-body">
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">Receiver
-                                                                                Name <span class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="receiver_name" required>
-                                                                            <input type="hidden" name='client_id'
-                                                                                value="{{ $collection->client->id }}">
-                                                                            <input type="hidden" name="requestId"
-                                                                                value="{{ $collection->requestId }}">
-                                                                            <input type="hidden" name="delivery_location"
-                                                                                value="{{ $collection->shipmentCollection->destination->destination }}">
-
-
+                                                                            <label class="form-label text-primary">Receiver Name <span class="text-danger">*</span></label>
+                                                                            <input type="text" class="form-control" name="receiver_name">
+                                                                            <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
+                                                                            <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
+                                                                            <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
                                                                         </div>
-
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">Phone
-                                                                                Number
-                                                                                <span class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="receiver_phone" required>
+                                                                            <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
+                                                                            <input type="text" class="form-control" name="receiver_phone">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">ID
-                                                                                Number <span class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="receiver_id_no" required
-                                                                                maxlength="8">
+                                                                            <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
+                                                                            <input type="text" class="form-control" name="receiver_id_no" maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary"> Receiver Type
-                                                                                <span class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="receiver_type" required>
+                                                                            <label class="form-label text-primary">Receiver Type <span class="text-danger">*</span></label>
+                                                                            <input type="text" class="form-control" name="receiver_type">
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <!-- Agent Panel -->
-                                                        <div class="col-md-12">
+                                                        <!-- Agent Approval Request -->
+                                                        <div class="col-md-12" id="agent_request" style="display: none;">
+                                                            <div class="card shadow-sm mb-4">
+                                                                <div class="card-header bg-primary text-white">Front Office Approval Required</div>
+                                                                <div class="card-body">
+                                                                    <div>
+                                                                        <p>Please request approval from the front office for this agent to collect the delivery.</p>
+                                                                        <button type="button" id="approvalBtn-{{ $collection->id }}" class="btn btn-warning" onclick="submitApprovalRequest('{{ $collection->requestId }}')">Submit Request</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Agent Panel (shown only if approved) -->
+                                                        @if($agentApproved ?? false)
+                                                        <div class="col-md-12" id="agent_panel">
                                                             <div class="card shadow-sm mb-4">
                                                                 <div class="card-header bg-primary text-white">Agent Details</div>
-                                                                <!-- RECEIVER DETAILS -->
                                                                 <div class="card-body">
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">Agent
-                                                                                Name
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="agent_name">
+                                                                            <label class="form-label text-primary">Agent Name</label>
+                                                                            <input type="text" class="form-control" name="agent_name">
                                                                         </div>
-
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary"> Agent Phone
-                                                                                Number
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="agent_phone">
+                                                                            <label class="form-label text-primary">Agent Phone Number</label>
+                                                                            <input type="text" class="form-control" name="agent_phone">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">Agent ID
-                                                                                Number
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="agent_id_no"
-                                                                                maxlength="8">
+                                                                            <label class="form-label text-primary">Agent ID Number</label>
+                                                                            <input type="text" class="form-control" name="agent_id_no" maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
-                                                                            <label
-                                                                                class="form-label text-primary text-primary">Remarks
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="remarks"
-                                                                                maxlength="8">
+                                                                            <label class="form-label text-primary">Remarks</label>
+                                                                            <input type="text" class="form-control" name="remarks">
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        @endif
 
+                                                        <!-- Form Actions -->
                                                         <div class="modal-footer d-flex p-0">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal" aria-label="Close">Cancel</button>
-                                                            <button type="submit"
-                                                                class="btn btn-success text-white">Submit
-                                                                Collection</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-success text-white">Submit Collection</button>
                                                         </div>
                                                     </form>
                                                 </div>
+
+                                                <!-- JavaScript for Dynamic Display -->
+                                                <script>
+                                                    const btn = document.getElementById('approvalBtn-{{ $collection->id }}');
+                                                        btn.disabled = true;
+                                                        btn.innerText = "Submitting...";
+
+                                                    function submitApprovalRequest(requestId) {
+                                                        fetch("{{ route('request.agent.approval') }}", {
+                                                            method: "POST",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                                "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                                                            },
+                                                            body: JSON.stringify({ requestId: requestId })
+                                                        })
+                                                        .then(response => {
+                                                            if (!response.ok) throw new Error("Failed to send approval request");
+                                                            return response.json();
+                                                        })
+                                                        .then(data => {
+                                                            // Close the modal
+                                                            $('#deliverParcel-{{ $collection->id }}').modal('hide');
+
+                                                            // Show a success alert
+                                                            alert("Approval request sent successfully to front office.");
+                                                        })
+                                                        .catch(error => {
+                                                            alert("Error: " + error.message);
+                                                        });
+                                                    }
+                                                </script>
+
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const receiverRadio = document.getElementById('select_receiver');
+                                                        const agentRadio = document.getElementById('select_agent');
+                                                        const receiverPanel = document.getElementById('receiver_panel');
+                                                        const agentRequest = document.getElementById('agent_request');
+                                                        const agentPanel = document.getElementById('agent_panel');
+
+                                                        function togglePanels() {
+                                                            if (receiverRadio.checked) {
+                                                                receiverPanel.style.display = 'block';
+                                                                agentRequest.style.display = 'none';
+                                                                if (agentPanel) agentPanel.style.display = 'none';
+                                                            } else if (agentRadio.checked) {
+                                                                receiverPanel.style.display = 'none';
+                                                                agentRequest.style.display = 'block';
+                                                                if (agentPanel) agentPanel.style.display = 'block';
+                                                            }
+                                                        }
+
+                                                        receiverRadio.addEventListener('change', togglePanels);
+                                                        agentRadio.addEventListener('change', togglePanels);
+                                                    });
+                                                </script>
+
                                             </div>
                                         </div>
                                     </div>

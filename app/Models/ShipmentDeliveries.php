@@ -16,6 +16,7 @@ class ShipmentDeliveries extends Model
         'agent_name',
         'agent_phone',
         'agent_id_no',
+        'delivery_location',
         'delivery_datetime',
         'delivered_by',
         'remarks'

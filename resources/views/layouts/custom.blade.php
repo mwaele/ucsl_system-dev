@@ -562,7 +562,7 @@
                 @foreach ($toastTypes as $type => $props)
                     @if (session($type))
                         <div aria-live="polite" aria-atomic="true" class="position-fixed mr-3"
-                            style="top: 1rem; right: 1rem; z-index: 1050;">
+                            style="top: 1rem; right: 1rem; z-index: 400;">
                             <div class="toast show timeout-toast {{ $props['bg'] }} text-white mt-5" role="alert"
                                 aria-live="assertive" aria-atomic="true">
                                 <div class="toast-header {{ $props['bg'] }} text-white">
@@ -675,7 +675,7 @@
                         toast.classList.remove('show');
                         toast.classList.add('fade');
                         setTimeout(() => toast.remove(), 300);
-                    }, 22400);
+                    }, 3000);
                 });
             });
         </script>

@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AgentApprovalRequestMail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ShipmentDeliveries;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Tracking;
@@ -144,11 +148,28 @@ class ShipmentDeliveriesController extends Controller
 
             $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
 
-            
-
-
         return redirect()->back()->with('success', 'Delivery inserted successfully.');
 
+    }
+
+    public function requestApproval(Request $request)
+    {
+        $requestId = $request->input('requestId');
+
+        // You may want to store this status in DB (optional)
+        session()->put("agent_approval_{$requestId}", false);
+
+        Mail::to('frontoffice@example.com')->send(new AgentApprovalRequestMail($requestId));
+
+        return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
+    }
+
+    public function approveAgent($requestId)
+    {
+        // Set approval flag in session (or DB for persistence)
+        session()->put("agent_approval_{$requestId}", true);
+
+        return redirect()->route('dashboard')->with('success', "Agent approved for delivery ID $requestId.");
     }
 
     /**

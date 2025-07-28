@@ -162,6 +162,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/clientData/{cid}', [MainController::class, 'clients']);
 
+
+    Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
+    Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
+
     //collections
      Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
      Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');

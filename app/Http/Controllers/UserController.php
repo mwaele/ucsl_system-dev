@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\SendUserAccountEmail;
 
 class UserController extends Controller
 {
@@ -39,31 +40,8 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Email Details
-        $loginUrl = url('/login');
-        $terms = env('TERMS_AND_CONDITIONS', '#');
-
-        $subject = "Your UCS Account Has Been Created";
-        $message = "
-            Dear {$user->name},<br><br>
-            Your user account has been created successfully.<br><br>
-
-            Here are your login credentials:<br>
-            <strong>Email:</strong> {$user->email}<br>
-            <strong>Password:</strong> {$request->password}<br><br>
-
-            You can log in to the UCS Portal using the link below:<br>
-            <a href=\"{$loginUrl}\" target=\"_blank\">Login to UCS Portal</a><br><br>
-
-            <p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-            <p>Thank you for using Ufanisi Courier Services. For we are Fast, Reliable and Secure.</p>
-        ";
-
-        try {
-            EmailHelper::sendHtmlEmail($user->email, $subject, $message);
-        } catch (\Exception $e) {
-            \Log::error("User Account Email Error: " . $e->getMessage());
-        }
+        // Dispatch email job
+        SendUserAccountEmail::dispatch($user, $request->password);
 
         return redirect()->back()->with('success', 'User account created.');
     }
