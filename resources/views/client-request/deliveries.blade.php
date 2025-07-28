@@ -55,8 +55,11 @@
                                             @if ($collection->status == 'pending collection') bg-secondary
                                             @elseif ($collection->status == 'collected')
                                                 bg-warning
+                                            @elseif ($collection->status == 'delivered')
+                                                bg-primary
                                             @elseif ($collection->status == 'verified')
-                                                bg-primary @endif
+                                                bg-green 
+                                            @endif
                                             fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </p>
@@ -333,48 +336,48 @@
                                                             </div>
                                                         </div>
 
-                                                        <!-- Agent Approval Request -->
-                                                        <div class="col-md-12" id="agent_request" style="display: none;">
-                                                            <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-primary text-white">Front Office Approval Required</div>
-                                                                <div class="card-body">
-                                                                    <div>
-                                                                        <p>Please request approval from the front office for this agent to collect the delivery.</p>
-                                                                        <button type="button" id="approvalBtn-{{ $collection->id }}" class="btn btn-warning" onclick="submitApprovalRequest('{{ $collection->requestId }}')">Submit Request</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Agent Panel (shown only if approved) -->
-                                                        @if($agentApproved ?? false)
-                                                        <div class="col-md-12" id="agent_panel">
-                                                            <div class="card shadow-sm mb-4">
-                                                                <div class="card-header bg-primary text-white">Agent Details</div>
-                                                                <div class="card-body">
-                                                                    <div class="form-row">
-                                                                        <div class="form-group col-md-6">
-                                                                            <label class="form-label text-primary">Agent Name</label>
-                                                                            <input type="text" class="form-control" name="agent_name">
+                                                        @if($approvalStatuses[$collection->requestId] ?? false)
+                                                            <!-- Agent pickup is approved -->
+                                                            <div class="col-md-12" id="agent_panel">
+                                                                <div class="card shadow-sm mb-4">
+                                                                    <div class="card-header bg-primary text-white">Agent Details</div>
+                                                                    <div class="card-body">
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-primary">Agent Name</label>
+                                                                                <input type="text" class="form-control" name="agent_name">
+                                                                            </div>
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-primary">Agent Phone Number</label>
+                                                                                <input type="text" class="form-control" name="agent_phone">
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="form-group col-md-6">
-                                                                            <label class="form-label text-primary">Agent Phone Number</label>
-                                                                            <input type="text" class="form-control" name="agent_phone">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-row">
-                                                                        <div class="form-group col-md-6">
-                                                                            <label class="form-label text-primary">Agent ID Number</label>
-                                                                            <input type="text" class="form-control" name="agent_id_no" maxlength="8">
-                                                                        </div>
-                                                                        <div class="form-group col-md-6">
-                                                                            <label class="form-label text-primary">Remarks</label>
-                                                                            <input type="text" class="form-control" name="remarks">
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-primary">Agent ID Number</label>
+                                                                                <input type="text" class="form-control" name="agent_id_no" maxlength="8">
+                                                                            </div>
+                                                                            <div class="form-group col-md-6">
+                                                                                <label class="form-label text-primary">Remarks</label>
+                                                                                <input type="text" class="form-control" name="remarks">
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        @else
+                                                            <!-- Agent Approval Request -->
+                                                            <div class="col-md-12" id="agent_request" style="display: none;">
+                                                                <div class="card shadow-sm mb-4">
+                                                                    <div class="card-header bg-primary text-white">Front Office Approval Required</div>
+                                                                    <div class="card-body">
+                                                                        <div>
+                                                                            <p>Please request approval from the front office for this agent to collect the delivery.</p>
+                                                                            <button type="button" id="approvalBtn-{{ $collection->id }}" class="btn btn-warning" onclick="submitApprovalRequest('{{ $collection->requestId }}')">Submit Request</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         @endif
 
                                                         <!-- Form Actions -->
@@ -387,10 +390,34 @@
 
                                                 <!-- JavaScript for Dynamic Display -->
                                                 <script>
-                                                    const btn = document.getElementById('approvalBtn-{{ $collection->id }}');
-                                                        btn.disabled = true;
-                                                        btn.innerText = "Submitting...";
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const receiverRadio = document.getElementById('select_receiver');
+                                                        const agentRadio = document.getElementById('select_agent');
+                                                        const receiverPanel = document.getElementById('receiver_panel');
+                                                        const agentRequest = document.getElementById('agent_request');
+                                                        const agentPanel = document.getElementById('agent_panel');
+                                                        const btn = document.getElementById('approvalBtn-{{ $collection->id }}');
+                                                            btn.disabled = false;
+                                                            btn.innerText = "Submitting...";
 
+                                                        function togglePanels() {
+                                                            if (receiverRadio.checked) {
+                                                                receiverPanel.style.display = 'block';
+                                                                agentRequest.style.display = 'none';
+                                                                if (agentPanel) agentPanel.style.display = 'none';
+                                                            } else if (agentRadio.checked) {
+                                                                receiverPanel.style.display = 'none';
+                                                                agentRequest.style.display = 'block';
+                                                                if (agentPanel) agentPanel.style.display = 'block';
+                                                            }
+                                                        }
+
+                                                        receiverRadio.addEventListener('change', togglePanels);
+                                                        agentRadio.addEventListener('change', togglePanels);
+                                                    });
+                                                </script>
+
+                                                <script>
                                                     function submitApprovalRequest(requestId) {
                                                         fetch("{{ route('request.agent.approval') }}", {
                                                             method: "POST",
@@ -419,26 +446,14 @@
 
                                                 <script>
                                                     document.addEventListener('DOMContentLoaded', function () {
-                                                        const receiverRadio = document.getElementById('select_receiver');
-                                                        const agentRadio = document.getElementById('select_agent');
-                                                        const receiverPanel = document.getElementById('receiver_panel');
-                                                        const agentRequest = document.getElementById('agent_request');
-                                                        const agentPanel = document.getElementById('agent_panel');
+                                                        const isApproved = @json($approvalStatuses[$collection->requestId] ?? false);
 
-                                                        function togglePanels() {
-                                                            if (receiverRadio.checked) {
-                                                                receiverPanel.style.display = 'block';
-                                                                agentRequest.style.display = 'none';
-                                                                if (agentPanel) agentPanel.style.display = 'none';
-                                                            } else if (agentRadio.checked) {
-                                                                receiverPanel.style.display = 'none';
-                                                                agentRequest.style.display = 'block';
-                                                                if (agentPanel) agentPanel.style.display = 'block';
-                                                            }
+                                                        // Inside togglePanels
+                                                        if (agentRadio.checked) {
+                                                            receiverPanel.style.display = 'none';
+                                                            agentRequest.style.display = isApproved ? 'none' : 'block';
+                                                            if (agentPanel) agentPanel.style.display = isApproved ? 'block' : 'none';
                                                         }
-
-                                                        receiverRadio.addEventListener('change', togglePanels);
-                                                        agentRadio.addEventListener('change', togglePanels);
                                                     });
                                                 </script>
 

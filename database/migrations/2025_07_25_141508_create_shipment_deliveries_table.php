@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('requestId');
             $table->integer('client_id');
-            $table->string('receiver_name');
-            $table->string('receiver_phone');
-            $table->integer('receiver_id_no');
-            $table->string('receiver_type');
+            $table->string('receiver_name')->nullable();
+            $table->string('receiver_phone')->nullable();
+            $table->integer('receiver_id_no')->nullable();
+            $table->string('receiver_type')->nullable();
             $table->string('agent_name')->nullable();
             $table->string('agent_phone')->nullable();
             $table->integer('agent_id_no')->nullable();

@@ -14,6 +14,7 @@ use App\Models\Tracking;
 use App\Models\TrackingInfo;
 use App\Models\Client;
 use App\Models\ClientRequest;
+use App\Models\ShipmentCollection;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
 use App\Models\SentMessage;
@@ -130,11 +131,14 @@ class ShipmentDeliveriesController extends Controller
             $fullOfficeMessage = $frontMessage . $footer;
 
             $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
-
+            $requestId = $request->requestId;
+            $request = ClientRequest::with('client')->find($requestId);
+            $senderName = $request->client->name ?? 'Valued Client';
             $riderName = Auth::user()->name;
+            dd($senderName);
 
              // sender email
-            $senderMessage = "Dear {$request->client_id}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
+            $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
             $sender_subject = 'Parcel Delivered';
             $client = Client::find($request->client_id); // or whatever key you have
 
@@ -146,6 +150,8 @@ class ShipmentDeliveriesController extends Controller
                 }
             $fullOfficeMessage = $senderMessage . $footer;
 
+            ClientRequest::where('requestId', $request->requestId)
+            ->update(['status' => 'delivered']);
             $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
 
         return redirect()->back()->with('success', 'Delivery inserted successfully.');
@@ -156,18 +162,35 @@ class ShipmentDeliveriesController extends Controller
     {
         $requestId = $request->input('requestId');
 
-        // You may want to store this status in DB (optional)
-        session()->put("agent_approval_{$requestId}", false);
+        // Fetch the shipment collection by requestId
+        $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
 
-        Mail::to('frontoffice@example.com')->send(new AgentApprovalRequestMail($requestId));
+        if (!$shipmentCollection) {
+            return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
+        }
+
+        // Reset approval status in DB
+        $shipmentCollection->agent_approved = false;
+        $shipmentCollection->save();
+
+        // Send approval request mail
+
+        Mail::to('mwaele@ufanisi.co.ke')->send(new AgentApprovalRequestMail($requestId));
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
     }
 
     public function approveAgent($requestId)
     {
-        // Set approval flag in session (or DB for persistence)
-        session()->put("agent_approval_{$requestId}", true);
+        $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
+
+        if (!$shipmentCollection) {
+            return redirect('/')->with('error', 'Shipment not found.');
+        }
+
+        // Mark as approved
+        $shipmentCollection->agent_approved = true;
+        $shipmentCollection->save();
 
         return redirect()->route('dashboard')->with('success', "Agent approved for delivery ID $requestId.");
     }
