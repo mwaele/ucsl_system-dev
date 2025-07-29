@@ -58,6 +58,27 @@ class ShipmentController extends Controller
         //
     }
 
+    public function generate(Request $request)
+    {
+        $filter = $request->query('filter');
+        $value = $request->query('value');
+
+        $query = Shipment::query();
+
+        if ($filter === 'date') {
+            $query->whereDate('arrival_date', $value);
+        } elseif ($filter === 'dispatch') {
+            $query->where('dispatch_note_number', 'like', "%$value%");
+        } elseif ($filter === 'type') {
+            $query->where('shipment_type', $value);
+        }
+
+        $shipments = $query->get();
+
+        // Example: return as downloadable CSV or a view
+        return view('reports.shipment_arrivals', compact('shipments', 'filter', 'value'));
+    }
+
     /**
      * Display the specified resource.
      */

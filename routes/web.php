@@ -30,6 +30,7 @@ use App\Http\Controllers\TransporterController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\SameDayRateController;
+use App\Http\Controllers\ShipmentArrivalController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -218,6 +219,12 @@ Route::middleware('auth')->group(function () {
       Route::resource('categories','App\Http\Controllers\CategoryController');
 
       Route::resource('shipment_deliveries','App\Http\Controllers\shipmentDeliveriesController');
+
+      Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
+
+        Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
+            ->name('shipment_arrivals_report');
+
 
       Route::resource('transporters','App\Http\Controllers\TransporterController');
       Route::resource('dispatchers','App\Http\Controllers\DispatcherController');
