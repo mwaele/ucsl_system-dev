@@ -131,11 +131,9 @@ class ShipmentDeliveriesController extends Controller
             $fullOfficeMessage = $frontMessage . $footer;
 
             $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
-            $requestId = $request->requestId;
-            $request = ClientRequest::with('client')->find($requestId);
-            $senderName = $request->client->name ?? 'Valued Client';
+        
+            $senderName = 'Valued Client';
             $riderName = Auth::user()->name;
-            dd($senderName);
 
              // sender email
             $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";

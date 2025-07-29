@@ -39,7 +39,9 @@ class MyDeliveryController extends Controller
                             ->where('userId', $loggedInUserId)
                             ->orderBy('created_at','desc')
                             ->get();
-                            
+        
+        $approvalStatuses = [];
+
         foreach ($collections as $collection) {
             $shipment = $collection->shipmentCollection;
             $approvalStatuses[$collection->requestId] = $shipment?->agent_approved ?? false;

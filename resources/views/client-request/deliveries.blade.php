@@ -131,9 +131,9 @@
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Sender:</div>
-                                                            <div>Name: {{ $collection->client->name }}</div>
+                                                            <div>Name: {{ $collection->shipmentCollection->sender_name }}</div>
                                                             @php
-                                                                $phone = $collection->client->contact;
+                                                                $phone = $collection->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -141,8 +141,8 @@
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
-                                                            <div>Location: {{ $collection->client->building }}</div>
-                                                            <div>Town: {{ $collection->client->city }}</div>
+                                                            <div>Location: {{ $collection->shipmentCollection->sender_address }}</div>
+                                                            <div>Town: {{ $collection->shipmentCollection->sender_town }}</div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Receiver:</div>
@@ -373,7 +373,13 @@
                                                                     <div class="card-body">
                                                                         <div>
                                                                             <p>Please request approval from the front office for this agent to collect the delivery.</p>
-                                                                            <button type="button" id="approvalBtn-{{ $collection->id }}" class="btn btn-warning" onclick="submitApprovalRequest('{{ $collection->requestId }}')">Submit Request</button>
+                                                                            <button 
+                                                                                type="button"
+                                                                                id="approvalBtn-{{ $collection->id }}"
+                                                                                class="btn btn-warning"
+                                                                                onclick="submitApprovalRequest('{{ $collection->requestId }}', this)">
+                                                                                Submit Request
+                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -383,7 +389,7 @@
                                                         <!-- Form Actions -->
                                                         <div class="modal-footer d-flex p-0">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cancel</button>
-                                                            <button type="submit" class="btn btn-success text-white">Submit Collection</button>
+                                                            <button type="submit" class="btn btn-success text-white" disabled>Submit Collection</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -396,9 +402,6 @@
                                                         const receiverPanel = document.getElementById('receiver_panel');
                                                         const agentRequest = document.getElementById('agent_request');
                                                         const agentPanel = document.getElementById('agent_panel');
-                                                        const btn = document.getElementById('approvalBtn-{{ $collection->id }}');
-                                                            btn.disabled = false;
-                                                            btn.innerText = "Submitting...";
 
                                                         function togglePanels() {
                                                             if (receiverRadio.checked) {
@@ -418,7 +421,10 @@
                                                 </script>
 
                                                 <script>
-                                                    function submitApprovalRequest(requestId) {
+                                                    function submitApprovalRequest(requestId, btn) {
+                                                        btn.disabled = true;
+                                                        btn.innerText = "Submitting...";
+
                                                         fetch("{{ route('request.agent.approval') }}", {
                                                             method: "POST",
                                                             headers: {
@@ -439,6 +445,8 @@
                                                             alert("Approval request sent successfully to front office.");
                                                         })
                                                         .catch(error => {
+                                                            btn.disabled = false;
+                                                            btn.innerText = "Submit Request";
                                                             alert("Error: " + error.message);
                                                         });
                                                     }
@@ -454,6 +462,63 @@
                                                             agentRequest.style.display = isApproved ? 'none' : 'block';
                                                             if (agentPanel) agentPanel.style.display = isApproved ? 'block' : 'none';
                                                         }
+                                                    });
+                                                </script>
+
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const receiverRadio = document.getElementById('select_receiver');
+                                                        const agentRadio = document.getElementById('select_agent');
+                                                        const submitBtn = document.querySelector('button[type="submit"]');
+
+                                                        const receiverFields = [
+                                                            'input[name="receiver_name"]',
+                                                            'input[name="receiver_phone"]',
+                                                            'input[name="receiver_id_no"]',
+                                                            'input[name="receiver_type"]'
+                                                        ];
+
+                                                        const agentFields = [
+                                                            'input[name="agent_name"]',
+                                                            'input[name="agent_phone"]',
+                                                            'input[name="agent_id_no"]'
+                                                        ];
+
+                                                        function getValues(selectors) {
+                                                            return selectors.map(selector => {
+                                                                const el = document.querySelector(selector);
+                                                                return el ? el.value.trim() : '';
+                                                            });
+                                                        }
+
+                                                        function validateFields() {
+                                                            let isValid = false;
+
+                                                            if (receiverRadio.checked) {
+                                                                const values = getValues(receiverFields);
+                                                                isValid = values.every(v => v !== '');
+                                                            } else if (agentRadio.checked) {
+                                                                const values = getValues(agentFields);
+                                                                isValid = values.every(v => v !== '');
+                                                            }
+
+                                                            submitBtn.disabled = !isValid;
+                                                        }
+
+                                                        // Run validation when fields change
+                                                        [...receiverFields, ...agentFields].forEach(selector => {
+                                                            const input = document.querySelector(selector);
+                                                            if (input) {
+                                                                input.addEventListener('input', validateFields);
+                                                            }
+                                                        });
+
+                                                        // Also validate on delivery type change
+                                                        receiverRadio.addEventListener('change', validateFields);
+                                                        agentRadio.addEventListener('change', validateFields);
+
+                                                        // Initial state
+                                                        validateFields();
                                                     });
                                                 </script>
 
