@@ -17,16 +17,28 @@ class AgentApprovalRequestMail extends Mailable
      * Create a new message instance.
      */
     public $requestId;
+    public $agentName;
+    public $agentIdNumber;
+    public $agentPhone;
 
-    public function __construct($requestId)
+    public function __construct($requestId, $agentName, $agentIdNumber, $agentPhone)
     {
         $this->requestId = $requestId;
+        $this->agentName = $agentName;
+        $this->agentIdNumber = $agentIdNumber;
+        $this->agentPhone = $agentPhone;
     }
 
     public function build()
     {
-        return $this->subject('Agent Delivery Approval Request')
-                    ->markdown('emails.agent_approval_request');
+        return $this->subject('Agent Approval Request')
+            ->view('emails.agent_approval_request')
+            ->with([
+                'requestId' => $this->requestId,
+                'agentName' => $this->agentName,
+                'agentIdNumber' => $this->agentIdNumber,
+                'agentPhone' => $this->agentPhone,
+            ]);
     }
 
     /**

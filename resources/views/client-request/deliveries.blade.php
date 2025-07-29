@@ -555,16 +555,30 @@
                                                                 <div class="card shadow-sm mb-4">
                                                                     <div class="card-header bg-primary text-white">Front Office Approval Required</div>
                                                                     <div class="card-body">
-                                                                        <div>
-                                                                            <p>Please request approval from the front office for this agent to collect the delivery.</p>
-                                                                            <button 
-                                                                                type="button"
-                                                                                id="approvalBtn-{{ $collection->id }}"
-                                                                                class="btn btn-warning"
-                                                                                onclick="submitApprovalRequest('{{ $collection->requestId }}', this)">
-                                                                                Submit Request
-                                                                            </button>
+                                                                        <p>Please request approval from the front office for this agent to collect the delivery.</p>
+
+                                                                        <div class="mb-3">
+                                                                            <label for="agent_name_{{ $collection->id }}" class="form-label">Agent Name</label>
+                                                                            <input type="text" class="form-control" id="agent_name_{{ $collection->id }}" placeholder="Enter agent name">
                                                                         </div>
+
+                                                                        <div class="mb-3">
+                                                                            <label for="agent_id_{{ $collection->id }}" class="form-label">Agent ID Number</label>
+                                                                            <input type="text" class="form-control" id="agent_id_{{ $collection->id }}" placeholder="Enter agent ID">
+                                                                        </div>
+
+                                                                        <div class="mb-3">
+                                                                            <label for="agent_phone_{{ $collection->id }}" class="form-label">Agent Phone Number</label>
+                                                                            <input type="text" class="form-control" id="agent_phone_{{ $collection->id }}" placeholder="Enter phone number">
+                                                                        </div>
+
+                                                                        <button 
+                                                                            type="button"
+                                                                            id="approvalBtn-{{ $collection->id }}"
+                                                                            class="btn btn-warning"
+                                                                            onclick="submitApprovalRequest('{{ $collection->requestId }}', '{{ $collection->id }}', this)">
+                                                                            Submit Request
+                                                                        </button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -605,9 +619,13 @@
                                                 </script>
 
                                                 <script>
-                                                    function submitApprovalRequest(requestId, btn) {
+                                                    function submitApprovalRequest(requestId, collectionId, btn) {
                                                         btn.disabled = true;
                                                         btn.innerText = "Submitting...";
+
+                                                        const agentName = document.getElementById(`agent_name_${collectionId}`).value;
+                                                        const agentId = document.getElementById(`agent_id_${collectionId}`).value;
+                                                        const agentPhone = document.getElementById(`agent_phone_${collectionId}`).value;
 
                                                         fetch("{{ route('request.agent.approval') }}", {
                                                             method: "POST",
@@ -615,17 +633,19 @@
                                                                 "Content-Type": "application/json",
                                                                 "X-CSRF-TOKEN": '{{ csrf_token() }}'
                                                             },
-                                                            body: JSON.stringify({ requestId: requestId })
+                                                            body: JSON.stringify({
+                                                                requestId,
+                                                                agentName,
+                                                                agentId,
+                                                                agentPhone
+                                                            })
                                                         })
                                                         .then(response => {
                                                             if (!response.ok) throw new Error("Failed to send approval request");
                                                             return response.json();
                                                         })
                                                         .then(data => {
-                                                            // Close the modal
-                                                            $('#deliverParcel-{{ $collection->id }}').modal('hide');
-
-                                                            // Show a success alert
+                                                            $('#deliverParcel-' + collectionId).modal('hide');
                                                             alert("Approval request sent successfully to front office.");
                                                         })
                                                         .catch(error => {

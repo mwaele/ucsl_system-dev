@@ -159,21 +159,28 @@ class ShipmentDeliveriesController extends Controller
     public function requestApproval(Request $request)
     {
         $requestId = $request->input('requestId');
+        $agentName = $request->input('agentName');
+        $agentId = $request->input('agentId');
+        $agentPhone = $request->input('agentPhone');
 
-        // Fetch the shipment collection by requestId
+        // Validate inputs (optional)
+        if (!$agentName || !$agentId || !$agentPhone) {
+            return response()->json(['status' => 'error', 'message' => 'Agent details are required.'], 422);
+        }
+
         $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
 
         if (!$shipmentCollection) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
-        // Reset approval status in DB
         $shipmentCollection->agent_approved = false;
         $shipmentCollection->save();
 
-        // Send approval request mail
-
-        Mail::to('mwaele@ufanisi.co.ke')->send(new AgentApprovalRequestMail($requestId));
+        // Send approval email (you may customize the mailable to include agent details)
+        Mail::to('mwaele@ufanisi.co.ke')->send(
+            new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone)
+        );
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
     }
