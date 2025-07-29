@@ -496,20 +496,20 @@
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">Receiver Name <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_name">
+                                                                            <input type="text" class="form-control" name="receiver_name" value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
                                                                             <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
                                                                             <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_phone">
+                                                                            <input type="text" class="form-control" name="receiver_phone" value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_id_no" maxlength="8">
+                                                                            <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">Receiver Type <span class="text-danger">*</span></label>
@@ -557,19 +557,19 @@
                                                                     <div class="card-body">
                                                                         <p>Please request approval from the front office for this agent to collect the delivery.</p>
 
-                                                                        <div class="mb-3">
-                                                                            <label for="agent_name_{{ $collection->id }}" class="form-label">Agent Name</label>
-                                                                            <input type="text" class="form-control" id="agent_name_{{ $collection->id }}" placeholder="Enter agent name">
-                                                                        </div>
-
-                                                                        <div class="mb-3">
-                                                                            <label for="agent_id_{{ $collection->id }}" class="form-label">Agent ID Number</label>
-                                                                            <input type="text" class="form-control" id="agent_id_{{ $collection->id }}" placeholder="Enter agent ID">
-                                                                        </div>
-
-                                                                        <div class="mb-3">
-                                                                            <label for="agent_phone_{{ $collection->id }}" class="form-label">Agent Phone Number</label>
-                                                                            <input type="text" class="form-control" id="agent_phone_{{ $collection->id }}" placeholder="Enter phone number">
+                                                                        <div class="row g-3 mb-3">
+                                                                            <div class="col-md-4">
+                                                                                <label for="agent_name_{{ $collection->id }}" class="form-label">Name</label>
+                                                                                <input type="text" class="form-control" id="agent_name_{{ $collection->id }}" placeholder="Agent name">
+                                                                            </div>
+                                                                            <div class="col-md-4">
+                                                                                <label for="agent_id_{{ $collection->id }}" class="form-label">ID No.</label>
+                                                                                <input type="text" class="form-control" id="agent_id_{{ $collection->id }}" placeholder="ID number">
+                                                                            </div>
+                                                                            <div class="col-md-4">
+                                                                                <label for="agent_phone_{{ $collection->id }}" class="form-label">Phone</label>
+                                                                                <input type="text" class="form-control" id="agent_phone_{{ $collection->id }}" placeholder="Phone number">
+                                                                            </div>
                                                                         </div>
 
                                                                         <button 
