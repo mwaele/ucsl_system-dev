@@ -258,7 +258,7 @@
                                     @if ($request->status == 'pending collection') bg-secondary
                                     @elseif ($request->status == 'collected')
                                         bg-warning
-                                    @elseif ($request->status == 'verified')
+                                    @elseif ($request->status == 'delivered')
                                         bg-primary @endif
                                     fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
@@ -408,13 +408,60 @@
                                         </div>
                                     </div>
 
-                                    @if ($request->status === 'pending collection')
-                                        <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                    @if (
+                                        isset($request->shipmentCollection) &&
+                                        !$request->shipmentCollection->agent_approved &&
+                                        $request->shipmentCollection->agent_requested
+                                    )
+                                        <a 
+                                            href="#" 
+                                            class="btn btn-sm btn-primary mr-1" 
+                                            title="Review Agent Pickup Request"
                                             data-toggle="modal"
-                                            data-target="#deleteClientRequest-{{ $request->requestId }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                            data-target="#agentRequestModal-{{ $request->requestId }}"
+                                        >
+                                            <i class="fas fa-user-check"></i> Review Agent Request
+                                        </a>
                                     @endif
+
+                                    <!-- Agent Request Modal -->
+                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form method="POST" action="{{ route('client-request.agent-approval') }}" onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
+                                                @csrf
+                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
+                                                <input type="hidden" id="action-{{ $request->requestId }}" name="action" value="approve">
+
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Review Agent Request</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to approve or decline the agent pickup request for this client?</p>
+
+                                                        <div id="remarks-container-{{ $request->requestId }}" style="display: none;">
+                                                            <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks (required on decline):</label>
+                                                            <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Reason for declining..."></textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger" onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
+
+                                                        <button type="submit" class="btn btn-success" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
+                                                            Approve
+                                                        </button>
+
+                                                        <button type="submit" class="btn btn-warning d-none" id="confirm-decline-btn-{{ $request->requestId }}">
+                                                            Confirm Decline
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
 
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
@@ -442,34 +489,13 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    @if ($request->status === 'collected')
-                                        {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
-                                            data-toggle="modal" data-rider="{{ $request->user->name }}"
-                                            data-target="#verifyCollectedParcel-{{ $request->requestId }}">
-                                            <i class="fas fa-clipboard-check"></i>
-                                        </button> --}}
-                                        <button class="btn btn-info btn-sm verify-btn mr-1"
-                                            data-id="{{ $request->shipmentCollection->id }}"
-                                            data-request-id="{{ $request->requestId }}"
-                                            data-rider="{{ $request->user->name }}"
-                                            data-vehicle="{{ $request->vehicle->regNo ?? '—' }}"
-                                            data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
-                                            data-cost="{{ $request->shipmentCollection->cost }}"
-                                            data-total-cost="{{ $request->shipmentCollection->total_cost }}"
-                                            data-vat="{{ $request->shipmentCollection->vat }}"
-                                            data-base-cost="{{ $request->shipmentCollection->base_cost }}">
-                                            Verify
-                                        </button>
-                                    @endif
-
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     @endif
 
-                                    @if ($request->status === 'verified')
+                                    @if ($request->status === 'delivered')
                                         <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i>
@@ -506,7 +532,7 @@
                                     @endif
 
 
-                                    @if ($request->status === 'verified')
+                                    @if ($request->status === 'delivered')
                                         <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
                                             data-toggle="modal" data-target="">
                                             <i class="fas fa-truck"></i>
@@ -518,22 +544,64 @@
                     </tbody>
                 </table>
 
-                <!-- Parcel Collection Details Verification Modal -->
-                <div class="modal fade" id="itemsModal" tabindex="-1" aria-labelledby="itemsModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-xl">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success">
-                                <h5 class="modal-title text-white"><strong>Parcel Collection Details Verification</strong>
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
-                            </div>
-                            <div class="modal-body" id="modalItemsBody">
-                                Loading...
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <script>
+                    function setAgentAction(id, action) {
+                        const modal = document.getElementById(`agentRequestModal-${id}`);
+                        if (!modal) return;
+
+                        const actionInput = modal.querySelector(`#action-${id}`);
+                        const remarksContainer = modal.querySelector(`#remarks-container-${id}`);
+                        const approveBtn = modal.querySelector(`#approve-btn-${id}`);
+                        const confirmDeclineBtn = modal.querySelector(`#confirm-decline-btn-${id}`);
+
+                        if (!actionInput || !remarksContainer || !approveBtn || !confirmDeclineBtn) {
+                            console.warn("Missing elements in modal for request ID:", id);
+                            return;
+                        }
+
+                        actionInput.value = action;
+
+                        if (action === 'decline') {
+                            remarksContainer.style.display = 'block';
+                            approveBtn.classList.add('d-none');
+                            confirmDeclineBtn.classList.remove('d-none');
+                        } else {
+                            remarksContainer.style.display = 'none';
+                            approveBtn.classList.remove('d-none');
+                            confirmDeclineBtn.classList.add('d-none');
+                        }
+                    }
+
+                    function validateAgentApprovalForm(id) {
+                        const modal = document.getElementById(`agentRequestModal-${id}`);
+                        if (!modal) return false;
+
+                        const action = modal.querySelector(`#action-${id}`)?.value;
+                        const remarks = modal.querySelector(`#remarks-${id}`)?.value.trim();
+
+                        if (action === 'decline' && remarks === '') {
+                            alert('Please provide a remark for declining the request.');
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Bind all modal trigger buttons
+                        const allModals = document.querySelectorAll('[id^="agentRequestModal-"]');
+
+                        allModals.forEach(modal => {
+                            modal.addEventListener('shown.bs.modal', function () {
+                                // Reset modal state every time it opens
+                                const id = modal.id.split('-')[1];
+                                setAgentAction(id, 'approve'); // Reset to default state
+                            });
+                        });
+                    });
+                </script>
+
+
                 <script>
                     $(document).ready(function() {
                         $('#collectionLocation').on('change', function() {
@@ -547,256 +615,6 @@
                             $('#rate_id').val(rateId);
                         });
                     });
-                </script>
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-
-                        //
-                        $(document).on('click', '.verify-btn', function() {
-                            const shipment_id = $(this).data('id');
-                            const vehicle_reg_no = $(this).data('vehicle');
-                            const rider = $(this).data('rider');
-                            const date_requested = $(this).data('date-requested');
-                            const request_id = $(this).data('request-id');
-                            const cost = $(this).data('cost');
-                            const total_cost = $(this).data('total-cost');
-                            const vat = $(this).data('vat');
-                            const base_cost = $(this).data('base-cost');
-                            $.ajax({
-                                url: '/shipments/' + shipment_id + '/items',
-                                method: 'GET',
-                                success: function(response) {
-                                    let headerInfo = `
-                                    <form id="shipmentForm">
-                                                @csrf
-                                                @method('PUT')
-                                    <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Request ID</label>
-                                            <input type="text" name="requestId" class="form-control" id="requestId" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Rider</label>
-                                            <input type="text" name="userId" id="riderName" class="form-control"  readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Vehicle</label>
-                                            <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Date Requested</label>
-                                            <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
-                                        </div>
-                                    </div>
-                                `;
-
-                                    let itemsHtml =
-                                        '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
-                                    response.items.forEach((item, index) => {
-                                        const volume = item.length * item.width * item.height;
-
-                                        itemsHtml += `<thead> <tr><th> Item No. </th> <th> Item Name </th> <th> Package No </th> <th> Weight(Kg) </th> <th> Length(cm) </th> <th> Width(cm) </th> <th> Height(cm) </th> <th> Volume(cm <sup> 3 </sup>)</th><th> Remarks </th> </tr> </thead>
-                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
-
-
-                                    <tr>
-                                        <td colspan="9">
-                                            <table class="table table-sm table-bordered mt-2">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th>Sub Item Name</th>
-                                                        <th>Quantity</th>
-                                                        <th>Weight (Kg)</th>
-                                                        <th>Remarks</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="sub_items-${index}">
-                                                    <!-- Sub-items will be appended here -->
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item </button>
-                                        </td>
-                                    </tr>
-                                `;
-                                    });
-                                    itemsHtml += `
-                                        </tbody>
-                                    </table>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Cost *</small></label>
-                                            <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
-                                        </div>
-
-                                        <input type="hidden" name="base_cost" id="baseCost" value="">
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Tax (16%)*</small></label>
-                                            <input type="number" class="form-control" name="vat" id="vat" readonly>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Total Cost*</small></label>
-                                            <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Billing Party</small></label>
-                                            <select name="billing_party" class="form-control">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="Sender">Sender</option>
-                                                <option value="Receiver">Receiver</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Payment Mode</small></label>
-                                            <select name="payment_mode" class="form-control">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="M-Pesa">M-Pesa</option>
-                                                <option value="Cash">Cash</option>
-                                                <option value="Cheque">Cheque</option>
-                                                <option value="Invoice">Invoice</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-dark"><small>Reference</small></label>
-                                            <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
-                                        </div>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Submit Verification</button>
-                                    </div></form>
-                                    `;
-
-
-                                    // ✅ Correct usage
-                                    $('#modalItemsBody').html(headerInfo + itemsHtml);
-                                    document.getElementById('requestId').value = request_id;
-                                    document.getElementById('totalCost').value = total_cost;
-                                    document.getElementById('cost').value = cost;
-                                    document.getElementById('riderName').value = rider;
-                                    document.getElementById('vehicleRegNo').value = vehicle_reg_no;
-                                    document.getElementById('dateRequested').value = date_requested;
-                                    document.getElementById('vat').value = vat;
-                                    document.getElementById('baseCost').value = base_cost;
-                                    $('#itemsModal').modal('show');
-                                },
-                                error: function() {
-                                    $('#modalItemsBody').html('<p>Error loading items.</p>');
-                                    $('#itemsModal').modal('show');
-                                }
-                            });
-
-                        });
-
-                        // Total weight calculation and cost update
-                        function recalculateCosts() {
-                            let totalWeight = 0;
-
-                            $('#shipmentTable tbody tr').each(function() {
-                                const row = $(this);
-                                const weight = parseFloat(row.find('.weight').val()) || 0;
-                                const packages = parseFloat(row.find('.packages').val()) || 1;
-                                totalWeight += weight * packages;
-                            });
-
-                            const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                            let cost = baseCost;
-
-                            if (totalWeight > 25) {
-                                const extraWeight = totalWeight - 25;
-                                cost += extraWeight * 50;
-                            }
-
-                            $('input[name="cost"]').val(cost.toFixed(2));
-
-                            const vat = cost * 0.16;
-                            $('input[name="vat"]').val(vat.toFixed(2));
-                            $('input[name="total_cost"]').val((cost + vat).toFixed(2));
-                        }
-
-                        // Watch for changes in volume dimensions
-                        $(document).on('input', '.length, .width, .height',
-                            function() {
-                                const row = $(this).closest('tr');
-                                calculateVolume(row);
-                            });
-
-                        // Watch for changes in weight or packages
-                        $(document).on('input', '.weight, .packages', function() {
-                            recalculateCosts();
-                        });
-
-                        // Handle dynamic sub-item row addition
-                        document.querySelectorAll('.add-sub-item-btn').forEach(button => {
-                            button.addEventListener('click', function() {
-                                const itemIndex = this.getAttribute('data-item-index');
-                                let subCount = parseInt(this.getAttribute('data-sub-count'), 10);
-                                const tbody = document.querySelector(`#sub-items-body-${itemIndex}`);
-
-                                const newRow = document.createElement('tr');
-                                newRow.innerHTML = `
-                                    <td>
-                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][name]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][quantity]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" step="0.01" name="items[${itemIndex}][sub_items][${subCount}][weight]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][length]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][width]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][height]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][remarks]" class="form-control">
-                                    </td>
-                                `;
-
-                                tbody.appendChild(newRow);
-
-                                // Update sub-count for future additions
-                                this.setAttribute('data-sub-count', subCount + 1);
-
-                                // Bind cost listeners for the new row if needed
-                                bindCostListeners(newRow);
-                            });
-                        });
-                    });
-                </script>
-
-                <script>
-                    function addSubItems(parentIndex) {
-
-                        const container = document.getElementById(`sub_items-${parentIndex}`);
-
-                        const subItemCount = container.children.length;
-
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
-                            <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
-                            <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
-                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
-                        `;
-
-                        container.appendChild(row);
-                    }
                 </script>
             </div>
         </div>

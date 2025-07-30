@@ -156,6 +156,32 @@ class ShipmentDeliveriesController extends Controller
 
     }
 
+    public function handleAgentApproval(Request $request)
+    {
+        $requestId = $request->input('request_id');
+        $action = $request->input('action');
+        $remarks = $request->input('remarks');
+
+        $collection = ShipmentCollection::where('requestId', $requestId)->first();
+
+        if (!$collection) {
+            return redirect()->back()->with('error', 'Shipment not found.');
+        }
+
+        if ($action === 'approve') {
+            $collection->agent_approved = true;
+            $collection->approval_remarks = null; // optional: clear remarks
+        } elseif ($action === 'decline') {
+            $collection->agent_approved = false;
+            $collection->agent_requested = false;
+            $collection->approval_remarks = $remarks; // save reason
+        }
+
+        $collection->save();
+
+        return redirect()->back()->with('success', 'Agent request has been ' . ($action === 'approve' ? 'approved' : 'declined') . '.');
+    }
+
     public function requestApproval(Request $request)
     {
         $requestId = $request->input('requestId');
@@ -175,6 +201,7 @@ class ShipmentDeliveriesController extends Controller
         }
 
         $shipmentCollection->agent_approved = false;
+        $shipmentCollection->agent_requested = true;
         $shipmentCollection->save();
 
         // Send approval email (you may customize the mailable to include agent details)

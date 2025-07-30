@@ -166,6 +166,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
     Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
+    Route::post('/client-request/agent-approval', [ShipmentDeliveriesController::class, 'handleAgentApproval'])->name('client-request.agent-approval');
 
     //collections
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');

@@ -10,12 +10,8 @@ A delivery request (ID: **{{ $requestId }}**) has been initiated for the followi
 
 Please login to take action:
 
-<x-mail::button :url="route('login') . '?redirect=' . route('agent.approve', $requestId)">
-    Approve Agent Pickup
-</x-mail::button>
-
-<x-mail::button :url="route('login') . '?redirect=' . route('agent.decline.form', $requestId)" color="error">
-    Decline Request
+<x-mail::button :url="route('sameday.on-account', $requestId)">
+    View Request
 </x-mail::button>
 
 Thank you,<br>
