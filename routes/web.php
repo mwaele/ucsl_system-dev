@@ -222,8 +222,13 @@ Route::middleware('auth')->group(function () {
 
       Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
-        Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
-            ->name('shipment_arrivals_report');
+      Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
+          ->name('shipment_arrivals_report');
+
+      // Route::get('/shipment_arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])
+      // ->name('arrival_details');
+
+       Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
 
 
       Route::resource('transporters','App\Http\Controllers\TransporterController');

@@ -21,9 +21,11 @@
 
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <a href="{{ route('loading_sheets.index') }}" class="btn btn-success"><i class="fas fa-bars"></i>
-                    All Loading Sheets</a>
-                <h4 class="m-0 font-weight-bold text-success">Loading Sheet Details</h4>
+                <h4 class="m-0 font-weight-bold text-primary">Parcel Receipts Details at <strong>
+                        {{ Auth::user()->office->name }} </strong>
+                    Dispatch Date:<strong> {{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </strong> Destination:
+                    <strong> {{ $destination->destination ?? '' }} </strong>
+                </h4>
 
 
                 <a href="/generate_loading_sheet/{{ $loading_sheet->id }}"
@@ -32,50 +34,23 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row mb-2 p-2">
-                <div class="col-md-6">
-                    <img src="{{ asset('images/UCSLogo1.png') }}" height="100px" width="auto" alt="UCS Logo"
-                        class="img-fluid">
-                </div>
-                <div class="col-md-6 d-flex flex-column align-items-end justify-content-end">
-                    <div class="mb-2 ">
-                        <p class="p">Pokomo Road, Industrial Area</p>
-                        <p class="p">P.O. Box 43357 - 00100, Nairobi</p>
-                        <p class="p">Tel: +254 756 504 560 0202592118</p>
-                        <p class="p">Email: enquiries@ufanisicourier.co.ke</p>
-                    </div>
-                    <div class="mb-2 ">
-                        <p class="p">Jomo Kenyatta Avenue - Sparki Area</p>
-                        <p class="p">P.O. Box 980 - 80100 Mombasa</p>
-                        <p class="p">Tel: +254 751 505 560 +254 104 100 101</p>
-                    </div>
-                </div>
+
+
+            <div class="d-flex justify-content-between mb-3 shadow-sm  bg-warning pt-2">
+
+                <!-- Type Filter -->
+                <select id="typeFilter" class="form-control ml-2 mb-2" style="width: 200px;">
+                    <option value="">Select Type</option>
+                    <option value="COD">COD</option>
+                    <option value="Walkin">Walkin</option>
+                </select>
+                <h4 class="text-white mt-1 pr-2">
+                    <strong>No. {{ str_pad($loading_sheet->batch_no, 4, '0', STR_PAD_LEFT) }}
+                    </strong>
+                </h4>
             </div>
 
-            <h4 class="text-danger mb-3" style="text-align: right">
-                <strong>No. {{ str_pad($loading_sheet->batch_no, 4, '0', STR_PAD_LEFT) }}
-                </strong>
-            </h4>
 
-            <div class="table-responsive">
-                <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>DISPATCH DATE</th>
-                            <th>OFFICE OF ORIGIN</th>
-                            <th>DESTINATION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
-                            <td>{{ $loading_sheet->office->name }} </td>
-                            <td>{{ $destination->destination }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
             <div class="table-responsive">
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>

@@ -5,11 +5,12 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <h4 class="m-0 font-weight-bold text-primary mb-3 mb-md-0">Parcel Receipts at Destination Office</h4>
+                <h4 class="m-0 font-weight-bold text-primary mb-3 mb-md-0">Parcel Receipts at <strong>
+                        {{ Auth::user()->office->name }} </strong></h4>
 
 
                 <!-- Report Button -->
-                <a href="/shipment_arrivals_report" id="generateReport"
+                <a href="/shipment_arrivals_report" id="generateReportBtn"
                     class="btn btn-danger btn-sm ml-md-2 mb-2 mb-md-0 shadow-sm">
                     <i class="fas fa-download fa-sm text-white"></i> Generate Report
                 </a>
@@ -53,41 +54,57 @@
             <div class="d-flex justify-content-center mb-3 shadow-sm  bg-warning pt-2">
                 <div class="form-inline flex-wrap justify-content-center">
                     <!-- Radio Filters -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filterOption" value="dispatch"
-                            id="radioDispatch" checked>
-                        <label class="form-check-label" for="radioDispatch">Dispatch Note</label>
-                    </div>
+
+
 
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="filterOption" value="date" id="radioDate">
                         <label class="form-check-label" for="radioDate">Date</label>
+
+                        <!-- Date Picker -->
+                        <input type="date" id="dateFilter" class="form-control ml-2 mb-2" style="width: 200px;"
+                            value="<?= date('Y-m-d') ?>">
                     </div>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filterOption" value="type" id="radioType">
-                        <label class="form-check-label" for="radioType">COD/Walkin</label>
+                        <input class="form-check-input" type="radio" name="filterOption" value="dispatch"
+                            id="radioDispatch" checked>
+                        <label class="form-check-label" for="radioDispatch">Dispatch Note</label>
+
+                        <!-- Dispatch Dropdown -->
+                        <select id="dispatchNoteFilter" class="form-control ml-2 mb-2" style="width: 200px;">
+                            <option value="">Select Dispatch Note</option>
+                            @foreach ($sheets as $sheet)
+                                <option value="{{ $sheet->batch_no }}">
+                                    {{ str_pad($sheet->batch_no, 5, '0', STR_PAD_LEFT) }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
-                    <!-- Dispatch Dropdown -->
-                    <select id="dispatchNoteFilter" class="form-control ml-2 mb-2" style="width: 200px;">
-                        <option value="">Select Batch No</option>
-                        @foreach ($sheets as $sheet)
-                            <option value="{{ str_pad($sheet->batch_no, 5, '0', STR_PAD_LEFT) }}">
-                                {{ str_pad($sheet->batch_no, 5, '0', STR_PAD_LEFT) }}</option>
-                        @endforeach
-                    </select>
+                    <!-- Date Range Radio -->
+                    <div class="form-check form-check-inline">
+                        {{-- <input class="form-check-input" type="radio" name="filterOption" id="filterByDateRange"
+                            value="daterange"> --}}
+                        {{-- <input class="form-check-input" type="radio" name="filterOption" id="filterByDateRange"
+                            value="range">
 
-                    <!-- Date Picker -->
-                    <input type="date" id="dateFilter" class="form-control ml-2 mb-2" style="width: 200px;"
-                        value="<?= date('Y-m-d') ?>">
+                        <label class="form-check-label" for="filterByDateRange">Date Range</label> --}}
 
+                        <!-- Date Range Pickers -->
+                        {{-- <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
+
+                            <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;"
+                                placeholder="Start Date">
+                            <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;"
+                                placeholder="End Date">
+                        </div> --}}
+                    </div>
                     <!-- Type Filter -->
-                    <select id="typeFilter" class="form-control ml-2 mb-2" style="width: 200px;">
+                    {{-- <select id="typeFilter" class="form-control ml-2 mb-2" style="width: 200px;">
                         <option value="">Select Type</option>
                         <option value="COD">COD</option>
                         <option value="Walkin">Walkin</option>
-                    </select>
+                    </select> --}}
                 </div>
             </div>
 
@@ -140,36 +157,15 @@
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </a> --}}
-                                    <a href="{{ route('loading_sheets.show', $sheet->id) }}">
+                                    <a href="{{ route('arrival_details', $sheet->id) }}">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i> View
                                         </button>
                                     </a>
 
                                     <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                        data-target="#createLoadingSheet"><i class="fas fa-eye"></i> View Waybills</button>
-                                    <!-- Logout Modal-->
-                                    <div class="modal fade" id="" tabindex="-1" role="dialog"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form action =" " method = "POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            title="Delete" value="DELETE">YES DELETE <i
-                                                                class="fas fa-trash"></i> </button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        data-target="#createLoadingSheet"><i class="fas fa-eye"></i> View
+                                        Waybills</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -189,10 +185,17 @@
                     pageLength: 10,
                 });
             } else {
-                table = $('#myTable').DataTable(); // get existing instance
+                table = $('#myTable').DataTable();
             }
 
-
+            function toggleDateRangeVisibility() {
+                const selected = $('input[name="filterOption"]:checked').val();
+                if (selected === 'range') {
+                    $('#dateRangeFilter').show();
+                } else {
+                    $('#dateRangeFilter').hide();
+                }
+            }
 
 
             function filterTable() {
@@ -200,6 +203,8 @@
                 const dispatch = $('#dispatchNoteFilter').val();
                 const date = $('#dateFilter').val();
                 const type = $('#typeFilter').val();
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
 
                 table.rows().every(function() {
                     const data = this.data();
@@ -211,55 +216,65 @@
                         show = date ? data[1].includes(date) : true;
                     } else if (filterOption === 'type') {
                         show = type ? data[6].includes(type) : true;
+                    } else if (filterOption === 'daterange') {
+                        const rowDate = new Date(data[1]);
+                        const from = new Date(startDate);
+                        const to = new Date(endDate);
+                        if (startDate && endDate) {
+                            show = rowDate >= from && rowDate <= to;
+                        }
                     }
 
                     $(this.node()).toggle(show);
                 });
             }
 
-            $('#dispatchNoteFilter, #dateFilter, #typeFilter').on('change', filterTable);
-
-            $('input[name="filterOption"]').on('change', function() {
-                $('#dispatchNoteFilter').prop('disabled', this.value !== 'dispatch');
-                $('#dateFilter').prop('disabled', this.value !== 'date');
-                $('#typeFilter').prop('disabled', this.value !== 'type');
-                filterTable();
-            });
-
-            $('#dispatchNoteFilter').prop('disabled', false);
-            $('#dateFilter, #typeFilter').prop('disabled', true);
-
-            // update report link
+            function updateInputStates() {
+                const selected = $('input[name="filterOption"]:checked').val();
+                $('#dispatchNoteFilter').prop('disabled', selected !== 'dispatch');
+                $('#dateFilter').prop('disabled', selected !== 'date');
+                $('#typeFilter').prop('disabled', selected !== 'type');
+                $('#startDate, #endDate').prop('disabled', selected !== 'daterange');
+            }
 
             function updateReportLink() {
-                const selectedOption = $('input[name="filterOption"]:checked').val();
+                const selectedOption = document.querySelector('input[name="filterOption"]:checked')?.value;
                 let filterValue = '';
 
                 if (selectedOption === 'dispatch') {
-                    filterValue = $('#dispatchNoteFilter').val();
+                    filterValue = document.getElementById('dispatchNoteFilter').value;
                 } else if (selectedOption === 'date') {
-                    filterValue = $('#dateFilter').val();
+                    filterValue = document.getElementById('dateFilter').value;
                 } else if (selectedOption === 'type') {
-                    filterValue = $('#typeFilter').val();
+                    filterValue = document.getElementById('typeFilter').value;
+                } else if (selectedOption === 'range') {
+                    const start = document.getElementById('startDate').value;
+                    const end = document.getElementById('endDate').value;
+                    if (start && end) {
+                        filterValue = `${start}_${end}`;
+                    }
                 }
 
-                const reportUrl =
-                    `/shipment_arrivals_report?filter=${selectedOption}&value=${encodeURIComponent(filterValue)}`;
-                $('#generateReportBtn').attr('href', reportUrl);
+                const url =
+                    `/shipment_arrivals_report?filter=${selectedOption || ''}&value=${encodeURIComponent(filterValue)}`;
+                document.getElementById('generateReportBtn').setAttribute('href', url);
             }
 
-            // Initial run
-            updateReportLink();
+            $('#dispatchNoteFilter, #dateFilter,  #startDate, #endDate').on('change input', function() {
+                filterTable();
+                updateReportLink();
+            });
 
-            // Update on radio change
             $('input[name="filterOption"]').on('change', function() {
+                updateInputStates();
+                filterTable();
                 updateReportLink();
             });
 
-            // Update on filter value change
-            $('#dispatchNoteFilter, #dateFilter, #typeFilter').on('change input', function() {
-                updateReportLink();
-            });
+            // Initial state
+            updateInputStates();
+            filterTable();
+            updateReportLink();
         });
     </script>
 
