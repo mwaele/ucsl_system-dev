@@ -168,9 +168,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
 
     //collections
-     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
-     Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
-     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
+    Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
+    Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
+    Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
+    Route::get('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'showDeclineForm'])->name('agent.decline.form');
+    Route::post('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'submitDecline'])->name('agent.decline.submit');
 
     Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
 

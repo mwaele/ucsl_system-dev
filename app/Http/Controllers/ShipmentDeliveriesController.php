@@ -200,6 +200,27 @@ class ShipmentDeliveriesController extends Controller
         return redirect()->route('dashboard')->with('success', "Agent approved for delivery ID $requestId.");
     }
 
+    public function showDeclineForm($requestId)
+    {
+        return view('client-request.decline', compact('requestId'));
+    }
+
+    public function submitDecline(Request $request, $requestId)
+    {
+        $request->validate([
+            'remarks' => 'required|string|max:500',
+        ]);
+
+        $shipment = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
+        $shipment->agent_approved = false;
+        $shipment->agent_decline_remarks = $request->remarks;
+        $shipment->save();
+
+        // Optionally notify agent or log action...
+
+        return redirect()->route('dashboard')->with('status', 'Request declined with remarks.');
+    }
+
     /**
      * Display the specified resource.
      */
