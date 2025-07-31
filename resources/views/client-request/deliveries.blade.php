@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-danger">My Deliveries List</h6>
+                <h4 class="m-0 font-weight-bold text-danger">My Same Day Deliveries List</h4>
                 <a href="/collections_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
@@ -51,7 +51,7 @@
                                 <td> {{ $collection->parcelDetails }} </td>
                                 <td>
                                     <p
-                                        class="badge
+                                        class="badge mt-2
                                             @if ($collection->status == 'pending collection') bg-secondary
                                             @elseif ($collection->status == 'collected')
                                                 bg-warning
@@ -60,14 +60,14 @@
                                             @elseif ($collection->status == 'verified')
                                                 bg-green 
                                             @endif
-                                            fs-5 text-white">
+                                             text-white px-3 py-2 fs-8 rounded">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </p>
                                 </td>
                                 <td class="d-flex pl-2">
                                     @if ($collection->status === 'pending collection')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
-                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"><i
+                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"> Collect  <i
                                                 class="fas fa-box"></i>
                                         </button>
                                     @endif
@@ -264,7 +264,7 @@
                                     @if ($collection->status === 'delivered')
                                         <button class="btn btn-sm btn-info mr-1" title="Print collection" data-toggle="modal"
                                             data-target="#printGDNModal-{{ $collection->id }}">
-                                            GDN <i class="fas fa-print"></i>
+                                            GRN <i class="fas fa-print"></i>
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
@@ -274,7 +274,7 @@
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
-                                                            Goods Delivery Note</h5>
+                                                            Goods Received Note</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -292,12 +292,12 @@
                                                                         x="0" y="0" width="194" height="71" />
                                                                 </svg>
                                                             </div>
-                                                            <div style="text-align: center; font-size: 15px;"><strong>Goods Delivery Note</strong></div>
+                                                            <div style="text-align: center; font-size: 15px;"><strong>Goods Received Note</strong></div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-size: 14px;"><strong>Request ID:
                                                                     {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                                            <div style="font-size: 14px;"><strong>Goods Delivery Note No:
+                                                            <div style="font-size: 14px;"><strong>Goods Received Note No:
                                                                     {{ $collection->consignment_no ?? 'N/A' }}</strong>
                                                             </div>
                                                             <div>
@@ -379,7 +379,7 @@
                                                                                 <td style="text-align: center;">
                                                                                     {{ $item->packages_no }}</td>
                                                                                 <td style="text-align: right;">
-                                                                                    {{ $item->weight }}</td>
+                                                                                    {{ number_format($item->weight, 2) }}</td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -430,7 +430,8 @@
                                                                 <div style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
-                                                                </div><br>
+                                                                </div>
+                                                                <hr style="margin: 6px 0;">
                                                                 These are provisional charges based on details provided by
                                                                 sender.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
@@ -510,10 +511,6 @@
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
                                                                             <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
-                                                                        </div>
-                                                                        <div class="form-group col-md-6">
-                                                                            <label class="form-label text-primary">Receiver Type <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_type">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -678,8 +675,7 @@
                                                         const receiverFields = [
                                                             'input[name="receiver_name"]',
                                                             'input[name="receiver_phone"]',
-                                                            'input[name="receiver_id_no"]',
-                                                            'input[name="receiver_type"]'
+                                                            'input[name="receiver_id_no"]'
                                                         ];
 
                                                         const agentFields = [

@@ -441,16 +441,14 @@
                                                     <div class="modal-body">
                                                         <p>Are you sure you want to approve or decline the agent pickup request for this client?</p>
 
-                                                        <div id="remarks-container-{{ $request->requestId }}" style="display: none;">
-                                                            <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks (required on decline):</label>
-                                                            <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Reason for declining..."></textarea>
-                                                        </div>
+                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks <span class="text-muted">(required only if declining)</span>:</label>
+                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Add remarks if necessary..."></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-danger" onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
 
-                                                        <button type="submit" class="btn btn-success" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
+                                                        <button type="submit" class="btn btn-success d-inline" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
                                                             Approve
                                                         </button>
 
@@ -490,15 +488,15 @@
                                         </div>
                                     </div>
                                     @if ($request->status === 'collected')
-                                        <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
-                                            <i class="fas fa-eye"></i>
+                                        <button class="btn btn-sm btn-primary mr-1" title="View Client Request">
+                                            View <i class="fas fa-eye"></i>
                                         </button>
                                     @endif
 
                                     @if ($request->status === 'delivered')
-                                        <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
+                                        <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
-                                            <i class="fas fa-file-invoice"></i>
+                                            Waybill <i class="fas fa-file-invoice"></i> 
                                         </button>
 
                                         <div class="modal fade" id="waybillModal{{ $request->requestId }}"
@@ -533,7 +531,7 @@
 
 
                                     @if ($request->status === 'delivered')
-                                        <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
+                                        <button class="btn btn-sm btn-warning mr-1" title="Dispatch parcel"
                                             data-toggle="modal" data-target="">
                                             <i class="fas fa-truck"></i>
                                         </button>
@@ -545,42 +543,33 @@
                 </table>
 
                 <script>
-                    function setAgentAction(id, action) {
-                        const modal = document.getElementById(`agentRequestModal-${id}`);
-                        if (!modal) return;
+                    function setAgentAction(requestId, action) {
+                        const actionField = document.getElementById(`action-${requestId}`);
+                        const approveBtn = document.getElementById(`approve-btn-${requestId}`);
+                        const confirmDeclineBtn = document.getElementById(`confirm-decline-btn-${requestId}`);
 
-                        const actionInput = modal.querySelector(`#action-${id}`);
-                        const remarksContainer = modal.querySelector(`#remarks-container-${id}`);
-                        const approveBtn = modal.querySelector(`#approve-btn-${id}`);
-                        const confirmDeclineBtn = modal.querySelector(`#confirm-decline-btn-${id}`);
-
-                        if (!actionInput || !remarksContainer || !approveBtn || !confirmDeclineBtn) {
-                            console.warn("Missing elements in modal for request ID:", id);
+                        if (!actionField || !approveBtn || !confirmDeclineBtn) {
+                            console.warn('Could not find required fields for request ID:', requestId);
                             return;
                         }
 
-                        actionInput.value = action;
+                        actionField.value = action;
 
                         if (action === 'decline') {
-                            remarksContainer.style.display = 'block';
                             approveBtn.classList.add('d-none');
                             confirmDeclineBtn.classList.remove('d-none');
                         } else {
-                            remarksContainer.style.display = 'none';
                             approveBtn.classList.remove('d-none');
                             confirmDeclineBtn.classList.add('d-none');
                         }
                     }
 
-                    function validateAgentApprovalForm(id) {
-                        const modal = document.getElementById(`agentRequestModal-${id}`);
-                        if (!modal) return false;
-
-                        const action = modal.querySelector(`#action-${id}`)?.value;
-                        const remarks = modal.querySelector(`#remarks-${id}`)?.value.trim();
+                    function validateAgentApprovalForm(requestId) {
+                        const action = document.getElementById(`action-${requestId}`).value;
+                        const remarks = document.getElementById(`remarks-${requestId}`).value.trim();
 
                         if (action === 'decline' && remarks === '') {
-                            alert('Please provide a remark for declining the request.');
+                            alert('Remarks are required when declining a request.');
                             return false;
                         }
 
@@ -594,13 +583,12 @@
                         allModals.forEach(modal => {
                             modal.addEventListener('shown.bs.modal', function () {
                                 // Reset modal state every time it opens
-                                const id = modal.id.split('-')[1];
+                                const id = modal.id.replace('agentRequestModal-', '');
                                 setAgentAction(id, 'approve'); // Reset to default state
                             });
                         });
                     });
                 </script>
-
 
                 <script>
                     $(document).ready(function() {
