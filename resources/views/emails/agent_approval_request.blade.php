@@ -1,12 +1,14 @@
 <x-mail::message>
+# ATTENTION ADMIN
 # Agent Delivery Approval Request
 
-A delivery request (ID: **{{ $requestId }}**) has been initiated for the following agent and requires front office approval:
+A Same Day On-Account delivery request (ID: **{{ $requestId }}**) has been initiated for the following agent and requires front office approval:
 
 **Agent Details**
 - **Name:** {{ $agentName }}
 - **ID Number:** {{ $agentIdNumber }}
 - **Phone:** {{ $agentPhone }}
+- **Reason:** {{ $agentReason }}
 
 Please login to take action:
 

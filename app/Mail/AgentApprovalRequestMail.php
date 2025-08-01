@@ -20,13 +20,15 @@ class AgentApprovalRequestMail extends Mailable
     public $agentName;
     public $agentIdNumber;
     public $agentPhone;
+    public $agentReason;
 
-    public function __construct($requestId, $agentName, $agentIdNumber, $agentPhone)
+    public function __construct($requestId, $agentName, $agentIdNumber, $agentPhone, $agentReason)
     {
         $this->requestId = $requestId;
         $this->agentName = $agentName;
         $this->agentIdNumber = $agentIdNumber;
         $this->agentPhone = $agentPhone;
+        $this->agentReason = $agentReason;
     }
 
     public function build()
@@ -38,6 +40,7 @@ class AgentApprovalRequestMail extends Mailable
                 'agentName' => $this->agentName,
                 'agentIdNumber' => $this->agentIdNumber,
                 'agentPhone' => $this->agentPhone,
+                'agentReason' => $this->agentReason,
             ]);
     }
 

@@ -51,7 +51,6 @@ class ShipmentDeliveriesController extends Controller
             'receiver_name' => $request->receiver_name,
             'receiver_phone' => $request->receiver_phone,
             'receiver_id_no' => $request->receiver_id_no,
-            'receiver_type' => $request->receiver_type,
             'agent_name' => $request->agent_name,
             'agent_phone' => $request->agent_phone,
             'agent_id_no' => $request->agent_id_no,
@@ -62,95 +61,99 @@ class ShipmentDeliveriesController extends Controller
         ]);
 
           // 2. Create track
-            $trackingId = DB::table('tracks')->insertGetId([
-                'requestId' => $request->requestId,
-                'clientId' => $request->client_id,
-                'current_status' => 'Delivered',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        $trackingId = DB::table('tracks')->insertGetId([
+            'requestId' => $request->requestId,
+            'clientId' => $request->client_id,
+            'current_status' => 'Delivered',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-            // 3. Create tracking info
-            $rider = User::find(Auth::user()->name);
-            //$vehicle = Vehicle::find($clientRequest->vehicleId);
-            $delivered_to = 'Unknown Receiver'; // default fallback
-
-            if ($request->receiver_type == 'agent') {
-                $delivered_to = $request->agent_name;
-            } elseif ($request->receiver_type == 'client') {
-                $delivered_to = $request->receiver_name;
-            }
-
-
-
-            DB::table('tracking_infos')->insert([
-                'trackId' => $trackingId,
-                'date' => now(),
-                'details' => 'Parcel Delivered',
-                'user_id' => Auth::user()->id,
-                //'vehicle_id' => $vehicle->id,
-                'remarks' => "Parcel has been delivered to {$delivered_to} request ID {$request->requestId}. Delivered by {$rider}",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $riderName = Auth::user()->name;
-
-            // Get the front office creator of the client request
-            $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
-            $frontOfficeNumber = $creator?->phone_number ?? '+254725525484'; // fallback
-            $creatorName = $creator?->name ?? 'Staff';
-
-            // Front Office Message
-            $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
-
-            $smsService->sendSms(
-                phone: $frontOfficeNumber,
-                subject: 'Parcel Delivered',
-                message: $frontMessage,
-                addFooter: true
-            );
-
-            SentMessage::create([
-                'request_id' => $request->requestId,
-                'client_id' => $request->client_id,
-                'rider_id' => Auth::id(),
-                'recipient_type' => 'staff',
-                'recipient_name' => $creatorName ?? 'Front Office',
-                'phone_number' => $frontOfficeNumber,
-                'subject' => 'Parcel Delivered',
-                'message' => $frontMessage,
-            ]);
-
-            // front office email
-            $office_subject = 'Parcel Delivered';
-            $office_email = $creator->email;
-            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                    <p>Thank you for using Ufanisi Courier Services.</p>";
-            $fullOfficeMessage = $frontMessage . $footer;
-
-            $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
+        // 3. Create tracking info
+        $goods_received_note_no = $request->grn_no;
         
-            $senderName = 'Valued Client';
-            $riderName = Auth::user()->name;
+        ShipmentCollection::where('requestId', $request->requestId)
+        ->update(['grn_no' => $goods_received_note_no]); 
 
-             // sender email
-            $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
-            $sender_subject = 'Parcel Delivered';
-            $client = Client::find($request->client_id); // or whatever key you have
+        // 4. Create tracking info
+        $rider = User::find(Auth::user()->name);
+        //$vehicle = Vehicle::find($clientRequest->vehicleId);
+        $delivered_to = 'Unknown Receiver'; // default fallback
 
-                if ($client) {
-                    $sender_email = $client->email; // or whatever column name is used for the email
-                } else {
-                    // handle case where client isn't found
-                    $sender_email = null; // or throw an error / log
-                }
-            $fullOfficeMessage = $senderMessage . $footer;
+        if ($request->receiver_type == 'agent') {
+            $delivered_to = $request->agent_name;
+        } elseif ($request->receiver_type == 'client') {
+            $delivered_to = $request->receiver_name;
+        }
 
-            ClientRequest::where('requestId', $request->requestId)
-            ->update(['status' => 'delivered']);
-            $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
+        DB::table('tracking_infos')->insert([
+            'trackId' => $trackingId,
+            'date' => now(),
+            'details' => 'Parcel Delivered',
+            'user_id' => Auth::user()->id,
+            //'vehicle_id' => $vehicle->id,
+            'remarks' => "Parcel has been delivered to {$delivered_to} request ID {$request->requestId}. Delivered by {$rider}",
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $riderName = Auth::user()->name;
+
+        // Get the front office creator of the client request
+        $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
+        $frontOfficeNumber = $creator?->phone_number ?? '+254725525484'; // fallback
+        $creatorName = $creator?->name ?? 'Staff';
+
+        // Front Office Message
+        $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
+
+        $smsService->sendSms(
+            phone: $frontOfficeNumber,
+            subject: 'Parcel Delivered',
+            message: $frontMessage,
+            addFooter: true
+        );
+
+        SentMessage::create([
+            'request_id' => $request->requestId,
+            'client_id' => $request->client_id,
+            'rider_id' => Auth::id(),
+            'recipient_type' => 'staff',
+            'recipient_name' => $creatorName ?? 'Front Office',
+            'phone_number' => $frontOfficeNumber,
+            'subject' => 'Parcel Delivered',
+            'message' => $frontMessage,
+        ]);
+
+        // front office email
+        $office_subject = 'Parcel Delivered';
+        $office_email = $creator->email;
+        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                <p>Thank you for using Ufanisi Courier Services.</p>";
+        $fullOfficeMessage = $frontMessage . $footer;
+
+        $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
+    
+        $senderName = 'Valued Client';
+        $riderName = Auth::user()->name;
+
+            // sender email
+        $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
+        $sender_subject = 'Parcel Delivered';
+        $client = Client::find($request->client_id); // or whatever key you have
+
+            if ($client) {
+                $sender_email = $client->email; // or whatever column name is used for the email
+            } else {
+                // handle case where client isn't found
+                $sender_email = null; // or throw an error / log
+            }
+        $fullOfficeMessage = $senderMessage . $footer;
+
+        ClientRequest::where('requestId', $request->requestId)
+        ->update(['status' => 'delivered']);
+        $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
 
         return redirect()->back()->with('success', 'Delivery inserted successfully.');
 
@@ -188,9 +191,10 @@ class ShipmentDeliveriesController extends Controller
         $agentName = $request->input('agentName');
         $agentId = $request->input('agentId');
         $agentPhone = $request->input('agentPhone');
+        $agentReason = $request->input('agentReason');
 
         // Validate inputs (optional)
-        if (!$agentName || !$agentId || !$agentPhone) {
+        if (!$agentName || !$agentId || !$agentPhone || !$agentReason) {
             return response()->json(['status' => 'error', 'message' => 'Agent details are required.'], 422);
         }
 
@@ -206,7 +210,7 @@ class ShipmentDeliveriesController extends Controller
 
         // Send approval email (you may customize the mailable to include agent details)
         Mail::to('mwaele@ufanisi.co.ke')->send(
-            new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone)
+            new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone, $agentReason)
         );
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
@@ -222,6 +226,8 @@ class ShipmentDeliveriesController extends Controller
 
         // Mark as approved
         $shipmentCollection->agent_approved = true;
+        $shipmentCollection->approved_at = now();
+        $shipmentCollection->approved_by = Auth::id();
         $shipmentCollection->save();
 
         return redirect()->route('dashboard')->with('success', "Agent approved for delivery ID $requestId.");

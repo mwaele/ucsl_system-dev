@@ -43,6 +43,20 @@ class SameDayController extends Controller
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
+        // Get the latest consignment number
+        $latestGRN = ShipmentCollection::where('grn_no', 'LIKE', 'GRN-%')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestGRN && preg_match('/GRN-(\d+)/', $latestGRN->grn_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 10000; // Start from GRN-10000
+        }
+
+        $grn_no = 'GRN-' . $newNumber;
+
         // Generate Unique Request ID
         $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
             ->orderByRaw("$castExpression DESC")
@@ -77,7 +91,7 @@ class SameDayController extends Controller
 
         return view('same_day.on_account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers','timeFilter',
             'startDate',
-            'endDate', 'sub_category','locations'));
+            'endDate', 'sub_category','locations', 'grn_no'));
     }
 
     public function walk_in()

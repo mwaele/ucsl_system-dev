@@ -84,4 +84,9 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(User::class, 'collected_by');
     }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 }

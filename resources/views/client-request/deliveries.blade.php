@@ -298,7 +298,7 @@
                                                             <div style="font-size: 14px;"><strong>Request ID:
                                                                     {{ $collection->requestId ?? 'N/A' }}</strong></div>
                                                             <div style="font-size: 14px;"><strong>Goods Received Note No:
-                                                                    {{ $collection->consignment_no ?? 'N/A' }}</strong>
+                                                                    {{ $collection->grn_no ?? 'N/A' }}</strong>
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
@@ -501,16 +501,26 @@
                                                                             <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
                                                                             <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
+                                                                            <input type="hidden" value="{{ $grn_no }}" name="grn_no">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
                                                                             <input type="text" class="form-control" name="receiver_phone" value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-row">
+                                                                    <div class="form-row"> 
                                                                         <div class="form-group col-md-6">
                                                                             <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
+                                                                            <input type="number" 
+                                                                                class="form-control" 
+                                                                                name="receiver_id_no" 
+                                                                                value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}" 
+                                                                                minlength="8" 
+                                                                                maxlength="8" 
+                                                                                min="8999999" 
+                                                                                max="99999999" 
+                                                                                required
+                                                                                oninput="this.value = this.value.slice(0, 8);">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -531,16 +541,26 @@
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-primary">Agent Phone Number</label>
                                                                                 <input type="text" class="form-control" name="agent_phone">
+                                                                                <input type="hidden" value="{{ $grn_no }}" name="grn_no">
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
                                                                                 <label class="form-label text-primary">Agent ID Number</label>
-                                                                                <input type="text" class="form-control" name="agent_id_no" maxlength="8">
+                                                                                <input type="text" class="form-control" minlength="8" maxlength="8" min="8999999" max="99999999"
+                                                                                oninput="this.value = this.value.slice(0, 8);" name="agent_id_no" required>
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label class="form-label text-primary">Remarks</label>
-                                                                                <input type="text" class="form-control" name="remarks">
+                                                                                <label class="form-label text-primary">Remarks <span class="text-danger">*</span></label>
+                                                                                <input type="text"
+                                                                                    class="form-control"
+                                                                                    name="remarks"
+                                                                                    required
+                                                                                    pattern="^[^\d]{5,}$"
+                                                                                    title="Remarks must be at least 5 characters and must not contain numbers.">
+                                                                                <div class="invalid-feedback">
+                                                                                    Remarks must be at least 5 characters and must not contain numbers.
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -554,18 +574,33 @@
                                                                     <div class="card-body">
                                                                         <p>Please request approval from the front office for this agent to collect the delivery.</p>
 
-                                                                        <div class="row g-3 mb-3">
+                                                                        <div class="row g-2 mb-2">
                                                                             <div class="col-md-4">
                                                                                 <label for="agent_name_{{ $collection->id }}" class="form-label">Name</label>
                                                                                 <input type="text" class="form-control" id="agent_name_{{ $collection->id }}" placeholder="Agent name">
                                                                             </div>
                                                                             <div class="col-md-4">
                                                                                 <label for="agent_id_{{ $collection->id }}" class="form-label">ID No.</label>
-                                                                                <input type="text" class="form-control" id="agent_id_{{ $collection->id }}" placeholder="ID number">
+                                                                                <input type="text"
+                                                                                    class="form-control"
+                                                                                    id="agent_id_{{ $collection->id }}"
+                                                                                    name="agent_id"
+                                                                                    required
+                                                                                    pattern="^[0-9]{8}$"
+                                                                                    inputmode="numeric"
+                                                                                    maxlength="8"
+                                                                                    oninput="validateAgentId(this)">
+                                                                                <div class="invalid-feedback">
+                                                                                    ID must be 8 digits and at least 8999999.
+                                                                                </div>
                                                                             </div>
                                                                             <div class="col-md-4">
                                                                                 <label for="agent_phone_{{ $collection->id }}" class="form-label">Phone</label>
                                                                                 <input type="text" class="form-control" id="agent_phone_{{ $collection->id }}" placeholder="Phone number">
+                                                                            </div>
+                                                                            <div class="col-md-4">
+                                                                                <label for="agent_reason_{{ $collection->id }}" class="form-label">Reason</label>
+                                                                                <input type="text" class="form-control" id="agent_reason_{{ $collection->id }}" placeholder="Reason">
                                                                             </div>
                                                                         </div>
 
@@ -590,6 +625,41 @@
                                                 </div>
 
                                                 <!-- JavaScript for Dynamic Display -->
+                                                <script>
+                                                    // Bootstrap validation styling
+                                                    (() => {
+                                                        'use strict';
+                                                        const forms = document.querySelectorAll('.needs-validation');
+
+                                                        Array.from(forms).forEach(form => {
+                                                            form.addEventListener('submit', event => {
+                                                                const agentIdInput = form.querySelector('[name="agent_id"]');
+                                                                const idValue = parseInt(agentIdInput.value, 10);
+
+                                                                // Check numeric range
+                                                                if (idValue < 8999999 || idValue > 99999999) {
+                                                                    agentIdInput.classList.add('is-invalid');
+                                                                    event.preventDefault();
+                                                                    event.stopPropagation();
+                                                                    return;
+                                                                }
+
+                                                                if (!form.checkValidity()) {
+                                                                    event.preventDefault();
+                                                                    event.stopPropagation();
+                                                                }
+
+                                                                form.classList.add('was-validated');
+                                                            }, false);
+                                                        });
+                                                    })();
+
+                                                    function validateAgentId(input) {
+                                                        // Enforce numeric-only and max 8 characters
+                                                        input.value = input.value.replace(/\D/g, '').slice(0, 8);
+                                                    }
+                                                </script>
+
                                                 <script>
                                                     document.addEventListener('DOMContentLoaded', function () {
                                                         const receiverRadio = document.getElementById('select_receiver');
@@ -623,6 +693,7 @@
                                                         const agentName = document.getElementById(`agent_name_${collectionId}`).value;
                                                         const agentId = document.getElementById(`agent_id_${collectionId}`).value;
                                                         const agentPhone = document.getElementById(`agent_phone_${collectionId}`).value;
+                                                        const agentReason = document.getElementById(`agent_reason_${collectionId}`).value;
 
                                                         fetch("{{ route('request.agent.approval') }}", {
                                                             method: "POST",
@@ -634,7 +705,8 @@
                                                                 requestId,
                                                                 agentName,
                                                                 agentId,
-                                                                agentPhone
+                                                                agentPhone,
+                                                                agentReason
                                                             })
                                                         })
                                                         .then(response => {
