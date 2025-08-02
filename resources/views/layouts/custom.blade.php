@@ -694,7 +694,6 @@
             });
         </script>
 
-
         <script>
             // Initialise the datatable
             new DataTable('#example', {
@@ -822,8 +821,6 @@
                 accountTypeSelect.addEventListener('change', toggleFieldRequirements);
             });
         </script>
-
-
 
         <script>
             $('#station_name').on('focusout', function() {
@@ -1366,6 +1363,21 @@
                 });
             });
         </script>
-</body>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const prioritySelect = document.getElementById('priority_level');
+                const deadlineGroup = document.getElementById('priority-deadline-group');
+
+                function toggleDeadlineField() {
+                    deadlineGroup.style.display = (prioritySelect.value === 'high') ? 'block' : 'none';
+                }
+
+                prioritySelect.addEventListener('change', toggleDeadlineField);
+                toggleDeadlineField(); // Run on page load in case value is pre-filled
+            });
+        </script>
+
+    </body>
 
 </html>

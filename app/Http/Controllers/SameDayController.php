@@ -209,6 +209,8 @@ class SameDayController extends Controller
             'vehicleId' => 'required|integer',
             'category_id' => 'required|integer',
             'sub_category_id' => 'required|integer',
+            'priority_level' => 'required|string',
+            'deadline_date' => 'required|date',
             'requestId' => 'required|string|unique:client_requests,requestId',
             'rate_id'=>'nullable',
         ]);
@@ -227,10 +229,13 @@ class SameDayController extends Controller
                 'requestId' => $validated['requestId'],
                 'category_id' => $validated['category_id'],
                 'sub_category_id' => $validated['sub_category_id'],
+                'priority_level' => $validated['priority_level'],
+                'deadline_date' => $validated['deadline_date'],
                 'created_by' => Auth::id(),
                 'office_id' => Auth::user()->station,
                 'rate_id' => $validated['rate_id']
             ]);
+
 
             // 2. Create track
             $trackingId = DB::table('tracks')->insertGetId([

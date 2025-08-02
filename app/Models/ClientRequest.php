@@ -19,6 +19,8 @@ class ClientRequest extends Model
         'created_by',
         'category_id',
         'sub_category_id',
+        'priority_level',
+        'deadline_date',
         'rate_id',
         'office_id'
     ];

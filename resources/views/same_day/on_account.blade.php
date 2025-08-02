@@ -207,6 +207,20 @@
                                                 </div>
                                             </div>
                                         </form>
+                                        <hr>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="priority_level" class="form-label text-primary">Priority Level</label>
+                                                <select class="form-control" name="priority_level" id="priority_level">
+                                                    <option value="normal" selected>Normal</option>
+                                                    <option value="high">High</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6" id="priority-deadline-group" style="display: none;">
+                                                <label for="priority_deadline" class="form-label text-primary">Deadline (If High Priority)</label>
+                                                <input type="datetime-local" class="form-control" name="priority_deadline" id="priority_deadline">
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer d-sm-flex align-items-center">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
