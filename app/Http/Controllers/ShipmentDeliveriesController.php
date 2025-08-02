@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AgentApprovalRequestMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ShipmentDeliveries;
@@ -43,7 +44,7 @@ class ShipmentDeliveriesController extends Controller
      */
     public function store(Request $request, SmsService $smsService)
     {
-        
+        Log::info("GRN Saved", ['requestId' => $request->requestId, 'grn_no' => $request->grn_no]);
 
         $delivery = ShipmentDeliveries::create([
             'requestId' => $request->requestId,
@@ -60,7 +61,8 @@ class ShipmentDeliveriesController extends Controller
             'delivered_by'=> Auth::user()->id,
         ]);
 
-          // 2. Create track
+
+        // 2. Create track
         $trackingId = DB::table('tracks')->insertGetId([
             'requestId' => $request->requestId,
             'clientId' => $request->client_id,
@@ -69,11 +71,9 @@ class ShipmentDeliveriesController extends Controller
             'updated_at' => now(),
         ]);
 
-        // 3. Create tracking info
-        $goods_received_note_no = $request->grn_no;
-        
+        // 3. Create goods received note number
         ShipmentCollection::where('requestId', $request->requestId)
-        ->update(['grn_no' => $goods_received_note_no]); 
+            ->update(['grn_no' => $request->grn_no]);
 
         // 4. Create tracking info
         $rider = User::find(Auth::user()->name);

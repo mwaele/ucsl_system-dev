@@ -19,6 +19,20 @@ class MyDeliveryController extends Controller
         $destinations = Rate::all();
 
         // Get the latest consignment number
+        $latestGRN = ShipmentCollection::where('grn_no', 'LIKE', 'GRN-%')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestGRN && preg_match('/GRN-(\d+)/', $latestGRN->grn_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 10000; // Start from GRN-10000
+        }
+
+        $grn_no = 'GRN-' . $newNumber;
+
+        // Get the latest consignment number
         $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
             ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
             ->first();
@@ -48,7 +62,7 @@ class MyDeliveryController extends Controller
         }
 
         return view('client-request.deliveries', compact(
-            'collections', 'offices', 'destinations', 'loggedInUserId', 'consignment_no', 'approvalStatuses'
+            'collections', 'offices', 'destinations', 'loggedInUserId', 'consignment_no', 'approvalStatuses', 'grn_no'
         ));
     }
 
