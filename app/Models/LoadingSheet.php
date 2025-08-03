@@ -27,6 +27,7 @@ class LoadingSheet extends Model
         'remarks    ',
         'description',
         'destination_id', 
+        'offloading_clerk'
     ];
     public function office()
     {
@@ -51,5 +52,9 @@ class LoadingSheet extends Model
     public function special_destination()
     {
         return $this->belongsTo(SpecialRate::class, 'destination');
+    }
+    public function waybills()
+    {
+        return $this->hasMany(LoadingSheetWaybill::class);
     }
 }

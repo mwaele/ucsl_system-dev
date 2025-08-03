@@ -223,16 +223,22 @@ Route::middleware('auth')->group(function () {
 
       Route::resource('shipment_deliveries','App\Http\Controllers\shipmentDeliveriesController');
 
-      Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
+    Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
-      Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
-          ->name('shipment_arrivals_report');
+    Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
+        ->name('shipment_arrivals_report');
 
-      // Route::get('/shipment_arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])
-      // ->name('arrival_details');
+    Route::get('/shipment_arrivals_report_detail', [ShipmentArrivalController::class, 'generateParcels'])
+          ->name('shipment_arrivals_report_detail');
 
-       Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
+          Route::get('/shipment_arrivals_report_uncollected/{id}/{type}', [ShipmentArrivalController::class, 'generateParcelsUncollected'])
+          ->name('shipment_arrivals_report_uncollected');
 
+          
+
+    Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
+
+    Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
 
       Route::resource('transporters','App\Http\Controllers\TransporterController');
       Route::resource('dispatchers','App\Http\Controllers\DispatcherController');

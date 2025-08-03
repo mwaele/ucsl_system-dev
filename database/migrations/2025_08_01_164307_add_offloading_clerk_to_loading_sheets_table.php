@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('loading_sheets', function (Blueprint $table) {
-            $table->string('status')->default('Pending');
+            $table->integer('offloading_clerk')->nullable();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('loading_sheets', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropColumn('offloading_clerk');
         });
     }
 };

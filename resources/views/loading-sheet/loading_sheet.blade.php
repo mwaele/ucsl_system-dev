@@ -189,7 +189,6 @@
             const urlSegments = window.location.pathname.split('/');
             const loadingSheetId = urlSegments[urlSegments.length - 1]; // gets the last segment    
 
-
             fetch(`/loading-sheets/${loadingSheetId}/dispatch`, {
                     method: 'POST',
                     headers: {
@@ -204,7 +203,7 @@
                 })
                 .then(data => {
                     alert('Dispatch updated successfully!');
-                    window.location.href = response.redirect;
+                    window.location.href = data.redirect; // <-- fixed here
                 })
                 .catch(error => {
                     console.error('Error:', error);

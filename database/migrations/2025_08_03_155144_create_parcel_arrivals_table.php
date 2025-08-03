@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('loading_sheets', function (Blueprint $table) {
-            $table->string('status')->default('Pending');
+        Schema::create('parcel_arrivals', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('shipment_collection_id');
+            $table->integer('validated_by');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('loading_sheets', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+        Schema::dropIfExists('parcel_arrivals');
     }
 };

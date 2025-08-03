@@ -48,6 +48,49 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Allocate clerk modal --}}
+
+            <div class="modal fade" id="allocateClerk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success">
+                            <h5 class="modal-title text-white" id="exampleModalLabel"><strong>Allocate Clerk to physically
+                                    check arrival parcels</strong>
+                            </h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form id="updateArrivalForm" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <input type="hidden" name="loading_sheet_id" id="loading_sheet_id">
+
+
+                                <div class="form-row">
+                                    <label for="dispatcher">Dispatchers</label>
+                                    <select name="dispatchers" id="dispatchers" class="form-control">
+
+                                        <option value="">Select Dispatcher</option>
+                                        @foreach ($dispatchers as $dispatcher)
+                                            <option value="{{ $dispatcher->id }}">{{ $dispatcher->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+
+                            </div>
+
+                            <div class="modal-footer d-flex justify-content-between">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card-body">
@@ -118,6 +161,7 @@
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
+                            <th>Waybills</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -130,6 +174,7 @@
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
+                            <th>Waybills</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -146,8 +191,16 @@
                                 </td>
                                 <td> {{ $sheet->transporter_truck->reg_no }} </td>
                                 <td> {{ $sheet->transporter->name }} </td>
-                                <td></td>
+
+                                <td class="text-center">{{ $sheet->waybills_count }}</td>
+                                <td>{{ $sheet->status }}</td>
                                 <td class="row pl-4">
+                                    @if ($sheet->offloading_clerk == '')
+                                        <button class="btn btn-primary btn-sm mr-1 openAllocateModal"
+                                            data-id="{{ $sheet->id }}" data-toggle="modal"
+                                            data-target="#allocateClerk">Allocate
+                                            Clerk</button>
+                                    @endif
                                     @if (!$sheet->dispatch_date)
                                         <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button
                                                 class="btn btn-primary btn-sm mr-1">Add Waybills</button></a>
@@ -177,6 +230,39 @@
     </div>
     <script>
         $(document).ready(function() {
+
+            $('.openAllocateModal').on('click', function() {
+                const sheetId = $(this).data('id');
+                $('#loading_sheet_id').val(sheetId);
+            });
+
+            $('#updateArrivalForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const formData = {
+                    _token: $('input[name="_token"]').val(),
+                    loading_sheet_id: $('#loading_sheet_id').val(),
+                    dispatchers: $('#dispatchers').val(),
+                };
+
+                //alert(JSON.stringify(formData)); // for debugging
+
+                $.ajax({
+                    url: '{{ route('update_arrival_details') }}',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        alert('Updated successfully!');
+                        $('#allocateClerk').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Something went wrong!');
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
             let table;
 
             if (!$.fn.DataTable.isDataTable('#myTable')) {

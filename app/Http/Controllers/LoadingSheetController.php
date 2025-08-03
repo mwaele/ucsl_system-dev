@@ -45,7 +45,8 @@ class LoadingSheetController extends Controller
         
         $dispatchers = Dispatcher::all();
 
-        $sheets = LoadingSheet::with('rate')
+        $sheets = LoadingSheet::with(['rate'])
+        ->withCount('waybills') // This adds a `waybills_count` column
         ->orderBy('id', 'asc')
         ->get();
         //dd($sheets);
@@ -64,6 +65,21 @@ class LoadingSheetController extends Controller
         //
         return view('loading-sheet.create');
     }
+
+    public function updateArrivalDetails(Request $request)
+{
+    $request->validate([
+        'loading_sheet_id' => 'required|exists:loading_sheets,id',
+        'dispatchers' => 'required|exists:users,id',
+    ]);
+
+    $sheet = LoadingSheet::find($request->loading_sheet_id);
+    $sheet->dispatcher_id = $request->dispatchers;
+    $sheet->save();
+
+    return response()->json(['success' => true, 'message' => 'Updated successfully']);
+}
+
 
     /**
      * Store a newly created resource in storage.

@@ -35,9 +35,10 @@ class ShipmentArrivalController extends Controller
         //dd($destinations);
         $transporters = Transporter::orderBy('id', 'desc')->get();
         
-        $dispatchers = Dispatcher::all();
+        $dispatchers = Dispatcher::where('office_id', Auth::user()->station)->get();
 
         $sheets = LoadingSheet::with('rate')
+        ->withCount('waybills') // adds waybills_count
         ->orderBy('id', 'asc')
         ->get();
         //dd($sheets);
@@ -89,6 +90,21 @@ class ShipmentArrivalController extends Controller
     {
         //
     }
+public function updateArrivalDetails(Request $request)
+{
+    $request->validate([
+        'loading_sheet_id' => 'required|exists:loading_sheets,id',
+        'dispatchers' => 'required|exists:users,id',
+    ]);
+
+    $sheet = LoadingSheet::find($request->loading_sheet_id);
+    $sheet->offloading_clerk = $request->dispatchers;
+    $sheet->save();
+
+    return response()->json(['success' => true, 'message' => 'Updated successfully']);
+}
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -118,7 +134,7 @@ class ShipmentArrivalController extends Controller
         }} elseif ($filter === 'dispatch') {
             $query->where('batch_no', 'like', "%$value%");
         } elseif ($filter === 'type') {
-            $query->where('shipment_type', $value);
+            $query->where('payment_mode', $value);
         }
 
         $loading_sheets = $query->get();
@@ -132,10 +148,18 @@ class ShipmentArrivalController extends Controller
         // Example: return as downloadable CSV or a view
         // return view('reports.shipment_arrivals', compact('shipments', 'filter', 'value'));
     }
-
-    public function arrival_details($id)
+    public function generateParcels(Request $request)
     {
-         $loadingSheet = LoadingSheet::with(['office'])->find($id);
+        $filter = $request->query('filter');
+        $value = $request->query('value');
+        
+        $from = $request->query('from');
+        $to = $request->query('to');
+        $sheet_id = $request->query('sheet_id');
+        $status = $request->query('status');
+        //dd($request->all());
+
+        $loadingSheet = LoadingSheet::with(['office'])->find($sheet_id);
         $destination = Rate::where('id',$loadingSheet->destination)->first();
 
         $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])->get();
@@ -156,8 +180,112 @@ class ShipmentArrivalController extends Controller
             DB::raw('SUM(si.actual_quantity) as total_quantity'),
             DB::raw('SUM(si.actual_weight) as total_weight')
         )
-        ->where('lsw.loading_sheet_id', $id)
+        ->where('lsw.loading_sheet_id', $sheet_id)
+        ->where('sc.payment_mode',$value)
         ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
+        ->get();
+
+        $totals = DB::table('loading_sheet_waybills as lsw')
+        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+        ->select(
+            DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
+            DB::raw('SUM(si.actual_weight) as total_weight_sum'),
+            DB::raw('SUM(sc.total_cost) as total_cost_sum')
+        )->where('lsw.loading_sheet_id',$sheet_id)
+        ->first();
+
+        $query = ShipmentCollection::query();
+
+        if ($filter === 'type') {
+            $query->where('payment_mode', $value);
+        }
+
+        $waybills = $query->get();
+
+        //dd($data);
+        $title = "Report of ";
+
+        $pdf = Pdf::loadView('shipment_arrivals.arrivals_report_detail' , [
+            'data'=>$data,
+            'title'=>$title,
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("arrivals_report_detailed.pdf");
+
+        // Example: return as downloadable CSV or a view
+        // return view('reports.shipment_arrivals', compact('shipments', 'filter', 'value'));
+    }
+    public function generateParcelsUncollected($id,$type){
+    $sheet_id = $id;
+    if($type=='Uncollected'){
+        $status=null;
+        $title = "Report of Uncollected ";
+    }elseif($type=='Collected'){
+        $status='Collected';
+        $title = "Report of Collected ";
+    }else{
+        $status=null;
+        $title = "Report of ";
+    }
+       $data = DB::table('loading_sheet_waybills as lsw')
+        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+        ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+        ->join('clients as c', 'sc.client_id', '=', 'c.id')
+
+        ->select(
+            'lsw.waybill_no',
+            'r.destination', // Destination from rates
+            'sc.total_cost',
+            'c.name as client_name',
+            'sc.payment_mode',
+            DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
+            DB::raw('SUM(si.actual_quantity) as total_quantity'),
+            DB::raw('SUM(si.actual_weight) as total_weight')
+        )
+        ->where('lsw.loading_sheet_id', $sheet_id)
+        ->where('sc.status',$status)
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
+        ->get();
+
+        
+
+        $pdf = Pdf::loadView('shipment_arrivals.arrivals_report_detail' , [
+            'data'=>$data,
+            'title'=>$title
+        ])->setPaper('a4', 'landscape');;
+        return $pdf->download("arrivals_report_detailed.pdf");
+    }
+
+    public function arrival_details($id)
+    {
+
+        $loadingSheet = LoadingSheet::with(['office'])->find($id);
+        $destination = Rate::where('id',$loadingSheet->destination)->first();
+
+        $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])->get();
+
+       $data = DB::table('loading_sheet_waybills as lsw')
+        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+        ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+        ->join('clients as c', 'sc.client_id', '=', 'c.id')
+
+        ->select(
+            'lsw.waybill_no',
+            'r.destination', // Destination from rates
+            'sc.total_cost',
+            'sc.id',
+            'sc.status',
+            'c.name as client_name',
+            'sc.payment_mode',
+            DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
+            DB::raw('SUM(si.actual_quantity) as total_quantity'),
+            DB::raw('SUM(si.actual_weight) as total_weight')
+        )
+        ->where('lsw.loading_sheet_id', $id)
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode','sc.id',
+            'sc.status')
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')
@@ -172,7 +300,7 @@ class ShipmentArrivalController extends Controller
         //dd($data);
 
         return view('shipment_arrivals.manifest_details')->with([
-            'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals
+            'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals,'id'=>$id
         ]);
     }
 }
