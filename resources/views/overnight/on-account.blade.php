@@ -238,21 +238,27 @@
                                                     </script>
                                                 </div>
                                             </div>
-                                        <form>
-                                        <hr>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label for="priority_level" class="form-label text-primary">Priority Level</label>
-                                                <select class="form-control" name="priority_level" id="priority_level">
-                                                    <option value="normal" selected>Normal</option>
-                                                    <option value="high">High</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6" id="priority-deadline-group" style="display: none;">
-                                                <label for="priority_deadline" class="form-label text-primary">Deadline (If High Priority)</label>
-                                                <input type="datetime-local" class="form-control" name="priority_deadline" id="priority_deadline">
-                                            </div>
-                                        </div>
+                                            <form>
+                                                <hr>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label for="priority_level"
+                                                            class="form-label text-primary">Priority Level</label>
+                                                        <select class="form-control" name="priority_level"
+                                                            id="priority_level">
+                                                            <option value="normal" selected>Normal</option>
+                                                            <option value="high">High</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6" id="priority-deadline-group"
+                                                        style="display: none;">
+                                                        <label for="priority_deadline"
+                                                            class="form-label text-primary">Deadline (If High
+                                                            Priority)</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                            name="priority_deadline" id="priority_deadline">
+                                                    </div>
+                                                </div>
                                     </div>
                                     <div class="modal-footer d-flex justify-content-between align-items-center ">
                                         <button type="button" class="btn btn-warning" data-dismiss="modal">Close
@@ -632,7 +638,7 @@
                                         const volume = item.length * item.width * item.height;
 
                                         itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(cm <sup> 3 </sup>)</th><th class="text-primary"> Remarks </th> </tr> </thead>
-                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
+                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
 
 
                                     <tr>
@@ -735,19 +741,35 @@
                         // Total weight calculation and cost update
                         function recalculateCosts() {
                             let totalWeight = 0;
+                            let totalVolume = 0;
 
                             $('#shipmentTable tbody tr').each(function() {
                                 const row = $(this);
                                 const weight = parseFloat(row.find('.weight').val()) || 0;
                                 const packages = parseFloat(row.find('.packages').val()) || 1;
+                                const volume = parseFloat(row.find('.volume').val()) || 1;
                                 totalWeight += weight * packages;
+                                totalVolume += volume;
                             });
 
                             const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                             let cost = baseCost;
+                            volumeWeight = totalVolume / 5000;
 
-                            if (totalWeight > 25) {
-                                const extraWeight = totalWeight - 25;
+                            let baseWeight = 0;
+
+
+                            if (totalWeight > volumeWeight) {
+                                baseWeight = totalWeight;
+                            }
+                            if (volumeWeight > totalWeight) {
+                                baseWeight = volumeWeight;
+                            }
+                            //alert('total volume weight ' + volumeWeight);
+                            //alert('total weight ' + totalWeight);
+                            if (baseWeight > 25) {
+                                //alert('base weight used ' + baseWeight)
+                                const extraWeight = baseWeight - 25;
                                 cost += extraWeight * 50;
                             }
 

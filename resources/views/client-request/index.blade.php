@@ -583,7 +583,7 @@
                                         const volume = item.length * item.width * item.height;
 
                                         itemsHtml += `<thead> <tr><th> Item No. </th> <th> Item Name </th> <th> Package No </th> <th> Weight(Kg) </th> <th> Length(cm) </th> <th> Width(cm) </th> <th> Height(cm) </th> <th> Volume(cm <sup> 3 </sup>)</th><th> Remarks </th> </tr> </thead>
-                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
+                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
 
 
                                     <tr>
@@ -686,10 +686,13 @@
                         // Total weight calculation and cost update
                         function recalculateCosts() {
                             let totalWeight = 0;
+                            alert();
 
                             $('#shipmentTable tbody tr').each(function() {
                                 const row = $(this);
                                 const weight = parseFloat(row.find('.weight').val()) || 0;
+                                const volume = parseFloat(row.find('.volume').val()) || 0;
+                                console.log('volume', volume);
                                 const packages = parseFloat(row.find('.packages').val()) || 1;
                                 totalWeight += weight * packages;
                             });

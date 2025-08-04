@@ -31,6 +31,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\SameDayRateController;
 use App\Http\Controllers\ShipmentArrivalController;
+use App\Http\Controllers\InvoiceController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -183,6 +184,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipment-receipt/{id}', [ShipmentCollectionController::class, 'receipt'])->name('shipment.receipt');
     Route::post('/shipment-collections/walkin', [ShipmentCollectionController::class, 'create'])->name('shipment-collections.create');
     Route::delete('/shipment-collections/delete/{requestId}', [ShipmentCollectionController::class, 'delete'])->name('shipment-collections.delete');
+
+    Route::get('/get-latest-invoice-no', [InvoiceController::class, 'getLatestInvoiceNo'])->name('get.latest.invoice.no');
+
 
 
     Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');

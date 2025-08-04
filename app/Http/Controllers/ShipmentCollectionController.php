@@ -14,7 +14,9 @@ use App\Services\SmsService;
 use App\Models\SentMessage;
 use App\Models\Client;
 use App\Models\User;
+use App\Models\Payment;
 use App\Helpers\EmailHelper;
+use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
 
@@ -196,6 +198,38 @@ class ShipmentCollectionController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // 7. Save to payments table
+            if($request->payment_mode=="M-Pesa" || $request->payment_mode=="Cash" || $request->payment_mode=="Cheque" ){
+            DB::table('payments')->insert([
+                'client_id' => $request->clientId,
+                'amount' => $request->total_cost,
+                'date_paid' => now(),
+                'shipment_collection_id' => $collection->id,
+                'type' => $request->payment_mode,
+                'received_by' => auth()->user()->id,
+                'verified_by' => auth()->user()->id,
+                'paid_by' => $request->clientId,
+                'status' => 'Pending Verification',
+                'reference_no' => $request->reference,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+            if($request->payment_mode=="Invoice"){
+              DB::table('invoices')->insert([
+                'invoice_no' => 'INV-00001',
+                'amount' => $request->total_cost,
+                'due_date' => Carbon::now()->addDays(30),
+                'client_id' => $request->clientId,
+                'shipment_collection_id' => $collection->id,
+                'invoiced_by' => auth()->user()->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);  
+            }
+
 
             DB::commit();
 

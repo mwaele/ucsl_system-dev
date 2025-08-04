@@ -392,8 +392,9 @@
                             <th>Date</th>
                             <th>Origin</th>
                             <th>Destination</th>
-                            <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Service Type</th>
+                            <th>Receiver</th>
+                            <th>Rider</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -406,8 +407,9 @@
                             <th>Date</th>
                             <th>Origin</th>
                             <th>Destination</th>
-                            <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Service Type</th>
+                            <th>Receiver</th>
+                            <th>Rider</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -425,6 +427,7 @@
                                 <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
+                                <td></td>
                                 <td>
                                     @php
                                         $status = $request->shipmentCollection->clientRequestById->status ?? null;

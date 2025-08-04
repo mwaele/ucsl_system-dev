@@ -694,11 +694,11 @@
 
         <script>
             // Initialise the datatable
-            new DataTable('#example', {
-                paging: true,
-                scrollCollapse: true,
-                scrollY: '50vh'
-            });
+            // new DataTable('#example', {
+            //     paging: true,
+            //     scrollCollapse: true,
+            //     scrollY: '50vh'
+            // });
 
             new DataTable('#ucsl-table', {
                 language: {
@@ -1363,7 +1363,7 @@
         </script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const prioritySelect = document.getElementById('priority_level');
                 const deadlineGroup = document.getElementById('priority-deadline-group');
 
@@ -1376,6 +1376,6 @@
             });
         </script>
 
-    </body>
+</body>
 
 </html>

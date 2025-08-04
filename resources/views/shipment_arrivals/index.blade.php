@@ -6,7 +6,7 @@
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h4 class="m-0 font-weight-bold text-primary mb-3 mb-md-0">Parcel Receipts at <strong>
-                        {{ Auth::user()->office->name }} </strong></h4>
+                        {{ Auth::user()->office->name ?? '' }} </strong></h4>
 
 
                 <!-- Report Button -->

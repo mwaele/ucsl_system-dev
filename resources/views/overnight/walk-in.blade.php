@@ -242,7 +242,7 @@
 
                                             <div class="col-md-2">
                                                 <h6 for="payment_mode" class="text-primary">Payment Mode</h6>
-                                                <select name="payment_mode" class="form-control">
+                                                <select name="payment_mode" id="payment_mode" class="form-control">
                                                     <option value="" selected>-- Select --</option>
                                                     <option value="M-Pesa">M-Pesa</option>
                                                     <option value="Cash">Cash</option>
@@ -253,8 +253,8 @@
 
                                             <div class=" mt-2 col-md-2">
                                                 <h6 for="reference" class="text-primary">Reference</h6>
-                                                <input type="text" name="reference" class="form-control"
-                                                    placeholder="e.g. MPESA123XYZ">
+                                                <input type="text" id="reference" name="reference"
+                                                    class="form-control" placeholder="e.g. MPESA123XYZ">
                                             </div>
                                         </div>
 
@@ -482,4 +482,33 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            // Simulate onchange after 10 seconds if user is still on page
+            setTimeout(function() {
+                if ($('#payment_mode').length && $('#payment_mode').val() === 'Invoice') {
+                    $('#payment_mode').trigger('change');
+                }
+            }, 10000); // 10,000 ms = 10 seconds
+
+            $('#payment_mode').on('change', function() {
+                const mode = $(this).val();
+
+                if (mode === 'Invoice') {
+                    $.ajax({
+                        url: '{{ route('get.latest.invoice.no') }}',
+                        type: 'GET',
+                        success: function(data) {
+                            $('#reference').val(data.invoice_no);
+                        },
+                        error: function() {
+                            alert('Unable to fetch invoice number.');
+                        }
+                    });
+                } else {
+                    $('#reference').val(''); // clear for other modes
+                }
+            });
+        });
+    </script>
 @endsection
