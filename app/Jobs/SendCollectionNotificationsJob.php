@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,9 +29,21 @@ class SendCollectionNotificationsJob implements ShouldQueue
     {
         $requestId = $this->clientRequest->requestId;
         $location = $this->clientRequest->collectionLocation;
+        $deadline = $this->clientRequest->deadline_date;
+
+        Log::info('SendCollectionNotificationsJob: Deadline Debug', [
+            'request_id' => $requestId,
+            'deadline_raw' => $deadline,
+            'deadline_parsed' => $deadline ? \Carbon\Carbon::parse($deadline)->format('d M Y, h:i A') : null,
+            'clientRequest' => $this->clientRequest->toArray(),
+        ]);
+
+        $deadlineNote = $deadline 
+            ? " Please deliver before " . \Carbon\Carbon::parse($deadline)->format('d M Y, h:i A') . "." 
+            : '';
 
         // Rider SMS
-        $rider_message = "Dear {$this->rider->name}, Collect Parcel for client ({$this->client->name}) {$this->client->contact} Request ID: $requestId at $location";
+        $rider_message = "Dear {$this->rider->name}, Collect Parcel for client ({$this->client->name}) {$this->client->contact} Request ID: $requestId at $location.$deadlineNote";
         $smsService->sendSms($this->rider->phone_number, 'Client Collections Alert', $rider_message, true);
 
         SentMessage::create([
@@ -44,15 +57,15 @@ class SendCollectionNotificationsJob implements ShouldQueue
             'message' => $rider_message,
         ]);
 
-        // Rider email
+        // Rider Email
         $footer = "<br><p><strong>Terms & Conditions:</strong> <a href='" . env('TERMS_AND_CONDITIONS', '#') . "' target='_blank'>Click here</a></p>
-                   <p>Thank you for using Ufanisi Courier Services for we are <strong>Fast, Reliable and Secure</strong></p>";
+                <p>Thank you for using Ufanisi Courier Services for we are <strong>Fast, Reliable and Secure</strong></p>";
 
-        $emailMessage = "Dear {$this->rider->name}, <br><br> Collect Parcel for client ({$this->client->name}) {$this->client->contact} Request ID: $requestId at $location" . $footer;
+        $emailMessage = "Dear {$this->rider->name}, <br><br> Collect Parcel for client ({$this->client->name}) {$this->client->contact} Request ID: $requestId at $location.<br>$deadlineNote" . $footer;
         EmailHelper::sendHtmlEmail($this->rider->email, 'Client Collections Alert', $emailMessage);
 
         // Client SMS
-        $client_message = "Dear {$this->client->name}, We have allocated {$this->rider->name} {$this->rider->phone_number} to collect your parcel Request ID: $requestId";
+        $client_message = "Dear {$this->client->name}, We have allocated {$this->rider->name} {$this->rider->phone_number} to collect your parcel Request ID: $requestId.";
         $smsService->sendSms($this->client->contact, 'Parcel Collection Alert', $client_message, true);
 
         SentMessage::create([
@@ -66,8 +79,9 @@ class SendCollectionNotificationsJob implements ShouldQueue
             'message' => $client_message,
         ]);
 
-        // Client email
-        $emailMessage = "Dear {$this->client->name}, <br><br> We have allocated {$this->rider->name} {$this->rider->phone_number} to collect your parcel Request ID: $requestId" . $footer;
+        // Client Email
+        $emailMessage = "Dear {$this->client->name}, <br><br> We have allocated {$this->rider->name} {$this->rider->phone_number} to collect your parcel Request ID: $requestId." . $footer;
         EmailHelper::sendHtmlEmail($this->client->email, 'Parcel Collection Alert', $emailMessage);
     }
+
 }

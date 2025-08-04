@@ -422,6 +422,41 @@
                                         </div>
                                     </div>
 
+                                    @if ($request->status === 'pending collection')
+                                        <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                            data-toggle="modal"
+                                            data-target="#deleteClientRequest-{{ $request->requestId }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    @endif
+
+                                    <!-- Delete Modal-->
+                                    <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
+                                        tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete {{ $request->requestId }}?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <form
+                                                        action =" {{ route('clientRequests.destroy', $request->requestId) }}"
+                                                        method = "POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     @if (
                                         isset($request->shipmentCollection) &&
                                         !$request->shipmentCollection->agent_approved &&
@@ -475,32 +510,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Delete Modal-->
-                                    <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
-                                        tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $request->requestId }}?
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
-                                                    <form
-                                                        action =" {{ route('clientRequests.destroy', $request->requestId) }}"
-                                                        method = "POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            title="Delete" value="DELETE">YES DELETE <i
-                                                                class="fas fa-trash"></i> </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-primary mr-1" title="View Client Request">
                                             View <i class="fas fa-eye"></i>
