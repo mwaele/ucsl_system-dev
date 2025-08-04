@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 use App\Jobs\SendCollectionNotificationsJob;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 use App\Models\Client;
 use App\Models\ClientRequest;
 use App\Models\SubCategory;
@@ -13,10 +17,7 @@ use App\Models\FrontOffice;
 use App\Models\SameDayRate;
 use App\Models\Office;
 use App\Models\Rate;
-use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use App\Services\SmsService;
@@ -157,7 +158,8 @@ class SameDayController extends Controller
         ));
     }
     
-    public function sameday_walkin_report(){
+    public function sameday_walkin_report()
+    {
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
@@ -172,7 +174,8 @@ class SameDayController extends Controller
         return $pdf->download("sameday_walkin_report.pdf");
     }
 
-    public function sameday_account_report(){
+    public function sameday_account_report()
+    {
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
@@ -197,47 +200,56 @@ class SameDayController extends Controller
 
         return response()->json(['cost' => 'N/A'], 404);
     }
+
     public function store(Request $request)
     {
-        //dd($request);
-        $validated = $request->validate([
-            'clientId' => 'required|integer',
-            'collectionLocation' => 'required|string',
-            'parcelDetails' => 'required|string',
-            'dateRequested' => 'required|date',
-            'userId' => 'required|integer',
-            'vehicleId' => 'required|integer',
-            'category_id' => 'required|integer',
-            'sub_category_id' => 'required|integer',
-            'priority_level' => 'required|string',
-            'deadline_date' => 'required|date',
-            'requestId' => 'required|string|unique:client_requests,requestId',
-            'rate_id'=>'nullable',
-        ]);
+        Log::info('Entered store() method.', ['request_data' => $request->all()]);
+
+        try {
+            $validated = $request->validate([
+                'clientId' => 'required|integer',
+                'collectionLocation' => 'required|string',
+                'parcelDetails' => 'required|string',
+                'dateRequested' => 'required|date',
+                'userId' => 'required|integer',
+                'vehicleId' => 'required|integer',
+                'category_id' => 'required|integer',
+                'sub_category_id' => 'required|integer',
+                'priority_level' => 'required|string',
+                'deadline_date' => 'nullable',
+                'requestId' => 'required|string|unique:client_requests,requestId',
+                'rate_id' => 'nullable',
+            ]);
+            Log::info('Validation passed.', ['validated_data' => $validated]);
+        } catch (\Exception $e) {
+            Log::error('Validation failed.', ['message' => $e->getMessage()]);
+            return back()->withErrors(['error' => 'Validation error: ' . $e->getMessage()]);
+        }
 
         DB::beginTransaction();
 
         try {
-            // 1. Create client request
-            $clientRequest = ClientRequest::create([
-                'clientId' => $validated['clientId'],
-                'collectionLocation' => $validated['collectionLocation'],
-                'parcelDetails' => $validated['parcelDetails'],
-                'dateRequested' => Carbon::parse($validated['dateRequested']),
-                'userId' => $validated['userId'],
-                'vehicleId' => $validated['vehicleId'],
-                'requestId' => $validated['requestId'],
-                'category_id' => $validated['category_id'],
-                'sub_category_id' => $validated['sub_category_id'],
-                'priority_level' => $validated['priority_level'],
-                'deadline_date' => $validated['deadline_date'],
-                'created_by' => Auth::id(),
-                'office_id' => Auth::user()->station,
-                'rate_id' => $validated['rate_id']
-            ]);
+            Log::info('Transaction started.');
 
+            $clientRequest = new ClientRequest();
+            $clientRequest->clientId = $validated['clientId'];
+            $clientRequest->collectionLocation = $validated['collectionLocation'];
+            $clientRequest->parcelDetails = $validated['parcelDetails'];
+            $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
+            $clientRequest->userId = $validated['userId'];
+            $clientRequest->vehicleId = $validated['vehicleId'];
+            $clientRequest->requestId = $validated['requestId'];
+            $clientRequest->category_id = $validated['category_id'];
+            $clientRequest->sub_category_id = $validated['sub_category_id'];
+            $clientRequest->priority_level = $validated['priority_level'];
+            $clientRequest->deadline_date = $validated['deadline_date'];
+            $clientRequest->created_by = Auth::id();
+            $clientRequest->office_id = Auth::user()->station;
+            $clientRequest->rate_id = $validated['rate_id'];
+            $clientRequest->save();
 
-            // 2. Create track
+            Log::info('ClientRequest saved.', ['clientRequest_id' => $clientRequest->id]);
+
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' => $clientRequest->requestId,
                 'clientId' => $clientRequest->clientId,
@@ -245,10 +257,14 @@ class SameDayController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            Log::info('Track created.', ['track_id' => $trackingId]);
 
-            // 3. Create tracking info
             $rider = User::find($clientRequest->userId);
             $vehicle = Vehicle::find($clientRequest->vehicleId);
+
+            if (!$rider || !$vehicle) {
+                throw new \Exception('Rider or Vehicle not found.');
+            }
 
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
@@ -260,24 +276,38 @@ class SameDayController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            Log::info('Tracking info inserted.');
 
-            // 4. Ensure collection location exists
             Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
+            Log::info('Collection location ensured.');
 
             DB::commit();
+            Log::info('Transaction committed.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Client Request Store Error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Client Request Store Error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
 
-        // 5. Dispatch background job to send notifications
-        $client = Client::find($clientRequest->clientId);
-        SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicle);
+        try {
+            $client = Client::find($clientRequest->clientId);
+            SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicle);
+            Log::info('Notification job dispatched.', [
+                'clientRequest_id' => $clientRequest->id,
+                'client_id' => optional($client)->id
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('Failed to dispatch SendCollectionNotificationsJob', ['message' => $e->getMessage()]);
+        }
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
+
+
     // public function store(Request $request, SmsService $smsService) 
     // {
     //     dd($request);
