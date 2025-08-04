@@ -206,6 +206,7 @@ class SameDayController extends Controller
         Log::info('Entered store() method.', ['request_data' => $request->all()]);
 
         try {
+            // 1. Validate incoming request
             $validated = $request->validate([
                 'clientId' => 'required|integer',
                 'collectionLocation' => 'required|string',
@@ -231,6 +232,7 @@ class SameDayController extends Controller
         try {
             Log::info('Transaction started.');
 
+            // 2. Save client request
             $clientRequest = new ClientRequest();
             $clientRequest->clientId = $validated['clientId'];
             $clientRequest->collectionLocation = $validated['collectionLocation'];
@@ -250,6 +252,7 @@ class SameDayController extends Controller
 
             Log::info('ClientRequest saved.', ['clientRequest_id' => $clientRequest->id]);
 
+            // 3. Create tracking record
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' => $clientRequest->requestId,
                 'clientId' => $clientRequest->clientId,
@@ -259,6 +262,7 @@ class SameDayController extends Controller
             ]);
             Log::info('Track created.', ['track_id' => $trackingId]);
 
+            // 4. Get rider and vehicle details
             $rider = User::find($clientRequest->userId);
             $vehicle = Vehicle::find($clientRequest->vehicleId);
 
@@ -266,6 +270,7 @@ class SameDayController extends Controller
                 throw new \Exception('Rider or Vehicle not found.');
             }
 
+            // 5. Insert tracking info
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
@@ -278,9 +283,45 @@ class SameDayController extends Controller
             ]);
             Log::info('Tracking info inserted.');
 
+            // 6. Ensure collection location exists in Location table
             Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
             Log::info('Collection location ensured.');
 
+            // -------------------------
+            // 7. Generate and save waybill
+            // -------------------------
+
+            // Set waybill format components
+            $prefix = 'UCSL';
+            $suffix = 'KE';
+            $padLength = 10;
+
+            // Get the latest waybill number from the database
+            $latestWaybill = DB::table('shipment_collections')
+                ->whereNotNull('waybill_no')
+                ->orderByDesc('id')
+                ->value('waybill_no');
+
+            // If a previous waybill exists, increment it; otherwise, start from 1
+            $bill_no = $latestWaybill
+                ? (int)substr($latestWaybill, strlen($prefix), -strlen($suffix)) + 1
+                : 1;
+
+            // Construct the new waybill number
+            $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
+
+            // Save the generated waybill number into the shipment_collections table
+            $shipment = ShipmentCollection::where('requestId', $clientRequest->requestId)->first();
+
+            if ($shipment) {
+                $shipment->waybill_no = $waybill_no;
+                $shipment->save();
+            }
+
+
+            Log::info('Waybill number generated and saved.', ['waybill_no' => $waybill_no]);
+
+            // Commit transaction
             DB::commit();
             Log::info('Transaction committed.');
 
@@ -293,6 +334,7 @@ class SameDayController extends Controller
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
 
+        // Dispatch notification job (non-critical)
         try {
             $client = Client::find($clientRequest->clientId);
             SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicle);
@@ -306,6 +348,7 @@ class SameDayController extends Controller
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
+
 
 
     // public function store(Request $request, SmsService $smsService) 

@@ -39,7 +39,7 @@ class SendCollectionNotificationsJob implements ShouldQueue
         ]);
 
         $deadlineNote = $deadline 
-            ? " Please deliver before " . \Carbon\Carbon::parse($deadline)->format('d M Y, h:i A') . "." 
+            ? " NOTE: Deliver before " . \Carbon\Carbon::parse($deadline)->format('d M Y, h:i A') . "." 
             : '';
 
         // Rider SMS

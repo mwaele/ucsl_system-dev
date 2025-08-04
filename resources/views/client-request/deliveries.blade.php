@@ -123,7 +123,6 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
-
                                                                     <label
                                                                         class=" form-label text-primary text-primary pull-right">Service
                                                                         Type:
@@ -131,8 +130,6 @@
                                                                             {{ $collection->serviceLevel->sub_category_name }}
                                                                         </badge>
                                                                     </label>
-
-
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <label
@@ -143,10 +140,7 @@
                                                                         </badge>
                                                                     </label>
                                                                 </div>
-
                                                             </div>
-
-
                                                         </div>
 
                                                         <!-- Sender Panel -->
@@ -222,6 +216,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                         <!-- Receiver Panel -->
                                                         <div class="col-md-12">
                                                             <div class="card shadow-sm mb-4">
@@ -295,8 +290,6 @@
                                                                                 name="consignment_no">
                                                                         </div>
                                                                     </div>
-
-
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -304,7 +297,6 @@
                                                         @if ($collection->client->special_rates_status)
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
-
                                                                 <div class="form-group col-md-6">
                                                                     <label
                                                                         class="form-label text-primary text-primary">Origin
@@ -458,7 +450,6 @@
                                                             id="addRowBtn">Add
                                                             Row</button>
 
-
                                                         <!-- Service Level -->
                                                         <div class="section-title"></div>
                                                         <div class="form-row">
@@ -514,22 +505,7 @@
                                                                         class="form-control" name="total_cost" required
                                                                         readonly>
                                                                 </div>
-                                                                <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
-                                                                                                                                                                                                                                                                                                                                                            </label>
-                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
-                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                                                                                                                                                readonly>
-                                                                                                                                                                                                                                                                                                                                                        </div> -->
                                                             </div>
-
-                                                            <!-- Submit -->
-
-                                                            {{-- <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                                value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button> --}}
-
-
                                                         </div>
                                                         <div class="modal-footer d-flex justify-content-between p-0">
                                                             <button type="button" class="btn btn-danger"
@@ -997,9 +973,14 @@
 
                                                     <script>
                                                         document.addEventListener('DOMContentLoaded', function () {
-                                                            const receiverRadio = document.getElementById('select_receiver');
-                                                            const agentRadio = document.getElementById('select_agent');
-                                                            const submitBtn = document.querySelector('button[type="submit"]');
+                                                            // Scope to the modal only
+                                                            const modal = document.getElementById('deliverParcel-{{ $collection->id }}'); // Use your modal's actual ID
+
+                                                            if (!modal) return; // Exit if modal not found
+
+                                                            const receiverRadio = modal.querySelector('#select_receiver');
+                                                            const agentRadio = modal.querySelector('#select_agent');
+                                                            const submitBtn = modal.querySelector('button[type="submit"]');
 
                                                             const receiverFields = [
                                                                 'input[name="receiver_name"]',
@@ -1015,7 +996,7 @@
 
                                                             function getValues(selectors) {
                                                                 return selectors.map(selector => {
-                                                                    const el = document.querySelector(selector);
+                                                                    const el = modal.querySelector(selector);
                                                                     return el ? el.value.trim() : '';
                                                                 });
                                                             }
@@ -1023,33 +1004,36 @@
                                                             function validateFields() {
                                                                 let isValid = false;
 
-                                                                if (receiverRadio.checked) {
+                                                                if (receiverRadio && receiverRadio.checked) {
                                                                     const values = getValues(receiverFields);
                                                                     isValid = values.every(v => v !== '');
-                                                                } else if (agentRadio.checked) {
+                                                                } else if (agentRadio && agentRadio.checked) {
                                                                     const values = getValues(agentFields);
                                                                     isValid = values.every(v => v !== '');
                                                                 }
 
-                                                                submitBtn.disabled = !isValid;
+                                                                if (submitBtn) {
+                                                                    submitBtn.disabled = !isValid;
+                                                                }
                                                             }
 
-                                                            // Run validation when fields change
+                                                            // Add input listeners
                                                             [...receiverFields, ...agentFields].forEach(selector => {
-                                                                const input = document.querySelector(selector);
+                                                                const input = modal.querySelector(selector);
                                                                 if (input) {
                                                                     input.addEventListener('input', validateFields);
                                                                 }
                                                             });
 
-                                                            // Also validate on delivery type change
-                                                            receiverRadio.addEventListener('change', validateFields);
-                                                            agentRadio.addEventListener('change', validateFields);
+                                                            // Listen for radio button changes
+                                                            if (receiverRadio) receiverRadio.addEventListener('change', validateFields);
+                                                            if (agentRadio) agentRadio.addEventListener('change', validateFields);
 
-                                                            // Initial state
+                                                            // Initial check
                                                             validateFields();
                                                         });
                                                     </script>
+
 
                                                 </div>
                                             </div>
