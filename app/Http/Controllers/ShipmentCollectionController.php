@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
 use App\Services\SmsService;
@@ -333,6 +334,28 @@ class ShipmentCollectionController extends Controller
             'special_rates_status' => $request->special_rate_state,
             
         ]);
+
+        // Check if the client request sub_category_id matches the "Same Day" sub_category
+        $sameDaySubCategoryId = DB::table('sub_categories')
+            ->where('sub_category_name', 'Same Day')
+            ->value('id');
+
+        $clientRequestSubCategoryId = DB::table('client_requests')
+            ->where('requestId', $request->requestId)
+            ->value('sub_category_id');
+
+        if ($clientRequestSubCategoryId == $sameDaySubCategoryId) {
+            // If it matches, update the actual cost, vat, total cost and total weight
+            ShipmentCollection::where('requestId', $request->requestId)
+                ->update([
+                    'actual_cost' => $request->cost,
+                    'actual_vat' => $request->vat,
+                    'actual_total_cost' => $request->total_cost,
+                    'total_weight' => $request->total_weight,
+                ]);
+        }
+
+        
         if($shipment){
             \Log::info('Saving shipment items', [
                 'items' => $request->item_name,
@@ -384,6 +407,40 @@ class ShipmentCollectionController extends Controller
                 'details' => 'Parcel Collected at Client Premises',
                 'remarks' => "Rider arrived at client premises for collection; Collected {$itemCount} {$text} with total weight of {$totalWeight} {$text2}. Generated Consignment Note Number {$consignment_no}",
             ]);
+
+            // -------------------------
+            // 4. Generate and save waybill
+            // -------------------------
+
+            // Set waybill format components
+            $prefix = 'UCSL';
+            $suffix = 'KE';
+            $padLength = 10;
+
+            // Get the latest waybill number from the database
+            $latestWaybill = DB::table('shipment_collections')
+                ->whereNotNull('waybill_no')
+                ->orderByDesc('id')
+                ->value('waybill_no');
+
+            // If a previous waybill exists, increment it; otherwise, start from 1
+            $bill_no = $latestWaybill
+                ? (int)substr($latestWaybill, strlen($prefix), -strlen($suffix)) + 1
+                : 1;
+
+            // Construct the new waybill number
+            $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
+
+            // Save the generated waybill number into the shipment_collections table
+            $shipment = ShipmentCollection::where('requestId', $request->requestId)->first();
+
+            if ($shipment) {
+                $shipment->waybill_no = $waybill_no;
+                $shipment->save();
+            }
+
+
+            Log::info('Waybill number generated and saved.', ['waybill_no' => $waybill_no]);
          
         }
 

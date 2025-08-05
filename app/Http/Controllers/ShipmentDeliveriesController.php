@@ -61,41 +61,58 @@ class ShipmentDeliveriesController extends Controller
             'delivered_by'=> Auth::user()->id,
         ]);
 
-
-        // 2. Create track
-        $trackingId = DB::table('tracks')->insertGetId([
-            'requestId' => $request->requestId,
-            'clientId' => $request->client_id,
-            'current_status' => 'Delivered',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // 3. Create goods received note number
+        // 2. Create goods received note number
         ShipmentCollection::where('requestId', $request->requestId)
             ->update(['grn_no' => $request->grn_no]);
 
-        // 4. Create tracking info
-        $rider = User::find(Auth::user()->name);
-        //$vehicle = Vehicle::find($clientRequest->vehicleId);
-        $delivered_to = 'Unknown Receiver'; // default fallback
+        // 3. Insert or update tracking record
+        $existingTrack = DB::table('tracks')->where('requestId', $request->requestId)->first();
 
-        if ($request->receiver_type == 'agent') {
-            $delivered_to = $request->agent_name;
-        } elseif ($request->receiver_type == 'client') {
-            $delivered_to = $request->receiver_name;
+        if ($existingTrack) {
+            DB::table('tracks')
+                ->where('id', $existingTrack->id)
+                ->update([
+                    'current_status' => 'Delivered',
+                    'updated_at' => now(),
+                ]);
+            $trackingId = $existingTrack->id;
+        } else {
+            $trackingId = DB::table('tracks')->insertGetId([
+                'requestId' => $request->requestId,
+                'clientId' => $request->client_id,
+                'current_status' => 'Delivered',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
+
+        // 4. Create tracking info
+        $riderName = Auth::user()->name;
+        $riderId = Auth::id();
+
+        $deliveredTo = match ($request->receiver_type) {
+            'agent' => $request->agent_name,
+            'client' => $request->receiver_name,
+            default => 'Unknown Receiver'
+        };
 
         DB::table('tracking_infos')->insert([
             'trackId' => $trackingId,
             'date' => now(),
-            'details' => 'Parcel Delivered',
-            'user_id' => Auth::user()->id,
-            //'vehicle_id' => $vehicle->id,
-            'remarks' => "Parcel has been delivered to {$delivered_to} request ID {$request->requestId}. Delivered by {$rider}",
+            'details' => 'Parcel Delivered and GRN Created',
+            'user_id' => $riderId,
+            'remarks' => "Parcel with request ID {$request->requestId} was delivered to {$deliveredTo} at {$request->delivery_location} by rider {$riderName}. GRN No: {$request->grn_no}",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        Log::info('Tracking Updated for Delivery', [
+            'requestId' => $request->requestId,
+            'deliveredTo' => $deliveredTo,
+            'deliveredBy' => $riderName,
+            'grn_no' => $request->grn_no,
+        ]);
+
 
         $riderName = Auth::user()->name;
 
@@ -182,6 +199,30 @@ class ShipmentDeliveriesController extends Controller
 
         $collection->save();
 
+        // Add tracking info
+        $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
+
+        if ($trackId) {
+            DB::table('tracks')
+                ->where('id', $trackId)
+                ->update([
+                    'current_status' => $action === 'approve' ? 'Agent Approved' : 'Agent Declined',
+                    'updated_at' => now()
+                ]);
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => $action === 'approve' ? 'Agent Approval Granted' : 'Agent Approval Declined',
+                'user_id' => Auth::id(),
+                'remarks' => $action === 'approve' 
+                    ? 'Agent request was approved by staff.'
+                    : 'Agent request declined. Remarks: ' . $remarks,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Agent request has been ' . ($action === 'approve' ? 'approved' : 'declined') . '.');
     }
 
@@ -208,6 +249,28 @@ class ShipmentDeliveriesController extends Controller
         $shipmentCollection->agent_requested = true;
         $shipmentCollection->save();
 
+        // Add tracking info
+        $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
+
+        if ($trackId) {
+            DB::table('tracks')
+                ->where('id', $trackId)
+                ->update([
+                    'current_status' => 'Agent Approval Requested',
+                    'updated_at' => now()
+                ]);
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => 'Agent Approval Request Submitted',
+                'user_id' => Auth::id(),
+                'remarks' => "Agent Name: {$agentName}, ID: {$agentId}, Phone: {$agentPhone}, Reason: {$agentReason}",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         // Send approval email (you may customize the mailable to include agent details)
         Mail::to('mwaele@ufanisi.co.ke')->send(
             new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone, $agentReason)
@@ -230,6 +293,28 @@ class ShipmentDeliveriesController extends Controller
         $shipmentCollection->approved_by = Auth::id();
         $shipmentCollection->save();
 
+        // Add tracking info
+        $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
+
+        if ($trackId) {
+            DB::table('tracks')
+                ->where('id', $trackId)
+                ->update([
+                    'current_status' => 'Agent Approved for Delivery',
+                    'updated_at' => now()
+                ]);
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => 'Agent Approved for Final Delivery',
+                'user_id' => Auth::id(),
+                'remarks' => "Agent was approved by " . Auth::user()->name,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         return redirect()->route('dashboard')->with('success', "Agent approved for delivery ID $requestId.");
     }
 
@@ -248,6 +333,28 @@ class ShipmentDeliveriesController extends Controller
         $shipment->agent_approved = false;
         $shipment->agent_decline_remarks = $request->remarks;
         $shipment->save();
+
+        // Add tracking info
+        $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
+
+        if ($trackId) {
+            DB::table('tracks')
+                ->where('id', $trackId)
+                ->update([
+                    'current_status' => 'Agent Approval Declined',
+                    'updated_at' => now()
+                ]);
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => 'Agent Approval Declined',
+                'user_id' => Auth::id(),
+                'remarks' => "Decline remarks: " . $request->remarks,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         // Optionally notify agent or log action...
 

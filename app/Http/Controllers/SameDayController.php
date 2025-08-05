@@ -287,39 +287,7 @@ class SameDayController extends Controller
             Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
             Log::info('Collection location ensured.');
 
-            // -------------------------
-            // 7. Generate and save waybill
-            // -------------------------
-
-            // Set waybill format components
-            $prefix = 'UCSL';
-            $suffix = 'KE';
-            $padLength = 10;
-
-            // Get the latest waybill number from the database
-            $latestWaybill = DB::table('shipment_collections')
-                ->whereNotNull('waybill_no')
-                ->orderByDesc('id')
-                ->value('waybill_no');
-
-            // If a previous waybill exists, increment it; otherwise, start from 1
-            $bill_no = $latestWaybill
-                ? (int)substr($latestWaybill, strlen($prefix), -strlen($suffix)) + 1
-                : 1;
-
-            // Construct the new waybill number
-            $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
-
-            // Save the generated waybill number into the shipment_collections table
-            $shipment = ShipmentCollection::where('requestId', $clientRequest->requestId)->first();
-
-            if ($shipment) {
-                $shipment->waybill_no = $waybill_no;
-                $shipment->save();
-            }
-
-
-            Log::info('Waybill number generated and saved.', ['waybill_no' => $waybill_no]);
+            
 
             // Commit transaction
             DB::commit();

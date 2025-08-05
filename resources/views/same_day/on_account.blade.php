@@ -516,7 +516,7 @@
                                         </button>
                                     @endif
 
-                                    @if ($request->status === 'delivered')
+                                    @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             Waybill <i class="fas fa-file-invoice"></i> 
