@@ -198,8 +198,8 @@
                     </p>
                     <p class="p">
                         Destination: <span style="color: #212529;">{{ $data['destination_name'] }}</span>
-                    </p>
-                </td>
+                        </p>
+                    </td>
                 <td class="td">
                     <p class="p">
                         Sender: <span style="color: #212529;">{{ $data['sender_name'] }}</span>

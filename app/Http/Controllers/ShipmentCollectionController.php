@@ -368,20 +368,35 @@ class ShipmentCollectionController extends Controller
             $itemCount = 0;
 
             foreach ($request->item_name as $i => $itemName) {
-                ShipmentItem::create([
+                $itemData = [
                     'shipment_id' => $shipment->id,
                     'item_name' => $itemName,
-                    //'packages_no' => $request->packages[$i],
                     'packages_no' => $request->packages[$i],
                     'weight' => $request->weight[$i],
                     'length' => $request->length[$i],
                     'width' => $request->width[$i],
                     'height' => $request->height[$i],
                     'volume' => $request->volume[$i],
-                ]);
+                ];
+
+                // Add actual_* fields if it's a "Same Day" request
+                if ($clientRequestSubCategoryId == $sameDaySubCategoryId) {
+                    $itemData = array_merge($itemData, [
+                        'actual_quantity' => $request->packages[$i],
+                        'actual_weight' => $request->weight[$i],
+                        'actual_length' => $request->length[$i],
+                        'actual_width' => $request->width[$i],
+                        'actual_height' => $request->height[$i],
+                        'actual_volume' => $request->volume[$i],
+                    ]);
+                }
+
+                ShipmentItem::create($itemData);
+
                 $itemCount++;
-                $totalWeight += $request->weight[$i]* $request->packages[$i]; // Make sure this is numeric
+                $totalWeight += $request->weight[$i] * $request->packages[$i];
             }
+
 
             // Update the client_requests table
             ClientRequest::where('requestId', $request->requestId)
