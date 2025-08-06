@@ -52,6 +52,7 @@ class ShipmentDeliveriesController extends Controller
             'receiver_name' => $request->receiver_name,
             'receiver_phone' => $request->receiver_phone,
             'receiver_id_no' => $request->receiver_id_no,
+            'receiver_type' => $request->receiver_type,
             'agent_name' => $request->agent_name,
             'agent_phone' => $request->agent_phone,
             'agent_id_no' => $request->agent_id_no,
@@ -89,10 +90,13 @@ class ShipmentDeliveriesController extends Controller
         // 4. Create tracking info
         $riderName = Auth::user()->name;
         $riderId = Auth::id();
+        $receiverTown = DB::table('shipment_collections')
+            ->where('requestId', $request->requestId)
+            ->value('receiver_town');
 
         $deliveredTo = match ($request->receiver_type) {
             'agent' => $request->agent_name,
-            'client' => $request->receiver_name,
+            'receiver' => $request->receiver_name,
             default => 'Unknown Receiver'
         };
 
@@ -101,7 +105,7 @@ class ShipmentDeliveriesController extends Controller
             'date' => now(),
             'details' => 'Parcel Delivered and GRN Created',
             'user_id' => $riderId,
-            'remarks' => "Parcel with request ID {$request->requestId} was delivered to {$deliveredTo} at {$request->delivery_location} by rider {$riderName}. GRN No: {$request->grn_no}",
+            'remarks' => "Parcel with request ID {$request->requestId} was delivered to {$deliveredTo} at {$request->delivery_location}, {$receiverTown} by rider {$riderName}. GRN No: {$request->grn_no}",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -210,14 +214,16 @@ class ShipmentDeliveriesController extends Controller
                     'updated_at' => now()
                 ]);
 
+            $userName = Auth::user()->name;
+
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackId,
                 'date' => now(),
                 'details' => $action === 'approve' ? 'Agent Approval Granted' : 'Agent Approval Declined',
                 'user_id' => Auth::id(),
                 'remarks' => $action === 'approve' 
-                    ? 'Agent request was approved by staff.'
-                    : 'Agent request declined. Remarks: ' . $remarks,
+                    ? "Agent request was approved by $userName."
+                    : "Agent request declined by $userName. Remarks: $remarks",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

@@ -751,34 +751,45 @@
                                                                 </div>
                                                             </div>
 
+                                                            @php
+                                                                $isApproved = $approvalStatuses[$collection->requestId] ?? false;
+                                                            @endphp
+
                                                             <!-- Receiver Panel -->
-                                                            <div class="col-md-12" id="receiver_panel" style="display: none;">
-                                                                <div class="card shadow-sm mb-4">
-                                                                    <div class="card-header bg-primary text-white">Receiver Details</div>
-                                                                    <div class="card-body">
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-primary">Receiver Name <span class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control" name="receiver_name" value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
-                                                                                <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
-                                                                                <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
-                                                                                <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
-                                                                                <input type="hidden" name="grn_no" value="{{ $collection->shipmentCollection->grn_no }}" >
+                                                            @if (!$isApproved)
+                                                                <div class="col-md-12" id="receiver_panel" style="display: none;">
+                                                                    <div class="card shadow-sm mb-4">
+                                                                        <div class="card-header bg-primary text-white">Receiver Details</div>
+                                                                        <div class="card-body">
+                                                                            <div class="form-row">
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label class="form-label text-primary">Receiver Name <span class="text-danger">*</span></label>
+                                                                                    <input type="text" class="form-control" name="receiver_name" value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
+                                                                                    <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
+                                                                                    <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
+                                                                                    <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
+                                                                                    <input type="hidden" name="grn_no" value="{{ $collection->shipmentCollection->grn_no }}" >
+                                                                                    <input type="hidden" name="receiver_type" value="receiver">
+                                                                                </div>
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
+                                                                                    <input type="text" class="form-control" name="receiver_phone" value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
+                                                                                </div>
                                                                             </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control" name="receiver_phone" value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row"> 
-                                                                            <div class="form-group col-md-6">
-                                                                                <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
-                                                                                <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
+                                                                            <div class="form-row"> 
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
+                                                                                    <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            @else
+                                                                <div class="alert alert-info mt-3">
+                                                                    Receiver details are disabled because the agent request has already been approved.
+                                                                </div>
+                                                            @endif
 
                                                             @if($approvalStatuses[$collection->requestId] ?? false)
                                                                 <!-- Agent pickup is approved -->
@@ -790,11 +801,15 @@
                                                                                 <div class="form-group col-md-6">
                                                                                     <label class="form-label text-primary">Agent Name</label>
                                                                                     <input type="text" class="form-control" name="agent_name">
+                                                                                    <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
+                                                                                    <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
+                                                                                    <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
+                                                                                    <input type="hidden" value="{{ $grn_no }}" name="grn_no">
+                                                                                    <input type="hidden" name="receiver_type" value="agent">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
                                                                                     <label class="form-label text-primary">Agent Phone Number</label>
                                                                                     <input type="text" class="form-control" name="agent_phone">
-                                                                                    <input type="hidden" value="{{ $grn_no }}" name="grn_no">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="form-row">
@@ -973,13 +988,13 @@
 
                                                     <script>
                                                         document.addEventListener('DOMContentLoaded', function () {
-                                                            // Scope to the modal only
-                                                            const modal = document.getElementById('deliverParcel-{{ $collection->id }}'); // Use your modal's actual ID
-
-                                                            if (!modal) return; // Exit if modal not found
+                                                            const modal = document.getElementById('deliverParcel-{{ $collection->id }}');
+                                                            if (!modal) return;
 
                                                             const receiverRadio = modal.querySelector('#select_receiver');
                                                             const agentRadio = modal.querySelector('#select_agent');
+                                                            const receiverPanel = modal.querySelector('#receiver_panel');
+                                                            const agentPanel = modal.querySelector('#agent_panel');
                                                             const submitBtn = modal.querySelector('button[type="submit"]');
 
                                                             const receiverFields = [
@@ -991,23 +1006,26 @@
                                                             const agentFields = [
                                                                 'input[name="agent_name"]',
                                                                 'input[name="agent_phone"]',
-                                                                'input[name="agent_id_no"]'
+                                                                'input[name="agent_id_no"]',
+                                                                'input[name="remarks"]'
                                                             ];
 
                                                             function getValues(selectors) {
                                                                 return selectors.map(selector => {
                                                                     const el = modal.querySelector(selector);
-                                                                    return el ? el.value.trim() : '';
+                                                                    return el && el.offsetParent !== null ? el.value.trim() : ''; // only if visible
                                                                 });
                                                             }
 
                                                             function validateFields() {
                                                                 let isValid = false;
 
-                                                                if (receiverRadio && receiverRadio.checked) {
+                                                                if (receiverPanel && receiverPanel.style.display !== 'none') {
                                                                     const values = getValues(receiverFields);
                                                                     isValid = values.every(v => v !== '');
-                                                                } else if (agentRadio && agentRadio.checked) {
+                                                                }
+
+                                                                if (agentPanel && agentPanel.style.display !== 'none') {
                                                                     const values = getValues(agentFields);
                                                                     isValid = values.every(v => v !== '');
                                                                 }
@@ -1017,7 +1035,7 @@
                                                                 }
                                                             }
 
-                                                            // Add input listeners
+                                                            // Listen to all inputs in both panels
                                                             [...receiverFields, ...agentFields].forEach(selector => {
                                                                 const input = modal.querySelector(selector);
                                                                 if (input) {
@@ -1025,15 +1043,14 @@
                                                                 }
                                                             });
 
-                                                            // Listen for radio button changes
+                                                            // Revalidate on delivery type change
                                                             if (receiverRadio) receiverRadio.addEventListener('change', validateFields);
                                                             if (agentRadio) agentRadio.addEventListener('change', validateFields);
 
-                                                            // Initial check
+                                                            // Initial validation
                                                             validateFields();
                                                         });
                                                     </script>
-
 
                                                 </div>
                                             </div>

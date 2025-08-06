@@ -12,6 +12,7 @@ class ShipmentDeliveries extends Model
         'receiver_name',
         'receiver_phone',
         'receiver_id_no',
+        'receiver_type',
         'agent_name',
         'agent_phone',
         'agent_id_no',
