@@ -37,80 +37,99 @@ class TrackController extends Controller
     //     ]);
     // }
     public function getTrackingByRequestId($requestId, Request $request)
-{
-    // Get the main tracking info
-    $track = Track::with(['client', 'trackingInfos', 'clientRequest.user', 'clientRequest.vehicle'])
-        ->where('requestId', $requestId)
-        ->first();
+    {
+        // Get the main tracking info
+        $track = Track::with([
+                'client',
+                'trackingInfos',
+                'clientRequest.user',
+                'clientRequest.vehicle',
+                'clientRequest.serviceLevel', // Add this
+                'clientRequest.client'       // Add this
+            ])
+            ->where('requestId', $requestId)
+            ->first();
 
-    // If no track found, return null or 404
-    if (!$track) {
-        if(auth('client')->user()->name){
-            $table = 'clients';
-            $id = auth('client')->user()->id;
-        }else if(auth('guest')->user()->name){
-            $table = 'guests';
-            $id = auth('guest')->user()->id;
+
+        // If no track found, return null or 404
+        if (!$track) {
+            if(auth('client')->user()->name){
+                $table = 'clients';
+                $id = auth('client')->user()->id;
+            }else if(auth('guest')->user()->name){
+                $table = 'guests';
+                $id = auth('guest')->user()->id;
+            }
+            UserLog::create([
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results not found',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'table' => $table,
+        ]);
+            return response()->json(['message' => 'Tracking not found'], 404);
         }
-        UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results not found',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
-        return response()->json(['message' => 'Tracking not found'], 404);
-    }
 
-    // Get shipment collection using the same requestId
-    $shipment = DB::table('shipment_collections')
-        ->where('requestId', $requestId)
-        ->first();
+        // Get shipment collection using the same requestId
+        $shipment = DB::table('shipment_collections')
+            ->where('requestId', $requestId)
+            ->first();
 
-    // If shipment exists, fetch origin office and destination name
-    if ($shipment) {
-        // Get origin office name
-        $originOffice = DB::table('offices')
-            ->where('id', $shipment->origin_id)
-            ->value('name');
-            
+        // If shipment exists, fetch origin office and destination name
+        if ($shipment) {
+            // Get origin office name
+            $originOffice = DB::table('offices')
+                ->where('id', $shipment->origin_id)
+                ->value('name');
+                
 
-        // Get destination from rates
-        $destinationName = DB::table('rates')
-            ->where('id', $shipment->destination_id)
-            ->value('destination');
+            // Get destination from rates
+            $destinationName = DB::table('rates')
+                ->where('id', $shipment->destination_id)
+                ->value('destination');
 
-        // get shipment items
-        $shipment_items = DB::table('shipment_items')
-            ->where('shipment_id', $shipment->id)
-            ->get();
+            // get shipment items
+            $shipment_items = DB::table('shipment_items')
+                ->where('shipment_id', $shipment->id)
+                ->get();
 
 
 
-        // Attach them to the response
-        $track->origin_office = $originOffice;
-        $track->destination_name = $destinationName;
-        $track->sender_name = $shipment->sender_name;
-        $track->receiver_name = $shipment->receiver_name;
-        $track->shipment_items = $shipment_items;
-    }
-    if(auth('client')->user()->name ?? ""){
-            $table = 'clients';
-            $id = auth('client')->user()->id;
-        }else if(auth('guest')->user()->name){
-            $table = 'guests';
-            $id = auth('guest')->user()->id;
+            // Attach them to the response
+            $track->origin_office = $originOffice;
+            $track->destination_name = $destinationName;
+            $track->sender_name = $shipment->sender_name;
+            $track->receiver_name = $shipment->receiver_name;
+            $track->shipment_items = $shipment_items;
         }
-        UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results  found',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
+        if(auth('client')->user()->name ?? ""){
+                $table = 'clients';
+                $id = auth('client')->user()->id;
+            }else if(auth('guest')->user()->name){
+                $table = 'guests';
+                $id = auth('guest')->user()->id;
+            }
+            UserLog::create([
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results  found',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'table' => $table,
+        ]);
 
-    return response()->json($track);
-}
+        $deliveryType = $track->clientRequest->serviceLevel->sub_category_name ?? null;
+        $clientType = $track->clientRequest->client->type ?? null;
+
+        $label = '';
+        if ($deliveryType && $clientType) {
+            $formattedClientType = ucfirst(str_replace('_', ' ', $clientType));
+            $label = "($deliveryType Delivery - $formattedClientType Client)";
+        }
+
+        $track->tracking_label = $label; 
+
+        return response()->json($track);
+    }
 
 
     public function generateTrackingPdf($requestId, Request $request)
@@ -220,79 +239,97 @@ class TrackController extends Controller
         //     return back()->with('error', 'No tracking data found for this Request ID.');
         // }
         $client = Auth::user(); 
-        $track = Track::with(['client', 'trackingInfos' => function($query) {
-        $query->orderBy('date');
-    }])
-    ->where('requestId', $requestId)
-    ->first();
-
-    if (!$track) {
-        if(auth('client')->user()->name ?? ''){
-            $table = 'clients';
-            $id = auth('client')->user()->id;
-        }else if(auth('guest')->user()->name){
-            $table = 'guests';
-            $id = auth('guest')->user()->id;
-        }
-        UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Tracked Parcel Request ID: '.$requestId. ' to generate pdf and results not found',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
-        return response()->json(['error' => 'Tracking data not found.'], 404);
-    }
-     // Get shipment collection using the same requestId
-    $shipment = DB::table('shipment_collections')
+        $track = Track::with([
+            'client',
+            'trackingInfos' => function($query) {
+                $query->orderBy('date');
+            },
+            'clientRequest.client',
+            'clientRequest.serviceLevel',
+        ])
         ->where('requestId', $requestId)
         ->first();
 
-    // If shipment exists, fetch origin office and destination name
-    if ($shipment) {
-        // Get origin office name
-        $originOffice = DB::table('offices')
-            ->where('id', $shipment->origin_id)
-            ->value('name');
-            
+        $deliveryType = $track->clientRequest->serviceLevel->sub_category_name ?? null;
+        $clientType = $track->clientRequest->client->type ?? null;
 
-        // Get destination from rates
-        $destinationName = DB::table('rates')
-            ->where('id', $shipment->destination_id)
-            ->value('destination');
+        $trackingLabel = '';
+        if ($deliveryType && $clientType) {
+            $formattedClientType = ucfirst(str_replace('_', ' ', $clientType)); // e.g. "on_account" → "On account"
+            $trackingLabel = "($deliveryType Delivery - $formattedClientType Client)";
+        }
 
-        // get shipment items
-        $shipment_items = DB::table('shipment_items')
-            ->where('shipment_id', $shipment->id)
-            ->get();
-    }
-    $data = [
 
-        'origin_office' => $originOffice,
-        'destination_name' => $destinationName,
-        'sender_name' => $shipment->sender_name,
-        'receiver_name' => $shipment->receiver_name,
-    ];
 
-    $trackingData = [
-        'requestId' => $track->requestId,
-        'clientId' => $track->clientId,
-        'current_status'=> $track->current_status,
-        'client'=>$client,
-        'client' => [
-            'name' => $track->client->name ?? 'N/A',
-            'address' => $track->client->address ?? 'N/A',
-            'email' => $track->client->email ?? 'N/A',
-            'phone' => $track->client->contactPersonPhone ?? 'N/A',
-        ],
-        'tracking_infos' => $track->trackingInfos->map(function ($info) {
-            return [
-                'date' => $info->date,
-                'details' => $info->details,
-                'remarks' => $info->remarks,
-            ];
-        })->toArray(),
-    ];
+        if (!$track) {
+            if(auth('client')->user()->name ?? ''){
+                $table = 'clients';
+                $id = auth('client')->user()->id;
+            }else if(auth('guest')->user()->name){
+                $table = 'guests';
+                $id = auth('guest')->user()->id;
+            }
+            UserLog::create([
+                'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+                'actions' => 'Tracked Parcel Request ID: '.$requestId. ' to generate pdf and results not found',
+                'url' => $request->fullUrl(),
+                'reference_id' => $id,
+                'table' => $table,
+            ]);
+            return response()->json(['error' => 'Tracking data not found.'], 404);
+        }
+
+        // Get shipment collection using the same requestId
+        $shipment = DB::table('shipment_collections')
+            ->where('requestId', $requestId)
+            ->first();
+
+        // If shipment exists, fetch origin office and destination name
+        if ($shipment) {
+            // Get origin office name
+            $originOffice = DB::table('offices')
+                ->where('id', $shipment->origin_id)
+                ->value('name');
+                
+
+            // Get destination from rates
+            $destinationName = DB::table('rates')
+                ->where('id', $shipment->destination_id)
+                ->value('destination');
+
+            // get shipment items
+            $shipment_items = DB::table('shipment_items')
+                ->where('shipment_id', $shipment->id)
+                ->get();
+        }
+        $data = [
+
+            'origin_office' => $originOffice,
+            'destination_name' => $destinationName,
+            'sender_name' => $shipment->sender_name,
+            'receiver_name' => $shipment->receiver_name,
+        ];
+
+        $trackingData = [
+            'requestId' => $track->requestId,
+            'clientId' => $track->clientId,
+            'current_status'=> $track->current_status,
+            'tracking_label' => $trackingLabel,
+            'client'=>$client,
+            'client' => [
+                'name' => $track->client->name ?? 'N/A',
+                'address' => $track->client->address ?? 'N/A',
+                'email' => $track->client->email ?? 'N/A',
+                'phone' => $track->client->contactPersonPhone ?? 'N/A',
+            ],
+            'tracking_infos' => $track->trackingInfos->map(function ($info) {
+                return [
+                    'date' => $info->date,
+                    'details' => $info->details,
+                    'remarks' => $info->remarks,
+                ];
+            })->toArray(),
+        ];
 
 
         $pdf = Pdf::loadView('tracking.pdf_report' , [
@@ -310,12 +347,13 @@ class TrackController extends Controller
             $id = auth('guest')->user()->id;
         }
         UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and generated pdf report',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and generated pdf report',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'table' => $table,
+        ]);
+        
         return $pdf->download("tracking-report-{$requestId}.pdf");
             // }
         abort(404);

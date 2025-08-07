@@ -184,9 +184,9 @@
             Tracking Report For Request ID: <strong>{{ $trackingData['requestId'] }}</strong>
             Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }} for
                 {{ count($shipment_items) }} {{ Str::plural('item', count($shipment_items)) }}
-
-            </strong>
+            </strong> {{ $trackingData['tracking_label'] }}
         </h3>
+        
     </div>
     <section class="mb-3">
         <table width="100%" cellpadding="1" cellspacing="0"

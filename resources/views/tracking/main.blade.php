@@ -123,7 +123,11 @@
                         }
 
                         let html =
-                            `<h5 class="text-primary mb-2">Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</h5> 
+                            `<h5 class="text-primary mb-2">
+                                Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</strong> 
+                                <span >${data.tracking_label ? data.tracking_label : ''}</span>
+                            </h5>
+ 
                         <section class="mb-3">
                         <div class="row mb-1">
                             <div class="col-md-6">
