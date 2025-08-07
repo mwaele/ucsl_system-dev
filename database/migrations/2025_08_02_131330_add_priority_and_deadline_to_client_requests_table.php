@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('client_requests', function (Blueprint $table) {
             $table->string('priority_level')->nullable()->after('status');
-            $table->date('deadline_date')->nullable()->after('priority_level');
+            $table->dateTime('deadline_date')->nullable()->after('priority_level');
         });
     }
 

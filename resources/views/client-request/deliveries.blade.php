@@ -50,19 +50,21 @@
                                 <td> {{ $collection->collectionLocation }} </td>
                                 <td> {{ $collection->parcelDetails }} </td>
                                 <td>
-                                    <p
-                                        class="badge mt-2
-                                            @if ($collection->status == 'pending collection') bg-secondary
-                                            @elseif ($collection->status == 'collected')
-                                                bg-warning
-                                            @elseif ($collection->status == 'delivered')
-                                                bg-primary
-                                            @elseif ($collection->status == 'verified')
-                                                bg-green 
-                                            @endif
-                                             text-white px-3 py-2 fs-8 rounded">
+                                    <span
+                                        class="badge p-2
+                                    @if ($collection->status == 'pending collection') bg-secondary
+                                    @elseif ($collection->status == 'collected')
+                                        bg-warning
+                                    @elseif ($collection->status == 'delivered')
+                                        bg-primary @endif
+                                    fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
-                                    </p>
+                                    </span>
+                                    @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
+                                        <span class="badge p-2 mt-2 bg-danger fs-5 text-white">
+                                            Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="d-flex pl-2">
                                     <!-- Collect Parcel Button -->

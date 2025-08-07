@@ -217,7 +217,7 @@ class SameDayController extends Controller
                 'category_id' => 'required|integer',
                 'sub_category_id' => 'required|integer',
                 'priority_level' => 'required|string',
-                'deadline_date' => 'nullable',
+                'deadline_date' => 'nullable|date',
                 'requestId' => 'required|string|unique:client_requests,requestId',
                 'rate_id' => 'nullable',
             ]);
