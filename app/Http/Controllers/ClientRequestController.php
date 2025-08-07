@@ -152,6 +152,7 @@ class ClientRequestController extends Controller
             }
 
             $totalRequests = (clone $baseQuery)->count();
+            $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
             $collected = (clone $baseQuery)->where('status', 'collected')->count();
             $verified = (clone $baseQuery)->where('status', 'verified')->count();
             $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
@@ -162,6 +163,7 @@ class ClientRequestController extends Controller
             }
 
             $totalRequests = (clone $baseQuery)->count();
+            $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
             $collected = (clone $baseQuery)->where('status', 'collected')->count();
             $verified = (clone $baseQuery)->where('status', 'verified')->count();
             $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
@@ -174,6 +176,7 @@ class ClientRequestController extends Controller
             'client_requests',
             'request_id',
             'totalRequests',
+            'delivered',
             'collected',
             'verified',
             'pending_collection',

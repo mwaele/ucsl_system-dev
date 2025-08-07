@@ -43,6 +43,7 @@ class DashboardController extends Controller
 
         if ($user->role === 'admin') {
             $totalRequests = ClientRequest::when($dateRange, $queryWithDate)->count();
+            $delivered = ClientRequest::where('status', 'delivered')->when($dateRange, $queryWithDate)->count();
             $collected = ClientRequest::where('status', 'collected')->when($dateRange, $queryWithDate)->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
@@ -55,6 +56,8 @@ class DashboardController extends Controller
             $stationStats[$name] = [
                 'total' => ClientRequest::where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
+                'delivered' => ClientRequest::where('status', 'delivered')->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
                 'collected' => ClientRequest::where('status', 'collected')->where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
                 'verified' => ClientRequest::where('status', 'verified')->where('office_id', $id)
@@ -65,6 +68,8 @@ class DashboardController extends Controller
             }
         } else {
             $totalRequests = ClientRequest::where('office_id', $station)
+                ->when($dateRange, $queryWithDate)->count();
+            $delivered = ClientRequest::where('status', 'delivered')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
             $collected = ClientRequest::where('status', 'collected')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
@@ -81,6 +86,7 @@ class DashboardController extends Controller
 
         return view('index', compact(
             'totalRequests',
+            'delivered',
             'collected',
             'verified',
             'pendingCollection',

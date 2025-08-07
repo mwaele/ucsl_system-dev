@@ -251,10 +251,29 @@
                                                 </select>
                                             </div>
 
-                                            <div class=" mt-2 col-md-2">
-                                                <h6 for="reference" class="text-primary">Reference</h6>
+                                            <div class="mt-2 col-md-2">
+                                                <label for="reference" class="text-primary"><h6>Reference</h6></label>
                                                 <input type="text" id="reference" name="reference"
-                                                    class="form-control" placeholder="e.g. MPESA123XYZ">
+                                                    class="form-control text-uppercase" 
+                                                    placeholder="e.g. TH647CDTNA"
+                                                    maxlength="10"
+                                                    pattern="[A-Z0-9]{10}"
+                                                    title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
+                                            </div>
+
+                                            <div class=" mt-2 col-md-2">
+                                                <h6 for="priority_level" class="text-primary">Priority Level</h6>
+                                                <select class="form-control" name="priority_level"
+                                                    id="priority_level">
+                                                    <option value="normal" selected>Normal</option>
+                                                    <option value="high">High</option>
+                                                </select>
+                                            </div>
+                                            <div class="mt-2 col-md-3" id="priority-deadline-group"
+                                                style="display: none;">
+                                                <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)</h6>
+                                                <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
                                             </div>
                                         </div>
 

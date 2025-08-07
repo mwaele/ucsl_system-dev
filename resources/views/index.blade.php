@@ -76,6 +76,30 @@
             </a>
         </div>
 
+        <!-- Delivered Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivered', 'time' => $timeFilter])) }}"
+                title="View Unverified Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-info bg-primary shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Delivered Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $delivered }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
@@ -124,30 +148,6 @@
             </a>
         </div>
 
-        <!-- Unverified Requests Card -->
-        <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
-                title="View Unverified Parcels" class="text-decoration-none text-dark">
-                <div class="card border-left-info bg-primary shadow h-100 py-2 hover-card">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
-                                    Unverified Requests
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
-                                    {{ $collected }}
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-box fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
         <!-- Pending Collections Card -->
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
@@ -183,10 +183,17 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }}
                                 </h6>
-                                <p class="mb-1 text-warning">
-                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
-                                        class="text-warning text-decoration-none">
-                                        Pending Collection: <strong>{{ $stats['pending'] }}</strong>
+                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
+                                <p class="mb-1 text-info">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'delivered', 'time' => $timeFilter])) }}"
+                                        class="text-primary text-decoration-none">
+                                        Delivered: <strong>{{ $stats['delivered'] }}</strong>
+                                    </a>
+                                </p> 
+                                <p class="mb-1 text-info">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter])) }}"
+                                        class="text-info text-decoration-none">
+                                        Verified: <strong>{{ $stats['verified'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-success">
@@ -195,13 +202,12 @@
                                         Collected: <strong>{{ $stats['collected'] }}</strong>
                                     </a>
                                 </p>
-                                <p class="mb-1 text-info">
-                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter])) }}"
-                                        class="text-info text-decoration-none">
-                                        Verified: <strong>{{ $stats['verified'] }}</strong>
+                                <p class="mb-1 text-warning">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
+                                        class="text-warning text-decoration-none">
+                                        Pending Collection: <strong>{{ $stats['pending'] }}</strong>
                                     </a>
                                 </p>
-                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>    
                             </div>
                         </div>
                     </a>
