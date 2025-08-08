@@ -14,11 +14,14 @@ use App\Models\FrontOffice;
 use App\Models\Office;
 use App\Models\Rate;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 use Auth;
 
 class OvernightController extends Controller
 {
+    use PdfReportTrait;
+
     //
     public function on_account(Request $request )
     {
@@ -143,7 +146,8 @@ class OvernightController extends Controller
         ));
     }
 
-    public function overnight_account_report(){
+    public function overnight_account_report()
+    {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
@@ -152,13 +156,18 @@ class OvernightController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
-        $pdf = Pdf::loadView('overnight.overnight_account_report' , [
-            'clientRequests'=>$clientRequests
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("overnight_account_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'overnight.overnight_account_report',
+            ['clientRequests' => $clientRequests],
+            'overnight_account_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
-    public function walkin_report(){
+    public function walkin_report()
+    {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
@@ -167,10 +176,14 @@ class OvernightController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
-        $pdf = Pdf::loadView('overnight.walkin_report' , [
-            'clientRequests'=>$clientRequests
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("walkin_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'overnight.walkin_report',
+            ['clientRequests' => $clientRequests],
+            'walkin_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
 }

@@ -8,13 +8,15 @@ use App\Models\Rate;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Helpers\PdfHelper;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
 use Auth;
 
 class MyCollectionController extends Controller
 {
+    use PdfReportTrait;
+    
     public function show()
     {
         $offices = Office::where('id', Auth::user()->station)->get();
@@ -156,19 +158,12 @@ class MyCollectionController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pdf = Pdf::loadView('client-request.collections_report', [
-            'collections' => $collections
-        ])->setPaper('a4', 'landscape');
-
-        // Render before adding page numbers
-        $dompdf = $pdf->getDomPDF();
-        $dompdf->render();
-
-        // Add centered page numbers using helper
-        PdfHelper::addPageNumbers($dompdf);
-
-        return response($dompdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="collections_report.pdf"');
+        return $this->renderPdfWithPageNumbers(
+            'client-request.collections_report',
+            ['collections' => $collections],
+            'collections_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\PdfHelper;
 use App\Models\User;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Helpers\EmailHelper;
 use Illuminate\Support\Carbon;
 use App\Models\ClientRequest;
+use App\Traits\PdfReportTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +17,8 @@ use App\Jobs\SendUserAccountEmail;
 
 class UserController extends Controller
 {
+    use PdfReportTrait;
+
     public function index()
     {
         $stations = Office::all();
@@ -136,20 +138,13 @@ class UserController extends Controller
     {
         $users = User::orderBy('created_at', 'desc')->get();
 
-        $pdf = Pdf::loadView('users.user_report', [
-            'users' => $users
-        ])->setPaper('a4', 'landscape');
-
-        // Render PDF before adding page numbers
-        $dompdf = $pdf->getDomPDF();
-        $dompdf->render();
-
-        // Add perfectly centered page numbers
-        PdfHelper::addPageNumbers($dompdf);
-
-        return response($dompdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="users_report.pdf"');
+        return $this->renderPdfWithPageNumbers(
+            'users.user_report',
+            ['users' => $users],
+            'users_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function destroy($id)

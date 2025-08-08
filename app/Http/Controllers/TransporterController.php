@@ -6,17 +6,18 @@ use App\Models\Transporter;
 use App\Models\TransporterTrucks;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
 class TransporterController extends Controller
 {
+    use PdfReportTrait;
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        
-
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
         return view('transporters.index')->with(['transporters'=>$transporters]);
     }
@@ -59,7 +60,8 @@ class TransporterController extends Controller
         return redirect()->route('transporters.index')->with('Success', 'Transporter Saved Successfully');
     }
 
-    public function fetchTrucks($id){
+    public function fetchTrucks($id)
+    {
        $name = Transporter::find($id)?->name;
         
         $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id])->get();
@@ -73,17 +75,21 @@ class TransporterController extends Controller
         return response()->json($trucks);
     }
 
-    public function transporter_report(){
-
+    public function transporter_report()
+    {
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
-        $pdf = Pdf::loadView('transporters.truck_list_report' , [
-            'transporters'=>$transporters
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("transporters_report.pdf");
-       
+
+        return $this->renderPdfWithPageNumbers(
+            'transporters.truck_list_report',
+            ['transporters' => $transporters],
+            'transporters_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
-    public function transporterTrucksReport($id){
+    public function transporterTrucksReport($id)
+    {
        $name = Transporter::find($id)?->name;
         
         $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id])->get();

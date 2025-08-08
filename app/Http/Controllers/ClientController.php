@@ -10,10 +10,12 @@ use App\Models\Category;
 use App\Models\ClientCategory;
 use App\Models\SalesPerson;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
 class ClientController extends Controller
 {
+    use PdfReportTrait;
     /**
      * Display a listing of the resource.
      */
@@ -23,12 +25,17 @@ class ClientController extends Controller
         return view('clients.index')->with('clients', $clients);
     }
 
-    public function clients_report(){
+    public function clients_report()
+    {
         $clients = Client::all();
-        $pdf = Pdf::loadView('clients.clients_report' , [
-            'clients'=>$clients
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("clients_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'clients.clients_report',
+            ['clients' => $clients],
+            'clients_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     /**

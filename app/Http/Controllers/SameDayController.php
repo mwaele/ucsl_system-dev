@@ -20,6 +20,7 @@ use App\Models\Rate;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\PdfReportTrait;
 use App\Services\SmsService;
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
@@ -31,6 +32,8 @@ use App\Models\Location;
 
 class SameDayController extends Controller
 {
+    use PdfReportTrait;
+
     public function on_account(Request $request )
     {
         // Determine the correct CAST expression based on DB driver
@@ -168,10 +171,14 @@ class SameDayController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
-        $pdf = Pdf::loadView('same_day.sameday_walkin_report' , [
-            'clientRequests'=>$clientRequests
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("sameday_walkin_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'same_day.sameday_walkin_report',
+            ['clientRequests' => $clientRequests],
+            'sameday_walkin_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function sameday_account_report()
@@ -180,14 +187,18 @@ class SameDayController extends Controller
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
             ->whereHas('client', function ($query) {
-                $query->where('type', 'walkin');
+                $query->where('type', 'on_account');
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
-        $pdf = Pdf::loadView('same_day.sameday_account_report' , [
-            'clientRequests'=>$clientRequests
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("sameday_account_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'same_day.sameday_account_report',
+            ['clientRequests' => $clientRequests],
+            'sameday_account_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function getCost($originId, $destinationId)

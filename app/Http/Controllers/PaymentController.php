@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -25,12 +28,18 @@ class PaymentController extends Controller
     {
         //
     }
-    public function payments_report(){
+
+    public function payments_report()
+    {
         $payments = Payment::all();
-        $pdf = Pdf::loadView('payments.payments_report' , [
-            'payments'=>$payments
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("payments_report.pdf");
+
+        return $this->renderPdfWithPageNumbers(
+            'payments.payments_report',
+            ['payments' => $payments],
+            'payments_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     /**

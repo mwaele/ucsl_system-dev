@@ -26,12 +26,14 @@ use App\Services\SmsService;
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
-use App\Helpers\PdfHelper;
+use App\Traits\PdfReportTrait;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 
 class ClientRequestController extends Controller
 {
+    use PdfReportTrait;
+    
     /**
      * Display a listing of the resource.
      */
@@ -258,23 +260,19 @@ class ClientRequestController extends Controller
 
         $client_requests = $query->orderBy('created_at', 'desc')->get();
 
-        $pdf = Pdf::loadView('pdf.client-requests', [
-            'client_requests' => $client_requests,
-            'station' => $station,
-            'status' => $status,
-            'reportingPeriod' => $dateRange,
-            'timeFilter' => $timeFilter,
-        ])->setPaper('a4', 'landscape');
-
-        $dompdf = $pdf->getDomPDF();
-        $dompdf->render();
-
-        // Use helper
-        PdfHelper::addPageNumbers($dompdf);
-
-        return response($dompdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="client_requests.pdf"');
+        return $this->renderPdfWithPageNumbers(
+            'pdf.client-requests',
+            [
+                'client_requests' => $client_requests,
+                'station' => $station,
+                'status' => $status,
+                'reportingPeriod' => $dateRange,
+                'timeFilter' => $timeFilter,
+            ],
+            'client_requests.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function getClientCategories($clientId)

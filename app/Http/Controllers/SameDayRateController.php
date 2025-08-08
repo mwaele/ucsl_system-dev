@@ -6,11 +6,14 @@ use App\Models\SameDayRate;
 use App\Models\Rate;
 use App\Models\Office;
 use Illuminate\Http\Request;
+use App\Traits\PdfReportTrait;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class SameDayRateController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -27,14 +30,19 @@ class SameDayRateController extends Controller
     }
 
     
-    public function nrb_rates_sameday_report(){
+    public function nrb_rates_sameday_report()
+    {
+        $rates = SameDayRate::where('office_id', 2)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        $rates = SameDayRate::where('office_id',2)->orderBy('created_at', 'desc')->get();
-        $pdf = Pdf::loadView('rates.nrb_rates_sameday_report' , [
-            'rates'=>$rates
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("nrb_rates_sameday_report.pdf");
-       
+        return $this->renderPdfWithPageNumbers(
+            'rates.nrb_rates_sameday_report',
+            ['rates' => $rates],
+            'nrb_rates_sameday_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
     
 

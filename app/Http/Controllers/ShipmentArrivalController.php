@@ -12,13 +12,15 @@ use App\Models\Rate;
 use App\Models\LoadingSheetWaybill;
 use App\Models\ShipmentCollection;
 use Illuminate\Http\Request;
-use App\Helpers\PdfHelper;
+use App\Traits\PdfReportTrait;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class ShipmentArrivalController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -137,19 +139,13 @@ class ShipmentArrivalController extends Controller
 
         $loading_sheets = $query->get();
 
-        $pdf = Pdf::loadView('shipment_arrivals.arrivals_report', [
-            'sheets' => $loading_sheets
-        ])->setPaper('a4', 'landscape');
-
-        $dompdf = $pdf->getDomPDF();
-        $dompdf->render();
-
-        // Use helper
-        PdfHelper::addPageNumbers($dompdf);
-
-        return response($dompdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="arrivals_report.pdf"');
+        return $this->renderPdfWithPageNumbers(
+            'shipment_arrivals.arrivals_report',
+            ['sheets' => $loading_sheets],
+            'arrivals_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function generateParcels(Request $request)

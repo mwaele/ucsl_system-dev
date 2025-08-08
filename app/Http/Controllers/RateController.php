@@ -6,11 +6,14 @@ use App\Models\Rate;
 use App\Models\Office;
 use App\Models\Zone;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfReportTrait;
 use Illuminate\Http\Request;
 use Auth;
 
 class RateController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -118,42 +121,61 @@ class RateController extends Controller
     }
 
 
-    public function rates_report(){
-
+    public function rates_report()
+    {
         $rates = Rate::orderBy('created_at', 'desc')->get();
-        $pdf = Pdf::loadView('rates.rate_report' , [
-            'rates'=>$rates
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("rates_report.pdf");
-       
+
+        return $this->renderPdfWithPageNumbers(
+            'rates.rate_report',
+            ['rates' => $rates],
+            'rates_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
     
-    public function msa_rates_report(){
+    public function msa_rates_report()
+    {
+        $rates = Rate::orderBy('created_at', 'desc')
+            ->where('office_id', 1)
+            ->get();
 
-        $rates = Rate::orderBy('created_at', 'desc')->where('office_id',1)->get();
         $head = "Mombasa Overnight Rates Report";
         $title = "Overnight Rates From Mombasa to Other Destinations";
-        $pdf = Pdf::loadView('rates.rate_report' , [
-            'rates'=>$rates,
-            'title' => $title,
-            'head'=>$head,
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("mombasa_rates_report.pdf");
-       
+
+        return $this->renderPdfWithPageNumbers(
+            'rates.rate_report',
+            [
+                'rates' => $rates,
+                'title' => $title,
+                'head' => $head,
+            ],
+            'mombasa_rates_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
-    public function nrb_rates_report(){
+    public function nrb_rates_report()
+    {
+        $rates = Rate::orderBy('created_at', 'desc')
+            ->where('office_id', 2)
+            ->get();
 
-        $rates = Rate::orderBy('created_at', 'desc')->where('office_id',2)->get();
         $head = "Nairobi Overnight Rates Report";
         $title = "Overnight Rates From Nairobi to other Destinations";
-        $pdf = Pdf::loadView('rates.rate_report' , [
-            'rates'=>$rates,
-            'title' => $title,
-            'head'=>$head,
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("nairobi_rates_report.pdf");
-       
+
+        return $this->renderPdfWithPageNumbers(
+            'rates.rate_report',
+            [
+                'rates' => $rates,
+                'title' => $title,
+                'head' => $head,
+            ],
+            'nairobi_rates_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     /**
