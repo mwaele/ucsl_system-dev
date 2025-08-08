@@ -238,6 +238,9 @@
         </tr>
     </table>
     <div class="head">
+        <h2 style="text-align: center">Parcel Manifest <strong>From</strong> {{ $loading_sheet->office->name }}
+            <strong>To </strong> {{ $destination->destination }}
+        </h2>
         <h1 class="text-danger mb-3 " style="text-align: right">
             <strong>No. {{ str_pad($loading_sheet->batch_no, 4, '0', STR_PAD_LEFT) }}
             </strong>
@@ -358,12 +361,6 @@
                 <p>NAME: {{ $loading_sheet->transporter->name }}</p>
 
                 <p>PHONE NUMBER: {{ $loading_sheet->transporter->phone_no }}</p>
-            </td>
-
-
-            <td width="41%">
-                <p>REG. DETAILS: {{ $loading_sheet->transporter->reg_details }}</p>
-
                 <div class="signature-row">
                     <p class="signature-text">SIGNATURE:</p>
                     @php
@@ -374,6 +371,15 @@
                         <img class="signature-img" src="{{ $signaturePath2 }}">
                     @endif
                 </div>
+            </td>
+
+
+            <td width="41%">
+                <p>VEHICLE REG. NO: {{ $loading_sheet->transporter_truck->reg_no }}</p>
+                <p>DRIVER NAME: {{ $loading_sheet->transporter_truck->driver_name }}</p>
+                <p>DRIVER ID NO: {{ $loading_sheet->transporter_truck->driver_id_no }}</p>
+
+
             </td>
         </table>
         <table width="100%" style=" font-family: sans-serif;">
@@ -391,17 +397,13 @@
 
                 <p>NAME: ______________________</p>
                 <p>ID NUMBER: _________________</p>
+                <p>SIGNATURE:</p>
             </td>
             <td width="45%">
-                <p>PHONE NUMBER: ____________________</p>
-                <P>DATE: ______________________________</P>
+                <p>PHONE NUMBER: ________________________</p>
+                <p>DATE: __________________________________</p>
+                <p>OFFICE: ________________________________</p>
             </td>
-            <tr width="100%" style="margin:0 padding:0">
-                <td style="margin:0 padding:0"></td>
-                <td style="margin:0 padding:0">
-                    <p>SIGNATURE:</p>
-                </td>
-            </tr>
 
 
         </table>

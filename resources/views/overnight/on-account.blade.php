@@ -595,6 +595,7 @@
 
                         //
                         $(document).on('click', '.verify-btn', function() {
+                            //alert();
                             const shipment_id = $(this).data('id');
                             const vehicle_reg_no = $(this).data('vehicle');
                             const rider = $(this).data('rider');
@@ -637,7 +638,7 @@
                                     response.items.forEach((item, index) => {
                                         const volume = item.length * item.width * item.height;
 
-                                        itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(cm <sup> 3 </sup>)</th><th class="text-primary"> Remarks </th> </tr> </thead>
+                                        itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(Kg)</th><th class="text-primary"> Remarks </th> </tr> </thead>
                                     <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
 
 
@@ -696,7 +697,7 @@
 
                                         <div class="form-group col-md-2">
                                             <label class="text-primary"><small>Payment Mode</small></label>
-                                            <select name="payment_mode" class="form-control">
+                                            <select name="payment_mode" id="payment_mode"  class="form-control payment_mode">
                                                 <option value="" selected>-- Select --</option>
                                                 <option value="M-Pesa">M-Pesa</option>
                                                 <option value="Cash">Cash</option>
@@ -707,7 +708,7 @@
 
                                         <div class="form-group col-md-2">
                                             <label class="text-primary"><small>Reference</small></label>
-                                            <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                                            <input type="text" name="reference" id="reference" class="form-control reference" placeholder="e.g. MPESA123XYZ">
                                         </div>
                                     </div>
 
@@ -766,9 +767,9 @@
                                 baseWeight = volumeWeight;
                             }
                             //alert('total volume weight ' + volumeWeight);
-                            //alert('total weight ' + totalWeight);
+                            alert('total weight ' + totalWeight);
                             if (baseWeight > 25) {
-                                //alert('base weight used ' + baseWeight)
+                                alert('base weight used ' + baseWeight)
                                 const extraWeight = baseWeight - 25;
                                 cost += extraWeight * 50;
                             }
@@ -833,6 +834,29 @@
                                 bindCostListeners(newRow);
                             });
                         });
+                        $(document).on('change', '.payment_mode', function() {
+                            //alert('you clicked me!');
+                            const mode = $(this).val();
+
+                            if (mode === 'Invoice') {
+                                $.ajax({
+                                    url: '{{ route('get.latest.invoice.no') }}',
+                                    type: 'GET',
+                                    success: function(data) {
+                                        $('.reference').val(data
+                                            .invoice_no);
+                                    },
+                                    error: function() {
+                                        alert(
+                                            'Unable to fetch invoice number.');
+                                    }
+                                });
+                            } else {
+                                $('.reference').val(''); // clear for other modes
+                            }
+                        });
+
+
                     });
                 </script>
 

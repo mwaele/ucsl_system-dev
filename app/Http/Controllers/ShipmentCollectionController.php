@@ -235,7 +235,7 @@ class ShipmentCollectionController extends Controller
 
             if($request->payment_mode=="Invoice"){
               DB::table('invoices')->insert([
-                'invoice_no' => 'INV-00001',
+                'invoice_no' => $request->reference,
                 'amount' => $request->total_cost,
                 'due_date' => Carbon::now()->addDays(30),
                 'client_id' => $request->clientId,
@@ -764,9 +764,15 @@ class ShipmentCollectionController extends Controller
 
             $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
 
+            $shipment_collection = ShipmentCollection::where('requestId', $request->requestId)->first();
+
+            //dd($shipment_collection);
+
             // Save waybill
-            ShipmentCollection::where('requestId', $request->requestId)
+            $collection = ShipmentCollection::where('requestId', $request->requestId)
                 ->update(['waybill_no' => $waybill_no]);
+
+
 
             // Update client request
             ClientRequest::where('requestId', $request->requestId)
@@ -792,6 +798,37 @@ class ShipmentCollectionController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // 7. Save to payments table
+            if($request->payment_mode=="M-Pesa" || $request->payment_mode=="Cash" || $request->payment_mode=="Cheque" ){
+            DB::table('payments')->insert([
+                'client_id' => $shipment_collection->client_id,
+                'amount' => $request->total_cost,
+                'date_paid' => now(),
+                'shipment_collection_id' => $id,
+                'type' => $request->payment_mode,
+                'received_by' => auth()->user()->id,
+                'verified_by' => auth()->user()->id,
+                'paid_by' => $shipment_collection->client_id,
+                'status' => 'Pending Verification',
+                'reference_no' => $request->reference,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+            if($request->payment_mode=="Invoice"){
+              DB::table('invoices')->insert([
+                'invoice_no' => $request->reference,
+                'amount' => $request->total_cost,
+                'due_date' => Carbon::now()->addDays(30),
+                'client_id' => $shipment_collection->client_id,
+                'shipment_collection_id' => $id,
+                'invoiced_by' => auth()->user()->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);  
+            }
 
             // ----------------------------
             // ✅ SMS Notifications Logic

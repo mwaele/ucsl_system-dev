@@ -146,7 +146,7 @@
                                                     <th class="text-primary">Length (cm)</th>
                                                     <th class="text-primary">Width (cm)</th>
                                                     <th class="text-primary">Height (cm)</th>
-                                                    <th class="text-primary">Vol (cm<sup>3</sup>)</th>
+                                                    <th class="text-primary text-center">Volume Weight (Kg)</th>
                                                     <th class="text-primary">Remarks</th>
                                                     <th class="text-primary">Action</th>
                                                 </tr>
@@ -356,6 +356,8 @@
                                                 }
 
                                                 function calculateVolume(el) {
+                                                    let totalVolume = 0;
+
                                                     const row = el.closest('tr');
                                                     const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
                                                     const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
@@ -363,8 +365,34 @@
                                                     const volume = length * width * height;
                                                     row.querySelector('[name="volume[]"]').value = volume;
 
-                                                    // Recalculate totals
+                                                    let weightInput = row.querySelector('[name="weight[]"]');
+                                                    let weight = parseFloat(weightInput.value);
+
+                                                    //alert(weight);
+
+                                                    totalVolume += volume;
+
+                                                    volumeWeight = totalVolume / 5000;
+                                                    //alert('Total Volume Weight ' + volumeWeight)
+
+                                                    let base_weight = 0;
+
+                                                    if (weight >= volumeWeight) {
+                                                        base_weight = weight;
+                                                    }
+                                                    if (volumeWeight > weight) {
+                                                        alert('Volume weight applied: ' + volumeWeight + " Kgs");
+                                                        base_weight = volumeWeight;
+                                                        weight = volumeWeight; // update variable
+                                                        weightInput.value = volumeWeight; // update field value
+                                                        weightInput.dispatchEvent(new Event('keyup')); // trigger keyup event
+                                                        recalculateCosts();
+                                                    }
+
                                                     recalculateCosts();
+                                                    // Recalculate totals
+                                                    //recalculateCost(base_weight);
+                                                    //recalculateCost(volumeWeight);
                                                 }
 
                                                 function removeSubItem(button, parentIndex) {

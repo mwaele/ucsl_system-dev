@@ -18,4 +18,16 @@ class Payment extends Model
             'received_by',
             'verified_by',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+    public function shipment_collection()
+    {
+        return $this->belongsTo(ShipmentCollection::class, 'shipment_collection_id');
+    }
+    public function user(){
+        return $this->belongsTo(User::class, 'received_by');
+    }
 }

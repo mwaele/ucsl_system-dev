@@ -149,7 +149,7 @@
                                                     <th class="text-primary">Length (cm)</th>
                                                     <th class="text-primary">Width (cm)</th>
                                                     <th class="text-primary">Height (cm)</th>
-                                                    <th class="text-primary">Vol (cm<sup>3</sup>)</th>
+                                                    <th class="text-primary">Vol (kg)</th>
                                                     <th class="text-primary">Remarks</th>
                                                     <th class="text-primary">Action</th>
                                                 </tr>
@@ -245,7 +245,7 @@
 
                                             <div class="col-md-2">
                                                 <h6 for="payment_mode" class="text-primary">Payment Mode</h6>
-                                                <select name="payment_mode" class="form-control">
+                                                <select id="payment_mode" name="payment_mode" class="form-control">
                                                     <option value="" selected>-- Select --</option>
                                                     <option value="M-Pesa">M-Pesa</option>
                                                     <option value="Cash">Cash</option>
@@ -255,28 +255,29 @@
                                             </div>
 
                                             <div class="mt-2 col-md-2">
-                                                <label for="reference" class="text-primary"><h6>Reference</h6></label>
+                                                <label for="reference" class="text-primary">
+                                                    <h6>Reference</h6>
+                                                </label>
                                                 <input type="text" id="reference" name="reference"
-                                                    class="form-control text-uppercase" 
-                                                    placeholder="e.g. TH647CDTNA"
-                                                    maxlength="10"
-                                                    pattern="[A-Z0-9]{10}"
+                                                    class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
+                                                    maxlength="10" pattern="[A-Z0-9]{10}"
                                                     title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
                                                     oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                             </div>
 
                                             <div class=" mt-2 col-md-2">
                                                 <h6 for="priority_level" class="text-primary">Priority Level</h6>
-                                                <select class="form-control" name="priority_level"
-                                                    id="priority_level">
+                                                <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
                                                     <option value="high">High</option>
                                                 </select>
                                             </div>
                                             <div class="mt-2 col-md-3" id="priority-deadline-group"
                                                 style="display: none;">
-                                                <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)</h6>
-                                                <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
+                                                <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)
+                                                </h6>
+                                                <input type="datetime-local" class="form-control" name="deadline_date"
+                                                    id="deadline_date">
                                             </div>
                                         </div>
 
@@ -467,10 +468,11 @@
                                     @endif
                                 </td>
                                 <td class="d-flex pl-2">
-                                    <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
-                                        data-target="#editUserModal-{{ $request->id }}">
-                                        Edit
-                                    </button>
+                                    <a href="{{ route('generate-invoice', $request->id) }}">
+                                        <button class="btn btn-sm btn-info mr-1">
+                                            Generate Invoice
+                                        </button>
+                                    </a>
                                     <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                         data-toggle="modal" data-target="#deleteUser-{{ $request->id }}">
                                         <i class="fas fa-trash"></i>
@@ -507,4 +509,33 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            // Simulate onchange after 10 seconds if user is still on page
+            // setTimeout(function() {
+            //     if ($('#payment_mode').length && $('#payment_mode').val() === 'Invoice') {
+            //         $('#payment_mode').trigger('change');
+            //     }
+            // }, 10000); // 10,000 ms = 10 seconds
+
+            $('#payment_mode').on('change', function() {
+                const mode = $(this).val();
+
+                if (mode === 'Invoice') {
+                    $.ajax({
+                        url: '{{ route('get.latest.invoice.no') }}',
+                        type: 'GET',
+                        success: function(data) {
+                            $('#reference').val(data.invoice_no);
+                        },
+                        error: function() {
+                            alert('Unable to fetch invoice number.');
+                        }
+                    });
+                } else {
+                    $('#reference').val(''); // clear for other modes
+                }
+            });
+        });
+    </script>
 @endsection

@@ -6,6 +6,8 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\Dompdf\Facade\Options;
 
 class InvoiceController extends Controller
 {
@@ -33,6 +35,49 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function generateInvoice($id){
+        $invoice = DB::table('invoices')
+            ->join('shipment_collections', 'invoices.shipment_collection_id', '=', 'shipment_collections.id')
+            ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+            ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')
+            ->where('invoices.shipment_collection_id', $id)
+            ->select('invoices.*', 'shipment_collections.*', 'client_requests.*','clients.*')
+            ->first(); // Use ->first() to get a single invoice
+
+        // Step 2: Get shipment items separately
+        $shipmentItems = DB::table('shipment_items')
+            ->where('shipment_id', $id) // assuming $id is shipment_collection_id
+            ->get();
+
+        $data = [
+            'invoice' => $invoice,
+            'shipment_items' => $shipmentItems,
+            'onlyOnePage' => true,
+        ];
+       // dd($data);
+        $pdf = Pdf::loadView('same_day.invoice' , [
+            'invoice' => $invoice,
+            'shipmentItems' => $shipmentItems,
+            'onlyOnePage' => true,
+        ])->setPaper('a4', 'portrait'); 
+        return $pdf->download("invoice.pdf");
+
+    }
+
+//    public function generateInvoice()
+//     {
+//         $pdf = Pdf::loadView('same_day.invoice', ['data' => 'test']);
+
+//         // Add page script
+//     $pdf->getDomPDF()->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
+//         $font = $fontMetrics->getFont('Helvetica', 'normal');
+//         $text = "Page $pageNumber of $pageCount";
+//         $canvas->text(500, 820, $text, $font, 10);
+//     });
+
+//     return $pdf->stream('invoice.pdf');
+//     }
+
     public function index()
     {
         //

@@ -643,7 +643,7 @@
                                                                         <th>Length (cm)</th>
                                                                         <th>Width (cm)</th>
                                                                         <th>Height (cm)</th>
-                                                                        <th>Volume (cm<sup>3</sup>)</th>
+                                                                        <th>Volume Wt.(Kg)</th>
                                                                         <th>Act</th>
                                                                     </tr>
                                                                 </thead>
@@ -741,13 +741,13 @@
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
-                                                                                                                                                                                                                                                                                                                                                            </label>
-                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
-                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                                                                                                                                                readonly>
-                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
+                                                                                                                                                                                                                                                                                                                                                                                            </label>
+                                                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
+                                                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
+                                                                                                                                                                                                                                                                                                                                                                                                readonly>
+                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
                                                             </div>
 
                                                             <!-- Submit -->
@@ -873,21 +873,38 @@
 
                     function recalculateCosts() {
                         let totalWeight = 0;
+                        let totalVolume = 0;
 
                         $('#shipmentTable tbody tr').each(function() {
                             const row = $(this);
                             const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                             const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                            const volume = parseFloat(row.find('.volume').val()) || 1;
                             totalWeight += weight * packages;
+                            totalVolume += volume;
                         });
 
                         $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
                         const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                         let cost = baseCost;
+                        volumeWeight = totalVolume / 5000;
 
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
+                        let baseWeight = 0;
+
+
+                        if (totalWeight > volumeWeight) {
+                            baseWeight = totalWeight;
+                            alert('weight' + baseWeight)
+                        }
+                        if (volumeWeight > totalWeight) {
+                            baseWeight = volumeWeight;
+                            alert('volume weight' + baseWeight)
+                            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                        }
+
+                        if (baseWeight > 25) {
+                            const extraWeight = baseWeight - 25;
                             cost += extraWeight * 50;
                         }
 

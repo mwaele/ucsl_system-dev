@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment;
+use App\Models\ParcelReceiptItem;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 
-class PaymentController extends Controller
+class ParcelReceiptItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $payments = Payment::all();
-        return view('payments.index')->with('payments', $payments);
+        //
     }
 
     /**
@@ -24,13 +21,6 @@ class PaymentController extends Controller
     public function create()
     {
         //
-    }
-    public function payments_report(){
-        $payments = Payment::all();
-        $pdf = Pdf::loadView('payments.payments_report' , [
-            'payments'=>$payments
-        ])->setPaper('a4', 'landscape');
-        return $pdf->download("payments_report.pdf");
     }
 
     /**
@@ -44,7 +34,7 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Payment $payment)
+    public function show(ParcelReceiptItem $parcelReceiptItem)
     {
         //
     }
@@ -52,7 +42,7 @@ class PaymentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Payment $payment)
+    public function edit(ParcelReceiptItem $parcelReceiptItem)
     {
         //
     }
@@ -60,7 +50,7 @@ class PaymentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Payment $payment)
+    public function update(Request $request, ParcelReceiptItem $parcelReceiptItem)
     {
         //
     }
@@ -68,7 +58,7 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Payment $payment)
+    public function destroy(ParcelReceiptItem $parcelReceiptItem)
     {
         //
     }

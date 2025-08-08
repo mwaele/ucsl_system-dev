@@ -32,6 +32,7 @@ use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\SameDayRateController;
 use App\Http\Controllers\ShipmentArrivalController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -187,6 +188,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/get-latest-invoice-no', [InvoiceController::class, 'getLatestInvoiceNo'])->name('get.latest.invoice.no');
 
+    Route::get('/generate-invoice/{id}', [InvoiceController::class, 'generateInvoice'])->name('generate-invoice');
 
 
     Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');
@@ -203,6 +205,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/sameday/walk-in', [SameDayController::class, 'walk_in'])->name('sameday.walk-in');
     Route::get('/sameday/on-account', [SameDayController::class, 'on_account'])->name('sameday.on-account');
+
+    //parcel receipts
+    Route::resource('parcelReceipts','App\Http\Controllers\ParcelReceiptController');
+
+    Route::resource('parcelReceiptItems','App\Http\Controllers\ParcelReceiptItemController');
+
+    // payments
+    Route::resource('payments','App\Http\Controllers\PaymentController');
+
+    Route::get('/payments_report', [PaymentController::class, 'payments_report'])->name('payments_report');
 
     Route::get('/shipments/{id}/items', [ShipmentItemController::class, 'fetchItems']);
 

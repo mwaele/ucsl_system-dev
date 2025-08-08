@@ -686,7 +686,7 @@
                         // Total weight calculation and cost update
                         function recalculateCosts() {
                             let totalWeight = 0;
-                            alert();
+
 
                             $('#shipmentTable tbody tr').each(function() {
                                 const row = $(this);

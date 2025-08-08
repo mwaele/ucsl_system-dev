@@ -140,16 +140,50 @@
                                 <td>{{ $item->payment_mode }}</td>
                                 <td>{{ $item->status ?? 'Pending' }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-info verifyModal" data-toggle="modal"
-                                        data-id="{{ $item->waybill_no }}" data-waybill-no="{{ $item->waybill_no }}"
-                                        data-client="{{ $item->client_name }}" data-item-name="{{ $item->item_names }}"
-                                        data-weight="{{ $item->total_weight }}" data-target="#VerifyModal">Verify</button>
+                                    <button class="btn btn-sm btn-info  verify-btn" data-id="{{ $item->id }}"
+                                        data-waybill-no="{{ $item->waybill_no }}" data-client="{{ $item->client_name }}"
+                                        data-item-name="{{ $item->item_names }}" data-weight="{{ $item->total_weight }}"
+                                        data-request-id="{{ $item->requestId }}">Verify</button>
+                                    {{-- <button class="btn btn-info btn-sm verify-btn mr-1"
+                                        data-id="{{ $request->shipmentCollection->id }}"
+                                        data-request-id="{{ $request->requestId }}"
+                                        data-rider="{{ $request->user->name }}"
+                                        data-vehicle="{{ $request->vehicle ?? '—' }}"
+                                        data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
+                                        data-cost="{{ $request->shipmentCollection->cost }}"
+                                        data-total-cost="{{ $request->shipmentCollection->total_cost }}"
+                                        data-vat="{{ $request->shipmentCollection->vat }}"
+                                        data-base-cost="{{ $request->shipmentCollection->base_cost }}">
+                                        Verify
+                                    </button> --}}
                                 </td>
                             </tr>
                         @endforeach
 
+                        <div class="modal fade" id="itemsModal" tabindex="-1" aria-labelledby="itemsModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success">
+                                        <h4 class="modal-title text-white">Parcel Receipts Details at <strong>
+                                                {{ Auth::user()->office->name }} </strong>
+                                            Dispatch Date:<strong>
+                                                {{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </strong>
+                                            Destination:
+                                            <strong> {{ $destination->destination ?? '' }} </strong>
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">x</button>
+                                    </div>
+                                    <div class="modal-body" id="modalItemsBody">
+                                        Loading...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Shipment Arrival Modal -->
-                        <div class="modal fade" id="VerifyModal" tabindex="-1" aria-labelledby="VerifyModalLabel"
+                        {{-- <div class="modal fade" id="VerifyModal" tabindex="-1" aria-labelledby="VerifyModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog modal-xl">
                                 <div class="modal-content">
@@ -212,8 +246,155 @@
                                     </form>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
+                        <script>
+                            $(document).on('click', '.verify-btn', function() {
 
+                                const shipment_id = $(this).data('id');
+
+                                const vehicle_reg_no = $(this).data('vehicle');
+                                const rider = $(this).data('rider');
+                                const date_requested = $(this).data('date-requested');
+                                const request_id = $(this).data('request-id');
+                                //alert(request_id);
+                                const cost = $(this).data('cost');
+                                const total_cost = $(this).data('total-cost');
+                                const vat = $(this).data('vat');
+                                const base_cost = $(this).data('base-cost');
+                                $.ajax({
+                                    url: '/shipments/' + shipment_id + '/items',
+                                    method: 'GET',
+                                    success: function(response) {
+                                        let headerInfo = `
+                                    <form id="shipmentReceiptForm">
+                                                @csrf
+                                                @method('POST')
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Request ID</label>
+                                            <input type="text" name="requestId" class="form-control" id="requestId" readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Rider</label>
+                                            <input type="text" name="userId" id="riderName" class="form-control"  readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Vehicle</label>
+                                            <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label class="text-primary">Date Requested</label>
+                                            <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
+                                        </div>
+                                    </div>
+                                `;
+
+                                        let itemsHtml =
+                                            '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
+                                        response.items.forEach((item, index) => {
+                                            const volume = item.length * item.width * item.height;
+
+                                            itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(cm <sup> 3 </sup>)</th><th class="text-primary"> Remarks </th> </tr> </thead>
+                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
+
+
+                                    <tr>
+                                        <td colspan="9">
+                                            <table class="table table-sm table-bordered mt-2">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th class="text-warning">Sub Item Name</th>
+                                                        <th class="text-warning">Quantity</th>
+                                                        <th class="text-warning">Weight (Kg)</th>
+                                                        <th class="text-warning">Remarks</th>
+                                                        <th class="text-warning">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="sub_items-${index}">
+                                                    <!-- Sub-items will be appended here -->
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item </button>
+                                        </td>
+                                    </tr>
+                                `;
+                                        });
+                                        itemsHtml += `
+                                        </tbody>
+                                    </table>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Cost *</small></label>
+                                            <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
+                                        </div>
+
+                                        <input type="hidden" name="base_cost" id="baseCost" value="">
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Tax (16%)*</small></label>
+                                            <input type="number" class="form-control" name="vat" id="vat" readonly>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Total Cost*</small></label>
+                                            <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Billing Party</small></label>
+                                            <select name="billing_party" class="form-control">
+                                                <option value="" selected>-- Select --</option>
+                                                <option value="Sender">Sender</option>
+                                                <option value="Receiver">Receiver</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Payment Mode</small></label>
+                                            <select name="payment_mode" class="form-control">
+                                                <option value="" selected>-- Select --</option>
+                                                <option value="M-Pesa">M-Pesa</option>
+                                                <option value="Cash">Cash</option>
+                                                <option value="Cheque">Cheque</option>
+                                                <option value="Invoice">Invoice</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label class="text-primary"><small>Reference</small></label>
+                                            <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
+                                    <button type="submit" class="btn btn-primary">Submit Verification</button>
+                                    </div></form>
+                                    `;
+
+
+                                        // ✅ Correct usage
+                                        $('#modalItemsBody').html(headerInfo + itemsHtml);
+                                        document.getElementById('requestId').value = request_id;
+                                        document.getElementById('totalCost').value = total_cost;
+                                        document.getElementById('cost').value = cost;
+                                        document.getElementById('riderName').value = rider;
+                                        document.getElementById('vehicleRegNo').value = vehicle_reg_no;
+                                        document.getElementById('dateRequested').value = date_requested;
+                                        document.getElementById('vat').value = vat;
+                                        document.getElementById('baseCost').value = base_cost;
+                                        $('#itemsModal').modal('show');
+                                    },
+                                    error: function() {
+                                        $('#modalItemsBody').html('<p>Error loading items.</p>');
+                                        $('#itemsModal').modal('show');
+                                    }
+                                });
+
+                            });
+                        </script>
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
 
@@ -421,6 +602,36 @@
                     console.error('Error:', error);
                     alert('Failed to dispatch.');
                 });
+        });
+    </script>
+    <script>
+        // Handle form submission
+        $(document).on('submit', '#shipmentReceiptForm', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const shipmentId = $('.verify-btn').data('id');
+            const formData = form.serialize();
+
+            $.ajax({
+                url: `/parcelReceipts/${shipmentId}`,
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val(),
+                    'X-HTTP-Method-Override': 'PUT'
+                },
+                success: function(response) {
+                    alert('Shipment Collection Verified Successfully!');
+                    $('#itemsModal').modal('hide');
+                    // Optionally reload the page or update the table
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Error verifying shipment');
+                    console.error(xhr.responseText);
+                }
+            });
         });
     </script>
 @endsection

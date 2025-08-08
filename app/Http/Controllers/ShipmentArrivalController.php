@@ -281,6 +281,7 @@ class ShipmentArrivalController extends Controller
             'r.destination', // Destination from rates
             'sc.total_cost',
             'sc.id',
+            'sc.requestId',
             'sc.status',
             'c.name as client_name',
             'sc.payment_mode',
@@ -290,7 +291,8 @@ class ShipmentArrivalController extends Controller
         )
         ->where('lsw.loading_sheet_id', $id)
         ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode','sc.id',
-            'sc.status')
+            'sc.status',
+            'sc.requestId')
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')

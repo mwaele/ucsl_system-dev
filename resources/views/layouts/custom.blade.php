@@ -217,6 +217,23 @@
                     <span class="sized">Shipment Arrivals</span>
                 </a>
             </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Clients Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsepayments"
+                    aria-expanded="true" aria-controls="collapsepayments">
+                    <i class="fas fa-fw fa-money-bill-alt"></i>
+                    <span class="sized">Payments</span>
+                </a>
+                <div id="collapsepayments" class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
+                    aria-labelledby="headingpayments" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('payments.index') }}">All Payments</a>
+                    </div>
+                </div>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -1172,7 +1189,15 @@
 
                     if (length && width && height) {
                         const volume = length * width * height;
+                        // CALCULATE VOLUME WEIGHT
+                        const volume_weight = volume / 5000;
                         row.find('input[name="volume[]"]').val(volume.toFixed(2));
+                        const weight = row.find('input[name="weight[]"]').val();
+
+                        if (volume_weight > weight) {
+                            row.find('input[name="weight[]"]').val() = volume_weight;
+                        }
+
                     } else {
                         row.find('input[name="volume[]"]').val('');
                     }
@@ -1181,23 +1206,66 @@
                 // end calculate volume
 
                 // Total weight calculation and cost update
+                // function recalculateCosts() {
+                //     let totalWeight = 0;
+
+                //     $('#shipmentTable tbody tr').each(function() {
+                //         const row = $(this);
+                //         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                //         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                //         totalWeight += weight * packages;
+                //     });
+
+                //     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
+                //     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                //     let cost = baseCost;
+
+                //     if (totalWeight > 25) {
+                //         const extraWeight = totalWeight - 25;
+                //         cost += extraWeight * 50;
+                //     }
+
+                //     $('input[name="cost"]').val(cost.toFixed(2));
+
+                //     const vat = cost * 0.16;
+                //     $('input[name="vat"]').val(vat.toFixed(2));
+                //     $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                // }
                 function recalculateCosts() {
                     let totalWeight = 0;
+                    let totalVolume = 0;
 
                     $('#shipmentTable tbody tr').each(function() {
                         const row = $(this);
                         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                        const volume = parseFloat(row.find('.volume').val()) || 1;
                         totalWeight += weight * packages;
+                        totalVolume += volume;
                     });
 
                     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
                     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                     let cost = baseCost;
+                    volumeWeight = totalVolume / 5000;
 
-                    if (totalWeight > 25) {
-                        const extraWeight = totalWeight - 25;
+                    let baseWeight = 0;
+
+
+                    if (totalWeight > volumeWeight) {
+                        baseWeight = totalWeight;
+                        //alert('weight' + baseWeight)
+                    }
+                    if (volumeWeight > totalWeight) {
+                        baseWeight = volumeWeight;
+                        alert('volume weight' + baseWeight)
+                        $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                    }
+
+                    if (baseWeight > 25) {
+                        const extraWeight = baseWeight - 25;
                         cost += extraWeight * 50;
                     }
 
@@ -1208,11 +1276,13 @@
                     $('input[name="total_cost"]').val((cost + vat).toFixed(2));
                 }
 
+
                 // Watch for changes in volume dimensions
                 $(document).on('input', 'input[name="length[]"], input[name="width[]"], input[name="height[]"]',
                     function() {
                         const row = $(this).closest('tr');
                         calculateVolume(row);
+                        recalculateCosts();
                     });
 
                 // Watch for changes in weight or packages
