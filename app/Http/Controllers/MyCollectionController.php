@@ -8,13 +8,15 @@ use App\Models\Rate;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\PdfHelper;
 use Carbon\Carbon;
 
 use Auth;
 
 class MyCollectionController extends Controller
 {
-    public function show(){
+    public function show()
+    {
         $offices = Office::where('id', Auth::user()->station)->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
@@ -141,20 +143,32 @@ class MyCollectionController extends Controller
     //     return back()->with('success', 'Shipment saved successfully!');
     // }
 
-    
-    public function collections_report(){
+    public function collections_report()
+    {
         $loggedInUserId = Auth::user()->id;
-        $collections = ClientRequest::with('shipmentCollection.office',
-                                            'shipmentCollection.destination',
-                                            'shipmentCollection.items')
+
+        $collections = ClientRequest::with(
+            'shipmentCollection.office',
+            'shipmentCollection.destination',
+            'shipmentCollection.items'
+        )
             ->where('userId', $loggedInUserId)
-            ->orderBy('created_at','desc')
+            ->orderBy('created_at', 'desc')
             ->get();
-        
-        $pdf = Pdf::loadView('client-request.collections_report' , [
-            'collections'=>$collections
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("collections_report.pdf");
-       
+
+        $pdf = Pdf::loadView('client-request.collections_report', [
+            'collections' => $collections
+        ])->setPaper('a4', 'landscape');
+
+        // Render before adding page numbers
+        $dompdf = $pdf->getDomPDF();
+        $dompdf->render();
+
+        // Add centered page numbers using helper
+        PdfHelper::addPageNumbers($dompdf);
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="collections_report.pdf"');
     }
 }

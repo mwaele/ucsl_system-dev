@@ -32,13 +32,20 @@ class PdfHelper
 
         $width = $canvas->get_width();
         $height = $canvas->get_height();
+        $pageCount = $canvas->get_page_count();
         
-        // Center the placeholder string (Dompdf replaces it per page automatically)
-        $textWidth = $canvas->get_text_width($format, $font, $fontSize);
+        // Replace with widest possible text for measurement
+        $widestText = str_replace(
+            ['{PAGE_NUM}', '{PAGE_COUNT}'],
+            [$pageCount, $pageCount],
+            $format
+        );
+
+        $textWidth = $canvas->get_text_width($widestText, $font, $fontSize);
         $x = ($width - $textWidth) / 2;
         $y = $height - $offsetY;
 
-        // Only call once – Dompdf will render correct numbers on each page
+        // Call only once, Dompdf will replace placeholders per page
         $canvas->page_text($x, $y, $format, $font, $fontSize, $color);
     }
 }
