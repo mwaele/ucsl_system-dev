@@ -63,7 +63,8 @@
         <table class="bordered">
             <thead>
                 <tr>
-                    <th>Manifest #</th>
+                    <th>#</th>
+                    <th>Manifest No.</th>
                     <th>Dispatch date</th>
                     <th>Office of Origin</th>
                     <th>Destination</th>
@@ -74,6 +75,7 @@
             <tbody>
                 @foreach ($sheets as $sheet)
                     <tr>
+                        <td>{{ $loop->iteration }}.</td>
                         <td class="text-danger sized">{{ str_pad($sheet->batch_no, 5, '0', STR_PAD_LEFT) }}</td>
                         <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                         <td> {{ $sheet->office->name }} </td>
