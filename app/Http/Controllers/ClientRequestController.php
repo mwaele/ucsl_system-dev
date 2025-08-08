@@ -26,7 +26,7 @@ use App\Services\SmsService;
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
-
+use App\Helpers\PdfHelper;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 
@@ -213,15 +213,11 @@ class ClientRequestController extends Controller
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
-        // Station logic
         if ($user->role === 'admin') {
             $station = $stationParam ?: 'All';
         } else {
             $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
         }
-
-        // Determine the date range
-        $dateRange = null;
 
         if ($startDate && $endDate) {
             $dateRange = [
@@ -239,7 +235,6 @@ class ClientRequestController extends Controller
             };
         }
 
-        // Query
         $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office']);
 
         if ($user->role === 'admin') {
@@ -263,7 +258,6 @@ class ClientRequestController extends Controller
 
         $client_requests = $query->orderBy('created_at', 'desc')->get();
 
-        // PDF generation
         $pdf = Pdf::loadView('pdf.client-requests', [
             'client_requests' => $client_requests,
             'station' => $station,
@@ -273,17 +267,14 @@ class ClientRequestController extends Controller
         ])->setPaper('a4', 'landscape');
 
         $dompdf = $pdf->getDomPDF();
-        $canvas = $dompdf->get_canvas();
+        $dompdf->render();
 
-        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
-            $font = $fontMetrics->getFont('Helvetica', 'normal');
-            $text = "Page $pageNumber of $pageCount";
-            $w = $canvas->get_width();
-            $h = $canvas->get_height();
-            $canvas->text($w / 2, $h - 30, $text, $font, 10);
-        });
+        // Use helper
+        PdfHelper::addPageNumbers($dompdf);
 
-        return $pdf->download('client_requests.pdf');
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="client_requests.pdf"');
     }
 
     public function getClientCategories($clientId)

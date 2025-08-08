@@ -12,6 +12,7 @@ use App\Models\Rate;
 use App\Models\LoadingSheetWaybill;
 use App\Models\ShipmentCollection;
 use Illuminate\Http\Request;
+use App\Helpers\PdfHelper;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -136,34 +137,16 @@ class ShipmentArrivalController extends Controller
 
         $loading_sheets = $query->get();
 
-        // Create PDF instance
         $pdf = Pdf::loadView('shipment_arrivals.arrivals_report', [
             'sheets' => $loading_sheets
         ])->setPaper('a4', 'landscape');
 
-        // Force Dompdf to render first
         $dompdf = $pdf->getDomPDF();
         $dompdf->render();
 
-        // Now we can safely write on the canvas
-        $canvas = $dompdf->getCanvas();
-        $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-        $size = 10;
-        $font = null; // default font
-        $width = $canvas->get_width();
-        $height = $canvas->get_height();
-        $textWidth = $canvas->get_text_width($text, $font, $size);
+        // Use helper
+        PdfHelper::addPageNumbers($dompdf);
 
-        $canvas->page_text(
-            ($width - $textWidth) / 2, // center horizontally
-            $height - 28,              // 28 points from bottom
-            $text,
-            $font,
-            $size,
-            [0, 0, 0]
-        );
-
-        // Return the modified PDF output
         return response($dompdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="arrivals_report.pdf"');
