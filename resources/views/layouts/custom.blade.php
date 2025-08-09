@@ -702,6 +702,36 @@
         </script>
 
         <script>
+            const paymentMode = document.getElementById('payment_mode');
+            const reference = document.getElementById('reference');
+
+            paymentMode.addEventListener('change', function () {
+                if (this.value === 'M-Pesa') {
+                    reference.placeholder = "e.g. TH647CDTNA";
+                    reference.maxLength = 10;
+                    // Require 10 uppercase letters/numbers with at least one digit
+                    reference.pattern = "^(?=.*\\d)[A-Z0-9]{10}$";
+                    reference.title = "Enter a 10-character M-Pesa code (capital letters & numbers, at least one number, no spaces or special characters)";
+                    reference.classList.add('text-uppercase');
+
+                    // Restrict and format input
+                    reference.oninput = function () {
+                        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+                    };
+                } else {
+                    reference.placeholder = "Enter reference";
+                    reference.removeAttribute('maxlength');
+                    reference.removeAttribute('pattern');
+                    reference.removeAttribute('title');
+                    reference.classList.remove('text-uppercase');
+
+                    // Remove restrictions
+                    reference.oninput = null;
+                }
+            });
+        </script>
+
+        <script>
             // Initialize Flatpickr
             flatpickr("#datetime", {
                 enableTime: true,

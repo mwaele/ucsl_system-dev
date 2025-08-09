@@ -254,12 +254,8 @@
                                             <div class="mt-2 col-md-2">
                                                 <label for="reference" class="text-primary"><h6>Reference</h6></label>
                                                 <input type="text" id="reference" name="reference"
-                                                    class="form-control text-uppercase" 
-                                                    placeholder="e.g. TH647CDTNA"
-                                                    maxlength="10"
-                                                    pattern="[A-Z0-9]{10}"
-                                                    title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
-                                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
+                                                    class="form-control"
+                                                    placeholder="Enter reference">
                                             </div>
 
                                             <div class=" mt-2 col-md-2">
