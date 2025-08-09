@@ -217,7 +217,9 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6" id="priority-deadline-group" style="display: none;">
-                                                <label for="deadline_date" class="form-label text-primary">Deadline (If High Priority)</label>
+                                                <label for="deadline_date" class="form-label text-primary">
+                                                    Deadline (If High Priority)
+                                                </label>
                                                 <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
                                             </div>
                                         </div>

@@ -400,6 +400,8 @@ class ClientRequestController extends Controller
             'vehicleId' => 'required|integer',
             'category_id' => 'required|integer',
             'sub_category_id' => 'required|integer',
+            'priority_level' => 'required|string',
+            'deadline_date' => 'nullable|date',
             'requestId' => 'required|string|unique:client_requests,requestId',
             //'rate_id'=>'nullable',
         ]);
@@ -418,6 +420,8 @@ class ClientRequestController extends Controller
                 'requestId' => $validated['requestId'],
                 'category_id' => $validated['category_id'],
                 'sub_category_id' => $validated['sub_category_id'],
+                'priority_level' => $validated['priority_level'],
+                'deadline_date' => $validated['deadline_date'],
                 'created_by' => Auth::id(),
                 'office_id' => Auth::user()->station,
             ]);

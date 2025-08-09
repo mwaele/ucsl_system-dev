@@ -708,6 +708,36 @@
                 dateFormat: "Y-m-d H:i",
             });
         </script>
+        
+        <script>
+            function setMinDateTime() {
+                const now = new Date();
+                const datetimeLocal = document.getElementById("deadline_date");
+
+                // Format YYYY-MM-DDTHH:MM
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+
+                datetimeLocal.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            document.addEventListener("DOMContentLoaded", setMinDateTime);
+
+            // Update min whenever the field is focused
+            document.getElementById("deadline_date").addEventListener("focus", setMinDateTime);
+
+            // Optional: validate before form submit
+            document.querySelector("form")?.addEventListener("submit", function (e) {
+                const deadline = document.getElementById("deadline_date").value;
+                if (deadline && new Date(deadline) < new Date()) {
+                    alert("Please select a time from now going forward.");
+                    e.preventDefault();
+                }
+            });
+        </script>
 
         <script>
             // Initialise the datatable
