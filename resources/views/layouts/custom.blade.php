@@ -210,13 +210,54 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
+            <!-- Nav Item - Clients Collapse Menu -->
+            {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                    data-target="#collapseshipment_arrivals" aria-expanded="true"
+                    aria-controls="collapseshipment_arrivals">
+                    <i class="fas fa-fw fa-money-bill-alt"></i>
+                    <span class="sized">Shipment Arrivals</span>
+                </a>
+                <div id="collapseshipment_arrivals"
+                    class="collapse {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}"
+                    aria-labelledby="headingshipment_arrivals" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="nav-link" href="{{ route('shipment_arrivals.index') }}">
+                            <i class="fas fa-fw fa-shipping-fast"></i>
+                            <span class="sized">Shipment Arrivals</span>
+                        </a>
+                    </div>
+                </div>
+            </li> --}}
 
             <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                    data-target="#collapseshipment_arrivals" aria-expanded="true"
+                    aria-controls="collapseshipment_arrivals">
+                    <i class="fas fa-fw fa-money-bill-alt"></i>
+                    <span class="sized">Shipment Arrivals</span>
+                </a>
+                <div id="collapseshipment_arrivals"
+                    class="collapse {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}"
+                    aria-labelledby="headingshipment_arrivals" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('shipment_arrivals.index') }}">Arrivals
+                            Verification</a>
+                        <a class="collapse-item" href="">Parcel Collection
+                        </a>
+                        <a class="collapse-item" href="">Reports
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+
+            {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('shipment_arrivals.index') }}">
                     <i class="fas fa-fw fa-shipping-fast"></i>
                     <span class="sized">Shipment Arrivals</span>
                 </a>
-            </li>
+            </li> --}}
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
@@ -705,17 +746,18 @@
             const paymentMode = document.getElementById('payment_mode');
             const reference = document.getElementById('reference');
 
-            paymentMode.addEventListener('change', function () {
+            paymentMode.addEventListener('change', function() {
                 if (this.value === 'M-Pesa') {
                     reference.placeholder = "e.g. TH647CDTNA";
                     reference.maxLength = 10;
                     // Require 10 uppercase letters/numbers with at least one digit
                     reference.pattern = "^(?=.*\\d)[A-Z0-9]{10}$";
-                    reference.title = "Enter a 10-character M-Pesa code (capital letters & numbers, at least one number, no spaces or special characters)";
+                    reference.title =
+                        "Enter a 10-character M-Pesa code (capital letters & numbers, at least one number, no spaces or special characters)";
                     reference.classList.add('text-uppercase');
 
                     // Restrict and format input
-                    reference.oninput = function () {
+                    reference.oninput = function() {
                         this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
                     };
                 } else {
@@ -738,7 +780,7 @@
                 dateFormat: "Y-m-d H:i",
             });
         </script>
-        
+
         <script>
             function setMinDateTime() {
                 const now = new Date();
@@ -760,7 +802,7 @@
             document.getElementById("deadline_date").addEventListener("focus", setMinDateTime);
 
             // Optional: validate before form submit
-            document.querySelector("form")?.addEventListener("submit", function (e) {
+            document.querySelector("form")?.addEventListener("submit", function(e) {
                 const deadline = document.getElementById("deadline_date").value;
                 if (deadline && new Date(deadline) < new Date()) {
                     alert("Please select a time from now going forward.");
