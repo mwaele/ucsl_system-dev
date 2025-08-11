@@ -253,39 +253,40 @@ Route::middleware('auth')->group(function () {
           
 
     Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
+    Route::get('/parcel_collection', [ShipmentArrivalController::class, 'parcel_collection'])->name('parcel_collection');
 
     Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
 
-      Route::resource('transporters','App\Http\Controllers\TransporterController');
-      Route::resource('dispatchers','App\Http\Controllers\DispatcherController');
-      Route::get('transporter/trucks/{id}', [TransporterController::class, 'fetchTrucks']);
+    Route::resource('transporters','App\Http\Controllers\TransporterController');
+    Route::resource('dispatchers','App\Http\Controllers\DispatcherController');
+    Route::get('transporter/trucks/{id}', [TransporterController::class, 'fetchTrucks']);
 
-      Route::resource('transporter_trucks','App\Http\Controllers\TransporterTrucksController');
+    Route::resource('transporter_trucks','App\Http\Controllers\TransporterTrucksController');
 
-      Route::get('/get-trucks/{transporterId}', [TransporterController::class, 'getTrucks']);
+    Route::get('/get-trucks/{transporterId}', [TransporterController::class, 'getTrucks']);
 
-      Route::get('/loadingsheet_waybills/{id}', [LoadingSheetController::class, 'loadingsheet_waybills'])->name('loadingsheet_waybills');
+    Route::get('/loadingsheet_waybills/{id}', [LoadingSheetController::class, 'loadingsheet_waybills'])->name('loadingsheet_waybills');
 
-      Route::get('/shipment-collection/{id}', [LoadingSheetController::class, 'show']);
+    Route::get('/shipment-collection/{id}', [LoadingSheetController::class, 'show']);
 
-      Route::get('/generate_loading_sheet/{id}', [LoadingSheetController::class, 'generate_loading_sheet']);
+    Route::get('/generate_loading_sheet/{id}', [LoadingSheetController::class, 'generate_loading_sheet']);
 
-      Route::post('/get-shipment-items', [ShipmentItemController::class, 'getItems']);
+    Route::post('/get-shipment-items', [ShipmentItemController::class, 'getItems']);
 
-      Route::get('/transporters_report', [TransporterController::class, 'transporter_report']);
+    Route::get('/transporters_report', [TransporterController::class, 'transporter_report']);
 
-      Route::get('/transporter_trucks_report/{id}', [TransporterController::class, 'transporterTrucksReport']);
+    Route::get('/transporter_trucks_report/{id}', [TransporterController::class, 'transporterTrucksReport']);
 
     Route::post('/loading-sheets/{id}/dispatch', [LoadingSheetController::class, 'dispatch']);
 
     Route::resource('loading_sheet_waybills','App\Http\Controllers\LoadingSheetWaybillController');
 
-       
-      Route::resource('sub_categories','App\Http\Controllers\SubCategoryController');
+      
+    Route::resource('sub_categories','App\Http\Controllers\SubCategoryController');
 
-      Route::resource('client_categories','App\Http\Controllers\ClientCategoryController');
+    Route::resource('client_categories','App\Http\Controllers\ClientCategoryController');
 
-      Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
+    Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
    
 
 });

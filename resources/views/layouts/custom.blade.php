@@ -230,7 +230,7 @@
                 </div>
             </li> --}}
 
-            <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('shipment_arrivals.*', 'parcel_collection') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse"
                     data-target="#collapseshipment_arrivals" aria-expanded="true"
                     aria-controls="collapseshipment_arrivals">
@@ -243,7 +243,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('shipment_arrivals.index') }}">Arrivals
                             Verification</a>
-                        <a class="collapse-item" href="">Parcel Collection
+                        <a class="collapse-item" href="{{ route('parcel_collection') }}">Parcel Collection
                         </a>
                         <a class="collapse-item" href="">Reports
                         </a>

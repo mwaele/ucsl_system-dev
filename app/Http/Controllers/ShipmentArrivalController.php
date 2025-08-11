@@ -28,12 +28,12 @@ class ShipmentArrivalController extends Controller
     {
         $offices = Office::where('id',Auth::user()->station)->get();
         $destinations = $shipments = DB::table('shipment_collections')
-        ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-        ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
-        ->where('client_requests.status', 'verified')
-        ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
-        ->groupBy('rates.destination','rates.id')
-        ->get();
+            ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+            ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
+            ->where('client_requests.status', 'verified')
+            ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
+            ->groupBy('rates.destination','rates.id')
+            ->get();
 
         //dd($destinations);
         $transporters = Transporter::orderBy('id', 'desc')->get();
@@ -266,44 +266,62 @@ class ShipmentArrivalController extends Controller
 
         $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])->get();
 
-       $data = DB::table('loading_sheet_waybills as lsw')
-        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
-        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
-        ->join('rates as r', 'sc.destination_id', '=', 'r.id')
-        ->join('clients as c', 'sc.client_id', '=', 'c.id')
-
-        ->select(
-            'lsw.waybill_no',
-            'r.destination', // Destination from rates
-            'sc.total_cost',
-            'sc.id',
-            'sc.requestId',
-            'sc.status',
-            'c.name as client_name',
-            'sc.payment_mode',
-            DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
-            DB::raw('SUM(si.actual_quantity) as total_quantity'),
-            DB::raw('SUM(si.actual_weight) as total_weight')
-        )
-        ->where('lsw.loading_sheet_id', $id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode','sc.id',
-            'sc.status',
-            'sc.requestId')
-        ->get();
+        $data = DB::table('loading_sheet_waybills as lsw')
+            ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+            ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+            ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+            ->join('clients as c', 'sc.client_id', '=', 'c.id')
+            ->select(
+                'lsw.waybill_no',
+                DB::raw('MAX(r.destination) as destination'),
+                'sc.total_cost',
+                'sc.id',
+                'sc.requestId',
+                'sc.status',
+                'c.name as client_name',
+                'sc.payment_mode',
+                DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
+                DB::raw('SUM(si.actual_quantity) as total_quantity'),
+                DB::raw('SUM(si.actual_weight) as total_weight')
+            )
+            ->where('lsw.loading_sheet_id', $id)
+            ->groupBy(
+                'lsw.waybill_no',
+                'c.name',
+                'r.id',
+                'sc.total_cost',
+                'sc.payment_mode',
+                'sc.id',
+                'sc.status',
+                'sc.requestId'
+            )
+            ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')
-        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
-        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
-        ->select(
-            DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
-            DB::raw('SUM(si.actual_weight) as total_weight_sum'),
-            DB::raw('SUM(sc.total_cost) as total_cost_sum')
-        )->where('lsw.loading_sheet_id',$id)
-        ->first();
-        //dd($data);
+            ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+            ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+            ->select(
+                DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
+                DB::raw('SUM(si.actual_weight) as total_weight_sum'),
+                DB::raw('SUM(sc.total_cost) as total_cost_sum')
+            )->where('lsw.loading_sheet_id',$id)
+            ->first();
+            //dd($data);
 
         return view('shipment_arrivals.manifest_details')->with([
             'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals,'id'=>$id
         ]);
+    }
+
+    /**
+     * Display the parcel collection data.
+     */
+    public function parcel_collection()
+    {
+        // Fetch all shipment arrivals
+        $shipmentArrivals = ShipmentArrival::all();
+
+        // Pass data to the view
+        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals'));
     }
 }
