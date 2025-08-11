@@ -36,7 +36,7 @@ class ParcelReceiptController extends Controller
      */
     public function show(ParcelReceipt $parcelReceipt)
     {
-        //
+        //dd($parcelReceipt);
     }
 
     /**

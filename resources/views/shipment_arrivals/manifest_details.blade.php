@@ -143,7 +143,11 @@
                                     <button class="btn btn-sm btn-info  verify-btn" data-id="{{ $item->id }}"
                                         data-waybill-no="{{ $item->waybill_no }}" data-client="{{ $item->client_name }}"
                                         data-item-name="{{ $item->item_names }}" data-weight="{{ $item->total_weight }}"
-                                        data-request-id="{{ $item->requestId }}">Verify</button>
+                                        data-request-id="{{ $item->requestId }}
+                                        "
+                                        data-vehicle="KCA-123X"data-rider="Jeff Letting"
+                                        data-date-requested="2025-08-11T14:30" data-cost="1000" data-total-cost="1160"
+                                        data-vat="160" data-base-cost="1000">>Verify</button>
                                     {{-- <button class="btn btn-info btn-sm verify-btn mr-1"
                                         data-id="{{ $request->shipmentCollection->id }}"
                                         data-request-id="{{ $request->requestId }}"
@@ -249,142 +253,185 @@
                         </div> --}}
                         <script>
                             $(document).on('click', '.verify-btn', function() {
-
                                 const shipment_id = $(this).data('id');
-
                                 const vehicle_reg_no = $(this).data('vehicle');
                                 const rider = $(this).data('rider');
                                 const date_requested = $(this).data('date-requested');
                                 const request_id = $(this).data('request-id');
-                                //alert(request_id);
                                 const cost = $(this).data('cost');
                                 const total_cost = $(this).data('total-cost');
                                 const vat = $(this).data('vat');
                                 const base_cost = $(this).data('base-cost');
+
                                 $.ajax({
                                     url: '/shipments/' + shipment_id + '/items',
                                     method: 'GET',
                                     success: function(response) {
-                                        let headerInfo = `
-                                    <form id="shipmentReceiptForm">
-                                                @csrf
-                                                @method('POST')
-                                    <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Request ID</label>
-                                            <input type="text" name="requestId" class="form-control" id="requestId" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Rider</label>
-                                            <input type="text" name="userId" id="riderName" class="form-control"  readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Vehicle</label>
-                                            <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Date Requested</label>
-                                            <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
-                                        </div>
-                                    </div>
-                                `;
 
-                                        let itemsHtml =
-                                            '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
+                                        // ✅ Start form
+                                        let formHtml = `
+                <form id="shipmentReceiptForm">
+                    @csrf
+                    @method('POST')
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Request ID</label>
+                            <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Rider</label>
+                            <input type="text" name="userId" class="form-control" value="${rider}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Vehicle</label>
+                            <input type="text" class="form-control" name="vehicleDisplay" value="${vehicle_reg_no}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Date Requested</label>
+                            <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
+                        </div>
+                    </div>
+            `;
+
+                                        // ✅ Items table
+                                        formHtml += `
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="shipmentTable">
+                        <thead>
+                            <tr>
+    <th class="text-primary">Item No.</th>
+    <th class="text-primary">Item Name</th>
+    <th class="text-primary">Package No</th>
+    <th class="text-primary">Weight (Kg)</th>
+    <th class="text-primary">Length (cm)</th>
+    <th class="text-primary">Width (cm)</th>
+    <th class="text-primary">Height (cm)</th>
+    <th class="text-primary text-center">Vol. Wt. (Kgs)</th>
+    <th class="text-primary">Tally Status</th> <!-- ✅ New column -->
+    <th class="text-primary">Remarks</th>
+</tr>
+
+                        </thead>
+                        <tbody>
+            `;
+
                                         response.items.forEach((item, index) => {
-                                            const volume = item.length * item.width * item.height;
+                                            const volume = (item.length || 0) * (item.width || 0) * (item.height ||
+                                                0);
+                                            formHtml += `
+                    <tr>
+    <td>${index + 1}
+        <input type="hidden" name="items[${index}][id]" value="${item.id}">
+    </td>
+    <td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td>
 
-                                            itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(cm <sup> 3 </sup>)</th><th class="text-primary"> Remarks </th> </tr> </thead>
-                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
+    <!-- Store original quantity for comparison -->
+    <td>
+        <input type="number" name="items[${index}][packages]" 
+               class="form-control packages-input" 
+               value="${item.packages_no}" 
+               data-original="${item.packages_no}" required>
+    </td>
 
+    <!-- Store original weight for comparison -->
+    <td>
+        <input type="number" step="0.01" name="items[${index}][weight]" 
+               class="form-control weight-input" 
+               value="${item.weight}" 
+               data-original="${item.weight}" required>
+    </td>
 
-                                    <tr>
-                                        <td colspan="9">
-                                            <table class="table table-sm table-bordered mt-2">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th class="text-warning">Sub Item Name</th>
-                                                        <th class="text-warning">Quantity</th>
-                                                        <th class="text-warning">Weight (Kg)</th>
-                                                        <th class="text-warning">Remarks</th>
-                                                        <th class="text-warning">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="sub_items-${index}">
-                                                    <!-- Sub-items will be appended here -->
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item </button>
-                                        </td>
-                                    </tr>
-                                `;
+    <td><input type="number" name="items[${index}][length]" class="form-control" value="${item.length}"></td>
+    <td><input type="number" name="items[${index}][width]" class="form-control" value="${item.width}"></td>
+    <td><input type="number" name="items[${index}][height]" class="form-control" value="${item.height}"></td>
+    <td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td>
+
+    <!-- Tally Status radios -->
+    <td>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input tally-radio" type="radio" 
+                   name="items[${index}][tally_status]" value="tallied" 
+                   ${item.tally_status === 'tallied' ? 'checked' : ''} required>
+            <label class="form-check-label">Tallied</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input tally-radio" type="radio" 
+                   name="items[${index}][tally_status]" value="not_tallied" 
+                   ${item.tally_status === 'not_tallied' ? 'checked' : ''}>
+            <label class="form-check-label">Not Tallied</label>
+        </div>
+    </td>
+
+    <td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td>
+</tr>
+
+                `;
                                         });
-                                        itemsHtml += `
-                                        </tbody>
-                                    </table>
-                                    </div>
 
-                                    <div class="form-row">
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Cost *</small></label>
-                                            <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
-                                        </div>
+                                        formHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
 
-                                        <input type="hidden" name="base_cost" id="baseCost" value="">
+                                        // ✅ Cost & Payment details
+                                        formHtml += `
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Cost *</small></label>
+                        <input type="number" class="form-control" name="cost" value="${cost}" readonly>
+                    </div>
 
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Tax (16%)*</small></label>
-                                            <input type="number" class="form-control" name="vat" id="vat" readonly>
-                                        </div>
+                    <input type="hidden" name="base_cost" value="${base_cost}">
 
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Total Cost*</small></label>
-                                            <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
-                                        </div>
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Tax (16%)*</small></label>
+                        <input type="number" class="form-control" name="vat" value="${vat}" readonly>
+                    </div>
 
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Billing Party</small></label>
-                                            <select name="billing_party" class="form-control">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="Sender">Sender</option>
-                                                <option value="Receiver">Receiver</option>
-                                            </select>
-                                        </div>
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Total Cost*</small></label>
+                        <input type="number" class="form-control" name="total_cost" value="${total_cost}" readonly>
+                    </div>
 
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Payment Mode</small></label>
-                                            <select name="payment_mode" class="form-control">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="M-Pesa">M-Pesa</option>
-                                                <option value="Cash">Cash</option>
-                                                <option value="Cheque">Cheque</option>
-                                                <option value="Invoice">Invoice</option>
-                                            </select>
-                                        </div>
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Billing Party</small></label>
+                        <select name="billing_party" class="form-control">
+                            <option value="" selected>-- Select --</option>
+                            <option value="Sender">Sender</option>
+                            <option value="Receiver">Receiver</option>
+                        </select>
+                    </div>
 
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Reference</small></label>
-                                            <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
-                                        </div>
-                                    </div>
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Payment Mode</small></label>
+                        <select name="payment_mode" class="form-control">
+                            <option value="" selected>-- Select --</option>
+                            <option value="M-Pesa">M-Pesa</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="Invoice">Invoice</option>
+                        </select>
+                    </div>
 
-                                    <div class="modal-footer d-flex justify-content-between align-items-center">
-                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
-                                    <button type="submit" class="btn btn-primary">Submit Verification</button>
-                                    </div></form>
-                                    `;
+                    <div class="form-group col-md-2">
+                        <label class="text-primary"><small>Reference</small></label>
+                        <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                    </div>
+                </div>
+            `;
 
+                                        // ✅ Footer & close form
+                                        formHtml += `
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
+                    <button type="submit" class="btn btn-primary">Submit Verification</button>
+                </div>
+                </form> <!-- ✅ Closing the form -->
+            `;
 
-                                        // ✅ Correct usage
-                                        $('#modalItemsBody').html(headerInfo + itemsHtml);
-                                        document.getElementById('requestId').value = request_id;
-                                        document.getElementById('totalCost').value = total_cost;
-                                        document.getElementById('cost').value = cost;
-                                        document.getElementById('riderName').value = rider;
-                                        document.getElementById('vehicleRegNo').value = vehicle_reg_no;
-                                        document.getElementById('dateRequested').value = date_requested;
-                                        document.getElementById('vat').value = vat;
-                                        document.getElementById('baseCost').value = base_cost;
+                                        // Inject full form into modal body
+                                        $('#modalItemsBody').html(formHtml);
                                         $('#itemsModal').modal('show');
                                     },
                                     error: function() {
@@ -392,7 +439,6 @@
                                         $('#itemsModal').modal('show');
                                     }
                                 });
-
                             });
                         </script>
                         <script>
@@ -574,6 +620,34 @@
         });
     </script>
 
+    <script>
+        $(document).on('input', '.packages-input, .weight-input', function() {
+            let $input = $(this);
+            let originalValue = parseFloat($input.data('original'));
+            let currentValue = parseFloat($input.val());
+
+            // Find the radios for this row
+            let $row = $input.closest('tr');
+            let $talliedRadio = $row.find('input[value="tallied"]');
+            let $notTalliedRadio = $row.find('input[value="not_tallied"]');
+
+            if (!isNaN(currentValue) && currentValue !== originalValue) {
+                // Auto-select Not Tallied
+                $notTalliedRadio.prop('checked', true);
+            } else {
+                // Auto-select Tallied (only if weight & qty match original)
+                let weightMatch = parseFloat($row.find('.weight-input').val()) === parseFloat($row.find(
+                    '.weight-input').data('original'));
+                let qtyMatch = parseFloat($row.find('.packages-input').val()) === parseFloat($row.find(
+                    '.packages-input').data('original'));
+
+                if (weightMatch && qtyMatch) {
+                    $talliedRadio.prop('checked', true);
+                }
+            }
+        });
+    </script>
+
 
 
     <script>
@@ -613,8 +687,10 @@
             const shipmentId = $('.verify-btn').data('id');
             const formData = form.serialize();
 
+            console.log('data' + formData);
+
             $.ajax({
-                url: `/parcelReceipts/${shipmentId}`,
+                url: `/shipment_arrival/${shipmentId}`,
                 type: 'POST',
                 data: formData,
                 headers: {
@@ -622,10 +698,10 @@
                     'X-HTTP-Method-Override': 'PUT'
                 },
                 success: function(response) {
-                    alert('Shipment Collection Verified Successfully!');
+                    //alert('Shipment Collection Verified Successfully!');
                     $('#itemsModal').modal('hide');
                     // Optionally reload the page or update the table
-                    location.reload();
+                    //location.reload();
                 },
                 error: function(xhr) {
                     alert('Error verifying shipment');

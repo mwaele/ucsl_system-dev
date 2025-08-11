@@ -206,8 +206,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/sameday/walk-in', [SameDayController::class, 'walk_in'])->name('sameday.walk-in');
     Route::get('/sameday/on-account', [SameDayController::class, 'on_account'])->name('sameday.on-account');
 
+    Route::resource('shipment_arrival', 'App\Http\Controllers\ShipmentArrivalsController');
+
+    Route::post('/shipment_arrival/{id}', [ShipmentArrivalsController::class, 'saveArrivals'])->name('shipment_arrival');
+
     //parcel receipts
     Route::resource('parcelReceipts','App\Http\Controllers\ParcelReceiptController');
+
+    
+
+
+    // Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
     Route::resource('parcelReceiptItems','App\Http\Controllers\ParcelReceiptItemController');
 
