@@ -62,7 +62,8 @@
                                     </span>
                                     @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger fs-5 text-white">
-                                            Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
+                                            Deliver by
+                                            {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
                                         </span>
                                     @endif
                                 </td>
@@ -70,7 +71,7 @@
                                     <!-- Collect Parcel Button -->
                                     @if ($collection->status === 'pending collection')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
-                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"> Collect  <i
+                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"> Collect <i
                                                 class="fas fa-box"></i>
                                         </button>
                                     @endif
@@ -105,8 +106,7 @@
                                                                         Type
                                                                     </label><br>
                                                                     <div class="form-check form-check-inline">
-                                                                        <input type="hidden" name="cid"
-                                                                            id="cid"
+                                                                        <input type="hidden" name="cid" id="cid"
                                                                             value="{{ $collection->client->id }}">
                                                                         <input type="hidden" name="rqid"
                                                                             value="{{ $collection->requestId }}">
@@ -167,8 +167,7 @@
                                                                             <div class="form-group col-md-6">
                                                                                 <label
                                                                                     class="form-label text-primary text-primary">Sender
-                                                                                    Email <span
-                                                                                        class="text-danger">*</span>
+                                                                                    Email <span class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="email" class="form-control"
                                                                                     name="senderEmail" id="senderEmail"
@@ -411,7 +410,7 @@
                                                                         <th>Length (cm)</th>
                                                                         <th>Width (cm)</th>
                                                                         <th>Height (cm)</th>
-                                                                        <th>Volume (cm<sup>3</sup>)</th>
+                                                                        <th class="text-center">Volume Weight (Kg)</th>
                                                                         <th>Act</th>
                                                                     </tr>
                                                                 </thead>
@@ -524,8 +523,8 @@
 
                                     <!-- Print Receipt Button -->
                                     @if ($collection->status === 'collected')
-                                        <button class="btn btn-sm btn-primary mr-1" title="Print collection" data-toggle="modal"
-                                            data-target="#printModal-{{ $collection->id }}">
+                                        <button class="btn btn-sm btn-primary mr-1" title="Print collection"
+                                            data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
                                             Print <i class="fas fa-print"></i>
                                         </button>
                                     @endif
@@ -535,7 +534,8 @@
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
+                                                        <h5 class="modal-title"
+                                                            id="printModalLabel-{{ $collection->id }}">
                                                             Shipment Receipt</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
@@ -554,8 +554,10 @@
                                                                         x="0" y="0" width="194" height="71" />
                                                                 </svg>
                                                             </div>
-                                                            <div style="text-align: center; font-size: 15px;"><strong>Parcel
-                                                                    Consignment Note</strong></div>
+                                                            <div style="text-align: center; font-size: 15px;">
+                                                                <strong>Parcel
+                                                                    Consignment Note</strong>
+                                                            </div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-size: 14px;"><strong>Request ID:
@@ -580,9 +582,11 @@
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Sender:</div>
-                                                            <div>Name: {{ $collection->shipmentCollection->sender_name }}</div>
+                                                            <div>Name: {{ $collection->shipmentCollection->sender_name }}
+                                                            </div>
                                                             @php
-                                                                $phone = $collection->shipmentCollection->sender_contact;
+                                                                $phone =
+                                                                    $collection->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -590,8 +594,10 @@
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
-                                                            <div>Location: {{ $collection->shipmentCollection->sender_address }}</div>
-                                                            <div>Town: {{ $collection->shipmentCollection->sender_town }}</div>
+                                                            <div>Location:
+                                                                {{ $collection->shipmentCollection->sender_address }}</div>
+                                                            <div>Town: {{ $collection->shipmentCollection->sender_town }}
+                                                            </div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Receiver:</div>
@@ -649,22 +655,26 @@
                                                                 </table>
                                                                 <hr style="margin: 4px 0;">
 
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total Weight:</strong>
                                                                     <span>{{ number_format($totalWeight, 2) }}
                                                                         {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Base Cost:</strong>
                                                                     <span>Ksh
                                                                         {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>VAT:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
@@ -675,11 +685,13 @@
 
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Collected By:</strong>
                                                                     <span> {{ $collection->user->name }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
                                                                         $phone = $collection->user->phone_number;
@@ -690,7 +702,8 @@
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div><br>
@@ -721,7 +734,9 @@
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
-                                        <div class="modal fade" id="deliverParcel-{{ $collection->id }}" tabindex="-1" role="dialog" aria-labelledby="deliverParcel-{{ $collection->id }}" aria-hidden="true">
+                                        <div class="modal fade" id="deliverParcel-{{ $collection->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="deliverParcel-{{ $collection->id }}"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-lg" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-warning">
@@ -731,57 +746,93 @@
                                                             {{ $collection->requestId }}
                                                             for
                                                             {{ $collection->client->name }}</h5>
-                                                        <button type="button" class="text-white close" data-dismiss="modal"
-                                                            aria-label="Close">
+                                                        <button type="button" class="text-white close"
+                                                            data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body"> 
+                                                    <div class="modal-body">
                                                         <form method="POST" action="{{ route('my_deliveries.store') }}">
                                                             @csrf
 
                                                             <!-- Selection: Receiver or Agent -->
                                                             <div class="form-group">
-                                                                <label class="text-primary">Select Delivery Type:</label><br>
+                                                                <label class="text-primary">Select Delivery
+                                                                    Type:</label><br>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="delivery_type" id="select_receiver" value="receiver">
-                                                                    <label class="form-check-label" for="select_receiver">Receiver</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="delivery_type" id="select_receiver"
+                                                                        value="receiver">
+                                                                    <label class="form-check-label"
+                                                                        for="select_receiver">Receiver</label>
                                                                 </div>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="delivery_type" id="select_agent" value="agent">
-                                                                    <label class="form-check-label" for="select_agent">Agent</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="delivery_type" id="select_agent"
+                                                                        value="agent">
+                                                                    <label class="form-check-label"
+                                                                        for="select_agent">Agent</label>
                                                                 </div>
                                                             </div>
 
                                                             @php
-                                                                $isApproved = $approvalStatuses[$collection->requestId] ?? false;
+                                                                $isApproved =
+                                                                    $approvalStatuses[$collection->requestId] ?? false;
                                                             @endphp
 
                                                             <!-- Receiver Panel -->
                                                             @if (!$isApproved)
-                                                                <div class="col-md-12" id="receiver_panel" style="display: none;">
+                                                                <div class="col-md-12" id="receiver_panel"
+                                                                    style="display: none;">
                                                                     <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">Receiver Details</div>
+                                                                        <div class="card-header bg-primary text-white">
+                                                                            Receiver Details</div>
                                                                         <div class="card-body">
                                                                             <div class="form-row">
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Receiver Name <span class="text-danger">*</span></label>
-                                                                                    <input type="text" class="form-control" name="receiver_name" value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
-                                                                                    <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
-                                                                                    <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
-                                                                                    <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
-                                                                                    <input type="hidden" name="grn_no" value="{{ $collection->shipmentCollection->grn_no }}" >
-                                                                                    <input type="hidden" name="receiver_type" value="receiver">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Receiver
+                                                                                        Name <span
+                                                                                            class="text-danger">*</span></label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="receiver_name"
+                                                                                        value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
+                                                                                    <input type="hidden" name="client_id"
+                                                                                        value="{{ $collection->client->id }}">
+                                                                                    <input type="hidden" name="requestId"
+                                                                                        value="{{ $collection->requestId }}">
+                                                                                    <input type="hidden"
+                                                                                        name="delivery_location"
+                                                                                        value="{{ $collection->shipmentCollection->destination->destination }}">
+                                                                                    <input type="hidden" name="grn_no"
+                                                                                        value="{{ $collection->shipmentCollection->grn_no }}">
+                                                                                    <input type="hidden"
+                                                                                        name="receiver_type"
+                                                                                        value="receiver">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Phone Number <span class="text-danger">*</span></label>
-                                                                                    <input type="text" class="form-control" name="receiver_phone" value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Phone
+                                                                                        Number <span
+                                                                                            class="text-danger">*</span></label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="receiver_phone"
+                                                                                        value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="form-row"> 
+                                                                            <div class="form-row">
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">ID Number <span class="text-danger">*</span></label>
-                                                                                    <input type="text" class="form-control" name="receiver_id_no" maxlength="8" value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
+                                                                                    <label
+                                                                                        class="form-label text-primary">ID
+                                                                                        Number <span
+                                                                                            class="text-danger">*</span></label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="receiver_id_no"
+                                                                                        maxlength="8"
+                                                                                        value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -789,39 +840,66 @@
                                                                 </div>
                                                             @else
                                                                 <div class="alert alert-info mt-3">
-                                                                    Receiver details are disabled because the agent request has already been approved.
+                                                                    Receiver details are disabled because the agent request
+                                                                    has already been approved.
                                                                 </div>
                                                             @endif
 
-                                                            @if($approvalStatuses[$collection->requestId] ?? false)
+                                                            @if ($approvalStatuses[$collection->requestId] ?? false)
                                                                 <!-- Agent pickup is approved -->
                                                                 <div class="col-md-12" id="agent_panel">
                                                                     <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">Agent Details</div>
+                                                                        <div class="card-header bg-primary text-white">
+                                                                            Agent Details</div>
                                                                         <div class="card-body">
                                                                             <div class="form-row">
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Agent Name</label>
-                                                                                    <input type="text" class="form-control" name="agent_name">
-                                                                                    <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
-                                                                                    <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
-                                                                                    <input type="hidden" name="delivery_location" value="{{ $collection->shipmentCollection->destination->destination }}">
-                                                                                    <input type="hidden" value="{{ $grn_no }}" name="grn_no">
-                                                                                    <input type="hidden" name="receiver_type" value="agent">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Agent
+                                                                                        Name</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="agent_name">
+                                                                                    <input type="hidden" name="client_id"
+                                                                                        value="{{ $collection->client->id }}">
+                                                                                    <input type="hidden" name="requestId"
+                                                                                        value="{{ $collection->requestId }}">
+                                                                                    <input type="hidden"
+                                                                                        name="delivery_location"
+                                                                                        value="{{ $collection->shipmentCollection->destination->destination }}">
+                                                                                    <input type="hidden"
+                                                                                        value="{{ $grn_no }}"
+                                                                                        name="grn_no">
+                                                                                    <input type="hidden"
+                                                                                        name="receiver_type"
+                                                                                        value="agent">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Agent Phone Number</label>
-                                                                                    <input type="text" class="form-control" name="agent_phone">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Agent
+                                                                                        Phone Number</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="agent_phone">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="form-row">
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Agent ID Number</label>
-                                                                                    <input type="text" class="form-control" name="agent_id_no" maxlength="8">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Agent
+                                                                                        ID Number</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="agent_id_no" maxlength="8">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">Remarks <span class="text-danger">*</span></label>
-                                                                                    <input type="text" class="form-control" name="remarks">
+                                                                                    <label
+                                                                                        class="form-label text-primary">Remarks
+                                                                                        <span
+                                                                                            class="text-danger">*</span></label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        name="remarks">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -829,33 +907,55 @@
                                                                 </div>
                                                             @else
                                                                 <!-- Agent Approval Request -->
-                                                                <div class="col-md-12" id="agent_request" style="display: none;">
+                                                                <div class="col-md-12" id="agent_request"
+                                                                    style="display: none;">
                                                                     <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">Front Office Approval Required</div>
+                                                                        <div class="card-header bg-primary text-white">
+                                                                            Front Office Approval Required</div>
                                                                         <div class="card-body">
-                                                                            <p>Please request approval from the front office for this agent to collect the delivery.</p>
+                                                                            <p>Please request approval from the front office
+                                                                                for this agent to collect the delivery.</p>
 
                                                                             <div class="row g-2 mb-2">
                                                                                 <div class="col-md-4">
-                                                                                    <label for="agent_name_{{ $collection->id }}" class="form-label">Name</label>
-                                                                                    <input type="text" class="form-control" id="agent_name_{{ $collection->id }}" placeholder="Agent name">
+                                                                                    <label
+                                                                                        for="agent_name_{{ $collection->id }}"
+                                                                                        class="form-label">Name</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        id="agent_name_{{ $collection->id }}"
+                                                                                        placeholder="Agent name">
                                                                                 </div>
                                                                                 <div class="col-md-4">
-                                                                                    <label for="agent_id_{{ $collection->id }}" class="form-label">ID No.</label>
-                                                                                    <input type="text" class="form-control" id="agent_id_{{ $collection->id }}" placeholder="ID number">
+                                                                                    <label
+                                                                                        for="agent_id_{{ $collection->id }}"
+                                                                                        class="form-label">ID No.</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        id="agent_id_{{ $collection->id }}"
+                                                                                        placeholder="ID number">
                                                                                 </div>
                                                                                 <div class="col-md-4">
-                                                                                    <label for="agent_phone_{{ $collection->id }}" class="form-label">Phone</label>
-                                                                                    <input type="text" class="form-control" id="agent_phone_{{ $collection->id }}" placeholder="Phone number">
+                                                                                    <label
+                                                                                        for="agent_phone_{{ $collection->id }}"
+                                                                                        class="form-label">Phone</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        id="agent_phone_{{ $collection->id }}"
+                                                                                        placeholder="Phone number">
                                                                                 </div>
                                                                                 <div class="col-md-4">
-                                                                                    <label for="agent_reason_{{ $collection->id }}" class="form-label">Reason</label>
-                                                                                    <input type="text" class="form-control" id="agent_reason_{{ $collection->id }}" placeholder="Reason">
+                                                                                    <label
+                                                                                        for="agent_reason_{{ $collection->id }}"
+                                                                                        class="form-label">Reason</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        id="agent_reason_{{ $collection->id }}"
+                                                                                        placeholder="Reason">
                                                                                 </div>
                                                                             </div>
 
-                                                                            <button 
-                                                                                type="button"
+                                                                            <button type="button"
                                                                                 id="approvalBtn-{{ $collection->id }}"
                                                                                 class="btn btn-warning"
                                                                                 onclick="submitApprovalRequest('{{ $collection->requestId }}', '{{ $collection->id }}', this)">
@@ -868,8 +968,11 @@
 
                                                             <!-- Form Actions -->
                                                             <div class="modal-footer d-flex p-0">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cancel</button>
-                                                                <button type="submit" class="btn btn-success text-white" disabled>Submit Collection</button>
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal"
+                                                                    aria-label="Close">Cancel</button>
+                                                                <button type="submit" class="btn btn-success text-white"
+                                                                    disabled>Submit Collection</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -911,7 +1014,7 @@
                                                     </script>
 
                                                     <script>
-                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                        document.addEventListener('DOMContentLoaded', function() {
                                                             const receiverRadio = document.getElementById('select_receiver');
                                                             const agentRadio = document.getElementById('select_agent');
                                                             const receiverPanel = document.getElementById('receiver_panel');
@@ -946,37 +1049,37 @@
                                                             const agentReason = document.getElementById(`agent_reason_${collectionId}`).value;
 
                                                             fetch("{{ route('request.agent.approval') }}", {
-                                                                method: "POST",
-                                                                headers: {
-                                                                    "Content-Type": "application/json",
-                                                                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                                                                },
-                                                                body: JSON.stringify({
-                                                                    requestId,
-                                                                    agentName,
-                                                                    agentId,
-                                                                    agentPhone,
-                                                                    agentReason
+                                                                    method: "POST",
+                                                                    headers: {
+                                                                        "Content-Type": "application/json",
+                                                                        "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                                                                    },
+                                                                    body: JSON.stringify({
+                                                                        requestId,
+                                                                        agentName,
+                                                                        agentId,
+                                                                        agentPhone,
+                                                                        agentReason
+                                                                    })
                                                                 })
-                                                            })
-                                                            .then(response => {
-                                                                if (!response.ok) throw new Error("Failed to send approval request");
-                                                                return response.json();
-                                                            })
-                                                            .then(data => {
-                                                                $('#deliverParcel-' + collectionId).modal('hide');
-                                                                alert("Approval request sent successfully to front office.");
-                                                            })
-                                                            .catch(error => {
-                                                                btn.disabled = false;
-                                                                btn.innerText = "Submit Request";
-                                                                alert("Error: " + error.message);
-                                                            });
+                                                                .then(response => {
+                                                                    if (!response.ok) throw new Error("Failed to send approval request");
+                                                                    return response.json();
+                                                                })
+                                                                .then(data => {
+                                                                    $('#deliverParcel-' + collectionId).modal('hide');
+                                                                    alert("Approval request sent successfully to front office.");
+                                                                })
+                                                                .catch(error => {
+                                                                    btn.disabled = false;
+                                                                    btn.innerText = "Submit Request";
+                                                                    alert("Error: " + error.message);
+                                                                });
                                                         }
                                                     </script>
 
                                                     <script>
-                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                        document.addEventListener('DOMContentLoaded', function() {
                                                             const isApproved = @json($approvalStatuses[$collection->requestId] ?? false);
 
                                                             // Inside togglePanels
@@ -989,7 +1092,7 @@
                                                     </script>
 
                                                     <script>
-                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                        document.addEventListener('DOMContentLoaded', function() {
                                                             const modal = document.getElementById('deliverParcel-{{ $collection->id }}');
                                                             if (!modal) return;
 
@@ -1057,22 +1160,24 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif   
-                                    
+                                    @endif
+
                                     <!-- Goods Received Note Button -->
                                     @if ($collection->status === 'delivered')
-                                        <button class="btn btn-sm btn-info mr-1" title="Print collection" data-toggle="modal"
-                                            data-target="#printGDNModal-{{ $collection->id }}">
+                                        <button class="btn btn-sm btn-info mr-1" title="Print collection"
+                                            data-toggle="modal" data-target="#printGDNModal-{{ $collection->id }}">
                                             GRN <i class="fas fa-print"></i>
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="printGDNModal-{{ $collection->id }}" tabindex="-1"
-                                            aria-labelledby="printGDNModalLabel-{{ $collection->id }}" aria-hidden="true">
+                                            aria-labelledby="printGDNModalLabel-{{ $collection->id }}"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
+                                                        <h5 class="modal-title"
+                                                            id="printModalLabel-{{ $collection->id }}">
                                                             Goods Received Note</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
@@ -1091,7 +1196,8 @@
                                                                         x="0" y="0" width="194" height="71" />
                                                                 </svg>
                                                             </div>
-                                                            <div style="text-align: center; font-size: 15px;"><strong>Goods Received Note</strong></div>
+                                                            <div style="text-align: center; font-size: 15px;"><strong>Goods
+                                                                    Received Note</strong></div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-size: 14px;"><strong>Request ID:
@@ -1106,7 +1212,8 @@
                                                                 {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                                             </div>
                                                             <div><strong>Total Items:</strong>
-                                                                {{ $collection->shipmentCollection->items->count() }}</div>
+                                                                {{ $collection->shipmentCollection->items->count() }}
+                                                            </div>
                                                             <div>
                                                                 <strong>Date:</strong> {{ now()->format('F j, Y') }}
                                                                 <strong style="margin-left: 10px;">Time:</strong>
@@ -1116,9 +1223,11 @@
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Sender:</div>
-                                                            <div>Name: {{ $collection->shipmentCollection->sender_name }}</div>
+                                                            <div>Name: {{ $collection->shipmentCollection->sender_name }}
+                                                            </div>
                                                             @php
-                                                                $phone = $collection->shipmentCollection->sender_contact;
+                                                                $phone =
+                                                                    $collection->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -1126,12 +1235,16 @@
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
-                                                            <div>Location: {{ $collection->shipmentCollection->sender_address }}</div>
-                                                            <div>Town: {{ $collection->shipmentCollection->sender_town }}</div>
+                                                            <div>Location:
+                                                                {{ $collection->shipmentCollection->sender_address }}
+                                                            </div>
+                                                            <div>Town: {{ $collection->shipmentCollection->sender_town }}
+                                                            </div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-weight: bold;">Receiver:</div>
-                                                            <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                                            <div>Name:
+                                                                {{ $collection->shipmentCollection->receiver_name }}
                                                             </div>
                                                             @php
                                                                 $phone =
@@ -1147,7 +1260,8 @@
                                                             <div>Address:
                                                                 {{ $collection->shipmentCollection->receiver_address }}
                                                             </div>
-                                                            <div>Town: {{ $collection->shipmentCollection->receiver_town }}
+                                                            <div>Town:
+                                                                {{ $collection->shipmentCollection->receiver_town }}
                                                             </div>
                                                             <hr style="margin: 4px 0;">
 
@@ -1178,29 +1292,34 @@
                                                                                 <td style="text-align: center;">
                                                                                     {{ $item->packages_no }}</td>
                                                                                 <td style="text-align: right;">
-                                                                                    {{ number_format($item->weight, 2) }}</td>
+                                                                                    {{ number_format($item->weight, 2) }}
+                                                                                </td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
                                                                 </table>
                                                                 <hr style="margin: 4px 0;">
 
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total Weight:</strong>
                                                                     <span>{{ number_format($totalWeight, 2) }}
                                                                         {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Base Cost:</strong>
                                                                     <span>Ksh
                                                                         {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>VAT:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
@@ -1211,11 +1330,13 @@
 
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Delivered By:</strong>
                                                                     <span> {{ $collection->user->name }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
                                                                         $phone = $collection->user->phone_number;
@@ -1226,7 +1347,8 @@
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div>
@@ -1250,7 +1372,7 @@
                                         </div>
                                     @endif
 
-                                                  
+
                                 </td>
                             </tr>
                         @endforeach

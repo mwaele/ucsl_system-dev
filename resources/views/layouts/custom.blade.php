@@ -1249,19 +1249,23 @@
 
                     if (length && width && height) {
                         const volume = length * width * height;
-                        // CALCULATE VOLUME WEIGHT
-                        const volume_weight = volume / 5000;
+                        const volume_weight = volume / 5000; // calculate volume weight
+
                         row.find('input[name="volume[]"]').val(volume.toFixed(2));
-                        const weight = row.find('input[name="weight[]"]').val();
+
+                        const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
 
                         if (volume_weight > weight) {
-                            row.find('input[name="weight[]"]').val() = volume_weight;
+                            row.find('input[name="weight[]"]')
+                                .val(volume_weight.toFixed(2)) // set new value
+                                .trigger('keyup') // simulate keyup
+                                .trigger('change'); // also trigger change if needed
                         }
-
                     } else {
                         row.find('input[name="volume[]"]').val('');
                     }
                 }
+
 
                 // end calculate volume
 
@@ -1320,7 +1324,7 @@
                     }
                     if (volumeWeight > totalWeight) {
                         baseWeight = volumeWeight;
-                        alert('volume weight' + baseWeight)
+                        //alert('volume weight' + baseWeight)
                         $('input[name="total_weight"]').val(baseWeight.toFixed(2));
                     }
 

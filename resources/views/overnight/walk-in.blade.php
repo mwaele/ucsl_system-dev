@@ -163,12 +163,9 @@
                                                     </td>
                                                     <td><input type="number" step="0.01" name="weight[]"
                                                             class="form-control" required></td>
-                                                    <td><input type="number" name="length[]" class="form-control"
-                                                            onchange="calculateVolume(this)"></td>
-                                                    <td><input type="number" name="width[]" class="form-control"
-                                                            onchange="calculateVolume(this)"></td>
-                                                    <td><input type="number" name="height[]" class="form-control"
-                                                            onchange="calculateVolume(this)"></td>
+                                                    <td><input type="number" name="length[]" class="form-control"></td>
+                                                    <td><input type="number" name="width[]" class="form-control"></td>
+                                                    <td><input type="number" name="height[]" class="form-control"></td>
                                                     <td>
                                                         <input type="number" name="volume[]" class="form-control"
                                                             readonly>
@@ -252,24 +249,29 @@
                                             </div>
 
                                             <div class="mt-2 col-md-2">
-                                                <label for="reference" class="text-primary"><h6>Reference</h6></label>
+                                                <label for="reference" class="text-primary">
+                                                    <h6>Reference</h6>
+                                                </label>
                                                 <input type="text" id="reference" name="reference"
-                                                    class="form-control"
-                                                    placeholder="Enter reference">
+                                                    class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
+                                                    maxlength="10" pattern="[A-Z0-9]{10}"
+                                                    title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                             </div>
 
                                             <div class=" mt-2 col-md-2">
                                                 <h6 for="priority_level" class="text-primary">Priority Level</h6>
-                                                <select class="form-control" name="priority_level"
-                                                    id="priority_level">
+                                                <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
                                                     <option value="high">High</option>
                                                 </select>
                                             </div>
                                             <div class="mt-2 col-md-3" id="priority-deadline-group"
                                                 style="display: none;">
-                                                <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)</h6>
-                                                <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
+                                                <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)
+                                                </h6>
+                                                <input type="datetime-local" class="form-control" name="deadline_date"
+                                                    id="deadline_date">
                                             </div>
                                         </div>
 
@@ -280,7 +282,7 @@
                                                         e.target.matches('[name="weight[]"]') ||
                                                         e.target.matches('[name="packages[]"]')
                                                     ) {
-                                                        recalculateCosts();
+                                                        // recalculateCosts();
                                                     }
                                                 });
 
@@ -295,9 +297,9 @@
                                                     <td><input type="text" name="item_name[]" class="form-control" required></td>
                                                     <td><input type="number" name="packages[]" class="form-control" required></td>
                                                     <td><input type="number" step="0.01" name="weight[]" class="form-control" required></td>
-                                                    <td><input type="number" name="length[]" class="form-control" onchange="calculateVolume(this)"></td>
-                                                    <td><input type="number" name="width[]" class="form-control" onchange="calculateVolume(this)"></td>
-                                                    <td><input type="number" name="height[]" class="form-control" onchange="calculateVolume(this)"></td>
+                                                    <td><input type="number" name="length[]" class="form-control" onchange="calculateVolum(this)"></td>
+                                                    <td><input type="number" name="width[]" class="form-control" onchange="calculateVolum(this)"></td>
+                                                    <td><input type="number" name="height[]" class="form-control" onchange="calculateVolum(this)"></td>
                                                     <td><input type="number" name="volume[]" class="form-control" readonly></td>
                                                     <td><input type="text" name="remarks[]" class="form-control"></td>
                                                     <td>
@@ -351,45 +353,156 @@
                                                     container.appendChild(row);
                                                 }
 
-                                                function calculateVolume(el) {
-                                                    let totalVolume = 0;
+                                                // function calculateVolum(el) {
+                                                //     let totalVolume = 0;
 
-                                                    const row = el.closest('tr');
-                                                    const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
-                                                    const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
-                                                    const height = parseFloat(row.querySelector('[name="height[]"]').value) || 0;
-                                                    const volume = length * width * height;
-                                                    row.querySelector('[name="volume[]"]').value = volume;
+                                                //     const row = el.closest('tr');
+                                                //     const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
+                                                //     const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
+                                                //     const height = parseFloat(row.querySelector('[name="height[]"]').value) || 0;
+                                                //     const volume = length * width * height;
+                                                //     row.querySelector('[name="volume[]"]').value = volume;
 
-                                                    let weightInput = row.querySelector('[name="weight[]"]');
-                                                    let weight = parseFloat(weightInput.value);
+                                                //     let weightInput = row.querySelector('[name="weight[]"]');
+                                                //     let weight = parseFloat(weightInput.value);
 
-                                                    //alert(weight);
+                                                //     //alert(weight);
 
-                                                    totalVolume += volume;
+                                                //     totalVolume += volume;
 
-                                                    volumeWeight = totalVolume / 5000;
-                                                    //alert('Total Volume Weight ' + volumeWeight)
+                                                //     volumeWeight = totalVolume / 5000;
+                                                //     //alert('Total Volume Weight ' + volumeWeight)
 
-                                                    let base_weight = 0;
+                                                //     let base_weight = 0;
 
-                                                    if (weight >= volumeWeight) {
-                                                        base_weight = weight;
-                                                    }
-                                                    if (volumeWeight > weight) {
-                                                        alert('Volume weight applied: ' + volumeWeight + " Kgs");
-                                                        base_weight = volumeWeight;
-                                                        weight = volumeWeight; // update variable
-                                                        weightInput.value = volumeWeight; // update field value
-                                                        weightInput.dispatchEvent(new Event('keyup')); // trigger keyup event
-                                                        recalculateCosts();
-                                                    }
+                                                //     if (weight >= volumeWeight) {
+                                                //         base_weight = weight;
+                                                //     }
+                                                //     if (volumeWeight > weight) {
+                                                //         //alert('Volume weight applied: ' + volumeWeight + " Kgs");
 
-                                                    recalculateCosts();
-                                                    // Recalculate totals
-                                                    //recalculateCost(base_weight);
-                                                    //recalculateCost(volumeWeight);
-                                                }
+                                                //         base_weight = volumeWeight;
+                                                //         weight = volumeWeight;
+
+                                                //         $(weightInput)
+                                                //             .val(volumeWeight.toFixed(2))
+                                                //             .trigger('keyup');
+
+                                                //         //recalculateCosts();
+                                                //     }
+
+
+                                                //     // recalculateCosts();
+                                                //     // Recalculate totals
+                                                //     //recalculateCost(base_weight);
+                                                //     //recalculateCost(volumeWeight);
+                                                // }
+
+                                                // function calculateVolume(el) {
+                                                //     // If caller passed a jQuery object, convert to DOM element
+                                                //     if (el && el.jquery) el = el[0];
+                                                //     if (!el) return;
+
+                                                //     const row = el.closest('tr');
+                                                //     if (!row) return;
+
+                                                //     // Row-level dimensions and volume
+                                                //     const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
+                                                //     const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
+                                                //     const height = parseFloat(row.querySelector('[name="height[]"]').value) || 0;
+                                                //     const volume = length * width * height;
+
+                                                //     // Write volume back to the row (2 decimals)
+                                                //     const volumeInput = row.querySelector('[name="volume[]"]');
+                                                //     if (volumeInput) volumeInput.value = volume.toFixed(2);
+
+                                                //     // Calculate row volume-weight and possibly update the row weight
+                                                //     const volumeWeightRow = volume / 5000;
+                                                //     const weightInput = row.querySelector('[name="weight[]"]');
+                                                //     let weight = weightInput ? (parseFloat(weightInput.value) || 0) : 0;
+
+                                                //     if (volumeWeightRow > weight) {
+                                                //         const val = volumeWeightRow.toFixed(2);
+
+                                                //         // If jQuery is available, use it to set value and trigger events
+                                                //         if (window.jQuery) {
+                                                //             $(weightInput).val(val).trigger('keyup').trigger('change');
+                                                //         } else {
+                                                //             // Native fallback: set value and dispatch input + keyup events
+                                                //             if (weightInput) weightInput.value = val;
+                                                //             weightInput && weightInput.dispatchEvent(new Event('input', {
+                                                //                 bubbles: true
+                                                //             }));
+                                                //             weightInput && weightInput.dispatchEvent(new KeyboardEvent('keyup', {
+                                                //                 bubbles: true
+                                                //             }));
+                                                //         }
+                                                //         // keep local variable in sync
+                                                //         weight = volumeWeightRow;
+                                                //     }
+
+                                                //     // Recalculate totals across all rows
+                                                //     let totalVolume = 0;
+                                                //     let totalWeight = 0;
+                                                //     document.querySelectorAll('#shipmentTable tbody tr').forEach(tr => {
+                                                //         const w = parseFloat((tr.querySelector('input[name="weight[]"]') || {}).value) || 0;
+                                                //         const p = parseFloat((tr.querySelector('input[name="packages[]"]') || {
+                                                //             value: 1
+                                                //         }).value) || 1;
+                                                //         const v = parseFloat((tr.querySelector('[name="volume[]"]') || {}).value) || 0;
+                                                //         totalWeight += w * p;
+                                                //         totalVolume += v;
+                                                //     });
+
+                                                //     // Write total weight
+                                                //     const totalWeightInput = document.querySelector('input[name="total_weight"]');
+                                                //     if (totalWeightInput) totalWeightInput.value = totalWeight.toFixed(2);
+
+                                                //     // Cost calculations
+                                                //     const baseCost = parseFloat((document.querySelector('input[name="base_cost"]') || {}).value) || 0;
+                                                //     let cost = baseCost;
+                                                //     const volumeWeightTotal = totalVolume / 5000;
+                                                //     const baseWeight = Math.max(totalWeight, volumeWeightTotal);
+
+                                                //     // If volume weight dominates, update displayed total_weight and fire events
+                                                //     if (volumeWeightTotal > totalWeight) {
+                                                //         if (totalWeightInput) {
+                                                //             totalWeightInput.value = baseWeight.toFixed(2);
+                                                //             if (window.jQuery) {
+                                                //                 $('input[name="total_weight"]').trigger('keyup').trigger('change');
+                                                //             } else {
+                                                //                 totalWeightInput.dispatchEvent(new Event('input', {
+                                                //                     bubbles: true
+                                                //                 }));
+                                                //                 totalWeightInput.dispatchEvent(new KeyboardEvent('keyup', {
+                                                //                     bubbles: true
+                                                //                 }));
+                                                //             }
+                                                //         }
+                                                //     }
+
+                                                //     // apply surcharge for > 25kg
+                                                //     if (baseWeight > 25) {
+                                                //         const extraWeight = baseWeight - 25;
+                                                //         cost += extraWeight * 50;
+                                                //     }
+
+                                                //     // write cost, vat and total cost
+                                                //     const costInput = document.querySelector('input[name="cost"]');
+                                                //     const vatInput = document.querySelector('input[name="vat"]');
+                                                //     const totalCostInput = document.querySelector('input[name="total_cost"]');
+
+                                                //     if (costInput) costInput.value = cost.toFixed(2);
+                                                //     const vat = cost * 0.16;
+                                                //     if (vatInput) vatInput.value = vat.toFixed(2);
+                                                //     if (totalCostInput) totalCostInput.value = (cost + vat).toFixed(2);
+
+                                                //     // If you have a legacy recalc function elsewhere, you can optionally call it:
+                                                //     if (typeof recalculateCosts === 'function') {
+                                                //         recalculateCosts();
+                                                //     }
+                                                // }
+
 
                                                 function removeSubItem(button, parentIndex) {
                                                     const row = button.closest('tr');

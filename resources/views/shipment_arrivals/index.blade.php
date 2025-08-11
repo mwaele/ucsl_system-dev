@@ -100,13 +100,29 @@
 
 
 
-                    <div class="form-check form-check-inline">
+                    {{-- <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="filterOption" value="date" id="radioDate">
                         <label class="form-check-label" for="radioDate">Date</label>
 
                         <!-- Date Picker -->
                         <input type="date" id="dateFilter" class="form-control ml-2 mb-2" style="width: 200px;"
-                            value="<?= date('Y-m-d') ?>">
+                            value="<? // = date('Y-m-d') ?>">
+                    </div> --}}
+
+
+
+                    <!-- Date Range Filter -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="filterOption" id="filterByDateRange"
+                            value="daterange">
+                        <label class="form-check-label" for="filterByDateRange">Date Range</label>
+
+                        <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
+                            <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;"
+                                placeholder="Start Date">
+                            <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;"
+                                placeholder="End Date">
+                        </div>
                     </div>
 
                     <div class="form-check form-check-inline">
@@ -123,6 +139,7 @@
                             @endforeach
                         </select>
                     </div>
+
 
                     <!-- Date Range Radio -->
                     <div class="form-check form-check-inline">
@@ -219,9 +236,9 @@
                                         </button>
                                     </a>
 
-                                    <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
                                         data-target="#createLoadingSheet"><i class="fas fa-eye"></i> View
-                                        Waybills</button>
+                                        Waybills</button> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -287,36 +304,230 @@
             }
 
 
+            // function filterTable() {
+            //     const filterOption = $('input[name="filterOption"]:checked').val();
+            //     const dispatch = $('#dispatchNoteFilter').val();
+            //     const date = $('#dateFilter').val();
+            //     const type = $('#typeFilter').val();
+            //     const startDate = $('#startDate').val();
+            //     const endDate = $('#endDate').val();
+
+            //     table.rows().every(function() {
+            //         const data = this.data();
+            //         let show = true;
+
+            //         if (filterOption === 'dispatch') {
+            //             show = dispatch ? data[0].includes(dispatch) : true;
+            //         } else if (filterOption === 'date') {
+            //             show = date ? data[1].includes(date) : true;
+            //         } else if (filterOption === 'type') {
+            //             show = type ? data[6].includes(type) : true;
+            //         } else if (filterOption === 'daterange') {
+            //             const rowDate = new Date(data[1]);
+            //             const from = new Date(startDate);
+            //             const to = new Date(endDate);
+            //             if (startDate && endDate) {
+            //                 show = rowDate >= from && rowDate <= to;
+            //             }
+            //         }
+
+            //         $(this.node()).toggle(show);
+            //     });
+            // }
+
+            // function filterTable() {
+            //     const filterOption = $('input[name="filterOption"]:checked').val();
+            //     const dispatch = $('#dispatchNoteFilter').val();
+            //     const date = $('#dateFilter').val();
+            //     const type = $('#typeFilter').val();
+            //     const startDate = $('#startDate').val();
+            //     const endDate = $('#endDate').val();
+
+            //     const today = new Date();
+            //     today.setHours(0, 0, 0, 0);
+
+            //     // ✅ Validate once for date range
+            //     if (filterOption === 'daterange' && startDate && endDate) {
+            //         const from = new Date(startDate);
+            //         const to = new Date(endDate);
+            //         from.setHours(0, 0, 0, 0);
+            //         to.setHours(0, 0, 0, 0);
+
+            //         if (to > today) {
+            //             alert("'End Date' cannot be greater than today.");
+            //             return;
+            //         }
+            //         if (to < from) {
+            //             alert("'End Date' cannot be earlier than 'Start Date'.");
+            //             return;
+            //         }
+            //     }
+
+            //     table.rows().every(function() {
+            //         const data = this.data();
+            //         let show = true;
+
+            //         if (filterOption === 'dispatch') {
+            //             show = dispatch ? data[1].includes(dispatch) : true;
+            //         } else if (filterOption === 'date') {
+            //             show = date ? data[2].includes(date) : true;
+            //         } else if (filterOption === 'type') {
+            //             show = type ? data[6].includes(type) : true;
+            //         } else if (filterOption === 'daterange') {
+            //             if (startDate && endDate) {
+            //                 const rowDate = new Date(data[2]); // Column 3 has "Dispatch date"
+            //                 const from = new Date(startDate);
+            //                 const to = new Date(endDate);
+            //                 from.setHours(0, 0, 0, 0);
+            //                 to.setHours(0, 0, 0, 0);
+
+            //                 show = rowDate >= from && rowDate <= to;
+            //             }
+            //         }
+
+            //         $(this.node()).toggle(show);
+            //     });
+            // }
+
+            // works
+            // function filterTable() {
+            //     const filterOption = $('input[name="filterOption"]:checked').val();
+            //     const dispatch = $('#dispatchNoteFilter').val();
+            //     const date = $('#dateFilter').val(); // single date
+            //     const type = $('#typeFilter').val();
+            //     const startDate = $('#startDate').val(); // range start
+            //     const endDate = $('#endDate').val(); // range end
+
+            //     const today = new Date();
+            //     today.setHours(0, 0, 0, 0);
+
+            //     // ✅ Validation for date range
+            //     if (startDate && endDate) {
+            //         const from = new Date(startDate);
+            //         const to = new Date(endDate);
+            //         from.setHours(0, 0, 0, 0);
+            //         to.setHours(0, 0, 0, 0);
+
+            //         if (to > today) {
+            //             alert("'End Date' cannot be greater than today.");
+            //             return;
+            //         }
+            //         if (to < from) {
+            //             alert("'End Date' cannot be earlier than 'Start Date'.");
+            //             return;
+            //         }
+            //     }
+
+            //     table.rows().every(function() {
+            //         const data = this.data();
+            //         let show = true;
+
+            //         if (filterOption === 'dispatch') {
+            //             show = dispatch ? data[1].includes(dispatch) : true;
+            //         } else if (filterOption === 'date' || filterOption === 'daterange') {
+            //             const rowDate = new Date(data[2]);
+            //             rowDate.setHours(0, 0, 0, 0);
+
+            //             const from = startDate ? new Date(startDate) : (date ? new Date(date) : null);
+            //             const to = endDate ? new Date(endDate) : from;
+
+            //             if (from) from.setHours(0, 0, 0, 0);
+            //             if (to) to.setHours(0, 0, 0, 0);
+
+            //             if (from && to) {
+            //                 show = rowDate >= from && rowDate <= to;
+            //             } else if (from) {
+            //                 // acts like #dateFilter
+            //                 show = rowDate.getTime() === from.getTime();
+            //             }
+            //         } else if (filterOption === 'type') {
+            //             show = type ? data[6].includes(type) : true;
+            //         }
+
+            //         $(this.node()).toggle(show);
+            //     });
+            // }
+
             function filterTable() {
                 const filterOption = $('input[name="filterOption"]:checked').val();
                 const dispatch = $('#dispatchNoteFilter').val();
-                const date = $('#dateFilter').val();
+                const date = $('#dateFilter').val(); // single date
                 const type = $('#typeFilter').val();
-                const startDate = $('#startDate').val();
-                const endDate = $('#endDate').val();
+                const startDate = $('#startDate').val(); // range start
+                const endDate = $('#endDate').val(); // range end
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // ✅ Validate range only if both start & end are filled
+                if (filterOption === 'daterange' && startDate && endDate) {
+                    const from = new Date(startDate);
+                    const to = new Date(endDate);
+                    from.setHours(0, 0, 0, 0);
+                    to.setHours(0, 0, 0, 0);
+
+                    if (to > today) {
+                        alert("'End Date' cannot be greater than today.");
+                        return;
+                    }
+                    if (to < from) {
+                        alert("'End Date' cannot be earlier than 'Start Date'.");
+                        return;
+                    }
+                }
 
                 table.rows().every(function() {
                     const data = this.data();
                     let show = true;
 
                     if (filterOption === 'dispatch') {
-                        show = dispatch ? data[0].includes(dispatch) : true;
+                        show = dispatch ? data[1].includes(dispatch) : true;
+
                     } else if (filterOption === 'date') {
-                        show = date ? data[1].includes(date) : true;
+                        // Standard single date filter
+                        if (date) {
+                            const rowDate = new Date(data[2]);
+                            rowDate.setHours(0, 0, 0, 0);
+                            const filterDate = new Date(date);
+                            filterDate.setHours(0, 0, 0, 0);
+                            show = rowDate.getTime() === filterDate.getTime();
+                        }
+
+                    } else if (filterOption === 'daterange') {
+                        const rowDate = new Date(data[2]);
+                        rowDate.setHours(0, 0, 0, 0);
+
+                        if (startDate && endDate) {
+                            // Full range filter
+                            const from = new Date(startDate);
+                            const to = new Date(endDate);
+                            from.setHours(0, 0, 0, 0);
+                            to.setHours(0, 0, 0, 0);
+                            show = rowDate >= from && rowDate <= to;
+
+                        } else if (startDate && !endDate) {
+                            // If end date is empty → act like single date filter
+                            const from = new Date(startDate);
+                            from.setHours(0, 0, 0, 0);
+                            show = rowDate.getTime() === from.getTime();
+                        }
                     } else if (filterOption === 'type') {
                         show = type ? data[6].includes(type) : true;
-                    } else if (filterOption === 'daterange') {
-                        const rowDate = new Date(data[1]);
-                        const from = new Date(startDate);
-                        const to = new Date(endDate);
-                        if (startDate && endDate) {
-                            show = rowDate >= from && rowDate <= to;
-                        }
                     }
 
                     $(this.node()).toggle(show);
                 });
             }
+
+
+
+            // function updateInputStates() {
+            //     const selected = $('input[name="filterOption"]:checked').val();
+            //     $('#dispatchNoteFilter').prop('disabled', selected !== 'dispatch');
+            //     $('#dateFilter').prop('disabled', selected !== 'date');
+            //     $('#typeFilter').prop('disabled', selected !== 'type');
+            //     $('#startDate, #endDate').prop('disabled', selected !== 'daterange');
+            // }
 
             function updateInputStates() {
                 const selected = $('input[name="filterOption"]:checked').val();
@@ -324,7 +535,14 @@
                 $('#dateFilter').prop('disabled', selected !== 'date');
                 $('#typeFilter').prop('disabled', selected !== 'type');
                 $('#startDate, #endDate').prop('disabled', selected !== 'daterange');
+
+                if (selected === 'daterange') {
+                    $('#dateRangeFilter').show();
+                } else {
+                    $('#dateRangeFilter').hide();
+                }
             }
+
 
             function updateReportLink() {
                 const selectedOption = document.querySelector('input[name="filterOption"]:checked')?.value;

@@ -307,18 +307,19 @@
 
                     </td>
                     <td class="text-center" style="padding-right:5px!important;">
-                        <p style="padding:0px!important; margin:0 !important">{{ 'Sender: ' . $invoice->sender_name }}
+                        <p style="padding:3px!important; margin:0 !important"> <strong>Sender:
+                            </strong>{{ $invoice->sender_name }}
                         </p>
-                        <p style="padding:0px!important; margin:0 !important">
-                            {{ 'Receiver: ' . $invoice->receiver_name }}</p>
+                        <p style="padding:3px!important; margin:0 !important"> <strong>Receiver: </strong>
+                            {{ $invoice->receiver_name }}</p>
 
                     </td>
                     <td class="text-right" style="padding-right:5px!important;">
-                        <p style="padding:0px!important; margin:0 !important">
-                            {{ 'Due Date: ' . \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y h:i A') }}
+                        <p style="padding:3px!important; margin:0 !important"> <strong>Due Date: </strong>
+                            {{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y h:i A') }}
                         </p>
-                        <p style="padding:0px!important; margin:0 !important">
-                            {{ 'Generated on : ' . now()->format('d/m/Y') . ' at ' . now()->format('h:i A') }}
+                        <p style="padding:3px!important; margin:0 !important"> <strong>Generated on :</strong>
+                            {{ now()->format('d/m/Y') . ' at ' . now()->format('h:i A') }}
                         </p>
 
 
