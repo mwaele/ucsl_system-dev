@@ -82,7 +82,7 @@
 
                                             <div class="modal-body">
                                                 {{-- Issue Form --}}
-                                                <form method="POST" action="">
+                                                <form method="POST" action="{{ route('arrivals.issue', $arrival->id) }}">
                                                     @csrf
 
                                                     @php
