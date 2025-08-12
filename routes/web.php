@@ -33,6 +33,7 @@ use App\Http\Controllers\SameDayRateController;
 use App\Http\Controllers\ShipmentArrivalController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ShipmentArrivalsController;
 
 
 Route::middleware('client.auth')->group(function () {

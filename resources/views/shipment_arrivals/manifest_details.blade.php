@@ -140,14 +140,21 @@
                                 <td>{{ $item->payment_mode }}</td>
                                 <td>{{ $item->status ?? 'Pending' }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-info  verify-btn" data-id="{{ $item->id }}"
-                                        data-waybill-no="{{ $item->waybill_no }}" data-client="{{ $item->client_name }}"
-                                        data-item-name="{{ $item->item_names }}" data-weight="{{ $item->total_weight }}"
-                                        data-request-id="{{ $item->requestId }}
+                                    @if ($item->status != 'arrived')
+                                        <button class="btn btn-sm btn-info  verify-btn" data-id="{{ $item->id }}"
+                                            data-waybill-no="{{ $item->waybill_no }}"
+                                            data-client="{{ $item->client_name }}"
+                                            data-item-name="{{ $item->item_names }}"
+                                            data-weight="{{ $item->total_weight }}"
+                                            data-request-id="{{ $item->requestId }}
                                         "
-                                        data-vehicle="KCA-123X"data-rider="Jeff Letting"
-                                        data-date-requested="2025-08-11T14:30" data-cost="1000" data-total-cost="1160"
-                                        data-vat="160" data-base-cost="1000">>Verify</button>
+                                            data-vehicle="KCA-123X"data-rider="Jeff Letting"
+                                            data-date-requested="2025-08-11T14:30" data-cost="1000" data-total-cost="1160"
+                                            data-vat="160" data-base-cost="1000">Verify</button>
+                                    @endif
+                                    @if ($item->status == 'arrived')
+                                        <span class="text-success">Verified</span>
+                                    @endif
                                     {{-- <button class="btn btn-info btn-sm verify-btn mr-1"
                                         data-id="{{ $request->shipmentCollection->id }}"
                                         data-request-id="{{ $request->requestId }}"
@@ -395,28 +402,8 @@
                     </div>
 
                     <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Billing Party</small></label>
-                        <select name="billing_party" class="form-control">
-                            <option value="" selected>-- Select --</option>
-                            <option value="Sender">Sender</option>
-                            <option value="Receiver">Receiver</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Payment Mode</small></label>
-                        <select name="payment_mode" class="form-control">
-                            <option value="" selected>-- Select --</option>
-                            <option value="M-Pesa">M-Pesa</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Cheque">Cheque</option>
-                            <option value="Invoice">Invoice</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Reference</small></label>
-                        <input type="text" name="reference" class="form-control" placeholder="e.g. MPESA123XYZ">
+                        <label class="text-primary"><small>Cost Difference</small></label>
+                        <input type="text" name="cost_diff" class="form-control" >
                     </div>
                 </div>
             `;
@@ -425,7 +412,7 @@
                                         formHtml += `
                 <div class="modal-footer d-flex justify-content-between align-items-center">
                     <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
-                    <button type="submit" class="btn btn-primary">Submit Verification</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Submit Verification</button>
                 </div>
                 </form> <!-- ✅ Closing the form -->
             `;
@@ -617,10 +604,81 @@
             // Initial load
             filterTable();
             updateReportLink();
+
+            // function checkMismatch() {
+            //     let hasMismatch = false;
+
+            //     $("tr").each(function() {
+            //         const packagesInput = $(this).find(".packages-input");
+            //         const weightInput = $(this).find(".weight-input");
+
+            //         const originalPackages = parseFloat(packagesInput.data("original")) || 0;
+            //         const enteredPackages = parseFloat(packagesInput.val()) || 0;
+
+            //         const originalWeight = parseFloat(weightInput.data("original")) || 0;
+            //         const enteredWeight = parseFloat(weightInput.val()) || 0;
+
+            //         // Check mismatch
+            //         if (originalPackages !== enteredPackages || originalWeight !== enteredWeight) {
+            //             $(this).find('input[value="not_tallied"]').prop("checked", true);
+            //             hasMismatch = true;
+            //         } else {
+            //             $(this).find('input[value="tallied"]').prop("checked", true);
+            //         }
+            //     });
+
+            //     // Disable or enable submit
+            //     $("#submitBtn").prop("disabled", hasMismatch);
+            // }
+
+            // // Run check on page load
+            // checkMismatch();
+
+            // // Recheck whenever quantity or weight changes
+            // $(document).on("input", ".packages-input, .weight-input", function() {
+            //     checkMismatch();
+            // });
+
+
+            // testing 
+            function checkMismatch() {
+                let hasMismatch = false;
+
+                $("tr").each(function() {
+                    const packagesInput = $(this).find(".packages-input");
+                    const weightInput = $(this).find(".weight-input");
+
+                    const originalPackages = parseFloat(packagesInput.data("original")) || 0;
+                    const enteredPackages = parseFloat(packagesInput.val()) || 0;
+
+                    const originalWeight = parseFloat(weightInput.data("original")) || 0;
+                    const enteredWeight = parseFloat(weightInput.val()) || 0;
+
+                    // Check mismatch
+                    if (originalPackages !== enteredPackages || originalWeight !== enteredWeight) {
+                        $(this).find('input[value="not_tallied"]').prop("checked", true);
+                        hasMismatch = true;
+                    } else {
+                        $(this).find('input[value="tallied"]').prop("checked", true);
+                    }
+                });
+
+                // Disable or enable submit
+                $("#submitBtn").prop("disabled", hasMismatch);
+            }
+
+            // Run check on page load
+            checkMismatch();
+
+            // Recheck whenever quantity or weight changes
+            $(document).on("input", ".packages-input, .weight-input", function() {
+                checkMismatch();
+            });
+
         });
     </script>
 
-    <script>
+    {{-- <script>
         $(document).on('input', '.packages-input, .weight-input', function() {
             let $input = $(this);
             let originalValue = parseFloat($input.data('original'));
@@ -646,7 +704,7 @@
                 }
             }
         });
-    </script>
+    </script> --}}
 
 
 
@@ -687,21 +745,17 @@
             const shipmentId = $('.verify-btn').data('id');
             const formData = form.serialize();
 
-            console.log('data' + formData);
-
             $.ajax({
                 url: `/shipment_arrival/${shipmentId}`,
-                type: 'POST',
+                type: 'POST', // must match your Laravel route
                 data: formData,
                 headers: {
-                    'X-CSRF-TOKEN': $('input[name="_token"]').val(),
-                    'X-HTTP-Method-Override': 'PUT'
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 },
                 success: function(response) {
-                    //alert('Shipment Collection Verified Successfully!');
                     $('#itemsModal').modal('hide');
-                    // Optionally reload the page or update the table
-                    //location.reload();
+                    // Optionally reload table or update without full reload
+                    location.reload();
                 },
                 error: function(xhr) {
                     alert('Error verifying shipment');
