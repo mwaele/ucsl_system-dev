@@ -33,4 +33,10 @@ class ShipmentArrival extends Model
     {
         return $this->belongsTo(shipmentCollection::class, 'shipment_collection_id');
     }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'shipment_collection_id');
+    }
+
 }

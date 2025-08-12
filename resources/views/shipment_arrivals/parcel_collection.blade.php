@@ -24,11 +24,11 @@
                     <tr class="text-success">
                         <th>#</th>
                         <th>Request ID</th>
-                        <th>Date Received</th>
+                        <th>Waybill No.</th>
                         <th>Verified By</th>
                         <th>Total Cost</th>
                         <th>Status</th>
-                        <th>Driver Name</th>
+                        <th>Paid</th>
                         <th>Vehicle Reg No</th>
                         <th>Action</th>
                     </tr>
@@ -38,7 +38,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $arrival->requestId }}</td>
-                            <td>{{ $arrival->date_received }}</td>
+                            <td>{{ $arrival->shipmentCollection->waybill_no }}</td>
                             <td>{{ $arrival->verifiedBy->name ?? null }}</td>
                             <td>Ksh. {{ number_format($arrival->total_cost) }}</td>
                             <td>
@@ -46,7 +46,7 @@
                                     {{ ucfirst($arrival->status) }}
                                 </span>
                             </td>
-                            <td>{{ $arrival->driver_name }}</td>
+                            <td>{{ $arrival->payment?->amount }}</td>
                             <td>{{ $arrival->vehicle_reg_no }}</td>
                             <td>
                                <!-- Issue Button -->
