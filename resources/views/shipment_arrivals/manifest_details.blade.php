@@ -55,7 +55,6 @@
                 </a>
 
 
-
             </div>
         </div>
         <div class="card-body">
@@ -136,7 +135,7 @@
                                 <td>{{ $item->destination ?? '' }}</td>
                                 <td>{{ $item->total_quantity }}</td>
                                 <td>{{ $item->total_weight }}</td>
-                                <td>{{ number_format($item->total_cost, 2) }}</td>
+                                <td>{{ number_format($item->actual_total_cost, 2) }}</td>
                                 <td>{{ $item->payment_mode }}</td>
                                 <td>{{ $item->status ?? 'Pending' }}</td>
                                 <td>
@@ -148,9 +147,11 @@
                                             data-weight="{{ $item->total_weight }}"
                                             data-request-id="{{ $item->requestId }}
                                         "
-                                            data-vehicle="KCA-123X"data-rider="Jeff Letting"
-                                            data-date-requested="2025-08-11T14:30" data-cost="1000" data-total-cost="1160"
-                                            data-vat="160" data-base-cost="1000">Verify</button>
+                                            data-vehicle="{{ $item->vehicle_reg_no ?? '' }}"data-rider="{{ $item->transported_by ?? '' }}"
+                                            data-date-requested="{{ $item->dispatch_date }}"
+                                            data-cost="{{ $item->actual_cost }}"
+                                            data-total-cost="{{ $item->actual_total_cost }}"
+                                            data-vat="{{ $item->actual_vat }}" data-base-cost="1000">Verify</button>
                                     @endif
                                     @if ($item->status == 'arrived')
                                         <span class="text-success">Verified</span>
@@ -258,6 +259,8 @@
                                 </div>
                             </div>
                         </div> --}}
+                        <!-- Spinner Overlay -->
+
                         <script>
                             $(document).on('click', '.verify-btn', function() {
                                 const shipment_id = $(this).data('id');
@@ -286,15 +289,15 @@
                             <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="text-primary">Rider</label>
+                            <label class="text-primary">Transporter</label>
                             <input type="text" name="userId" class="form-control" value="${rider}" readonly>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="text-primary">Vehicle</label>
+                            <label class="text-primary">Vehicle Reg No.</label>
                             <input type="text" class="form-control" name="vehicleDisplay" value="${vehicle_reg_no}" readonly>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="text-primary">Date Requested</label>
+                            <label class="text-primary">Date Dispatched</label>
                             <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
                         </div>
                     </div>
@@ -543,6 +546,22 @@
             @endif
         </div>
     </div>
+
+    {{-- <!-- Spinner Overlay -->
+    <div id="spinnerOverlay"
+        style="
+        display:none;
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(255,255,255,0.7);
+        z-index:9999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">
+        <img src="{{ asset('images/spinner.gif') }}" alt="Saving..." />
+    </div> --}}
     <script>
         $(document).ready(function() {
             $(document).on('click', '.verifyModal', function() {
@@ -741,6 +760,9 @@
         $(document).on('submit', '#shipmentReceiptForm', function(e) {
             e.preventDefault();
 
+            $('#submitBtn').prop('disabled', true);
+            $('#spinnerOverlay').show();
+            $('#itemsModal').modal('hide');
             const form = $(this);
             const shipmentId = $('.verify-btn').data('id');
             const formData = form.serialize();
@@ -755,11 +777,15 @@
                 success: function(response) {
                     $('#itemsModal').modal('hide');
                     // Optionally reload table or update without full reload
+                    alert(response.message);
                     location.reload();
                 },
                 error: function(xhr) {
                     alert('Error verifying shipment');
                     console.error(xhr.responseText);
+                },
+                complete: function() {
+                    $("#loadingSpinner").hide(); // Hide spinner when done
                 }
             });
         });

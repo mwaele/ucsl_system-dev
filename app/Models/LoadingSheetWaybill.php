@@ -24,5 +24,20 @@ class LoadingSheetWaybill extends Model
         return $this->belongsTo(ShipmentItem::class, 'shipment_item_id');
     }
 
+      public function shipmentItem()
+    {
+        return $this->belongsTo(ShipmentItem::class, 'shipment_item_id');
+    }
+
+    public function shipmentCollection()
+    {
+        return $this->belongsTo(ShipmentCollection::class, 'shipment_id');
+    }
+
+    public function loadingSheet()
+    {
+        return $this->belongsTo(LoadingSheet::class, 'loading_sheet_id');
+    }
+
     
 }

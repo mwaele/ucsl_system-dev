@@ -79,6 +79,12 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
+    
+    public function track()
+    {
+        return $this->hasOne(Track::class, 'requestId', 'requestId');
+    }
+
 
     public function collectedBy()
     {
@@ -89,4 +95,5 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+    
 }

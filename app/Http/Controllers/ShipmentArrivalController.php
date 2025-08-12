@@ -270,15 +270,21 @@ class ShipmentArrivalController extends Controller
             ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
             ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
             ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+             ->join('loading_sheets as ls', 'lsw.loading_sheet_id', '=', 'ls.id')
             ->join('clients as c', 'sc.client_id', '=', 'c.id')
             ->select(
                 'lsw.waybill_no',
                 DB::raw('MAX(r.destination) as destination'),
-                'sc.total_cost',
+                'sc.actual_cost',
+                'sc.actual_total_cost',
                 'sc.id',
                 'sc.requestId',
+                'ls.vehicle_reg_no',
+                'ls.transported_by',
+                'ls.dispatch_date',
                 'sc.status',
                 'c.name as client_name',
+                'sc.actual_vat',
                 'sc.payment_mode',
                 DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
                 DB::raw('SUM(si.actual_quantity) as total_quantity'),
@@ -289,11 +295,14 @@ class ShipmentArrivalController extends Controller
                 'lsw.waybill_no',
                 'c.name',
                 'r.id',
-                'sc.total_cost',
+                'sc.actual_vat','sc.actual_cost','sc.actual_total_cost',
                 'sc.payment_mode',
                 'sc.id',
                 'sc.status',
-                'sc.requestId'
+                'sc.requestId',
+                'ls.vehicle_reg_no',
+                'ls.transported_by',
+                'ls.dispatch_date',
             )
             ->get();
 

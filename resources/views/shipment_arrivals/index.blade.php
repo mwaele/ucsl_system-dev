@@ -140,6 +140,10 @@
                         </select>
                     </div>
 
+                    <a href="{{ route('shipment_arrivals.index') }}"><button class="btn btn-primary mb-2 clear ">Clear
+                            Filters</button></a>
+
+
 
                     <!-- Date Range Radio -->
                     <div class="form-check form-check-inline">
