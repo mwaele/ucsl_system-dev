@@ -23,4 +23,14 @@ class ShipmentArrival extends Model
     {
         return $this->belongsTo(User::class, 'verified_by');
     }
+
+    public function clientRequest()
+    {
+        return $this->belongsTo(clientRequest::class, 'requestId');
+    }
+
+    public function shipmentCollection()
+    {
+        return $this->belongsTo(shipmentCollection::class, 'shipment_collection_id');
+    }
 }

@@ -49,14 +49,118 @@
                             <td>{{ $arrival->driver_name }}</td>
                             <td>{{ $arrival->vehicle_reg_no }}</td>
                             <td>
-                                @if(in_array(strtolower($arrival->payment_mode), ['cash-on-delivery', 'on account']))
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
-                                        data-target="#paymentModal-{{ $arrival->id }}">
-                                        Record Payment
+                               <!-- Issue Button -->
+                                @if ($arrival->status === 'received')
+                                    <button class="btn btn-sm btn-primary" title="Issue Parcel" data-toggle="modal"
+                                        data-target="#issueParcel-{{ $arrival->id }}">
+                                        Issue <i class="fas fa-box-open"></i> <i class="fas fa-arrow-right"></i>
                                     </button>
-                                @else
-                                    <span class="badge badge-info">Paid</span>
                                 @endif
+
+                                <!-- Issue Parcel Modal -->
+                                <div class="modal fade" id="issueParcel-{{ $arrival->id }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="issueParcelLabel-{{ $arrival->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title">Issue Parcel – {{ $arrival->parcelDetails }} (Request ID: {{ $arrival->requestId }})</h5>
+                                                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" action="">
+                                                    @csrf
+                                                    <div class="form-group">
+                                                        <label class="text-primary">Select Issue Type:</label><br>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio" name="issue_type"
+                                                                id="issue_receiver_{{ $arrival->id }}" value="receiver">
+                                                            <label class="form-check-label" for="issue_receiver_{{ $arrival->id }}">Receiver</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio" name="issue_type"
+                                                                id="issue_agent_{{ $arrival->id }}" value="agent">
+                                                            <label class="form-check-label" for="issue_agent_{{ $arrival->id }}">Agent</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Receiver Panel -->
+                                                    <div class="col-md-12" id="issue_receiver_panel_{{ $arrival->id }}" style="display:none;">
+                                                        <div class="card shadow-sm mb-3">
+                                                            <div class="card-header bg-info text-white">Receiver Details</div>
+                                                            <div class="card-body">
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Receiver Name<span class="text-danger">*</span></label>
+                                                                        <input type="text" class="form-control" name="receiver_name">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Phone<span class="text-danger">*</span></label>
+                                                                        <input type="text" class="form-control" name="receiver_phone">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>ID Number<span class="text-danger">*</span></label>
+                                                                        <input type="text" class="form-control" name="receiver_id_no" maxlength="8">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Agent Panel -->
+                                                    <div class="col-md-12" id="issue_agent_panel_{{ $arrival->id }}" style="display:none;">
+                                                        <div class="card shadow-sm mb-3">
+                                                            <div class="card-header bg-info text-white">Agent Details</div>
+                                                            <div class="card-body">
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Agent Name</label>
+                                                                        <input type="text" class="form-control" name="agent_name">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Agent Phone</label>
+                                                                        <input type="text" class="form-control" name="agent_phone">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Agent ID Number</label>
+                                                                        <input type="text" class="form-control" name="agent_id_no" maxlength="8">
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Remarks<span class="text-danger">*</span></label>
+                                                                        <input type="text" class="form-control" name="remarks">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <input type="hidden" name="requestId" value="{{ $arrival->requestId }}">
+                                                    <input type="hidden" name="client_id" value="{{ $arrival->shipmentCollection->client_id }}">
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const receiverRadio = document.getElementById('issue_receiver_{{ $arrival->id }}');
+                                            const agentRadio = document.getElementById('issue_agent_{{ $arrival->id }}');
+                                            const receiverPanel = document.getElementById('issue_receiver_panel_{{ $arrival->id }}');
+                                            const agentPanel = document.getElementById('issue_agent_panel_{{ $arrival->id }}');
+
+                                            function togglePanels() {
+                                                receiverPanel.style.display = receiverRadio.checked ? 'block' : 'none';
+                                                agentPanel.style.display = agentRadio.checked ? 'block' : 'none';
+                                            }
+
+                                            receiverRadio.addEventListener('change', togglePanels);
+                                            agentRadio.addEventListener('change', togglePanels);
+                                        });
+                                    </script>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
