@@ -33,4 +33,10 @@ class Payment extends Model
     {
         return $this->belongsTo(User::class, 'received_by');
     }
+
+    public function getBalanceAttribute()
+    {
+        $totalCost = $this->shipment_collection?->total_cost ?? 0;
+        return $totalCost - $this->amount;
+    }
 }

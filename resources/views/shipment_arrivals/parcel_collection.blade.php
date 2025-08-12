@@ -45,30 +45,115 @@
                                 <span class="badge badge-{{ strtolower($arrival->status) === 'delivered' ? 'success' : 'warning' }}">
                                     {{ ucfirst($arrival->status) }}
                                 </span>
+                            <td> 
+                                @if($arrival->payment && $arrival->payment->balance > 0)
+                                    <span class="badge bg-info text-white">
+                                        Paid: {{ $arrival->shipmentCollection->payment_mode }} Ksh. {{ number_format($arrival->payment->amount, 0) }}
+                                    </span>
+                                    <br>
+                                    <span class="badge bg-primary text-white">
+                                        Balance: Ksh. {{ number_format($arrival->payment->balance, 0) }}
+                                    </span>
+                                @elseif($arrival->payment && $arrival->payment->balance == 0)
+                                    <span class="badge bg-success text-white">Fully Paid</span>
+                                @else
+                                    <span class="badge bg-danger text-white">Unpaid</span>
+                                @endif
                             </td>
-                            <td>{{ $arrival->payment?->amount }}</td>
                             <td>{{ $arrival->vehicle_reg_no }}</td>
                             <td>
-                               <!-- Issue Button -->
-                                @if ($arrival->status === 'received')
+                                @if ($arrival->status === 'Verified')
                                     <button class="btn btn-sm btn-primary" title="Issue Parcel" data-toggle="modal"
-                                        data-target="#issueParcel-{{ $arrival->id }}">
+                                            data-target="#issueParcel-{{ $arrival->id }}">
                                         Issue <i class="fas fa-box-open"></i> <i class="fas fa-arrow-right"></i>
                                     </button>
                                 @endif
 
-                                <!-- Issue Parcel Modal -->
                                 <div class="modal fade" id="issueParcel-{{ $arrival->id }}" tabindex="-1" role="dialog"
                                     aria-labelledby="issueParcelLabel-{{ $arrival->id }}" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header bg-primary text-white">
-                                                <h5 class="modal-title">Issue Parcel – {{ $arrival->parcelDetails }} (Request ID: {{ $arrival->requestId }})</h5>
+                                                <h5 class="modal-title">
+                                                    Issue Parcel – {{ $arrival->parcelDetails }} (Request ID: {{ $arrival->requestId }})
+                                                </h5>
                                                 <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                                             </div>
+
                                             <div class="modal-body">
+                                                {{-- Issue Form --}}
                                                 <form method="POST" action="">
                                                     @csrf
+
+                                                    @php
+                                                        $hasPayment = $arrival->payment !== null;
+                                                        $balance = $hasPayment ? $arrival->payment->balance : null;
+                                                    @endphp
+
+                                                    {{-- Payment Section (Only if unpaid or has balance) --}}
+                                                    @if(!$hasPayment || $balance > 0)
+                                                        <div class="mb-3">
+                                                            @if(!$hasPayment)
+                                                                <span class="badge bg-danger text-white">
+                                                                    Unpaid – To pay Ksh. {{ number_format($arrival->shipmentCollection->total_cost, 0) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-info text-white">
+                                                                    Paid: {{ $arrival->shipmentCollection->payment_mode }}
+                                                                </span>
+                                                                <span class="badge bg-primary text-white">
+                                                                    Ksh. {{ number_format($arrival->payment->amount, 0) }}
+                                                                </span>
+                                                                <span class="badge bg-warning text-white">
+                                                                    Balance: Ksh. {{ number_format($balance, 0) }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+
+                                                        {{-- Record Payment --}}
+                                                        <div class="card shadow-sm border-primary mb-3">
+                                                            <div class="card-header bg-primary text-white">
+                                                                Record Payment
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    {{-- Payment Mode --}}
+                                                                    <div class="col-md-4">
+                                                                        <label for="payment_mode" class="text-primary"><h6>Payment Mode</h6></label>
+                                                                        <select id="payment_mode" name="payment_mode" class="form-control" required>
+                                                                            <option value="" selected>-- Select --</option>
+                                                                            <option value="M-Pesa">M-Pesa</option>
+                                                                            <option value="Cash">Cash</option>
+                                                                            <option value="Cheque">Cheque</option>
+                                                                            <option value="Invoice">Invoice</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    {{-- Reference --}}
+                                                                    <div class="col-md-4">
+                                                                        <label for="reference" class="text-primary"><h6>Reference</h6></label>
+                                                                        <input type="text" id="reference" name="reference"
+                                                                            class="form-control text-uppercase"
+                                                                            placeholder="e.g. TH647CDTNA"
+                                                                            maxlength="10"
+                                                                            pattern="[A-Z0-9]{10}"
+                                                                            title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                                            oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)"
+                                                                            required>
+                                                                    </div>
+
+                                                                    {{-- Amount --}}
+                                                                    <div class="col-md-4">
+                                                                        <label for="amount_paid" class="text-primary"><h6>Amount</h6></label>
+                                                                        <input type="number" id="amount_paid" name="amount_paid" class="form-control"
+                                                                            placeholder="Enter amount paid" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
+                                                    {{-- Issue Type Selection --}}
                                                     <div class="form-group">
                                                         <label class="text-primary">Select Issue Type:</label><br>
                                                         <div class="form-check form-check-inline">
@@ -83,7 +168,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Receiver Panel -->
+                                                    {{-- Receiver Panel --}}
                                                     <div class="col-md-12" id="issue_receiver_panel_{{ $arrival->id }}" style="display:none;">
                                                         <div class="card shadow-sm mb-3">
                                                             <div class="card-header bg-info text-white">Receiver Details</div>
@@ -106,7 +191,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Agent Panel -->
+                                                    {{-- Agent Panel --}}
                                                     <div class="col-md-12" id="issue_agent_panel_{{ $arrival->id }}" style="display:none;">
                                                         <div class="card shadow-sm mb-3">
                                                             <div class="card-header bg-info text-white">Agent Details</div>
@@ -133,17 +218,21 @@
                                                         </div>
                                                     </div>
 
+                                                    {{-- Hidden Fields --}}
                                                     <input type="hidden" name="requestId" value="{{ $arrival->requestId }}">
                                                     <input type="hidden" name="client_id" value="{{ $arrival->shipmentCollection->client_id }}">
 
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                        <button type="submit" class="btn btn-primary">
+                                                            Submit
+                                                        </button>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
+
                                     <script>
                                         document.addEventListener('DOMContentLoaded', function () {
                                             const receiverRadio = document.getElementById('issue_receiver_{{ $arrival->id }}');

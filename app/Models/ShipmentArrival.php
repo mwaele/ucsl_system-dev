@@ -36,7 +36,7 @@ class ShipmentArrival extends Model
 
     public function payment()
     {
-        return $this->hasOne(Payment::class, 'shipment_collection_id');
+        return $this->hasOne(Payment::class, 'shipment_collection_id', 'shipment_collection_id');
     }
 
 }
