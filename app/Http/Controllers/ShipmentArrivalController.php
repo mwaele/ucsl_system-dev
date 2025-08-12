@@ -329,7 +329,7 @@ class ShipmentArrivalController extends Controller
     public function parcel_collection()
     {
         // Fetch all shipment arrivals
-        $shipmentArrivals = ShipmentArrival::with('payment')->get();
+        $shipmentArrivals = ShipmentArrival::with(['payment','transporter_truck','transporter'])->get();
 
         // Pass data to the view
         return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals'));
