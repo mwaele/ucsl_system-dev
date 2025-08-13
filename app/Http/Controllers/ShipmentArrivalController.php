@@ -333,10 +333,24 @@ class ShipmentArrivalController extends Controller
         // Fetch all shipment arrivals
         $shipmentArrivals = ShipmentArrival::with(['payment','transporter_truck','transporter'])->get();
 
-        $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
+        $riders = User::where(['role'=>'driver','station'=>Auth::user()->office_id])->get();
+
+        // Get the latest consignment number
+        $latestGRN = ShipmentCollection::where('grn_no', 'LIKE', 'GRN-%')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestGRN && preg_match('/GRN-(\d+)/', $latestGRN->grn_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 10000; // Start from GRN-10000
+        }
+
+        $grn_no = 'GRN-' . $newNumber;
 
         // Pass data to the view
-        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals','riders'));
+        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no'));
     }
     
 
@@ -431,7 +445,6 @@ class ShipmentArrivalController extends Controller
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
 
-
     public function issue(Request $request, $id) 
     {
         $arrival = ShipmentArrival::with('shipmentCollection.client', 'shipmentCollection.payments')->findOrFail($id);
@@ -477,6 +490,10 @@ class ShipmentArrivalController extends Controller
                 'status' => 'issued',
                 'remarks' => $request->remarks ?? null,
             ]);
+
+            // 2️⃣ Create goods received note number
+            ShipmentCollection::where('requestId', $arrival->shipmentCollection->requestId)
+                ->update(['grn_no' => $request->grn_no]);
 
             // Update track status
             DB::table('tracks')
