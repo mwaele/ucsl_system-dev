@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendCollectionNotificationsJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,6 +28,7 @@ use Illuminate\Support\HtmlString;
 use App\Traits\PdfReportTrait;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
+use App\Jobs\SendCollectionNotificationsJob;
 
 class ClientRequestController extends Controller
 {

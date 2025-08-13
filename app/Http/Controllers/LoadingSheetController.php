@@ -146,7 +146,8 @@ class LoadingSheetController extends Controller
     }
 
 
-    public function generate_loading_sheet($id){
+    public function generate_loading_sheet($id)
+    {
 
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
         $destination = Rate::where('id',$loadingSheet->destination)->first();
@@ -224,7 +225,7 @@ class LoadingSheetController extends Controller
             DB::raw('SUM(si.actual_weight) as total_weight')
         )
         ->where('lsw.loading_sheet_id', $id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode', 'r.destination')
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')

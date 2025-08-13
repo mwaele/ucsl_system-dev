@@ -267,7 +267,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/arrivals/{id}/issue', [ShipmentArrivalController::class, 'issue'])->name('arrivals.issue');
 
 
-Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
+    Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
 
     Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
 

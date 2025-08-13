@@ -17,6 +17,7 @@ use App\Traits\PdfReportTrait;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\SendIssueNotificationsJob;
 
 class ShipmentArrivalController extends Controller
 {
@@ -268,7 +269,7 @@ class ShipmentArrivalController extends Controller
             ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
             ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
             ->join('rates as r', 'sc.destination_id', '=', 'r.id')
-             ->join('loading_sheets as ls', 'lsw.loading_sheet_id', '=', 'ls.id')
+            ->join('loading_sheets as ls', 'lsw.loading_sheet_id', '=', 'ls.id')
             ->join('clients as c', 'sc.client_id', '=', 'c.id')
             ->select(
                 'lsw.waybill_no',
@@ -351,11 +352,11 @@ class ShipmentArrivalController extends Controller
     }
 
 
-    public function issue(Request $request, $id)
+    public function issue(Request $request, $id) 
     {
-        $arrival = ShipmentArrival::with('payment', 'shipmentCollection')->findOrFail($id);
+        $arrival = ShipmentArrival::with('shipmentCollection.client', 'shipmentCollection.payments')->findOrFail($id);
 
-        // If payment is required
+        // Always validate if there's a balance or no payment yet
         if (!$arrival->payment || $arrival->payment->balance > 0) {
             $request->validate([
                 'payment_mode' => 'required|string',
@@ -377,16 +378,69 @@ class ShipmentArrivalController extends Controller
             ]);
         }
 
-        // Process issuing
-        $arrival->update([
-            'status' => 'issued',
-            'remarks' => $request->remarks ?? null,
-        ]);
+        // 🔎 Recalculate total paid and balance across all payments
+        $totalPaid = $arrival->shipmentCollection->payments->sum('amount');
+        $totalCost = $arrival->shipmentCollection->total_cost ?? 0;
+        $balance   = max(0, $totalCost - $totalPaid);
 
-        // Store receiver/agent details (if you have a table for that)
-        // e.g., IssuedParcel::create([...])
+        // 🚫 If balance still exists, do not issue
+        if ($balance > 0) {
+            return back()->withErrors([
+                'error' => "Cannot issue parcel. Balance of Ksh. " . number_format($balance, 0) . " is still pending."
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            // ✅ No balance, update to issued
+            $arrival->update([
+                'status' => 'issued',
+                'remarks' => $request->remarks ?? null,
+            ]);
+
+            // Update track status
+            DB::table('tracks')
+                ->where('requestId', $arrival->shipmentCollection->requestId)
+                ->update([
+                    'current_status' => 'Issued',
+                    'updated_at' => now(),
+                ]);
+
+            // Add tracking info
+            $trackId = DB::table('tracks')
+                ->where('requestId', $arrival->shipmentCollection->requestId)
+                ->value('id');
+
+            DB::table('tracking_infos')->insert([
+                'trackId'   => $trackId,
+                'date'      => now(),
+                'details'   => 'Parcel issued to receiver/agent',
+                'user_id'   => auth()->id(),
+                'vehicle_id'=> null,
+                'remarks'   => "Issued parcel for request ID {$arrival->shipmentCollection->requestId} to designated receiver/agent.",
+                'created_at'=> now(),
+                'updated_at'=> now(),
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to issue parcel: ' . $e->getMessage()]);
+        }
+
+        // Send notification
+        try {
+            SendIssueNotificationsJob::dispatch(
+                $arrival->shipmentCollection,
+                $arrival->shipmentCollection->client,
+                auth()->user()
+            );
+        } catch (\Exception $e) {
+            Log::warning('Failed to dispatch SendIssueNotificationsJob', ['message' => $e->getMessage()]);
+        }
 
         return back()->with('success', 'Parcel issued successfully.');
     }
+
 
 }

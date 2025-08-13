@@ -27,11 +27,8 @@
                             <th>Request ID</th>
                             <th>Waybill No.</th>
                             <th>Verified By</th>
-                            <th>Total Cost</th>
-                            <th>Status</th>
-                            <th>Paid</th>
-                            <th>Vehicle Reg No</th>
-                            {{-- <th>Transporter</th> --}}
+                            <th>Payment Status</th>
+                            <th>Parcel Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,16 +39,43 @@
                                 <td>{{ $arrival->requestId }}</td>
                                 <td>{{ $arrival->shipmentCollection->waybill_no }}</td>
                                 <td>{{ $arrival->verifiedBy->name ?? null }}</td>
-                                <td>Ksh. {{ number_format($arrival->total_cost) }}</td>
+                                <td>
+                                    @php
+                                        $payment = $arrival->payment; // e.g. latest payment; may be null
+                                        $totalCost = $arrival->shipmentCollection->total_cost ?? 0;
+
+                                        // If we have any payment model, use its computed accessors (which aggregate all)
+                                        if ($payment) {
+                                            $totalPaid = $payment->total_paid;
+                                            $balance   = $payment->balance;
+                                        } else {
+                                            // No single payment loaded; compute directly to keep badges accurate
+                                            $totalPaid = \App\Models\Payment::where('shipment_collection_id', $arrival->shipment_collection_id)->sum('amount');
+                                            $balance   = max(0, $totalCost - $totalPaid);
+                                        }
+                                    @endphp
+
+                                    @if($totalPaid > 0 && $balance > 0)
+                                        <span class="badge bg-info text-white">
+                                            Paid: Ksh. {{ number_format($totalPaid, 0) }}
+                                        </span>
+                                        <br>
+                                        <span class="badge bg-primary text-white">
+                                            Balance: Ksh. {{ number_format($balance, 0) }}
+                                        </span>
+                                    @elseif($totalPaid >= $totalCost && $totalCost > 0)
+                                        <span class="badge bg-success text-white">Fully Paid</span>
+                                    @else
+                                        <span class="badge bg-danger text-white">Unpaid</span>
+                                    @endif
+                                </td>
+
                                 <td>
                                     <span
                                         class="badge badge-{{ strtolower($arrival->status) === 'delivered' ? 'success' : 'warning' }}">
                                         {{ ucfirst($arrival->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $arrival->payment?->amount }}</td>
-                                <td>{{ $arrival->transporter_truck->reg_no ?? '' }}</td>
-                                {{-- <td>{{ $arrival->transporter->name ?? '' }}</td> --}}
                                 <td>
                                     <!-- Issue Button -->
                                     @if ($arrival->status === 'Verified')
