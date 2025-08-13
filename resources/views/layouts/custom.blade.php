@@ -210,6 +210,16 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item {{ request()->routeIs('lastMileDelivery.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('lastMileDelivery.index') }}">
+                    <i class="fas fa-fw fa-shipping-fast"></i>
+                    <span class="sized">Last Mile Deliveries</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
             <!-- Nav Item - Clients Collapse Menu -->
             {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse"

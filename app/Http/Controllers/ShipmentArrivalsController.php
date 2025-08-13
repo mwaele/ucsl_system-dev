@@ -329,7 +329,7 @@ public function saveArrivals(Request $request, $id, SmsService $smsService)
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**

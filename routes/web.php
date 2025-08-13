@@ -266,7 +266,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/parcel_collection', [ShipmentArrivalController::class, 'parcel_collection'])->name('parcel_collection');
     Route::post('/arrivals/{id}/issue', [ShipmentArrivalController::class, 'issue'])->name('arrivals.issue');
 
+
+Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
+
     Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
+
+    Route::resource('lastMileDelivery','App\Http\Controllers\LastMileDeliveryController');
 
     Route::resource('transporters','App\Http\Controllers\TransporterController');
     Route::resource('dispatchers','App\Http\Controllers\DispatcherController');

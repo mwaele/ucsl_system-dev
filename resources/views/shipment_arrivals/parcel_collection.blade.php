@@ -54,16 +54,22 @@
                                 {{-- <td>{{ $arrival->transporter->name ?? '' }}</td> --}}
                                 <td>
                                     <!-- Issue Button -->
-                                    @if ($arrival->status === 'received')
+                                    @if ($arrival->status === 'Verified')
                                         <button class="btn btn-sm btn-primary" title="Issue Parcel" data-toggle="modal"
                                             data-target="#issueParcel-{{ $arrival->id }}">
                                             Issue <i class="fas fa-box-open"></i> <i class="fas fa-arrow-right"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-warning" title="Delivery" data-toggle="modal"
-                                            data-target="#issueParcel-{{ $arrival->id }}">
-                                            Allocate Rider <i class="fas fa-box-open"></i> <i
-                                                class="fas fa-arrow-right"></i>
-                                        </button>
+                                        @if ($arrival->delivery_rider_status != 'Allocated')
+                                            <button class="btn btn-sm btn-warning" title="Delivery" data-toggle="modal"
+                                                data-target="#allocateRider-{{ $arrival->id }}">
+                                                Allocate Rider <i class="fas fa-box-open"></i> <i
+                                                    class="fas fa-arrow-right"></i>
+                                            </button>
+                                        @endif
+                                        @if ($arrival->delivery_rider_status == 'Allocated')
+                                            <button class="btn btn-info">Rider
+                                                {{ $arrival->delivery_rider_status }}</button>
+                                        @endif
                                     @endif
 
                                     <div class="modal fade" id="issueParcel-{{ $arrival->id }}" tabindex="-1"
@@ -179,8 +185,8 @@
                                                             </div>
                                                             <div class="form-check form-check-inline">
                                                                 <input class="form-check-input" type="radio"
-                                                                    name="issue_type" id="issue_agent_{{ $arrival->id }}"
-                                                                    value="agent">
+                                                                    name="issue_type"
+                                                                    id="issue_agent_{{ $arrival->id }}" value="agent">
                                                                 <label class="form-check-label"
                                                                     for="issue_agent_{{ $arrival->id }}">Agent</label>
                                                             </div>
@@ -287,6 +293,91 @@
                                             });
                                         </script>
                                     </div>
+
+                                    {{-- Allocate Rider Modal --}}
+
+                                    <div class="modal fade" id="allocateRider-{{ $arrival->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="allocateRiderLabel-{{ $arrival->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-xl" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-warning text-white">
+                                                    <h5 class="modal-title">
+                                                        Allocate Rider to deliver {{ $arrival->parcelDetails }} (Request
+                                                        ID:
+                                                        {{ $arrival->requestId }})
+                                                    </h5>
+                                                    <button type="button" class="close text-white"
+                                                        data-dismiss="modal">&times;</button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    {{-- Issue Form --}}
+                                                    <form method="POST" id="allocateRider"
+                                                        action="{{ route('shipment-arrivals.update', $arrival->id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="row">
+                                                            {{-- Payment Mode --}}
+                                                            <div class="col-md-12">
+                                                                <label for="rider_delivery" class="text-primary">
+                                                                    <h6>Select Delivery Rider</h6>
+                                                                </label>
+                                                                <select id="delivery_rider" name="delivery_rider"
+                                                                    class="form-control" required>
+                                                                    <option value="" selected>-- Select
+                                                                        --
+                                                                    </option>
+                                                                    @foreach ($riders as $rider)
+                                                                        <option value="{{ $rider->id }}">
+                                                                            {{ $rider->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+
+
+
+                                                        {{-- Hidden Fields --}}
+                                                        {{-- <input type="hidden" name="requestId"
+                                                            value="{{ $arrival->requestId }}">
+                                                        <input type="hidden" name="client_id"
+                                                            value="{{ $arrival->shipmentCollection->client_id }}"> --}}
+
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Cancel X</button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const receiverRadio = document.getElementById('issue_receiver_{{ $arrival->id }}');
+                                                const agentRadio = document.getElementById('issue_agent_{{ $arrival->id }}');
+                                                const receiverPanel = document.getElementById('issue_receiver_panel_{{ $arrival->id }}');
+                                                const agentPanel = document.getElementById('issue_agent_panel_{{ $arrival->id }}');
+
+                                                function togglePanels() {
+                                                    receiverPanel.style.display = receiverRadio.checked ? 'block' : 'none';
+                                                    agentPanel.style.display = agentRadio.checked ? 'block' : 'none';
+                                                }
+
+                                                receiverRadio.addEventListener('change', togglePanels);
+                                                agentRadio.addEventListener('change', togglePanels);
+                                            });
+                                        </script>
+                                    </div>
+
+
+
                                 </td>
                             </tr>
                         @endforeach

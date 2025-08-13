@@ -90,10 +90,7 @@ class ShipmentArrivalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ShipmentArrival $shipmentArrival)
-    {
-        //
-    }
+   
 
     public function updateArrivalDetails(Request $request)
     {
@@ -331,8 +328,26 @@ class ShipmentArrivalController extends Controller
         // Fetch all shipment arrivals
         $shipmentArrivals = ShipmentArrival::with(['payment','transporter_truck','transporter'])->get();
 
+        $riders = User::where(['role'=>'driver','station'=>Auth::user()->office_id])->get();
+
         // Pass data to the view
-        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals'));
+        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals','riders'));
+    }
+    
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'delivery_rider' => 'required|exists:users,id', //  rider ID comes from users table
+        ]);
+
+        $arrival = ShipmentArrival::findOrFail($id);
+
+        $arrival->delivery_rider = $request->delivery_rider; 
+        $arrival->delivery_rider_status="Allocated";
+        $arrival->save();
+
+        return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
 
 

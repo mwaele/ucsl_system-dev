@@ -17,7 +17,9 @@ class ShipmentArrival extends Model
         'status',
         'driver_name',
         'vehicle_reg_no',
-        'remarks'
+        'remarks',
+        'delivery_rider',
+        'delivery_rider_status'
     ];
     public function verifiedBy()
     {
