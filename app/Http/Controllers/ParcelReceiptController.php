@@ -62,4 +62,10 @@ class ParcelReceiptController extends Controller
     {
         //
     }
+
+    //payment generate receipt
+    public function generateReceipt($id){
+
+
+    }
 }

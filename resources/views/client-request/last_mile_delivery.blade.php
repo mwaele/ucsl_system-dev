@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h4 class="m-0 font-weight-bold text-danger">Overnight and Same Day Shipment Deliveries</h4>
+                <h4 class="m-0 font-weight-bold text-danger">My Same Day Deliveries List</h4>
                 <a href="/collections_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
@@ -760,16 +760,16 @@
                                                                 <label class="text-primary">Select Delivery
                                                                     Type:</label><br>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input select_receiver"
-                                                                        type="radio" name="delivery_type"
-                                                                        id="select_receiver" value="receiver">
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="delivery_type" id="select_receiver"
+                                                                        value="receiver">
                                                                     <label class="form-check-label"
                                                                         for="select_receiver">Receiver</label>
                                                                 </div>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input select_agent"
-                                                                        type="radio" name="delivery_type"
-                                                                        id="select_agent" value="agent">
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="delivery_type" id="select_agent"
+                                                                        value="agent">
                                                                     <label class="form-check-label"
                                                                         for="select_agent">Agent</label>
                                                                 </div>
@@ -782,7 +782,7 @@
 
                                                             <!-- Receiver Panel -->
                                                             @if (!$isApproved)
-                                                                <div class="col-md-12 receiver_panel" id="receiver_panel"
+                                                                <div class="col-md-12" id="receiver_panel"
                                                                     style="display: none;">
                                                                     <div class="card shadow-sm mb-4">
                                                                         <div class="card-header bg-primary text-white">
@@ -847,7 +847,7 @@
 
                                                             @if ($approvalStatuses[$collection->requestId] ?? false)
                                                                 <!-- Agent pickup is approved -->
-                                                                <div class="col-md-12 agent_panel" id="agent_panel">
+                                                                <div class="col-md-12" id="agent_panel">
                                                                     <div class="card shadow-sm mb-4">
                                                                         <div class="card-header bg-primary text-white">
                                                                             Agent Details</div>
@@ -907,7 +907,7 @@
                                                                 </div>
                                                             @else
                                                                 <!-- Agent Approval Request -->
-                                                                <div class="col-md-12 agent_request" id="agent_request"
+                                                                <div class="col-md-12" id="agent_request"
                                                                     style="display: none;">
                                                                     <div class="card shadow-sm mb-4">
                                                                         <div class="card-header bg-primary text-white">
@@ -1015,32 +1015,26 @@
 
                                                     <script>
                                                         document.addEventListener('DOMContentLoaded', function() {
-                                                            // Loop through every modal
-                                                            document.querySelectorAll('.modal').forEach(function(modal) {
-                                                                const receiverRadio = modal.querySelector('.select_receiver');
-                                                                const agentRadio = modal.querySelector('.select_agent');
-                                                                const receiverPanel = modal.querySelector('.receiver_panel');
-                                                                const agentRequest = modal.querySelector('.agent_request');
-                                                                const agentPanel = modal.querySelector('.agent_panel');
+                                                            const receiverRadio = document.getElementById('select_receiver');
+                                                            const agentRadio = document.getElementById('select_agent');
+                                                            const receiverPanel = document.getElementById('receiver_panel');
+                                                            const agentRequest = document.getElementById('agent_request');
+                                                            const agentPanel = document.getElementById('agent_panel');
 
-                                                                if (!receiverRadio || !agentRadio) return; // skip if not found
-
-                                                                function togglePanels() {
-                                                                    if (receiverRadio.checked) {
-                                                                        receiverPanel.style.display = 'block';
-                                                                        if (agentRequest) agentRequest.style.display = 'none';
-                                                                        if (agentPanel) agentPanel.style.display = 'none';
-                                                                    } else if (agentRadio.checked) {
-                                                                        receiverPanel.style.display = 'none';
-                                                                        if (agentRequest) agentRequest.style.display = 'block';
-                                                                        if (agentPanel) agentPanel.style.display = 'block';
-                                                                    }
+                                                            function togglePanels() {
+                                                                if (receiverRadio.checked) {
+                                                                    receiverPanel.style.display = 'block';
+                                                                    agentRequest.style.display = 'none';
+                                                                    if (agentPanel) agentPanel.style.display = 'none';
+                                                                } else if (agentRadio.checked) {
+                                                                    receiverPanel.style.display = 'none';
+                                                                    agentRequest.style.display = 'block';
+                                                                    if (agentPanel) agentPanel.style.display = 'block';
                                                                 }
+                                                            }
 
-                                                                // Attach listeners for this modal only
-                                                                receiverRadio.addEventListener('change', togglePanels);
-                                                                agentRadio.addEventListener('change', togglePanels);
-                                                            });
+                                                            receiverRadio.addEventListener('change', togglePanels);
+                                                            agentRadio.addEventListener('change', togglePanels);
                                                         });
                                                     </script>
 
@@ -1102,10 +1096,10 @@
                                                             const modal = document.getElementById('deliverParcel-{{ $collection->id }}');
                                                             if (!modal) return;
 
-                                                            const receiverRadio = modal.querySelector('.select_receiver');
-                                                            const agentRadio = modal.querySelector('.select_agent');
-                                                            const receiverPanel = modal.querySelector('.receiver_panel');
-                                                            const agentPanel = modal.querySelector('.agent_panel');
+                                                            const receiverRadio = modal.querySelector('#select_receiver');
+                                                            const agentRadio = modal.querySelector('#select_agent');
+                                                            const receiverPanel = modal.querySelector('#receiver_panel');
+                                                            const agentPanel = modal.querySelector('#agent_panel');
                                                             const submitBtn = modal.querySelector('button[type="submit"]');
 
                                                             const receiverFields = [

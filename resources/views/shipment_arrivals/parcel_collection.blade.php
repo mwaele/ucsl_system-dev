@@ -71,10 +71,11 @@
                                 </td>
 
                                 <td>
-                                    <span
+                                    {{-- <span
                                         class="badge badge-{{ strtolower($arrival->status) === 'delivered' ? 'success' : 'warning' }}">
                                         {{ ucfirst($arrival->status) }}
-                                    </span>
+                                    </span> --}}
+                                    {{ $arrival->shipmentCollection->status }}
                                 </td>
                                 <td>
                                     <!-- Issue Button -->
@@ -209,8 +210,8 @@
                                                             </div>
                                                             <div class="form-check form-check-inline">
                                                                 <input class="form-check-input" type="radio"
-                                                                    name="issue_type"
-                                                                    id="issue_agent_{{ $arrival->id }}" value="agent">
+                                                                    name="issue_type" id="issue_agent_{{ $arrival->id }}"
+                                                                    value="agent">
                                                                 <label class="form-check-label"
                                                                     for="issue_agent_{{ $arrival->id }}">Agent</label>
                                                             </div>

@@ -191,6 +191,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/generate-invoice/{id}', [InvoiceController::class, 'generateInvoice'])->name('generate-invoice');
 
+    Route::get('/generate-receipt/{id}', [PaymentController::class, 'generateReceipt'])->name('generate-receipt');
+
 
     Route::get('/overnight/walk-in', [OvernightController::class, 'walk_in'])->name('overnight.walk-in');
     Route::get('/overnight/on-account', [OvernightController::class, 'on_account'])->name('overnight.on-account');
@@ -268,6 +270,8 @@ Route::middleware('auth')->group(function () {
 
 
     Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
+
+Route::put('/client_request/{id}', [SameDayController::class, 'update'])->name('client_request.update');
 
     Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
 

@@ -468,15 +468,86 @@
                                     @endif
                                 </td>
                                 <td class="d-flex pl-2">
-                                    <a href="{{ route('generate-invoice', $request->id) }}">
-                                        <button class="btn btn-sm btn-info mr-1">
-                                            Generate Invoice
+                                    @if ($request->shipmentCollection->payment_mode == 'Invoice')
+                                        <a href="{{ route('generate-invoice', $request->id) }}">
+                                            <button class="btn btn-sm btn-info mr-1">
+                                                Generate Invoice
+                                            </button>
+                                        </a>
+                                    @endif
+
+                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
+                                        <a href="{{ route('generate-receipt', $request->id) }}">
+                                            <button class="btn btn-sm btn-warning mr-1">
+                                                Generate Receipt
+                                            </button>
+                                        </a>
+                                    @endif
+
+                                    @if ($request->userId == '')
+                                        <button class="btn btn-sm btn-primary" title="Delivery" data-toggle="modal"
+                                            data-target="#allocateRider-{{ $request->id }}">
+                                            Allocate Rider <i class="fas fa-van"></i> <i class="fas fa-arrow-up"></i>
                                         </button>
-                                    </a>
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                    @endif
+                                    {{-- Allocate Rider Modal --}}
+
+                                    <div class="modal fade" id="allocateRider-{{ $request->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="allocateRiderLabel-{{ $request->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-xl" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-warning text-white">
+                                                    <h5 class="modal-title">
+                                                        Allocate Rider to deliver Parcel(Request
+                                                        ID:
+                                                        {{ $request->requestId }})
+                                                    </h5>
+                                                    <button type="button" class="close text-white"
+                                                        data-dismiss="modal">&times;</button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    {{-- Issue Form --}}
+                                                    <form method="POST" id="allocateRider"
+                                                        action="{{ route('client_request.update', $request->id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="row">
+                                                            {{-- Payment Mode --}}
+                                                            <div class="col-md-12">
+                                                                <label for="rider_delivery" class="text-primary">
+                                                                    <h6>Select Delivery Rider</h6>
+                                                                </label>
+                                                                <select id="delivery_rider" name="delivery_rider"
+                                                                    class="form-control" required>
+                                                                    <option value="" selected>-- Select
+                                                                        --
+                                                                    </option>
+                                                                    @foreach ($riders as $rider)
+                                                                        <option value="{{ $rider->id }}">
+                                                                            {{ $rider->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Cancel X</button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                         data-toggle="modal" data-target="#deleteUser-{{ $request->id }}">
                                         <i class="fas fa-trash"></i>
-                                    </button>
+                                    </button> --}}
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteUser-{{ $request->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
