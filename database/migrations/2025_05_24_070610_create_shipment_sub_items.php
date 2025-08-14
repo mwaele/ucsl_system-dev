@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shipment_sub_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shipment_item_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shipment_item_id');
             $table->string('item_name');
             $table->integer("quantity")->nullable();
             $table->float('weight')->nullable();
