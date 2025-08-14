@@ -88,6 +88,7 @@ class SameDayController extends Controller
     {
          $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
         $offices = Office::where('id',Auth::user()->station)->get();
+        $vehicles = Vehicle::all();
         $loggedInUserId = Auth::user()->id;
         
         $destinations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
@@ -159,6 +160,7 @@ class SameDayController extends Controller
             'consignment_no',
             'sub_category',
             'locations',
+            'vehicles',
             'riders'
         ));
     }
@@ -333,7 +335,8 @@ class SameDayController extends Controller
     public function update(Request $request, $id, SmsService $smsService)
     {
         $validatedData = $request->validate([
-            'delivery_rider' => 'required|exists:users,id', //  rider ID comes from users table
+            'userId' => 'required|exists:users,id', //  rider ID comes from users table
+            'vehicleId' => 'required', 
         ]);
         
 
@@ -353,12 +356,13 @@ class SameDayController extends Controller
         DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $client_request) {
 
         //dd($validatedData['delivery_rider']);
-        $client_request->status= "pending collection";
-        $client_request->userId = $validatedData['delivery_rider'];
+        $client_request->status= "collected";
+        $client_request->vehicleId = $validatedData['userId'];
+        $client_request->userId = $validatedData['vehicleId'];
         $client_request->save();       
 
 
-        $rider = User::findOrFail($validatedData['delivery_rider']);
+        $rider = User::findOrFail($validatedData['userId']);
 
         //dd($rider);
 
