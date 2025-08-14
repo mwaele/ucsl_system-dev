@@ -572,6 +572,60 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    @if (
+                                        isset($request->shipmentCollection) &&
+                                        !$request->shipmentCollection->agent_approved &&
+                                        $request->shipmentCollection->agent_requested
+                                    )
+                                        <a 
+                                            href="#" 
+                                            class="btn btn-sm btn-primary mr-1" 
+                                            title="Review Agent Pickup Request"
+                                            data-toggle="modal"
+                                            data-target="#agentRequestModal-{{ $request->requestId }}"
+                                        >
+                                            <i class="fas fa-user-check"></i> Review Agent Request
+                                        </a>
+                                    @endif
+
+                                    <!-- Agent Request Modal -->
+                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form method="POST" action="{{ route('client-request.agent-approval') }}" onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
+                                                @csrf
+                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
+                                                <input type="hidden" id="action-{{ $request->requestId }}" name="action" value="approve">
+
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Review Agent Request</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to approve or decline the agent pickup request for this client?</p>
+
+                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks <span class="text-muted">(required only if declining)</span>:</label>
+                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Add remarks if necessary..."></textarea>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger" onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
+
+                                                        <button type="submit" class="btn btn-success d-inline" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
+                                                            Approve
+                                                        </button>
+
+                                                        <button type="submit" class="btn btn-warning d-none" id="confirm-decline-btn-{{ $request->requestId }}">
+                                                            Confirm Decline
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
                                 </td>
                             </tr>
                         @endforeach

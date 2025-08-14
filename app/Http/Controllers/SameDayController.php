@@ -353,7 +353,7 @@ class SameDayController extends Controller
         DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $client_request) {
 
         //dd($validatedData['delivery_rider']);
-        $client_request->status= "collected";
+        $client_request->status= "pending collection";
         $client_request->userId = $validatedData['delivery_rider'];
         $client_request->save();       
 
