@@ -120,36 +120,50 @@ class ShipmentArrivalController extends Controller
     }
 
     public function generate(Request $request)
-    {
-        $filter = $request->query('filter');
-        $value = $request->query('value');
-        $from = $request->query('from');
-        $to = $request->query('to');
+{
+    $filter = $request->query('filter');
+    $value = $request->query('value');
 
-        $query = LoadingSheet::query();
+    
 
-        if ($filter === 'date') {
-            $query->whereDate('dispatch_date', $value);
-        } elseif ($filter === 'date_range') {
-            if ($from && $to) {
-                $query->whereBetween('dispatch_date', [$from, $to]);
-            }
-        } elseif ($filter === 'dispatch') {
-            $query->where('batch_no', 'like', "%$value%");
-        } elseif ($filter === 'type') {
-            $query->where('payment_mode', $value);
+    // Safely split start/end date
+    [$startDate, $endDate] = explode('_', $value) + [null, null];
+
+    $query = LoadingSheet::query();
+    $titled = '';
+
+    if ($filter === 'daterange') {
+        //dd($filter);
+        if ($startDate && $endDate) {
+            $titled = "Between ".$startDate." To ".$endDate;
+            // Both dates provided
+            $query->whereBetween('dispatch_date', [
+            $startDate . ' 00:00:00',
+            $endDate . ' 23:59:59'
+        ]);
+        } elseif ($startDate && empty($endDate)) {
+            // Only start date provided
+            $titled ="of ".$startDate;
+            $query->whereDate('dispatch_date', $startDate);
         }
+    } elseif ($filter === 'dispatch') {
+        $titled = "of batch No. ".str_pad($value, 5, '0', STR_PAD_LEFT);
+        $query->where('batch_no', 'like', "%$value%");
+    } 
 
-        $loading_sheets = $query->get();
+    $loading_sheets = $query->get();
 
-        return $this->renderPdfWithPageNumbers(
-            'shipment_arrivals.arrivals_report',
-            ['sheets' => $loading_sheets],
-            'arrivals_report.pdf',
-            'a4',
-            'landscape'
-        );
-    }
+    return $this->renderPdfWithPageNumbers(
+        'shipment_arrivals.arrivals_report',
+        [
+        'sheets' => $loading_sheets,
+        'titled' => $titled,
+        ],
+        'arrivals_report.pdf',
+        'a4',
+        'landscape'
+    );
+}
 
     public function generateParcels(Request $request)
     {

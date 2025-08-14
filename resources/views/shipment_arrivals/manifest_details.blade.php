@@ -62,9 +62,9 @@
 
             <div class=" mb-3 shadow-sm  bg-warning pt-2">
                 <div class="form-row p-2">
-                    <div class="col-md-4">
+                    <div class="col-md-4  pr-4">
                         <!-- Type Filter -->
-                        <select id="typeFilter" class="form-control ml-2 mb-2">
+                        <select id="typeFilter" class="form-control ml-2 mb-2  pr-4">
                             <option value="">Filter By Payment Mode </option>
                             <option value="M-Pesa">M-Pesa</option>
                             <option value="Cash">Cash</option>
@@ -72,8 +72,8 @@
                             <option value="Invoice">Invoice</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <select id="statusFilter" class="form-control ml-2 mb-2">
+                    <div class="col-md-4 pr-4">
+                        <select id="statusFilter" class="form-control ml-2  pr-2 mb-2">
                             <option value="">Filter By Status </option>
                             <option value="Pending">Pending</option>
                             <option value="Collected">Collected</option>

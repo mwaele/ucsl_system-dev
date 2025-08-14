@@ -255,6 +255,10 @@
     <script>
         $(document).ready(function() {
 
+            const startDateInput = $('#startDate');
+            const endDateInput = $('#endDate');
+            const generateReportBtn = $('#generateReportBtn');
+
             $('.openAllocateModal').on('click', function() {
                 const sheetId = $(this).data('id');
                 $('#loading_sheet_id').val(sheetId);
@@ -464,14 +468,29 @@
                 today.setHours(0, 0, 0, 0);
 
                 // ✅ Validate range only if both start & end are filled
+                if (filterOption === 'daterange' && startDate) {
+                    // Parse manually to avoid UTC issues
+                    const [year, month, day] = startDate.split('-').map(Number);
+                    const from = new Date(year, month - 1, day); // local date
+                    from.setHours(0, 0, 0, 0); // normalize
+
+                    if (from > today) {
+                        alert("'Start Date' cannot be greater than today's date.");
+                        $('#startDate').val('');
+                        return;
+                    }
+                }
                 if (filterOption === 'daterange' && startDate && endDate) {
-                    const from = new Date(startDate);
+                    // Parse manually to avoid UTC issues
+                    const [year, month, day] = startDate.split('-').map(Number);
+                    const from = new Date(year, month - 1, day); // local date
                     const to = new Date(endDate);
                     from.setHours(0, 0, 0, 0);
                     to.setHours(0, 0, 0, 0);
 
                     if (to > today) {
-                        alert("'End Date' cannot be greater than today.");
+                        alert("'End Date' cannot be greater than today's date.");
+                        $('#endDate').val('');
                         return;
                     }
                     if (to < from) {
@@ -549,27 +568,42 @@
 
 
             function updateReportLink() {
-                const selectedOption = document.querySelector('input[name="filterOption"]:checked')?.value;
+                const selectedOption = document.querySelector('input[name="filterOption"]:checked')?.value || '';
                 let filterValue = '';
 
                 if (selectedOption === 'dispatch') {
-                    filterValue = document.getElementById('dispatchNoteFilter').value;
+                    filterValue = document.getElementById('dispatchNoteFilter').value || '';
                 } else if (selectedOption === 'date') {
-                    filterValue = document.getElementById('dateFilter').value;
+                    filterValue = document.getElementById('dateFilter').value || '';
                 } else if (selectedOption === 'type') {
-                    filterValue = document.getElementById('typeFilter').value;
-                } else if (selectedOption === 'range') {
-                    const start = document.getElementById('startDate').value;
-                    const end = document.getElementById('endDate').value;
+                    filterValue = document.getElementById('typeFilter').value || '';
+                } else if (selectedOption === 'daterange' || selectedOption === 'range') {
+                    const start = document.getElementById('startDate')?.value || '';
+                    const end = document.getElementById('endDate')?.value || '';
+
                     if (start && end) {
+                        // Full range
                         filterValue = `${start}_${end}`;
+                        //alert(filterValue);
+                    } else if (start) {
+                        // Only start date → single-date filter
+                        filterValue = start;
+                        // alert(filterValue);
+                    } else if (end) {
+                        // Only end date (edge case)
+                        filterValue = end;
+                        //alert(filterValue);
                     }
                 }
+                const params = new URLSearchParams({
+                    filter: selectedOption,
+                    value: filterValue
+                });
 
-                const url =
-                    `/shipment_arrivals_report?filter=${selectedOption || ''}&value=${encodeURIComponent(filterValue)}`;
-                document.getElementById('generateReportBtn').setAttribute('href', url);
+                document.getElementById('generateReportBtn')
+                    .setAttribute('href', `/shipment_arrivals_report?${params.toString()}`);
             }
+
 
             $('#dispatchNoteFilter, #dateFilter,  #startDate, #endDate').on('change input', function() {
                 filterTable();

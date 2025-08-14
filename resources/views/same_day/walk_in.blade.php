@@ -402,8 +402,8 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table text-primary table-bordered table-striped table-hover" id="ucsl-table" width="100%"
-                    cellspacing="0" style="font-size: 14px;">
+                <table class="table text-primary table-bordered table-striped table-hover" width="100%" cellspacing="0"
+                    id="dataTable" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
                             <th>#</th>

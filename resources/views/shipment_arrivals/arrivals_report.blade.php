@@ -55,7 +55,8 @@
             </tr>
             <tr>
                 <td style="text-align: center;">
-                    <h1><strong>Parcel Receipts Report at {{ Auth::user()->office->name }} </strong></h1>
+                    <h1><strong>Parcel Receipts Report {{ $titled }} at {{ Auth::user()->office->name }} </strong>
+                    </h1>
                 </td>
 
             </tr>

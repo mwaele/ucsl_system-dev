@@ -5,16 +5,17 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="/sameday_account_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
-                    <i class="fas fa-download fa text-white"></i> Generate Report
-                </a>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
+                    + Create Parcel
+                </button>
+
                 <h4 class="mb-0 text-warning"><strong> Same Day - On-Account Parcels</strong></h4>
 
                 <div class="d-flex gap-2 ms-auto">
-                    
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
-                        + Create Parcel
-                    </button>
+
+                    <a href="/sameday_account_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
+                        <i class="fas fa-download fa text-white"></i> Generate Report
+                    </a>
 
                     <form action="{{ route('clientRequestSameDay.store') }}" method="POST">
                         @csrf
@@ -205,7 +206,8 @@
                                         <hr>
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <label for="priority_level" class="form-label text-primary">Priority Level</label>
+                                                <label for="priority_level" class="form-label text-primary">Priority
+                                                    Level</label>
                                                 <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
                                                     <option value="high">High</option>
@@ -215,12 +217,14 @@
                                                 <label for="deadline_date" class="form-label text-primary">
                                                     Deadline (If High Priority)
                                                 </label>
-                                                <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
+                                                <input type="datetime-local" class="form-control" name="deadline_date"
+                                                    id="deadline_date">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer d-sm-flex align-items-center">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
@@ -235,7 +239,7 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table text-primary table-bordered table-striped table-hover" id="ucsl-table" width="100%"
+                <table class="table text-primary table-bordered table-striped table-hover" id="dataTable" width="100%"
                     cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
@@ -276,7 +280,8 @@
                                     </span>
                                     @if ($request->priority_level == 'high' && $request->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger fs-5 text-white">
-                                            Deliver by {{ \Carbon\Carbon::parse($request->deadline_date)->format('g:i A') }}
+                                            Deliver by
+                                            {{ \Carbon\Carbon::parse($request->deadline_date)->format('g:i A') }}
                                         </span>
                                     @endif
                                 </td>
@@ -459,51 +464,60 @@
                                         </div>
                                     </div>
 
-                                    @if (
-                                        isset($request->shipmentCollection) &&
-                                        !$request->shipmentCollection->agent_approved &&
-                                        $request->shipmentCollection->agent_requested
-                                    )
-                                        <a 
-                                            href="#" 
-                                            class="btn btn-sm btn-primary mr-1" 
-                                            title="Review Agent Pickup Request"
-                                            data-toggle="modal"
-                                            data-target="#agentRequestModal-{{ $request->requestId }}"
-                                        >
+                                    @if (isset($request->shipmentCollection) &&
+                                            !$request->shipmentCollection->agent_approved &&
+                                            $request->shipmentCollection->agent_requested)
+                                        <a href="#" class="btn btn-sm btn-primary mr-1"
+                                            title="Review Agent Pickup Request" data-toggle="modal"
+                                            data-target="#agentRequestModal-{{ $request->requestId }}">
                                             <i class="fas fa-user-check"></i> Review Agent Request
                                         </a>
                                     @endif
 
                                     <!-- Agent Request Modal -->
-                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}"
+                                        tabindex="-1" role="dialog"
+                                        aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}"
+                                        aria-hidden="true">
                                         <div class="modal-dialog" role="document">
-                                            <form method="POST" action="{{ route('client-request.agent-approval') }}" onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
+                                            <form method="POST" action="{{ route('client-request.agent-approval') }}"
+                                                onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
                                                 @csrf
-                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
-                                                <input type="hidden" id="action-{{ $request->requestId }}" name="action" value="approve">
+                                                <input type="hidden" name="request_id"
+                                                    value="{{ $request->requestId }}">
+                                                <input type="hidden" id="action-{{ $request->requestId }}"
+                                                    name="action" value="approve">
 
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Review Agent Request</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                        <button type="button" class="close"
+                                                            data-dismiss="modal"><span>&times;</span></button>
                                                     </div>
 
                                                     <div class="modal-body">
-                                                        <p>Are you sure you want to approve or decline the agent pickup request for this client?</p>
+                                                        <p>Are you sure you want to approve or decline the agent pickup
+                                                            request for this client?</p>
 
-                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks <span class="text-muted">(required only if declining)</span>:</label>
-                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Add remarks if necessary..."></textarea>
+                                                        <label for="remarks-{{ $request->requestId }}"
+                                                            class="form-label">Remarks <span class="text-muted">(required
+                                                                only if declining)</span>:</label>
+                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3"
+                                                            placeholder="Add remarks if necessary..."></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger" onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
+                                                        <button type="button" class="btn btn-danger"
+                                                            onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
 
-                                                        <button type="submit" class="btn btn-success d-inline" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
+                                                        <button type="submit" class="btn btn-success d-inline"
+                                                            id="approve-btn-{{ $request->requestId }}"
+                                                            onclick="setAgentAction({{ $request->requestId }}, 'approve')">
                                                             Approve
                                                         </button>
 
-                                                        <button type="submit" class="btn btn-warning d-none" id="confirm-decline-btn-{{ $request->requestId }}">
+                                                        <button type="submit" class="btn btn-warning d-none"
+                                                            id="confirm-decline-btn-{{ $request->requestId }}">
                                                             Confirm Decline
                                                         </button>
                                                     </div>
@@ -521,7 +535,7 @@
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
-                                            Waybill <i class="fas fa-file-invoice"></i> 
+                                            Waybill <i class="fas fa-file-invoice"></i>
                                         </button>
 
                                         <div class="modal fade" id="waybillModal{{ $request->requestId }}"
@@ -601,12 +615,12 @@
                         return true;
                     }
 
-                    document.addEventListener('DOMContentLoaded', function () {
+                    document.addEventListener('DOMContentLoaded', function() {
                         // Bind all modal trigger buttons
                         const allModals = document.querySelectorAll('[id^="agentRequestModal-"]');
 
                         allModals.forEach(modal => {
-                            modal.addEventListener('shown.bs.modal', function () {
+                            modal.addEventListener('shown.bs.modal', function() {
                                 // Reset modal state every time it opens
                                 const id = modal.id.replace('agentRequestModal-', '');
                                 setAgentAction(id, 'approve'); // Reset to default state
