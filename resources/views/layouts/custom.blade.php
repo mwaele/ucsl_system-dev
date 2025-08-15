@@ -1438,7 +1438,7 @@
                     const originId = modal.find('.origin-dropdownx').val();
 
                     if (originId && destinationId) {
-                        $.get(`/get-cost/${originId}/${destinationId}`)
+                        $.get(`/get-cost-same-day/${originId}/${destinationId}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);

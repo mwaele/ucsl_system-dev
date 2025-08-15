@@ -52,14 +52,15 @@
                                                     <label for="collectionLocation" class="form-label text-primary">Pickup
                                                         Location</label>
                                                     <select name="collectionLocation" id="collectionLocation"
-                                                        class="form-control selectpicker" data-live-search="true">
+                                                            class="form-control selectpicker" data-live-search="true">
                                                         <option value="">-- Select Location --</option>
-                                                        @foreach ($locations as $location)
-                                                            <option value="{{ $location->destination }}"
-                                                                data-id="{{ $location->id }}">
-                                                                {{ $location->destination }}</option>
+                                                        @foreach ($locations->sortBy('destination') as $location)
+                                                            <option value="{{ $location->destination }}" data-id="{{ $location->id }}">
+                                                                {{ $location->destination }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
+
                                                     <input type="hidden" name='rate_id' id="rate_id" value="">
 
 

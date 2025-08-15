@@ -53,7 +53,7 @@
 
             <div class="modal fade" id="allocateClerk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-success">
                             <h5 class="modal-title text-white" id="exampleModalLabel"><strong>Allocate Clerk to physically
@@ -67,25 +67,20 @@
                             @csrf
                             <div class="modal-body">
                                 <input type="hidden" name="loading_sheet_id" id="loading_sheet_id">
-
-
                                 <div class="form-row">
-                                    <label for="dispatcher">Dispatchers</label>
+                                    <label for="dispatcher">Clerks</label>
                                     <select name="dispatchers" id="dispatchers" class="form-control">
-
-                                        <option value="">Select Dispatcher</option>
+                                        <option value="">Select Clerk</option>
                                         @foreach ($dispatchers as $dispatcher)
                                             <option value="{{ $dispatcher->id }}">{{ $dispatcher->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-
-
                             </div>
 
-                            <div class="modal-footer d-flex justify-content-between">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                     </div>

@@ -66,7 +66,9 @@ class SameDayController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
-        $locations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
+        $locations = Rate::where('office_id', 2)
+            ->whereIn('type', ['Same Day', 'same_day'])
+            ->get();
 
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
@@ -91,7 +93,11 @@ class SameDayController extends Controller
         $vehicles = Vehicle::all();
         $loggedInUserId = Auth::user()->id;
         
-        $destinations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
+        $destinations = Rate::where('office_id', 2)
+            ->whereIn('type', ['Same Day', 'same_day'])
+            ->orderBy('destination', 'asc')
+            ->get();
+
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
@@ -139,7 +145,9 @@ class SameDayController extends Controller
         }
 
         $consignment_no = 'CN-' . $newNumber;
-        $locations = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
+        $locations = Rate::where('office_id', 2)
+            ->whereIn('type', ['Same Day', 'same_day'])
+            ->get();
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
@@ -388,42 +396,43 @@ class SameDayController extends Controller
 
         // Insert tracking info
         DB::table('tracking_infos')->insert([
-            'trackId' => $trackId,
-            'date' => $now,
-            'details' => "Delivery Rider Allocated",
-            'remarks' => "We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
-    });
-    try {
-        $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
-        $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
+                'trackId' => $trackId,
+                'date' => $now,
+                'details' => "Delivery Rider Allocated",
+                'remarks' => "We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
+        });
 
-        DB::table('sent_messages')->insert([
-            'request_id' => $requestId,
-            'client_id' => $shipment->client_id,
-            'rider_id' => $authId,
-            'recipient_type' => 'receiver',
-            'recipient_name' => $shipment->receiver_name,
-            'phone_number' => $shipment->receiver_phone,
-            'subject' => 'dispatched for delivery',
-            'message' => $receiverMsg,
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
+        try {
+            $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
+            $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
 
-        $terms = env('TERMS_AND_CONDITIONS', '#');
-        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                   <p>Thank you for using Ufanisi Courier Services.</p>";
+            DB::table('sent_messages')->insert([
+                'request_id' => $requestId,
+                'client_id' => $shipment->client_id,
+                'rider_id' => $authId,
+                'recipient_type' => 'receiver',
+                'recipient_name' => $shipment->receiver_name,
+                'phone_number' => $shipment->receiver_phone,
+                'subject' => 'dispatched for delivery',
+                'message' => $receiverMsg,
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
 
-        EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
-    } catch (\Exception $e) {
-        \Log::error('Notification Error: ' . $e->getMessage());
-    }
+            $terms = env('TERMS_AND_CONDITIONS', '#');
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+
+            EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
+        } catch (\Exception $e) {
+            \Log::error('Notification Error: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Rider allocated successfully.');
-}
+    }
 
 
 

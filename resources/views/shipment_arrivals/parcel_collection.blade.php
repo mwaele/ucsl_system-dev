@@ -322,7 +322,7 @@
                                     <div class="modal fade" id="allocateRider-{{ $arrival->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="allocateRiderLabel-{{ $arrival->id }}"
                                         aria-hidden="true">
-                                        <div class="modal-dialog modal-xl" role="document">
+                                        <div class="modal-dialog modal-md" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header bg-warning text-white">
                                                     <h5 class="modal-title">
@@ -400,7 +400,7 @@
                                     </div>
 
                                     <!-- Goods Received Note Button -->
-                                    @if ($arrival->status === 'issued' && $arrival->shipmentCollection)
+                                    @if ($arrival->status === 'delivered' && $arrival->shipmentCollection)
                                         <button class="btn btn-sm btn-info mr-1" title="Print Goods Received Note"
                                             data-toggle="modal" data-target="#printGDNModal-{{ $arrival->id }}">
                                             GRN <i class="fas fa-print"></i>

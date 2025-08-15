@@ -251,8 +251,8 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">Update User</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update User</button>
                             </div>
 
                         </div>

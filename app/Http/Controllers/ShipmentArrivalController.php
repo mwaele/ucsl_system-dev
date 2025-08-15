@@ -47,9 +47,9 @@ class ShipmentArrivalController extends Controller
         $dispatchers = Dispatcher::where('office_id', Auth::user()->station)->get();
 
         $sheets = LoadingSheet::with('rate')
-        ->withCount('waybills') // adds waybills_count
-        ->orderBy('id', 'asc')
-        ->get();
+            ->withCount('waybills') // adds waybills_count
+            ->orderBy('created_at', 'desc')
+            ->get();
         //dd($sheets);
 
         $count = LoadingSheet::count()+1; // Example: 1
@@ -345,7 +345,9 @@ class ShipmentArrivalController extends Controller
     public function parcel_collection()
     {
         // Fetch all shipment arrivals
-        $shipmentArrivals = ShipmentArrival::with(['payment','transporter_truck','transporter'])->get();
+        $shipmentArrivals = ShipmentArrival::with(['payment', 'transporter_truck', 'transporter'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $riders = User::where(['role'=>'driver','station'=>Auth::user()->office_id])->get();
 
@@ -421,40 +423,40 @@ class ShipmentArrivalController extends Controller
 
         // Insert tracking info
         DB::table('tracking_infos')->insert([
-            'trackId' => $trackId,
-            'date' => $now,
-            'details' => "Delivery Rider Allocated",
-            'remarks' => "We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
-    });
-    // Send notifications after commit
-    try {
-        $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
-        $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
+                'trackId' => $trackId,
+                'date' => $now,
+                'details' => "Delivery Rider Allocated",
+                'remarks' => "We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
+        });
+        // Send notifications after commit
+        try {
+            $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
+            $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
 
-        DB::table('sent_messages')->insert([
-            'request_id' => $requestId,
-            'client_id' => $shipment->client_id,
-            'rider_id' => $authId,
-            'recipient_type' => 'receiver',
-            'recipient_name' => $shipment->receiver_name,
-            'phone_number' => $shipment->receiver_phone,
-            'subject' => 'dispatched for delivery',
-            'message' => $receiverMsg,
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
+            DB::table('sent_messages')->insert([
+                'request_id' => $requestId,
+                'client_id' => $shipment->client_id,
+                'rider_id' => $authId,
+                'recipient_type' => 'receiver',
+                'recipient_name' => $shipment->receiver_name,
+                'phone_number' => $shipment->receiver_phone,
+                'subject' => 'dispatched for delivery',
+                'message' => $receiverMsg,
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
 
-        $terms = env('TERMS_AND_CONDITIONS', '#');
-        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                   <p>Thank you for using Ufanisi Courier Services.</p>";
+            $terms = env('TERMS_AND_CONDITIONS', '#');
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
 
-        EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
-    } catch (\Exception $e) {
-        \Log::error('Notification Error: ' . $e->getMessage());
-    }
+            EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
+        } catch (\Exception $e) {
+            \Log::error('Notification Error: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
@@ -493,7 +495,7 @@ class ShipmentArrivalController extends Controller
         // 🚫 If balance still exists, do not issue
         if ($balance > 0) {
             return back()->withErrors([
-                'error' => "Cannot issue parcel. Balance of Ksh. " . number_format($balance, 0) . " is still pending."
+                'error' => "Cannot release parcel. Balance of Ksh. " . number_format($balance, 0) . " is still pending."
             ]);
         }
 
@@ -501,7 +503,7 @@ class ShipmentArrivalController extends Controller
         try {
             // ✅ No balance, update to issued
             $arrival->update([
-                'status' => 'issued',
+                'status' => 'delivered',
                 'remarks' => $request->remarks ?? null,
             ]);
 
@@ -525,10 +527,10 @@ class ShipmentArrivalController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId'   => $trackId,
                 'date'      => now(),
-                'details'   => 'Parcel issued to receiver/agent',
+                'details'   => 'Parcel delivered to receiver/agent',
                 'user_id'   => auth()->id(),
                 'vehicle_id'=> null,
-                'remarks'   => "Issued parcel for request ID {$arrival->shipmentCollection->requestId} to designated receiver/agent.",
+                'remarks'   => "Delivered parcel for request ID {$arrival->shipmentCollection->requestId} to designated receiver/agent.",
                 'created_at'=> now(),
                 'updated_at'=> now(),
             ]);
@@ -536,7 +538,7 @@ class ShipmentArrivalController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Failed to issue parcel: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Failed to deliver parcel: ' . $e->getMessage()]);
         }
 
         // Send notification
@@ -550,7 +552,7 @@ class ShipmentArrivalController extends Controller
             Log::warning('Failed to dispatch SendIssueNotificationsJob', ['message' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Parcel issued successfully.');
+        return back()->with('success', 'Parcel delivered successfully.');
     }
 
 

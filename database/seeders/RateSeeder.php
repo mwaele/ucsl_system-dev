@@ -180,7 +180,7 @@ class RateSeeder extends Seeder
                     'origin' => 'Nairobi',
                     'destination' => $band['destination'],
                     'rate' => $band['rate'],
-                    'type' => 'same_day',
+                    'type' => 'Same Day',
                     'bands' => $band['bands'],
                     'additional_cost_per_kg' => 50,
                     'intercity_additional_cost_per_kg' => 100,

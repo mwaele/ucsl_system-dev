@@ -15,7 +15,7 @@
             <!-- Modal -->
             <div class="modal fade" id="createLoadingSheet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog modal-xl" role="document"> <!-- Added modal-lg for wider layout -->
+                <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                     <div class="modal-content">
                         <div class="modal-header bg-success">
 
@@ -125,6 +125,7 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
                             <th>Destination</th>
@@ -135,6 +136,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
                             <th>Destination</th>
@@ -146,6 +148,7 @@
                     <tbody>
                         @foreach ($sheets as $sheet)
                             <tr>
+                                <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
                                 <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')

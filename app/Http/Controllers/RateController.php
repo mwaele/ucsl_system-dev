@@ -58,9 +58,9 @@ class RateController extends Controller
     public function getDestinationSameDay($office_id)
     {
         $destinations = Rate::where('office_id', $office_id)
-                    ->where('type', 'Same Day')
-                    ->orderBy('destination', 'asc')
-                    ->get(['destination', 'id']);
+            ->whereIn('type', ['Same Day', 'same_day'])
+            ->orderBy('destination', 'asc')
+            ->get(['destination', 'id']);
 
         return response()->json($destinations);
     }
@@ -77,6 +77,21 @@ class RateController extends Controller
 
         return response()->json(['cost' => 'N/A'], 404);
     }
+
+    public function getCostSameDay($originId, $destinationId)
+    {
+        $rate = Rate::where('office_id', $originId)
+                    ->where('destination', $destinationId)
+                    ->whereIn('type', ['Same Day', 'same_day'])
+                    ->first();
+
+        if ($rate) {
+            return response()->json(['cost' => $rate->rate]);
+        }
+
+        return response()->json(['cost' => 'N/A'], 404);
+    }
+
 
 
     /**

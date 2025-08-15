@@ -86,14 +86,7 @@
                         </h4>
                     </div>
                 </div>
-
-
-
-
-
-
             </div>
-
 
             <div class="table-responsive">
                 <table class="table table-bordered text-primary" id="myTable" width="100%" cellspacing="0">
@@ -156,18 +149,6 @@
                                     @if ($item->status == 'arrived')
                                         <span class="text-success">Verified</span>
                                     @endif
-                                    {{-- <button class="btn btn-info btn-sm verify-btn mr-1"
-                                        data-id="{{ $request->shipmentCollection->id }}"
-                                        data-request-id="{{ $request->requestId }}"
-                                        data-rider="{{ $request->user->name }}"
-                                        data-vehicle="{{ $request->vehicle ?? '—' }}"
-                                        data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
-                                        data-cost="{{ $request->shipmentCollection->cost }}"
-                                        data-total-cost="{{ $request->shipmentCollection->total_cost }}"
-                                        data-vat="{{ $request->shipmentCollection->vat }}"
-                                        data-base-cost="{{ $request->shipmentCollection->base_cost }}">
-                                        Verify
-                                    </button> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -280,145 +261,143 @@
 
                                         // ✅ Start form
                                         let formHtml = `
-                <form id="shipmentReceiptForm">
-                    @csrf
-                    @method('POST')
-                    <div class="row">
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Request ID</label>
-                            <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Transporter</label>
-                            <input type="text" name="userId" class="form-control" value="${rider}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Vehicle Reg No.</label>
-                            <input type="text" class="form-control" name="vehicleDisplay" value="${vehicle_reg_no}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Date Dispatched</label>
-                            <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
-                        </div>
-                    </div>
-            `;
+                                            <form id="shipmentReceiptForm">
+                                                @csrf
+                                                @method('POST')
+                                                <div class="row">
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Request ID</label>
+                                                        <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Transporter</label>
+                                                        <input type="text" name="userId" class="form-control" value="${rider}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Vehicle Reg No.</label>
+                                                        <input type="text" class="form-control" name="vehicleDisplay" value="${vehicle_reg_no}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Date Dispatched</label>
+                                                        <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
+                                                    </div>
+                                                </div>
+                                        `;
 
                                         // ✅ Items table
                                         formHtml += `
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="shipmentTable">
-                        <thead>
-                            <tr>
-    <th class="text-primary">Item No.</th>
-    <th class="text-primary">Item Name</th>
-    <th class="text-primary">Package No</th>
-    <th class="text-primary">Weight (Kg)</th>
-    <th class="text-primary">Length (cm)</th>
-    <th class="text-primary">Width (cm)</th>
-    <th class="text-primary">Height (cm)</th>
-    <th class="text-primary text-center">Vol. Wt. (Kgs)</th>
-    <th class="text-primary">Tally Status</th> <!-- ✅ New column -->
-    <th class="text-primary">Remarks</th>
-</tr>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="shipmentTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-primary">Item No.</th>
+                                                            <th class="text-primary">Item Name</th>
+                                                            <th class="text-primary">Package No</th>
+                                                            <th class="text-primary">Weight (Kg)</th>
+                                                            <th class="text-primary">Length (cm)</th>
+                                                            <th class="text-primary">Width (cm)</th>
+                                                            <th class="text-primary">Height (cm)</th>
+                                                            <th class="text-primary text-center">Vol. Wt. (Kgs)</th>
+                                                            <th class="text-primary">Tally Status</th> <!-- ✅ New column -->
+                                                            <th class="text-primary">Remarks</th>
+                                                        </tr>
+                                                    </thead>
+                                                <tbody>
+                                            `;
 
-                        </thead>
-                        <tbody>
-            `;
+                                                response.items.forEach((item, index) => {
+                                                    const volume = (item.length || 0) * (item.width || 0) * (item.height ||
+                                                        0);
+                                                    formHtml += `
+                                                    <tr>
+                                                        <td>${index + 1}
+                                                            <input type="hidden" name="items[${index}][id]" value="${item.id}">
+                                                        </td>
+                                                        <td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td>
 
-                                        response.items.forEach((item, index) => {
-                                            const volume = (item.length || 0) * (item.width || 0) * (item.height ||
-                                                0);
-                                            formHtml += `
-                    <tr>
-    <td>${index + 1}
-        <input type="hidden" name="items[${index}][id]" value="${item.id}">
-    </td>
-    <td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td>
+                                                        <!-- Store original quantity for comparison -->
+                                                        <td>
+                                                            <input type="number" name="items[${index}][packages]" 
+                                                                class="form-control packages-input" 
+                                                                value="${item.packages_no}" 
+                                                                data-original="${item.packages_no}" required>
+                                                        </td>
 
-    <!-- Store original quantity for comparison -->
-    <td>
-        <input type="number" name="items[${index}][packages]" 
-               class="form-control packages-input" 
-               value="${item.packages_no}" 
-               data-original="${item.packages_no}" required>
-    </td>
+                                                        <!-- Store original weight for comparison -->
+                                                        <td>
+                                                            <input type="number" step="0.01" name="items[${index}][weight]" 
+                                                                class="form-control weight-input" 
+                                                                value="${item.weight}" 
+                                                                data-original="${item.weight}" required>
+                                                        </td>
 
-    <!-- Store original weight for comparison -->
-    <td>
-        <input type="number" step="0.01" name="items[${index}][weight]" 
-               class="form-control weight-input" 
-               value="${item.weight}" 
-               data-original="${item.weight}" required>
-    </td>
+                                                        <td><input type="number" name="items[${index}][length]" class="form-control" value="${item.length}"></td>
+                                                        <td><input type="number" name="items[${index}][width]" class="form-control" value="${item.width}"></td>
+                                                        <td><input type="number" name="items[${index}][height]" class="form-control" value="${item.height}"></td>
+                                                        <td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td>
 
-    <td><input type="number" name="items[${index}][length]" class="form-control" value="${item.length}"></td>
-    <td><input type="number" name="items[${index}][width]" class="form-control" value="${item.width}"></td>
-    <td><input type="number" name="items[${index}][height]" class="form-control" value="${item.height}"></td>
-    <td>${volume}<input type="hidden" name="items[${index}][volume]" value="${volume}"></td>
+                                                        <!-- Tally Status radios -->
+                                                        <td>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input tally-radio" type="radio" 
+                                                                    name="items[${index}][tally_status]" value="tallied" 
+                                                                    ${item.tally_status === 'tallied' ? 'checked' : ''} required>
+                                                                <label class="form-check-label">Tallied</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input tally-radio" type="radio" 
+                                                                    name="items[${index}][tally_status]" value="not_tallied" 
+                                                                    ${item.tally_status === 'not_tallied' ? 'checked' : ''}>
+                                                                <label class="form-check-label">Not Tallied</label>
+                                                            </div>
+                                                        </td>
 
-    <!-- Tally Status radios -->
-    <td>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input tally-radio" type="radio" 
-                   name="items[${index}][tally_status]" value="tallied" 
-                   ${item.tally_status === 'tallied' ? 'checked' : ''} required>
-            <label class="form-check-label">Tallied</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input tally-radio" type="radio" 
-                   name="items[${index}][tally_status]" value="not_tallied" 
-                   ${item.tally_status === 'not_tallied' ? 'checked' : ''}>
-            <label class="form-check-label">Not Tallied</label>
-        </div>
-    </td>
-
-    <td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td>
-</tr>
-
-                `;
-                                        });
-
+                                                        <td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td>
+                                                    </tr>
+                                                    `;
+                                                });
+                                         
                                         formHtml += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
+                                                 </tbody>
+                                            </table>
+                                        </div>
+                                        `;
 
                                         // ✅ Cost & Payment details
                                         formHtml += `
-                <div class="form-row">
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Cost *</small></label>
-                        <input type="number" class="form-control" name="cost" value="${cost}" readonly>
-                    </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-2">
+                                                    <label class="text-primary"><small>Cost *</small></label>
+                                                    <input type="number" class="form-control" name="cost" value="${cost}" readonly>
+                                                </div>
 
-                    <input type="hidden" name="base_cost" value="${base_cost}">
+                                                <input type="hidden" name="base_cost" value="${base_cost}">
 
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Tax (16%)*</small></label>
-                        <input type="number" class="form-control" name="vat" value="${vat}" readonly>
-                    </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="text-primary"><small>Tax (16%)*</small></label>
+                                                    <input type="number" class="form-control" name="vat" value="${vat}" readonly>
+                                                </div>
 
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Total Cost*</small></label>
-                        <input type="number" class="form-control" name="total_cost" value="${total_cost}" readonly>
-                    </div>
+                                                <div class="form-group col-md-2">
+                                                    <label class="text-primary"><small>Total Cost*</small></label>
+                                                    <input type="number" class="form-control" name="total_cost" value="${total_cost}" readonly>
+                                                </div>
 
-                    <div class="form-group col-md-2">
-                        <label class="text-primary"><small>Cost Difference</small></label>
-                        <input type="text" name="cost_diff" class="form-control" >
-                    </div>
-                </div>
-            `;
+                                                <div class="form-group col-md-2">
+                                                    <label class="text-primary"><small>Cost Difference</small></label>
+                                                    <input type="text" name="cost_diff" class="form-control" >
+                                                </div>
+                                            </div>
+                                        `;
 
                                         // ✅ Footer & close form
                                         formHtml += `
-                <div class="modal-footer d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
-                    <button type="submit" id="submitBtn" class="btn btn-primary">Submit Verification</button>
-                </div>
-                </form> <!-- ✅ Closing the form -->
-            `;
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Verification</button>
+                                            </div>
+                                            </form> <!-- ✅ Closing the form -->
+                                        `;
 
                                         // Inject full form into modal body
                                         $('#modalItemsBody').html(formHtml);

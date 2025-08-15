@@ -14,7 +14,7 @@ use App\Models\TransporterTrucks;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use App\Traits\PdfReportTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -25,6 +25,7 @@ use App\Helpers\EmailHelper;
 
 class LoadingSheetController extends Controller
 {
+    use PdfReportTrait;
     /**
      * Display a listing of the resource.
      */
@@ -47,7 +48,7 @@ class LoadingSheetController extends Controller
 
         $sheets = LoadingSheet::with(['rate'])
         ->withCount('waybills') // This adds a `waybills_count` column
-        ->orderBy('id', 'asc')
+        ->orderBy('created_at', 'desc')
         ->get();
         //dd($sheets);
 
@@ -67,18 +68,18 @@ class LoadingSheetController extends Controller
     }
 
     public function updateArrivalDetails(Request $request)
-{
-    $request->validate([
-        'loading_sheet_id' => 'required|exists:loading_sheets,id',
-        'dispatchers' => 'required|exists:users,id',
-    ]);
+    {
+        $request->validate([
+            'loading_sheet_id' => 'required|exists:loading_sheets,id',
+            'dispatchers' => 'required|exists:users,id',
+        ]);
 
-    $sheet = LoadingSheet::find($request->loading_sheet_id);
-    $sheet->dispatcher_id = $request->dispatchers;
-    $sheet->save();
+        $sheet = LoadingSheet::find($request->loading_sheet_id);
+        $sheet->dispatcher_id = $request->dispatchers;
+        $sheet->save();
 
-    return response()->json(['success' => true, 'message' => 'Updated successfully']);
-}
+        return response()->json(['success' => true, 'message' => 'Updated successfully']);
+    }
 
 
     /**
@@ -148,55 +149,58 @@ class LoadingSheetController extends Controller
 
     public function generate_loading_sheet($id)
     {
-
+        // Fetch loading sheet details
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
-        $destination = Rate::where('id',$loadingSheet->destination)->first();
+        $destination = Rate::find($loadingSheet->destination);
 
-        $loading_sheet_waybills = LoadingSheetWaybill::with(['shipment_item', 'loading_sheet'])
-        ->where('loading_sheet_id', $id)
-        ->get();
+        // Main table data
+        $data = DB::table('loading_sheet_waybills as lsw')
+            ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+            ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+            ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+            ->join('clients as c', 'sc.client_id', '=', 'c.id')
+            ->select(
+                'lsw.waybill_no',
+                'r.destination',
+                'sc.total_cost',
+                'sc.payment_mode',
+                'c.name as client_name',
+                DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
+                DB::raw('SUM(si.actual_quantity) as total_quantity'),
+                DB::raw('SUM(si.actual_weight) as total_weight')
+            )
+            ->where('lsw.loading_sheet_id', $id)
+            ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost', 'sc.payment_mode', 'r.destination')
+            ->orderBy('lsw.id', 'desc')
+            ->get();
 
-
-       $data = DB::table('loading_sheet_waybills as lsw')
-        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
-        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
-        ->join('rates as r', 'sc.destination_id', '=', 'r.id')
-        ->join('clients as c', 'sc.client_id', '=', 'c.id')
-
-        ->select(
-            'lsw.waybill_no',
-            'r.destination', // Destination from rates
-            'sc.total_cost',
-            'sc.payment_mode',
-            'c.name as client_name',
-            DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
-            DB::raw('SUM(si.actual_quantity) as total_quantity'),
-            DB::raw('SUM(si.actual_weight) as total_weight')
-        )->where('lsw.loading_sheet_id',$id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
-        
-        ->get();
-
-        
-
+        // Totals for footer
         $totals = DB::table('loading_sheet_waybills as lsw')
-        ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
-        ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
-        ->select(
-            DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
-            DB::raw('SUM(si.actual_weight) as total_weight_sum'),
-            DB::raw('SUM(sc.total_cost) as total_cost_sum')
-        )->where('lsw.loading_sheet_id',$id)
-        ->first();
-        //dd($data);
-    
+            ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
+            ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
+            ->select(
+                DB::raw('SUM(si.actual_quantity) as total_quantity_sum'),
+                DB::raw('SUM(si.actual_weight) as total_weight_sum'),
+                DB::raw('SUM(sc.total_cost) as total_cost_sum')
+            )
+            ->where('lsw.loading_sheet_id', $id)
+            ->first();
 
-        $pdf = Pdf::loadView('loading-sheet.loading-sheet-pdf' , [
-            'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals
-        ]);
-        return $pdf->download("loading_sheet.pdf");
-       
+        // Use your unified PDF generation method
+        return $this->renderPdfWithPageNumbers(
+            'loading-sheet.loading-sheet-pdf',
+            [
+                'loading_sheet' => $loadingSheet,
+                'destination'   => $destination,
+                'data'          => $data,
+                'totals'        => $totals
+            ],
+            'loading_sheet.pdf',
+            'a4',
+            'portrait'
+        );
     }
+
 
     /**
      * Display the specified resource.

@@ -148,6 +148,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/shipment_collections/store', [ShipmentCollectionController::class, 'store'])->name('shipment_collections.store');
     Route::resource('frontOffice','App\Http\Controllers\FrontOfficeController');
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
+    Route::get('/get-cost-same-day/{originId}/{destinationId}', [RateController::class, 'getCostSameDay']);
     Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
     Route::get('/waybill/generate/{requestId}', [ClientRequestController::class, 'generateWaybill'])->name('waybill.generate');
     Route::get('/waybill/preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill.preview');
