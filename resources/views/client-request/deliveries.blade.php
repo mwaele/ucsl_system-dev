@@ -51,15 +51,17 @@
                                 <td> {{ $collection->parcelDetails }} </td>
                                 <td>
                                     <span
-                                        class="badge p-2
-                                    @if ($collection->status == 'pending collection') bg-secondary
-                                    @elseif ($collection->status == 'collected')
-                                        bg-warning
-                                    @elseif ($collection->status == 'delivered')
-                                        bg-primary @endif
-                                    fs-5 text-white">
+                                        class="badge p-2 fs-5 text-white
+                                    {{ $collection->status == 'pending collection'
+                                        ? 'bg-secondary'
+                                        : ($collection->status == 'collected'
+                                            ? 'bg-warning'
+                                            : ($collection->status == 'delivered'
+                                                ? 'bg-primary'
+                                                : '')) }}">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </span>
+
                                     @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger fs-5 text-white">
                                             Deliver by
@@ -71,8 +73,8 @@
                                     <!-- Collect Parcel Button -->
                                     @if ($collection->status === 'pending collection')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
-                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"> Collect <i
-                                                class="fas fa-box"></i>
+                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"> Collect
+                                            <i class="fas fa-box"></i>
                                         </button>
                                     @endif
                                     <div class="modal fade" id="collect-{{ $collection->id }}" tabindex="-1"

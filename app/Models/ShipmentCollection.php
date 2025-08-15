@@ -95,6 +95,10 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'shipment_collection_id');
+    }
     
     public function payments()
     {

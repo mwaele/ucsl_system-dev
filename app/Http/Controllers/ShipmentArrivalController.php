@@ -289,6 +289,8 @@ class ShipmentArrivalController extends Controller
             ->join('rates as r', 'sc.destination_id', '=', 'r.id')
             ->join('loading_sheets as ls', 'lsw.loading_sheet_id', '=', 'ls.id')
             ->join('clients as c', 'sc.client_id', '=', 'c.id')
+            ->join('transporter_trucks as v', 'ls.vehicle_reg_no', '=', 'v.id') // join for vehicle
+            ->join('transporters as t', 'ls.transported_by', '=', 't.id') //
             ->select(
                 'lsw.waybill_no',
                 DB::raw('MAX(r.destination) as destination'),
@@ -302,6 +304,8 @@ class ShipmentArrivalController extends Controller
                 'sc.status',
                 'c.name as client_name',
                 'sc.actual_vat',
+                't.name',
+                'v.reg_no',
                 'sc.payment_mode',
                 DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
                 DB::raw('SUM(si.actual_quantity) as total_quantity'),
@@ -320,8 +324,12 @@ class ShipmentArrivalController extends Controller
                 'ls.vehicle_reg_no',
                 'ls.transported_by',
                 'ls.dispatch_date',
+                't.name',
+                'v.reg_no',
             )
             ->get();
+
+        //dd($data);
 
         $totals = DB::table('loading_sheet_waybills as lsw')
             ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')

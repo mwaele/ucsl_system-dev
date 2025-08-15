@@ -44,11 +44,11 @@ class LoadingSheetController extends Controller
         //dd($destinations);
         $transporters = Transporter::orderBy('id', 'desc')->get();
         
-        $dispatchers = Dispatcher::all();
+        $dispatchers = Dispatcher::where('office_id',Auth::user()->station)->get();
 
         $sheets = LoadingSheet::with(['rate'])
         ->withCount('waybills') // This adds a `waybills_count` column
-        ->orderBy('created_at', 'desc')
+        ->orderBy('id', 'desc')
         ->get();
         //dd($sheets);
 

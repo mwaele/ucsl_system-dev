@@ -151,7 +151,13 @@
                                                     <input type="hidden" id="vehicleId" name="vehicleId">
                                                 </div>
 
-                                            
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="requestId" class="form-label text-primary">Request
+                                                        ID</label>
+                                                    <input type="text" value="{{ $request_id }}" name="requestId"
+                                                        class="form-control" id="request_id" readonly>
+                                                </div>
+
                                                 <script>
                                                     const vehicleMap = {
                                                         @foreach ($vehicles as $vehicle)

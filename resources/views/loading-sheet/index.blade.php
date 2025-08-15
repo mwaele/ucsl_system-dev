@@ -125,30 +125,34 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Batch No.</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
+                            <th>Driver Name</th>
+                            <th>Driver Phone</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>#</th>
+                            <th>Batch No.</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
                             <th>Destination</th>
                             <th>Vehicle Number</th>
                             <th>Transporter</th>
+                            <th>Driver Name</th>
+                            <th>Driver Phone</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>
                     <tbody>
                         @foreach ($sheets as $sheet)
                             <tr>
-                                <td> {{ $loop->iteration }}. </td>
+                                <td>{{ str_pad($sheet->batch_no, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
                                 <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')
@@ -157,6 +161,8 @@
                                 </td>
                                 <td> {{ $sheet->transporter_truck->reg_no }} </td>
                                 <td> {{ $sheet->transporter->name }} </td>
+                                <td> {{ $sheet->transporter_truck->driver_name }} </td>
+                                <td> {{ $sheet->transporter_truck->driver_contact }} </td>
                                 <td class="row pl-4">
                                     @if (!$sheet->dispatch_date)
                                         <a href="{{ route('loadingsheet_waybills', $sheet->id) }}"><button

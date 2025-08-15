@@ -140,6 +140,7 @@
                                             data-weight="{{ $item->total_weight }}"
                                             data-request-id="{{ $item->requestId }}
                                         "
+                                            data-v="{{ $item->reg_no }}" data-name="{{ $item->name }}"
                                             data-vehicle="{{ $item->vehicle_reg_no ?? '' }}"data-rider="{{ $item->transported_by ?? '' }}"
                                             data-date-requested="{{ $item->dispatch_date }}"
                                             data-cost="{{ $item->actual_cost }}"
@@ -253,6 +254,8 @@
                                 const total_cost = $(this).data('total-cost');
                                 const vat = $(this).data('vat');
                                 const base_cost = $(this).data('base-cost');
+                                const data_v = $(this).data('v');
+                                const data_name = $(this).data('name');
 
                                 $.ajax({
                                     url: '/shipments/' + shipment_id + '/items',
@@ -261,28 +264,28 @@
 
                                         // ✅ Start form
                                         let formHtml = `
-                                            <form id="shipmentReceiptForm">
-                                                @csrf
-                                                @method('POST')
-                                                <div class="row">
-                                                    <div class="form-group col-md-3">
-                                                        <label class="text-primary">Request ID</label>
-                                                        <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
-                                                    </div>
-                                                    <div class="form-group col-md-3">
-                                                        <label class="text-primary">Transporter</label>
-                                                        <input type="text" name="userId" class="form-control" value="${rider}" readonly>
-                                                    </div>
-                                                    <div class="form-group col-md-3">
-                                                        <label class="text-primary">Vehicle Reg No.</label>
-                                                        <input type="text" class="form-control" name="vehicleDisplay" value="${vehicle_reg_no}" readonly>
-                                                    </div>
-                                                    <div class="form-group col-md-3">
-                                                        <label class="text-primary">Date Dispatched</label>
-                                                        <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
-                                                    </div>
-                                                </div>
-                                        `;
+                <form id="shipmentReceiptForm">
+                    @csrf
+                    @method('POST')
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Request ID</label>
+                            <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Transporter</label>
+                            <input type="text" name="userId" class="form-control" value="${data_name}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Vehicle Reg No.</label>
+                            <input type="text" class="form-control" name="vehicleDisplay" value="${data_v}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="text-primary">Date Dispatched</label>
+                            <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
+                        </div>
+                    </div>
+            `;
 
                                         // ✅ Items table
                                         formHtml += `
@@ -305,10 +308,10 @@
                                                 <tbody>
                                             `;
 
-                                                response.items.forEach((item, index) => {
-                                                    const volume = (item.length || 0) * (item.width || 0) * (item.height ||
-                                                        0);
-                                                    formHtml += `
+                                        response.items.forEach((item, index) => {
+                                            const volume = (item.length || 0) * (item.width || 0) * (item.height ||
+                                                0);
+                                            formHtml += `
                                                     <tr>
                                                         <td>${index + 1}
                                                             <input type="hidden" name="items[${index}][id]" value="${item.id}">
@@ -355,8 +358,8 @@
                                                         <td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td>
                                                     </tr>
                                                     `;
-                                                });
-                                         
+                                        });
+
                                         formHtml += `
                                                  </tbody>
                                             </table>

@@ -331,6 +331,34 @@
             </tbody>
 
         </table>
+        <table width="100%" cellpadding="1" cellspacing="0"
+            style=" font-family: sans-serif; margin-top:10px; margin-bottom:10px" class="bordered-table">
+            <tr>
+                <th style="text-align: left">Waybill Number</th>
+                <th style="text-align: left">Request ID</th>
+                <th style="text-align: left">Status</th>
+                <th style="text-align: left">Remaining Days</th>
+            </tr>
+            <tr>
+                <td>{{ $invoice->waybill_no }}</td>
+                <td>{{ $invoice->requestId }}</td>
+                <td>{{ $invoice->invoice_status }}</td>
+                <td>
+                    @php
+                        $dueDate = \Carbon\Carbon::parse($invoice->due_date);
+                        $remainingDays = now()->floatDiffInDays($dueDate, false); // returns decimal days
+                        $remainingDaysRounded = round($remainingDays); // round to nearest whole day
+                    @endphp
+                    @if ($remainingDaysRounded > 0)
+                        ({{ $remainingDaysRounded }} days )
+                    @elseif ($remainingDaysRounded === 0)
+                        (Due today)
+                    @else
+                        (Overdue by {{ abs($remainingDaysRounded) }} days)
+                    @endif
+                </td>
+            </tr>
+        </table>
 
         <!-- Main Table -->
         <table width="100%" cellpadding="1" cellspacing="0"

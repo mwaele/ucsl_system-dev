@@ -41,7 +41,7 @@ class InvoiceController extends Controller
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
             ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')
             ->where('invoices.shipment_collection_id', $id)
-            ->select('invoices.*', 'shipment_collections.*', 'client_requests.*','clients.*')
+            ->select('invoices.*','invoices.status as invoice_status', 'shipment_collections.*', 'client_requests.*','clients.*')
             ->first(); // Use ->first() to get a single invoice
 
         // Step 2: Get shipment items separately
@@ -54,7 +54,7 @@ class InvoiceController extends Controller
             'shipment_items' => $shipmentItems,
             'onlyOnePage' => true,
         ];
-       // dd($data);
+        //dd($data);
         $pdf = Pdf::loadView('same_day.invoice' , [
             'invoice' => $invoice,
             'shipmentItems' => $shipmentItems,

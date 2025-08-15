@@ -1016,7 +1016,10 @@
                             previous: "Previous"
                         }
                         // Add other customizations if needed
-                    }
+                    },
+                    // order: [
+                    //     [0, 'desc']
+                    // ] // assuming "id" is in column index 0
                 });
 
                 // Listen for change
@@ -1303,7 +1306,7 @@
                         const volume = length * width * height;
                         const volume_weight = volume / 5000; // calculate volume weight
 
-                        row.find('input[name="volume[]"]').val(volume.toFixed(2));
+                        row.find('input[name="volume[]"]').val(volume_weight.toFixed(2));
 
                         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
 
