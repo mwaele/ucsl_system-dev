@@ -125,14 +125,11 @@ class ClientRequestController extends Controller
 
         $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
 
-        $client_requests = ClientRequest::whereIn('clientId', function ($query) {
-                $query->select('id')
-                    ->from('clients')
-                    ->where('type', 'on_account');
-            })
-            ->with('client') // eager load client relationship
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query->whereIn('clientId', function ($q) {
+            $q->select('id')->from('clients');
+        });
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
 
         $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();

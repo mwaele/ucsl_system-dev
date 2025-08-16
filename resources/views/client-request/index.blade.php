@@ -14,11 +14,11 @@
                         <i class="fas fa-download"></i>
                     </a>
 
-                    <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
+                    <!-- <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
                         data-target="#createClientRequest">
                         <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
                             Request</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
 
@@ -217,11 +217,12 @@
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
-                            <th>Pick-up Location</th>
+                            <th>Service Level</th>
+                            <th>Client Type</th>
+                            <th>Route</th>
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Service Level</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -231,11 +232,12 @@
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
-                            <th>Pick-up Location</th>
+                            <th>Service Level</th>
+                            <th>Client Type</th>
+                            <th>Route</th>
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>
-                            <th>Service Level</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -246,21 +248,27 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                <td> {{ $request->serviceLevel->sub_category_name }} </td>
+                                <td> {{ \Illuminate\Support\Str::title($request->client->type) }} </td>
+                                <td>
+                                    From: {{ $request->shipmentCollection->sender_address ?? '' }}, {{ $request->shipmentCollection->sender_town ?? '' }} <br>
+                                    To: {{ $request->shipmentCollection->receiver_address ?? '' }}, {{ $request->shipmentCollection->receiver_town ?? '' }}
                                 </td>
+                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y') }} </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
-                                <td> {{ $request->serviceLevel->sub_category_name }} </td>
                                 <td>
                                     <span
                                         class="badge p-2
-                                @if ($request->status == 'pending collection') bg-secondary
-                                @elseif ($request->status == 'collected')
-                                    bg-warning
-                                @elseif ($request->status == 'verified')
-                                    bg-primary @endif
-                                fs-5 text-white">
+                                            @if ($request->status == 'pending collection') bg-secondary
+                                            @elseif ($request->status == 'collected')
+                                                bg-warning
+                                            @elseif ($request->status == 'verified')
+                                                bg-primary 
+                                            @elseif ($request->status == 'delivered')
+                                                bg-info
+                                            @endif
+                                            fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>
                                 </td>
@@ -510,6 +518,13 @@
                                         <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
                                             data-toggle="modal" data-target="">
                                             <i class="fas fa-truck"></i>
+                                        </button>
+                                    @endif
+
+                                    @if ($request->status === 'delivered')
+                                        <button class="btn btn-sm btn-info mr-1" title="View parcel"
+                                            data-toggle="modal" data-target="">
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                     @endif
                                 </td>

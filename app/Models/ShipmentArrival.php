@@ -40,10 +40,12 @@ class ShipmentArrival extends Model
     {
         return $this->hasOne(Payment::class, 'shipment_collection_id', 'shipment_collection_id');
     }
+
     public function transporter()
     {
         return $this->belongsTo(Transporter::class, 'transported_by');
     }
+    
     public function transporter_truck()
     {
         return $this->belongsTo(TransporterTrucks::class, 'vehicle_reg_no');

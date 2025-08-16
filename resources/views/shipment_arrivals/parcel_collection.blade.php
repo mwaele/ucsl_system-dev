@@ -178,7 +178,7 @@
                                                                             </label>
                                                                             <input type="number" id="amount_paid"
                                                                                 name="amount_paid" class="form-control"
-                                                                                placeholder="Enter amount paid" required>
+                                                                                placeholder="Enter amount paid" value="{{ $arrival->shipmentCollection->actual_total_cost ?? '' }}" required>
                                                                         </div>
                                                                     </div>
                                                                 </div>

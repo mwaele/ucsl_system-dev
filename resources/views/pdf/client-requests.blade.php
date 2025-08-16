@@ -78,14 +78,16 @@
                 <tr>
                     <th style="width: 5%;">#</th>
                     <th style="width: 10%;">Request ID</th>
-                    <th style="width: 15%;">Client</th>
-                    <th style="width: 15%;">Status</th>
                     @if ($showOfficeColumn)
                         <th style="width: 15%;">Office</th>
                     @endif
-                    <th style="width: 15%;">Created By</th>
-                    <th style="width: 20%;">Created At</th>
-                    <th style="width: 25%;">Remarks</th>
+                    <th style="width: 15%;">Client</th>
+                    <th style="width: 15%;">Service Level</th>
+                    <th style="width: 15%;">Client Type</th>
+                    <th style="width: 30%;">Route</th>
+                    <th style="width: 15%;">Date Requested</th>
+                    <th style="width: 20%;">Status</th>
+                    <th style="width: 20%;">Remarks</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,13 +95,18 @@
                     <tr>
                         <td>{{ $loop->iteration }}.</td>
                         <td>{{ $request->requestId }}</td>
-                        <td>{{ $request->client->name ?? '-' }}</td>
-                        <td>{{ ucfirst($request->status) }}</td>
                         @if ($showOfficeColumn)
                             <td>{{ $request->office->name ?? '-' }}</td>
                         @endif
-                        <td>{{ $request->createdBy->name ?? '-' }}</td>
-                        <td>{{ $request->created_at->format('F j, Y \a\t g:i A') }}</td>
+                        <td>{{ $request->client->name ?? '-' }}</td>
+                        <td> {{ $request->serviceLevel->sub_category_name }} </td>
+                        <td> {{ \Illuminate\Support\Str::title($request->client->type) }} </td>
+                        <td>
+                            From: {{ $request->shipmentCollection->sender_address ?? '' }}, {{ $request->shipmentCollection->sender_town ?? '' }} <br>
+                            To: {{ $request->shipmentCollection->receiver_address ?? '' }}, {{ $request->shipmentCollection->receiver_town ?? '' }}
+                        </td>
+                        <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y') }} </td>
+                        <td>{{ ucfirst($request->status) }}</td>
                         <td></td>
                     </tr>
                 @empty
