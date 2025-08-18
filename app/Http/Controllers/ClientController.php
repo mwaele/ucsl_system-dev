@@ -81,7 +81,7 @@ class ClientController extends Controller
         $validated = $request->validate([
             'accountNo' => 'required|unique:clients|max:255',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients',
+            'email' => 'required|email',
             'password' => 'required|string|min:8',
             'contact' => 'required|string|max:255',
             'address' => 'required|string|max:255',

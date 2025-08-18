@@ -50,7 +50,7 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <p><strong>Report for Trucks for {{ $name }}</strong></p>
+                    <h1><strong>Report for Trucks for {{ $name }}</strong></h1>
                     <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">

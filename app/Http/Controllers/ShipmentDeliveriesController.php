@@ -278,7 +278,7 @@ class ShipmentDeliveriesController extends Controller
         }
 
         // Send approval email (you may customize the mailable to include agent details)
-        Mail::to('mwaele@ufanisi.co.ke')->send(
+        Mail::to('jeff.letting@ufanisi.co.ke')->send(
             new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone, $agentReason)
         );
 

@@ -152,7 +152,7 @@ class LoadingSheetController extends Controller
         // Fetch loading sheet details
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
         $destination = Rate::find($loadingSheet->destination);
-
+        //dd($loadingSheet);
         // Main table data
         $data = DB::table('loading_sheet_waybills as lsw')
             ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
@@ -161,6 +161,7 @@ class LoadingSheetController extends Controller
             ->join('clients as c', 'sc.client_id', '=', 'c.id')
             ->select(
                 'lsw.waybill_no',
+                'lsw.id',
                 'r.destination',
                 'sc.total_cost',
                 'sc.payment_mode',
@@ -170,7 +171,7 @@ class LoadingSheetController extends Controller
                 DB::raw('SUM(si.actual_weight) as total_weight')
             )
             ->where('lsw.loading_sheet_id', $id)
-            ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost', 'sc.payment_mode', 'r.destination')
+            ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost', 'sc.payment_mode', 'r.destination','lsw.id')
             ->orderBy('lsw.id', 'desc')
             ->get();
 

@@ -64,6 +64,7 @@
                             <div class="form-group col-md-6">
                                 <label>Role</label>
                                 <select name="role" class="form-control">
+                                    {{--  to revisit and change the code to accomodate rider<option value="rider">Rider</option> --}}
                                     <option value="user" selected>User</option>
                                     <option value="driver">Driver</option>
                                     <option value="manager">Manager</option>
@@ -247,6 +248,12 @@
                                         <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>
                                             Inactive</option>
                                     </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Password</label>
+                                    <input name="password" type="password" class="form-control"
+                                        value="{{ $user->password }}">
                                 </div>
                             </div>
 

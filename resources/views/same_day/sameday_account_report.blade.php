@@ -50,7 +50,7 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <p><strong>Report for All Same Day Account List</strong></p>
+                    <h1><strong>Report for All Same Day Account List</strong></h1>
                     <p><strong>Reporting Period:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">

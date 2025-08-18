@@ -32,6 +32,8 @@ class ShipmentArrivalController extends Controller
      */
     public function index()
     {
+
+        
         $offices = Office::where('id',Auth::user()->station)->get();
         $destinations = $shipments = DB::table('shipment_collections')
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
@@ -357,7 +359,7 @@ class ShipmentArrivalController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $riders = User::where(['role'=>'driver','station'=>Auth::user()->office_id])->get();
+        $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
 
         // Get the latest consignment number
         $latestGRN = ShipmentCollection::where('grn_no', 'LIKE', 'GRN-%')
@@ -417,6 +419,11 @@ class ShipmentArrivalController extends Controller
         DB::table('shipment_collections')
             ->where('id', $shipment->id)
             ->update(['status' => 'Delivery Rider Allocated', 'updated_at' => $now]);
+
+        // Update client requests status
+        DB::table('client_requests')
+            ->where('requestId', $requestId)
+            ->update(['delivery_rider_id' => $validatedData['delivery_rider'],'status'=>'Delivery Rider Allocated']);
 
         // Update track and get ID in one go
         $trackId = DB::table('tracks')

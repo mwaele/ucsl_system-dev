@@ -22,7 +22,9 @@ class ClientRequest extends Model
         'priority_level',
         'deadline_date',
         'rate_id',
-        'office_id'
+        'office_id',
+        'status',
+        'delivery_rider_id'
     ];
 
     public function client()

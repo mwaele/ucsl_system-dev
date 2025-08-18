@@ -471,7 +471,7 @@
                                     @if ($request->shipmentCollection->payment_mode == 'Invoice')
                                         <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
-                                                Generate Invoice
+                                                Preview Invoice
                                             </button>
                                         </a>
                                     @endif
@@ -523,43 +523,54 @@
 
                                                             <div class="col-md-4">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                                        id="currentLocation" value="currentLocation">
-                                                                    <label class="form-check-label" for="currentLocation">Pickup Location</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="riderOption" id="currentLocation"
+                                                                        value="currentLocation">
+                                                                    <label class="form-check-label"
+                                                                        for="currentLocation">Pickup Location</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                                        id="unallocatedRiders" value="unallocated">
-                                                                    <label class="form-check-label" for="unallocatedRiders">Unallocated Riders</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="riderOption" id="unallocatedRiders"
+                                                                        value="unallocated">
+                                                                    <label class="form-check-label"
+                                                                        for="unallocatedRiders">Unallocated Riders</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="riderOption"
-                                                                        id="allRiders" value="all">
-                                                                    <label class="form-check-label" for="allRiders">All Riders</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="riderOption" id="allRiders" value="all">
+                                                                    <label class="form-check-label" for="allRiders">All
+                                                                        Riders</label>
                                                                 </div>
                                                             </div>
 
                                                             <div class="col-md-12 mb-3 mt-2">
-                                                                <label for="userId" class="form-label text-primary">Rider</label>
-                                                                <select class="form-control" id="userId" name="userId" required>
+                                                                <label for="userId"
+                                                                    class="form-label text-primary">Rider</label>
+                                                                <select class="form-control" id="userId"
+                                                                    name="userId" required>
                                                                     <option value="">Select Rider</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="col-md-8 mb-3">
-                                                                <label for="vehicle" class="form-label text-primary">Vehicle</label>
+                                                                <label for="vehicle"
+                                                                    class="form-label text-primary">Vehicle</label>
                                                                 <input type="text" id="vehicle" class="form-control"
-                                                                    name="vehicle_display" placeholder="Select rider to populate" readonly>
+                                                                    name="vehicle_display"
+                                                                    placeholder="Select rider to populate" readonly>
                                                                 <input type="hidden" id="vehicleId" name="vehicleId">
                                                             </div>
                                                         </div>
 
-                                                        <div class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
-                                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel X</button>
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Cancel X</button>
                                                             <button type="submit" class="btn btn-primary">Submit</button>
                                                         </div>
                                                     </form>
@@ -628,51 +639,60 @@
                                         </div>
                                     </div>
 
-                                    @if (
-                                        isset($request->shipmentCollection) &&
-                                        !$request->shipmentCollection->agent_approved &&
-                                        $request->shipmentCollection->agent_requested
-                                    )
-                                        <a 
-                                            href="#" 
-                                            class="btn btn-sm btn-primary mr-1" 
-                                            title="Review Agent Pickup Request"
-                                            data-toggle="modal"
-                                            data-target="#agentRequestModal-{{ $request->requestId }}"
-                                        >
+                                    @if (isset($request->shipmentCollection) &&
+                                            !$request->shipmentCollection->agent_approved &&
+                                            $request->shipmentCollection->agent_requested)
+                                        <a href="#" class="btn btn-sm btn-primary mr-1"
+                                            title="Review Agent Pickup Request" data-toggle="modal"
+                                            data-target="#agentRequestModal-{{ $request->requestId }}">
                                             <i class="fas fa-user-check"></i> Review Agent Request
                                         </a>
                                     @endif
 
                                     <!-- Agent Request Modal -->
-                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}" tabindex="-1" role="dialog" aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}" aria-hidden="true">
+                                    <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}"
+                                        tabindex="-1" role="dialog"
+                                        aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}"
+                                        aria-hidden="true">
                                         <div class="modal-dialog" role="document">
-                                            <form method="POST" action="{{ route('client-request.agent-approval') }}" onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
+                                            <form method="POST" action="{{ route('client-request.agent-approval') }}"
+                                                onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
                                                 @csrf
-                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
-                                                <input type="hidden" id="action-{{ $request->requestId }}" name="action" value="approve">
+                                                <input type="hidden" name="request_id"
+                                                    value="{{ $request->requestId }}">
+                                                <input type="hidden" id="action-{{ $request->requestId }}"
+                                                    name="action" value="approve">
 
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Review Agent Request</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                        <button type="button" class="close"
+                                                            data-dismiss="modal"><span>&times;</span></button>
                                                     </div>
 
                                                     <div class="modal-body">
-                                                        <p>Are you sure you want to approve or decline the agent pickup request for this client?</p>
+                                                        <p>Are you sure you want to approve or decline the agent pickup
+                                                            request for this client?</p>
 
-                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks <span class="text-muted">(required only if declining)</span>:</label>
-                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3" placeholder="Add remarks if necessary..."></textarea>
+                                                        <label for="remarks-{{ $request->requestId }}"
+                                                            class="form-label">Remarks <span class="text-muted">(required
+                                                                only if declining)</span>:</label>
+                                                        <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3"
+                                                            placeholder="Add remarks if necessary..."></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger" onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
+                                                        <button type="button" class="btn btn-danger"
+                                                            onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
 
-                                                        <button type="submit" class="btn btn-success d-inline" id="approve-btn-{{ $request->requestId }}" onclick="setAgentAction({{ $request->requestId }}, 'approve')">
+                                                        <button type="submit" class="btn btn-success d-inline"
+                                                            id="approve-btn-{{ $request->requestId }}"
+                                                            onclick="setAgentAction({{ $request->requestId }}, 'approve')">
                                                             Approve
                                                         </button>
 
-                                                        <button type="submit" class="btn btn-warning d-none" id="confirm-decline-btn-{{ $request->requestId }}">
+                                                        <button type="submit" class="btn btn-warning d-none"
+                                                            id="confirm-decline-btn-{{ $request->requestId }}">
                                                             Confirm Decline
                                                         </button>
                                                     </div>
@@ -694,8 +714,7 @@
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $request->id }}">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title"
-                                                            id="printModalLabel-{{ $request->id }}">
+                                                        <h5 class="modal-title" id="printModalLabel-{{ $request->id }}">
                                                             Shipment Receipt</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
@@ -745,8 +764,7 @@
                                                             <div>Name: {{ $request->shipmentCollection->sender_name }}
                                                             </div>
                                                             @php
-                                                                $phone =
-                                                                    $request->shipmentCollection->sender_contact;
+                                                                $phone = $request->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -764,8 +782,7 @@
                                                             <div>Name: {{ $request->shipmentCollection->receiver_name }}
                                                             </div>
                                                             @php
-                                                                $phone =
-                                                                    $request->shipmentCollection->receiver_phone;
+                                                                $phone = $request->shipmentCollection->receiver_phone;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -850,7 +867,8 @@
                                                                     <strong>Collected By:</strong>
                                                                     <span> {{ $request->user?->name }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
                                                                         $phone = $request->user?->phone_number;
@@ -859,11 +877,20 @@
                                                                         if ($phone && strlen($phone) > 6) {
                                                                             $maskedPhone =
                                                                                 substr($phone, 0, 3) .
-                                                                                str_repeat('*', max(0, strlen($phone) - 6)) .
+                                                                                str_repeat(
+                                                                                    '*',
+                                                                                    max(0, strlen($phone) - 6),
+                                                                                ) .
                                                                                 substr($phone, -3);
                                                                         } elseif ($phone) {
                                                                             // If phone is too short, just partially mask
-                                                                            $maskedPhone = substr($phone, 0, 1) . str_repeat('*', max(0, strlen($phone) - 2)) . substr($phone, -1);
+                                                                            $maskedPhone =
+                                                                                substr($phone, 0, 1) .
+                                                                                str_repeat(
+                                                                                    '*',
+                                                                                    max(0, strlen($phone) - 2),
+                                                                                ) .
+                                                                                substr($phone, -1);
                                                                         } else {
                                                                             $maskedPhone = 'N/A';
                                                                         }

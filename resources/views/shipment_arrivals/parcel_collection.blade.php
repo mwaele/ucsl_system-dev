@@ -6,7 +6,7 @@
 
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Parcel Collection</h5>
+                <h4 class="mb-0 text-primary">Client Parcel Collection</h4>
 
                 <div class="d-flex gap-2 ms-auto">
                     <a href="{{ url('/parcel-collection-report') }}"
@@ -47,15 +47,18 @@
                                         // If we have any payment model, use its computed accessors (which aggregate all)
                                         if ($payment) {
                                             $totalPaid = $payment->total_paid;
-                                            $balance   = $payment->balance;
+                                            $balance = $payment->balance;
                                         } else {
                                             // No single payment loaded; compute directly to keep badges accurate
-                                            $totalPaid = \App\Models\Payment::where('shipment_collection_id', $arrival->shipment_collection_id)->sum('amount');
-                                            $balance   = max(0, $totalCost - $totalPaid);
+                                            $totalPaid = \App\Models\Payment::where(
+                                                'shipment_collection_id',
+                                                $arrival->shipment_collection_id,
+                                            )->sum('amount');
+                                            $balance = max(0, $totalCost - $totalPaid);
                                         }
                                     @endphp
 
-                                    @if($totalPaid > 0 && $balance > 0)
+                                    @if ($totalPaid > 0 && $balance > 0)
                                         <span class="badge bg-info text-white">
                                             Paid: Ksh. {{ number_format($totalPaid, 0) }}
                                         </span>
@@ -79,7 +82,7 @@
                                 </td>
                                 <td>
                                     <!-- Issue Button -->
-                                    @if ($arrival->status === 'Verified')
+                                    @if ($arrival->status === 'Verified' && $arrival->delivery_rider_status != 'Allocated')
                                         <button class="btn btn-sm btn-primary" title="Issue Parcel" data-toggle="modal"
                                             data-target="#issueParcel-{{ $arrival->id }}">
                                             Issue <i class="fas fa-box-open"></i> <i class="fas fa-arrow-right"></i>
@@ -178,7 +181,9 @@
                                                                             </label>
                                                                             <input type="number" id="amount_paid"
                                                                                 name="amount_paid" class="form-control"
-                                                                                placeholder="Enter amount paid" value="{{ $arrival->shipmentCollection->actual_total_cost ?? '' }}" required>
+                                                                                placeholder="Enter amount paid"
+                                                                                value="{{ $arrival->shipmentCollection->actual_total_cost ?? '' }}"
+                                                                                required>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -215,21 +220,27 @@
                                                                 <div class="card-body">
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
-                                                                            <label>Receiver Name<span class="text-danger">*</span></label>
-                                                                            <input type="text" class="form-control" name="receiver_name" value="{{ $arrival->shipmentCollection->receiver_name ?? '' }}">
-                                                                            <input type="hidden" name="grn_no" value="{{ $arrival->shipmentCollection->grn_no }}">
+                                                                            <label>Receiver Name<span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="receiver_name"
+                                                                                value="{{ $arrival->shipmentCollection->receiver_name ?? '' }}">
+                                                                            <input type="hidden" name="grn_no"
+                                                                                value="{{ $arrival->shipmentCollection->grn_no }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label>Phone Number<span
                                                                                     class="text-danger">*</span></label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiver_phone" value="{{ $arrival->shipmentCollection->receiver_phone ?? '' }}">
+                                                                                name="receiver_phone"
+                                                                                value="{{ $arrival->shipmentCollection->receiver_phone ?? '' }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label>ID Number<span
                                                                                     class="text-danger">*</span></label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiver_id_no" maxlength="8" value="{{ $arrival->shipmentCollection->receiver_id_no ?? '' }}">
+                                                                                name="receiver_id_no" maxlength="8"
+                                                                                value="{{ $arrival->shipmentCollection->receiver_id_no ?? '' }}">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -246,8 +257,10 @@
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label>Agent Name</label>
-                                                                            <input type="text" class="form-control" name="agent_name">
-                                                                            <input type="hidden" name="grn_no" value="{{ $arrival->shipmentCollection->grn_no }}">
+                                                                            <input type="text" class="form-control"
+                                                                                name="agent_name">
+                                                                            <input type="hidden" name="grn_no"
+                                                                                value="{{ $arrival->shipmentCollection->grn_no }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label>Agent Phone</label>
@@ -408,13 +421,11 @@
                                     @endif
                                     @if ($arrival->shipmentCollection)
                                         <div class="modal fade" id="printGDNModal-{{ $arrival->id }}" tabindex="-1"
-                                            aria-labelledby="printGDNModalLabel-{{ $arrival->id }}"
-                                            aria-hidden="true">
+                                            aria-labelledby="printGDNModalLabel-{{ $arrival->id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $arrival->id }}">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title"
-                                                            id="printModalLabel-{{ $arrival->id }}">
+                                                        <h5 class="modal-title" id="printModalLabel-{{ $arrival->id }}">
                                                             Goods Received Note</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
@@ -438,7 +449,8 @@
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-size: 14px;"><strong>Request ID:
-                                                                    {{ $arrival->shipmentCollection->requestId ?? 'N/A' }}</strong></div>
+                                                                    {{ $arrival->shipmentCollection->requestId ?? 'N/A' }}</strong>
+                                                            </div>
                                                             <div style="font-size: 14px;"><strong>Goods Received Note No:
                                                                     {{ $arrival->shipmentCollection->grn_no ?? 'N/A' }}</strong>
                                                             </div>
@@ -463,8 +475,7 @@
                                                             <div>Name: {{ $arrival->shipmentCollection->sender_name }}
                                                             </div>
                                                             @php
-                                                                $phone =
-                                                                    $arrival->shipmentCollection->sender_contact;
+                                                                $phone = $arrival->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .
@@ -484,8 +495,7 @@
                                                                 {{ $arrival->shipmentCollection->receiver_name }}
                                                             </div>
                                                             @php
-                                                                $phone =
-                                                                    $arrival->shipmentCollection->receiver_phone;
+                                                                $phone = $arrival->shipmentCollection->receiver_phone;
                                                                 $maskedPhone =
                                                                     substr($phone, 0, 3) .
                                                                     str_repeat('*', strlen($phone) - 6) .

@@ -300,7 +300,7 @@
                                                             <th class="text-primary">Length (cm)</th>
                                                             <th class="text-primary">Width (cm)</th>
                                                             <th class="text-primary">Height (cm)</th>
-                                                            <th class="text-primary text-center">Vol. Wt. (Kgs)</th>
+                                                            <th class="text-primary text-center">Vol. Wt.</th>
                                                             <th class="text-primary">Tally Status</th> <!-- ✅ New column -->
                                                             <th class="text-primary">Remarks</th>
                                                         </tr>
@@ -345,13 +345,13 @@
                                                                 <input class="form-check-input tally-radio" type="radio" 
                                                                     name="items[${index}][tally_status]" value="tallied" 
                                                                     ${item.tally_status === 'tallied' ? 'checked' : ''} required>
-                                                                <label class="form-check-label">Tallied</label>
+                                                                <label class="form-check-label" style="font-size:14px; font-weight:bold">Tallied</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
                                                                 <input class="form-check-input tally-radio" type="radio" 
                                                                     name="items[${index}][tally_status]" value="not_tallied" 
                                                                     ${item.tally_status === 'not_tallied' ? 'checked' : ''}>
-                                                                <label class="form-check-label">Not Tallied</label>
+                                                                <label style="font-size:14px; font-weight:bold" class="form-check-label">Not Tallied</label>
                                                             </div>
                                                         </td>
 

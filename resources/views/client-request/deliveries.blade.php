@@ -44,11 +44,12 @@
                             <tr>
                                 <td> {{ $loop->iteration }}.</td>
                                 <td> {{ $collection->requestId }} </td>
-                                <td> {{ $collection->client->name }} </td>
+                                <td> {{ $collection->client->name ?? '' }} </td>
                                 <td> {{ $collection->serviceLevel->sub_category_name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->collectionLocation }} </td>
-                                <td> {{ $collection->parcelDetails }} </td>
+                                <td> {{ $collection->parcelDetails . '' . $collection->status }} </td>
+
                                 <td>
                                     <span
                                         class="badge p-2 fs-5 text-white
@@ -87,7 +88,7 @@
                                                         {{ $collection->parcelDetails }}. Request ID
                                                         {{ $collection->requestId }}
                                                         for
-                                                        {{ $collection->client->name }}</h5>
+                                                        {{ $collection->client->name ?? '' }}</h5>
                                                     <button type="button" class="text-white close" data-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -309,7 +310,7 @@
                                                                         <option value="">Select</option>
                                                                         @foreach ($offices as $office)
                                                                             <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
+                                                                                {{ $office->name ?? '' }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -338,11 +339,11 @@
                                                                         class="form-control origin-dropdownxz" required>
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->office_id }}">
-                                                                            {{ $collection->office->name }}</option>
+                                                                            {{ $collection->office->name ?? '' }}</option>
 
                                                                         {{-- @foreach ($offices as $office)
                                                                             <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
+                                                                                {{ $office->name ?? "" }}</option>
                                                                         @endforeach --}}
                                                                     </select>
                                                                 </div>
@@ -376,7 +377,7 @@
                                                                         <option value="">Select</option>
                                                                         @foreach ($offices as $office)
                                                                             <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
+                                                                                {{ $office->name ?? '' }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -531,7 +532,7 @@
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
-                                        <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
+                                        <di8v class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
                                             aria-labelledby="printModalLabel-{{ $collection->id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
@@ -569,7 +570,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ $collection->shipmentCollection->office->name }}
+                                                                {{ $collection->shipmentCollection->office->name ?? '' }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                                             </div>
@@ -589,10 +590,15 @@
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->sender_contact;
-                                                                $maskedPhone =
-                                                                    substr($phone, 0, 3) .
-                                                                    str_repeat('*', strlen($phone) - 6) .
-                                                                    substr($phone, -3);
+                                                                if (!empty($phone) && strlen($phone) > 6) {
+                                                                    $maskedPhone =
+                                                                        substr($phone, 0, 3) .
+                                                                        str_repeat('*', strlen($phone) - 6) .
+                                                                        substr($phone, -3);
+                                                                } else {
+                                                                    // If phone is too short, just show as is (or handle differently)
+                                                                    $maskedPhone = $phone;
+                                                                }
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -608,10 +614,15 @@
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->receiver_phone;
-                                                                $maskedPhone =
-                                                                    substr($phone, 0, 3) .
-                                                                    str_repeat('*', strlen($phone) - 6) .
-                                                                    substr($phone, -3);
+                                                                if (!empty($phone) && strlen($phone) > 6) {
+                                                                    $maskedPhone =
+                                                                        substr($phone, 0, 3) .
+                                                                        str_repeat('*', strlen($phone) - 6) .
+                                                                        substr($phone, -3);
+                                                                } else {
+                                                                    // If phone is too short, just show as is (or handle differently)
+                                                                    $maskedPhone = $phone;
+                                                                }
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -690,17 +701,22 @@
                                                                 <div
                                                                     style="display: flex; justify-content: space-between;">
                                                                     <strong>Collected By:</strong>
-                                                                    <span> {{ $collection->user->name }} </span>
+                                                                    <span> {{ $collection->user->name ?? '' }} </span>
                                                                 </div>
                                                                 <div
                                                                     style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
-                                                                        $phone = $collection->user->phone_number;
-                                                                        $maskedPhone =
-                                                                            substr($phone, 0, 3) .
-                                                                            str_repeat('*', strlen($phone) - 6) .
-                                                                            substr($phone, -3);
+                                                                        $phone = $collection->user->phone_number ?? '';
+                                                                        if (!empty($phone) && strlen($phone) > 6) {
+                                                                            $maskedPhone =
+                                                                                substr($phone, 0, 3) .
+                                                                                str_repeat('*', strlen($phone) - 6) .
+                                                                                substr($phone, -3);
+                                                                        } else {
+                                                                            // If phone is too short, just show as is (or handle differently)
+                                                                            $maskedPhone = $phone;
+                                                                        }
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
@@ -725,11 +741,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </di8v>
                                     @endif
 
                                     <!-- Deliver button -->
-                                    @if ($collection->status === 'collected')
+                                    @if ($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated')
                                         <button class="btn btn-sm btn-success" title="Deliver Parcel" data-toggle="modal"
                                             data-target="#deliverParcel-{{ $collection->id }}">
                                             Deliver <i class="fas fa-box"></i>
@@ -747,7 +763,7 @@
                                                             {{ $collection->parcelDetails }}. Request ID
                                                             {{ $collection->requestId }}
                                                             for
-                                                            {{ $collection->client->name }}</h5>
+                                                            {{ $collection->client->name ?? '' }}</h5>
                                                         <button type="button" class="text-white close"
                                                             data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -1215,7 +1231,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ $collection->shipmentCollection->office->name }}
+                                                                {{ $collection->shipmentCollection->office->name ?? '' }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                                             </div>
@@ -1236,10 +1252,15 @@
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->sender_contact;
-                                                                $maskedPhone =
-                                                                    substr($phone, 0, 3) .
-                                                                    str_repeat('*', strlen($phone) - 6) .
-                                                                    substr($phone, -3);
+                                                                if (!empty($phone) && strlen($phone) > 6) {
+                                                                    $maskedPhone =
+                                                                        substr($phone, 0, 3) .
+                                                                        str_repeat('*', strlen($phone) - 6) .
+                                                                        substr($phone, -3);
+                                                                } else {
+                                                                    // If phone is too short, just show as is (or handle differently)
+                                                                    $maskedPhone = $phone;
+                                                                }
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -1257,10 +1278,15 @@
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->receiver_phone;
-                                                                $maskedPhone =
-                                                                    substr($phone, 0, 3) .
-                                                                    str_repeat('*', strlen($phone) - 6) .
-                                                                    substr($phone, -3);
+                                                                if (!empty($phone) && strlen($phone) > 6) {
+                                                                    $maskedPhone =
+                                                                        substr($phone, 0, 3) .
+                                                                        str_repeat('*', strlen($phone) - 6) .
+                                                                        substr($phone, -3);
+                                                                } else {
+                                                                    // If phone is too short, just show as is (or handle differently)
+                                                                    $maskedPhone = $phone;
+                                                                }
                                                             @endphp
 
                                                             <div>Phone: {{ $maskedPhone }}</div>
@@ -1341,17 +1367,22 @@
                                                                 <div
                                                                     style="display: flex; justify-content: space-between;">
                                                                     <strong>Delivered By:</strong>
-                                                                    <span> {{ $collection->user->name }} </span>
+                                                                    <span> {{ $collection->user->name ?? '' }} </span>
                                                                 </div>
                                                                 <div
                                                                     style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
-                                                                        $phone = $collection->user->phone_number;
-                                                                        $maskedPhone =
-                                                                            substr($phone, 0, 3) .
-                                                                            str_repeat('*', strlen($phone) - 6) .
-                                                                            substr($phone, -3);
+                                                                        $phone = $collection->user->phone_number ?? '';
+                                                                        if (!empty($phone) && strlen($phone) > 6) {
+                                                                            $maskedPhone =
+                                                                                substr($phone, 0, 3) .
+                                                                                str_repeat('*', strlen($phone) - 6) .
+                                                                                substr($phone, -3);
+                                                                        } else {
+                                                                            // If phone is too short, just show as is (or handle differently)
+                                                                            $maskedPhone = $phone;
+                                                                        }
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
