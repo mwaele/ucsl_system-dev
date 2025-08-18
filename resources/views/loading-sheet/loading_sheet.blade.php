@@ -70,8 +70,7 @@
                         <tr>
                             <td>{{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                             <td>{{ $loading_sheet->office->name }} </td>
-                            <td>{{ $destination->destination }}
-                            </td>
+                            <td>{{ $destination?->destination ?? '' }}</td>
                         </tr>
                     </tbody>
                 </table>
