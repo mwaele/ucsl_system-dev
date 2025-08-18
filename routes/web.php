@@ -268,7 +268,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
     Route::get('/parcel_collection', [ShipmentArrivalController::class, 'parcel_collection'])->name('parcel_collection');
     Route::post('/arrivals/{id}/issue', [ShipmentArrivalController::class, 'issue'])->name('arrivals.issue');
-
+    Route::get('/parcel-collection-report', [ShipmentArrivalController::class, 'parcel_collection_report']);
 
     Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
 

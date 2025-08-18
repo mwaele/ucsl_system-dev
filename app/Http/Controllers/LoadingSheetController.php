@@ -47,9 +47,9 @@ class LoadingSheetController extends Controller
         $dispatchers = Dispatcher::where('office_id',Auth::user()->station)->get();
 
         $sheets = LoadingSheet::with(['rate'])
-        ->withCount('waybills') // This adds a `waybills_count` column
-        ->orderBy('id', 'desc')
-        ->get();
+            ->withCount('waybills') // This adds a `waybills_count` column
+            ->orderBy('id', 'desc')
+            ->get();
         //dd($sheets);
 
         $count = LoadingSheet::count()+1; // Example: 1
@@ -276,103 +276,98 @@ class LoadingSheetController extends Controller
         //
     }
     public function dispatch($id, SmsService $smsService)
-{
-    $sheet = LoadingSheet::findOrFail($id);
+    {
+        $sheet = LoadingSheet::findOrFail($id);
 
-    $shipment_ids = LoadingSheetWaybill::where('loading_sheet_id', $id)
-    ->pluck('shipment_id')->groupBy('loading_sheet_id')
-    ->toArray();
-    $shipmentIds = collect($shipment_ids[""])->unique()->values();
-    $shipments = ShipmentCollection::with('client')
-    ->whereIn('id', $shipmentIds)
-    ->get();
-    foreach ($shipments as $shipment) {
-       // dd($shipment->receiver_phone); 
-    $client = $shipment->client;
-    $waybill_no = $shipment->waybill_no;
-    $requestId = $shipment->requestId;
+        $shipment_ids = LoadingSheetWaybill::where('loading_sheet_id', $id)
+        ->pluck('shipment_id')->groupBy('loading_sheet_id')
+        ->toArray();
+        $shipmentIds = collect($shipment_ids[""])->unique()->values();
+        $shipments = ShipmentCollection::with('client')
+        ->whereIn('id', $shipmentIds)
+        ->get();
+        foreach ($shipments as $shipment) {
+        // dd($shipment->receiver_phone); 
+        $client = $shipment->client;
+        $waybill_no = $shipment->waybill_no;
+        $requestId = $shipment->requestId;
 
-    $existingTrack = DB::table('tracks')->where('requestId', $shipment->requestId)->first();
+        $existingTrack = DB::table('tracks')->where('requestId', $shipment->requestId)->first();
 
-    if ($existingTrack) {
-        $trackingId = $existingTrack->id;
-        DB::table('tracks')
-        ->where('id', $trackingId)
-        ->update([
-            'current_status' => 'Parcel Dispatched',
-            'updated_at' => now(),
-        ]);
-    } else {
-        $trackingId = DB::table('tracks')->insertGetId([
-            'requestId' => $shipment->requestId,
-            'clientId' => $shipment->client->id,
+        if ($existingTrack) {
+            $trackingId = $existingTrack->id;
+            DB::table('tracks')
+            ->where('id', $trackingId)
+            ->update([
+                'current_status' => 'Parcel Dispatched',
+                'updated_at' => now(),
+            ]);
+        } else {
+            $trackingId = DB::table('tracks')->insertGetId([
+                'requestId' => $shipment->requestId,
+                'clientId' => $shipment->client->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        
+
+        DB::table('tracking_infos')->insert([
+            'trackId' => $trackingId,
+            'date' => now(),
+            'details' => 'Parcel dispatched',
+            'remarks' => ''.$sheet->dispatcher->name.' dispatched the parcel '.' from '.$shipment->client->name.', request ID '.$shipment->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$shipment->consignment_no.'',
             'created_at' => now(),
-            'updated_at' => now(),
+            'updated_at' => now()
         ]);
+        // Send receiver SMS
+                $receiverPhone = $shipment->receiver_phone;
+                $parcelMessage = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
+
+                $smsService->sendSms(
+                    phone: $receiverPhone,
+                    subject: 'Parcel Dispatched Alert',
+                    message: $parcelMessage,
+                    addFooter: true
+                );
+
+                SentMessage::create([
+                    'request_id' => $requestId,
+                    'client_id' => $shipment->client->id,
+                    'recipient_type' => 'receiver',
+                    'recipient_name' => $shipment->receiver_name ?? 'Receiver',
+                    'phone_number' => $receiverPhone,
+                    'subject' => 'Parcel Dispatched Alert',
+                    'message' => $parcelMessage,
+                ]);
+
+                // send sender message
+
+                $senderPhone = $shipment->receiver_phone;
+                $parcelMessageSender = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
+
+                $smsService->sendSms(
+                    phone: $senderPhone,
+                    subject: 'Parcel Dispatched Alert',
+                    message: $parcelMessageSender,
+                    addFooter: true
+                );
+
+                SentMessage::create([
+                    'request_id' => $requestId,
+                    'client_id' => $shipment->client->id,
+                    'recipient_type' => 'sender',
+                    'recipient_name' => $shipment->receiver_name ?? 'Sender',
+                    'phone_number' => $senderPhone,
+                    'subject' => 'Parcel Dispatched Alert',
+                    'message' => $parcelMessageSender,
+                ]);
+
+
+            $sheet->dispatch_date = Carbon::now(); // or now()
+            $sheet->save();
     }
-
-    
-
-    DB::table('tracking_infos')->insert([
-        'trackId' => $trackingId,
-        'date' => now(),
-        'details' => 'Parcel dispatched',
-        'remarks' => ''.$sheet->dispatcher->name.' dispatched the parcel '.' from '.$shipment->client->name.', request ID '.$shipment->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$shipment->consignment_no.'',
-        'created_at' => now(),
-        'updated_at' => now()
-    ]);
-     // Send receiver SMS
-            $receiverPhone = $shipment->receiver_phone;
-            $parcelMessage = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
-
-            $smsService->sendSms(
-                phone: $receiverPhone,
-                subject: 'Parcel Dispatched Alert',
-                message: $parcelMessage,
-                addFooter: true
-            );
-
-            SentMessage::create([
-                'request_id' => $requestId,
-                'client_id' => $shipment->client->id,
-                'recipient_type' => 'receiver',
-                'recipient_name' => $shipment->receiver_name ?? 'Receiver',
-                'phone_number' => $receiverPhone,
-                'subject' => 'Parcel Dispatched Alert',
-                'message' => $parcelMessage,
-            ]);
-
-            // send sender message
-
-            $senderPhone = $shipment->receiver_phone;
-            $parcelMessageSender = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
-
-            $smsService->sendSms(
-                phone: $senderPhone,
-                subject: 'Parcel Dispatched Alert',
-                message: $parcelMessageSender,
-                addFooter: true
-            );
-
-            SentMessage::create([
-                'request_id' => $requestId,
-                'client_id' => $shipment->client->id,
-                'recipient_type' => 'sender',
-                'recipient_name' => $shipment->receiver_name ?? 'Sender',
-                'phone_number' => $senderPhone,
-                'subject' => 'Parcel Dispatched Alert',
-                'message' => $parcelMessageSender,
-            ]);
-
-
-        $sheet->dispatch_date = Carbon::now(); // or now()
-        $sheet->save();
-}
-
-
-    
-
-    
 
     return response()->json(['message' => 'Dispatch date updated', 'dispatch_date' => $sheet->dispatch_date,  'redirect' => route('loading_sheets.index')]);
 }

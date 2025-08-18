@@ -51,5 +51,15 @@ class ShipmentArrival extends Model
         return $this->belongsTo(TransporterTrucks::class, 'vehicle_reg_no');
     }
 
+    protected function statusLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => match ($attributes['status']) {
+                'Delivered' => 'Collected',
+                'Verified' => 'Pending Collection',
+                default     => $attributes['status'],
+            }
+        );
+    }
 
 }

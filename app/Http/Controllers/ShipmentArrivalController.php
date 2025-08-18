@@ -122,50 +122,50 @@ class ShipmentArrivalController extends Controller
     }
 
     public function generate(Request $request)
-{
-    $filter = $request->query('filter');
-    $value = $request->query('value');
+    {
+        $filter = $request->query('filter');
+        $value = $request->query('value');
 
-    
+        
 
-    // Safely split start/end date
-    [$startDate, $endDate] = explode('_', $value) + [null, null];
+        // Safely split start/end date
+        [$startDate, $endDate] = explode('_', $value) + [null, null];
 
-    $query = LoadingSheet::query();
-    $titled = '';
+        $query = LoadingSheet::query();
+        $titled = '';
 
-    if ($filter === 'daterange') {
-        //dd($filter);
-        if ($startDate && $endDate) {
-            $titled = "Between ".$startDate." To ".$endDate;
-            // Both dates provided
-            $query->whereBetween('dispatch_date', [
-            $startDate . ' 00:00:00',
-            $endDate . ' 23:59:59'
-        ]);
-        } elseif ($startDate && empty($endDate)) {
-            // Only start date provided
-            $titled ="of ".$startDate;
-            $query->whereDate('dispatch_date', $startDate);
-        }
-    } elseif ($filter === 'dispatch') {
-        $titled = "of batch No. ".str_pad($value, 5, '0', STR_PAD_LEFT);
-        $query->where('batch_no', 'like', "%$value%");
-    } 
+        if ($filter === 'daterange') {
+            //dd($filter);
+            if ($startDate && $endDate) {
+                $titled = "Between ".$startDate." To ".$endDate;
+                // Both dates provided
+                $query->whereBetween('dispatch_date', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59'
+            ]);
+            } elseif ($startDate && empty($endDate)) {
+                // Only start date provided
+                $titled ="of ".$startDate;
+                $query->whereDate('dispatch_date', $startDate);
+            }
+        } elseif ($filter === 'dispatch') {
+            $titled = "of batch No. ".str_pad($value, 5, '0', STR_PAD_LEFT);
+            $query->where('batch_no', 'like', "%$value%");
+        } 
 
-    $loading_sheets = $query->get();
+        $loading_sheets = $query->get();
 
-    return $this->renderPdfWithPageNumbers(
-        'shipment_arrivals.arrivals_report',
-        [
-        'sheets' => $loading_sheets,
-        'titled' => $titled,
-        ],
-        'arrivals_report.pdf',
-        'a4',
-        'landscape'
-    );
-}
+        return $this->renderPdfWithPageNumbers(
+            'shipment_arrivals.arrivals_report',
+            [
+            'sheets' => $loading_sheets,
+            'titled' => $titled,
+            ],
+            'arrivals_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
 
     public function generateParcels(Request $request)
     {
@@ -377,8 +377,7 @@ class ShipmentArrivalController extends Controller
 
         // Pass data to the view
         return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no'));
-    }
-    
+    } 
 
     public function update(Request $request, $id, SmsService $smsService)
     {
@@ -530,7 +529,7 @@ class ShipmentArrivalController extends Controller
             DB::table('tracks')
                 ->where('requestId', $arrival->shipmentCollection->requestId)
                 ->update([
-                    'current_status' => 'Issued',
+                    'current_status' => 'Parcel Delivered in Good Order',
                     'updated_at' => now(),
                 ]);
 
@@ -570,5 +569,20 @@ class ShipmentArrivalController extends Controller
         return back()->with('success', 'Parcel delivered successfully.');
     }
 
+    public function parcel_collection_report()
+    {
+        // Fetch all shipment arrivals
+        $shipmentArrivals = ShipmentArrival::with(['payment', 'transporter_truck', 'transporter'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'shipment_arrivals.parcel_collection_report',
+            ['shipmentArrivals' => $shipmentArrivals],
+            'parcel_collection_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
 
 }

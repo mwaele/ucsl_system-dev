@@ -125,6 +125,7 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Batch No.</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
@@ -138,6 +139,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Batch No.</th>
                             <th>Dispatch date</th>
                             <th>Office of Origin</th>
@@ -152,7 +154,8 @@
                     <tbody>
                         @foreach ($sheets as $sheet)
                             <tr>
-                                <td>{{ str_pad($sheet->batch_no, 4, '0', STR_PAD_LEFT) }}</td>
+                                <td> {{ $loop->iteration }}. </td>
+                                <td> {{ str_pad($sheet->batch_no, 4, '0', STR_PAD_LEFT) }} </td>
                                 <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
                                 <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')
