@@ -261,7 +261,7 @@
                                         </div>
                                     @endif
 
-                                    {{-- <a href="#">
+                                    <!-- <a href="#">
                                         <button class="btn btn-sm btn-warning mr-1" title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -270,10 +270,10 @@
                                         <button class="btn btn-sm btn-success mr-1" title="PDF Download">
                                             <i class="fas fa-file-pdf"></i>
                                         </button>
-                                    </a> --}}
-                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $collection->id }}"><i
-                                            class="fas fa-trash"></i></button> --}}
+                                            class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -777,7 +777,6 @@
                 </table>
             </div>
 
-
             <!-- JavaScript to toggle and populate form -->
 
             <script>
@@ -968,19 +967,6 @@
 
 
                 });
-            </script>
-            <script>
-                function printModalContent(id) {
-                    var content = document.getElementById('print-content-' + id).innerHTML;
-                    var printWindow = window.open('', '', 'width=800,height=600');
-                    printWindow.document.write('<html><head><title>Print Shipment Receipt</title>');
-                    printWindow.document.write('<link rel="stylesheet" href="/css/app.css">'); // optional
-                    printWindow.document.write('</head><body>');
-                    printWindow.document.write(content);
-                    printWindow.document.write('</body></html>');
-                    printWindow.document.close();
-                    printWindow.print();
-                }
             </script>
         </div>
     </div>

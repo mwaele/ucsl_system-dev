@@ -272,7 +272,7 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/shipment-arrivals/{id}', [ShipmentArrivalController::class, 'update'])->name('shipment-arrivals.update');
 
-Route::put('/client_request/{id}', [SameDayController::class, 'update'])->name('client_request.update');
+    Route::put('/client_request/{id}', [SameDayController::class, 'update'])->name('client_request.update');
 
     Route::post('/update-arrival-details', [ShipmentArrivalController::class, 'updateArrivalDetails'])->name('update_arrival_details');
 

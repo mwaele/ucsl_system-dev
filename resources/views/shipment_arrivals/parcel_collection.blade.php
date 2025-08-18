@@ -108,6 +108,11 @@
                                                         action="{{ route('arrivals.issue', $arrival->id) }}">
                                                         @csrf
 
+                                                        {{-- Hidden Fields --}}
+                                                        <input type="hidden" name="grn_no" value="{{ $grn_no }}">
+                                                        <input type="hidden" name="requestId" value="{{ $arrival->requestId }}">
+                                                        <input type="hidden" name="client_id" value="{{ $arrival->shipmentCollection->client_id }}">
+
                                                         @php
                                                             $hasPayment = $arrival->payment !== null;
                                                             $balance = $hasPayment ? $arrival->payment->balance : null;
@@ -225,8 +230,6 @@
                                                                             <input type="text" class="form-control"
                                                                                 name="receiver_name"
                                                                                 value="{{ $arrival->shipmentCollection->receiver_name ?? '' }}">
-                                                                            <input type="hidden" name="grn_no"
-                                                                                value="{{ $arrival->shipmentCollection->grn_no }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label>Phone Number<span
@@ -259,8 +262,6 @@
                                                                             <label>Agent Name</label>
                                                                             <input type="text" class="form-control"
                                                                                 name="agent_name">
-                                                                            <input type="hidden" name="grn_no"
-                                                                                value="{{ $arrival->shipmentCollection->grn_no }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label>Agent Phone</label>
@@ -282,12 +283,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
-                                                        {{-- Hidden Fields --}}
-                                                        <input type="hidden" name="requestId"
-                                                            value="{{ $arrival->requestId }}">
-                                                        <input type="hidden" name="client_id"
-                                                            value="{{ $arrival->shipmentCollection->client_id }}">
 
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
@@ -577,9 +572,6 @@
 
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
-                                                                <hr style="margin: 6px 0;">
-                                                                These are provisional charges based on details provided by
-                                                                sender.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
                                                                 conditions overleaf.

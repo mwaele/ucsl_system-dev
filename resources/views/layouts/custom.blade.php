@@ -1006,7 +1006,7 @@
                 //$('#dataTable').DataTable();
                 $('#dataTable').DataTable({
                     language: {
-                        lengthMenu: 'Show _MENU_ Entries Per Page', // Capitalized 'Entries'
+                        lengthMenu: 'Showing _MENU_ Entries Per Page', // Capitalized 'Entries'
                         search: 'Search:', // You can also change this if needed
                         info: "Showing _START_ to _END_ of _TOTAL_ Entries", // Capitalized 'Entries'
                         paginate: {
@@ -1565,6 +1565,31 @@
             });
         </script>
 
+        <script>
+            function printModalContent(id, type = null) {
+                // Default content id if no type provided
+                var contentId = type 
+                    ? 'print-content-' + id + '-' + type
+                    : 'print-content-' + id;
+
+                var element = document.getElementById(contentId);
+                if (!element) {
+                    alert('Receipt content not found: ' + contentId);
+                    return;
+                }
+
+                var content = element.innerHTML;
+                var printWindow = window.open('', '', 'width=800,height=600');
+                printWindow.document.write('<html><head><title>Print Receipt</title>');
+                printWindow.document.write('<link rel="stylesheet" href="/css/app.css">');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(content);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            }
+        </script>
+    </div>
 </body>
 
 </html>
