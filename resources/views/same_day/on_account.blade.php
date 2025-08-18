@@ -302,7 +302,7 @@
                                         </button>
                                     @endif
 
-                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
+                                    @if ($request->shipmentCollection?->payment_mode === 'M-Pesa')
                                         <button class="btn btn-sm btn-primary mr-1" title="Print collection"
                                             data-toggle="modal" data-target="#printModal-{{ $request->id }}">
                                             Preview Receipt <i class="fas fa-print"></i>

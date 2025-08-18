@@ -194,7 +194,7 @@
             <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_collections.show') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
-                    <span class="sized">My Collections</span>
+                    <span class="sized">Rider Collections</span>
                 </a>
             </li>
 
@@ -204,7 +204,7 @@
             <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_deliveries.show') }}">
                     <i class="fas fa-fw fa-shipping-fast"></i>
-                    <span class="sized">My Deliveries</span>
+                    <span class="sized">Rider Deliveries</span>
                 </a>
             </li>
 
