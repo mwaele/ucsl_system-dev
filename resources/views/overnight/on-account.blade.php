@@ -465,7 +465,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     @endif
-                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
+                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa' ?? null)
                                         {{-- <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-warning mr-1">
                                                 Generate Receipt
