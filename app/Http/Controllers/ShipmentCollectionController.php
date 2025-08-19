@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
+use App\Services\RequestIdService;
 use App\Services\SmsService;
 use App\Models\SentMessage;
 use App\Models\Client;
@@ -23,6 +24,12 @@ use Illuminate\Support\Facades\DB;
 
 class ShipmentCollectionController extends Controller
 {
+    protected $requestIdService;
+
+    public function __construct(RequestIdService $requestIdService)
+    {
+        $this->requestIdService = $requestIdService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -36,6 +43,8 @@ class ShipmentCollectionController extends Controller
      */
     public function create(Request $request, SmsService $smsService)
     {
+        $requestId = $this->requestIdService->generate();
+
         DB::beginTransaction();
 
         try {
@@ -81,7 +90,7 @@ class ShipmentCollectionController extends Controller
                 'receiver_email' => $request->receiverEmail,
                 'receiver_address' => $request->receiverAddress,
                 'receiver_town' => $request->receiverTown,
-                'requestId' => $request->requestId,
+                'requestId' => $requestId,
                 'client_id' => $request->clientId,
                 'origin_id' => $request->origin_id,
                 'destination_id' => $request->destination_id,
@@ -165,14 +174,14 @@ class ShipmentCollectionController extends Controller
             }
              // 5. Save Track
             $trackingId = DB::table('tracks')->insertGetId([
-                'requestId' =>  $request->requestId,
+                'requestId' =>  $requestId,
                 'clientId' => $request->clientId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
             DB::table('tracks')
-            ->where('requestId',$request->requestId,)
+            ->where('requestId',$requestId,)
             ->update([
                 'current_status' => 'Awaiting Dispatch',
                 'updated_at' => now()
@@ -188,7 +197,7 @@ class ShipmentCollectionController extends Controller
                 'trackId' => $trackingId,
                 'date' => now(),
                 'details' => 'Parcel received from Walk-in Client',
-                'remarks' => ''.auth()->user()->name.' received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName.', generated client request ID '.$request->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
+                'remarks' => ''.auth()->user()->name.' received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName.', generated client request ID '.$requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -198,7 +207,7 @@ class ShipmentCollectionController extends Controller
                 'clientId' => $request->clientId,
                 'category_id' => $request->category_id,
                 'sub_category_id' => $request->sub_category_id,
-                'requestId' => $request->requestId,
+                'requestId' => $requestId,
                 'collectionLocation' => null,
                 'parcelDetails' => 'Waybill No: '.$waybill_no.', Items: '.$itemCount.', Total Weight: '.$totalWeight.'kg',
                 'dateRequested' => now(),
@@ -262,7 +271,7 @@ class ShipmentCollectionController extends Controller
             );
 
             SentMessage::create([
-                'request_id' => $request->requestId,
+                'request_id' => $requestId,
                 'client_id' => $request->clientId,
                 'recipient_type' => 'receiver',
                 'recipient_name' => $request->receiverContactPerson ?? 'Receiver',

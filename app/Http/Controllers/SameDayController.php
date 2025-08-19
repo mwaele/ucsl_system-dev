@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Models\ClientRequest;
 use App\Models\SubCategory;
 use App\Models\ShipmentCollection;
+use App\Services\RequestIdService;
 use App\Models\Vehicle;
 use App\Models\User;
 use App\Models\FrontOffice;
@@ -25,8 +26,6 @@ use App\Services\SmsService;
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
-
-
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 
@@ -34,32 +33,20 @@ class SameDayController extends Controller
 {
     use PdfReportTrait;
 
+    protected $requestIdService;
+
+    public function __construct(RequestIdService $requestIdService)
+    {
+        $this->requestIdService = $requestIdService;
+    }
+
     public function on_account(Request $request )
     {
-        // Determine the correct CAST expression based on DB driver
-        $driver = DB::getDriverName();
-        $castExpression = $driver === 'pgsql'
-            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
-            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
 
         $timeFilter = $request->query('time', 'all'); // default to all
 
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-
-        // Generate Unique Request ID
-        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();
@@ -81,7 +68,7 @@ class SameDayController extends Controller
             ->get();
 
 
-        return view('same_day.on_account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers','timeFilter',
+        return view('same_day.on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
             'endDate', 'sub_category','locations'));
     }
@@ -100,29 +87,6 @@ class SameDayController extends Controller
 
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
-
-        // Determine DB driver for cross-DB SQL compatibility
-        $driver = DB::getDriverName();
-        $castExpression = $driver === 'pgsql'
-            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
-            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
-
-        // 1. Get the latest requestId from both tables
-        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        // 2. Extract numeric parts and determine the highest
-        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-
-        // 4. Format requestId
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         // Walk-in collections
         $collections = ShipmentCollection::with('client')
@@ -164,7 +128,6 @@ class SameDayController extends Controller
             'destinations',
             'walkInClients',
             'collections',
-            'request_id',
             'consignment_no',
             'sub_category',
             'locations',
@@ -229,7 +192,7 @@ class SameDayController extends Controller
         Log::info('Entered store() method.', ['request_data' => $request->all()]);
 
         try {
-            // 1. Validate incoming request
+            // 1. Validate incoming request (requestId removed)
             $validated = $request->validate([
                 'clientId' => 'required|integer',
                 'collectionLocation' => 'required|string',
@@ -241,10 +204,8 @@ class SameDayController extends Controller
                 'sub_category_id' => 'required|integer',
                 'priority_level' => 'required|string',
                 'deadline_date' => 'nullable|date',
-                'requestId' => 'required|string|unique:client_requests,requestId',
                 'rate_id' => 'nullable',
             ]);
-            Log::info('Validation passed.', ['validated_data' => $validated]);
         } catch (\Exception $e) {
             Log::error('Validation failed.', ['message' => $e->getMessage()]);
             return back()->withErrors(['error' => 'Validation error: ' . $e->getMessage()]);
@@ -255,7 +216,9 @@ class SameDayController extends Controller
         try {
             Log::info('Transaction started.');
 
-            // 2. Save client request
+            $requestId = $this->requestIdService->generate();
+
+            // 3. Save client request
             $clientRequest = new ClientRequest();
             $clientRequest->clientId = $validated['clientId'];
             $clientRequest->collectionLocation = $validated['collectionLocation'];
@@ -263,7 +226,7 @@ class SameDayController extends Controller
             $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
             $clientRequest->userId = $validated['userId'];
             $clientRequest->vehicleId = $validated['vehicleId'];
-            $clientRequest->requestId = $validated['requestId'];
+            $clientRequest->requestId = $requestId;
             $clientRequest->category_id = $validated['category_id'];
             $clientRequest->sub_category_id = $validated['sub_category_id'];
             $clientRequest->priority_level = $validated['priority_level'];
@@ -275,7 +238,7 @@ class SameDayController extends Controller
 
             Log::info('ClientRequest saved.', ['clientRequest_id' => $clientRequest->id]);
 
-            // 3. Create tracking record
+            // 4. Create tracking record
             $trackingId = DB::table('tracks')->insertGetId([
                 'requestId' => $clientRequest->requestId,
                 'clientId' => $clientRequest->clientId,
@@ -283,9 +246,10 @@ class SameDayController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
             Log::info('Track created.', ['track_id' => $trackingId]);
 
-            // 4. Get rider and vehicle details
+            // 5. Get rider and vehicle details
             $rider = User::find($clientRequest->userId);
             $vehicle = Vehicle::find($clientRequest->vehicleId);
 
@@ -293,7 +257,7 @@ class SameDayController extends Controller
                 throw new \Exception('Rider or Vehicle not found.');
             }
 
-            // 5. Insert tracking info
+            // 6. Insert tracking info
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
@@ -304,18 +268,16 @@ class SameDayController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
             Log::info('Tracking info inserted.');
 
-            // 6. Ensure collection location exists in Location table
+            // 7. Ensure collection location exists in Location table
             Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
             Log::info('Collection location ensured.');
-
-            
 
             // Commit transaction
             DB::commit();
             Log::info('Transaction committed.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Client Request Store Error', [

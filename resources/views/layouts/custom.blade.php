@@ -19,8 +19,7 @@
 
     <!-- Bootstrap Select CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-select.min.css') }}">
-
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -108,6 +107,10 @@
 
     <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+    
+    <!-- Bootstrap Select JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
 </head>
 
@@ -626,7 +629,7 @@
                     $toastTypes = [
                         'success' => ['bg' => 'bg-success', 'title' => 'Success'],
                         'error' => ['bg' => 'bg-danger', 'title' => 'Error'],
-                        'warning' => ['bg' => 'bg-warning text-dark', 'title' => 'Warning'],
+                        'warning' => ['bg' => 'bg-warning', 'title' => 'Warning'],
                         'info' => ['bg' => 'bg-info', 'title' => 'Info'],
                     ];
                 @endphp
@@ -1498,6 +1501,28 @@
                 });
             });
         </script>
+
+        <script>
+            $('.ajax-select').select2({
+                placeholder: 'Start typing...',
+                minimumInputLength: 2,
+                ajax: {
+                    url: '/search',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            type: $(this).data('type')
+                        };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    }
+                }
+            });
+        </script>
+
 
         <script>
             $(document).ready(function() {

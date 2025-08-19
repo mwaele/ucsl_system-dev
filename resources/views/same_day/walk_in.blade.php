@@ -36,15 +36,10 @@
                                         </div>
 
                                         <div class="row mt-3 mb-3">
-                                            <div class="col-md-2">
-                                                <h6 for="requestId" class="text-primary">Request ID</h6>
-                                                <input type="text" value="{{ $request_id }}" name="requestId"
-                                                    class="form-control" id="request_id" readonly>
-                                            </div>
                                             <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
-                                                <select class="form-control" id="clientId" name="clientId">
+                                                <select class="form-control selectpicker" data-live-search="true" id="clientId" name="clientId">
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
                                                         <option value="{{ $client->id }}">{{ $client->name }}

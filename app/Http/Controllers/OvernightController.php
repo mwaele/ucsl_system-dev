@@ -15,6 +15,7 @@ use App\Models\Office;
 use App\Models\Rate;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
+use App\Services\RequestIdService;
 use Carbon\Carbon;
 use Auth;
 
@@ -22,33 +23,20 @@ class OvernightController extends Controller
 {
     use PdfReportTrait;
 
+    protected $requestIdService;
+
+    public function __construct(RequestIdService $requestIdService)
+    {
+        $this->requestIdService = $requestIdService;
+    }
+
     //
     public function on_account(Request $request )
     {
-        // Determine the correct CAST expression based on DB driver
-        $driver = DB::getDriverName();
-        $castExpression = $driver === 'pgsql'
-            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
-            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
-
         $timeFilter = $request->query('time', 'all'); // default to all
 
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-
-        // Generate Unique Request ID
-        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         $clients = Client::where('type', 'on_account')->get();
         $vehicles = Vehicle::all();
@@ -65,8 +53,7 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
-
-        return view('overnight.on-account', compact('clients', 'clientRequests', 'request_id', 'vehicles', 'drivers','timeFilter',
+        return view('overnight.on-account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
             'endDate', 'sub_category'));
     }
@@ -78,29 +65,6 @@ class OvernightController extends Controller
         $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
-
-        // Determine DB driver for cross-DB SQL compatibility
-        $driver = DB::getDriverName();
-        $castExpression = $driver === 'pgsql'
-            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
-            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
-
-        // 1. Get the latest requestId from both tables
-        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        // 2. Extract numeric parts and determine the highest
-        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-
-        // 4. Format requestId
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         // Walk-in collections
         $collections = ShipmentCollection::with('client')
@@ -134,13 +98,11 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
-
         return view('overnight.walk-in', compact('clientRequests', 'offices',
             'loggedInUserId',
             'destinations',
             'walkInClients',
             'collections',
-            'request_id',
             'consignment_no',
             'sub_category'
         ));

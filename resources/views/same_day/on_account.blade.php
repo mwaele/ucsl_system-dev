@@ -39,7 +39,7 @@
                                                 <div class="col-md-6">
 
                                                     <label for="clientId" class="form-label text-primary">Client</label>
-                                                    <select class="form-control" id="clientId" name="clientId">
+                                                    <select class="form-control selectpicker" data-live-search="true" id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->id }}">{{ $client->name }}
@@ -144,19 +144,12 @@
                                             </div>
                                             <div class="row">
 
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <label for="vehicle" class="form-label text-primary">Vehicle</label>
                                                     <input type="text" id="vehicle" class="form-control"
                                                         name="vehicle_display" placeholder="Select rider to populate"
                                                         readonly>
                                                     <input type="hidden" id="vehicleId" name="vehicleId">
-                                                </div>
-
-                                                <div class="col-md-4 mb-3">
-                                                    <label for="requestId" class="form-label text-primary">Request
-                                                        ID</label>
-                                                    <input type="text" value="{{ $request_id }}" name="requestId"
-                                                        class="form-control" id="request_id" readonly>
                                                 </div>
 
                                                 <script>
@@ -190,7 +183,7 @@
                                                     });
                                                 </script>
 
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <label for="datetime" class="text-primary">Date of Request</label>
                                                     <div class="input-group">
                                                         <input type="text" name="dateRequested" id="datetime"
@@ -209,26 +202,26 @@
                                                         });
                                                     </script>
                                                 </div>
+
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="priority_level" class="form-label text-primary">Priority
+                                                        Level</label>
+                                                    <select class="form-control" name="priority_level" id="priority_level">
+                                                        <option value="normal" selected>Normal</option>
+                                                        <option value="high">High</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="col-md-3 mb-3" id="priority-deadline-group" style="display: none;">
+                                                    <label for="deadline_date" class="form-label text-primary">
+                                                        Deadline (If High Priority)
+                                                    </label>
+                                                    <input type="datetime-local" class="form-control" name="deadline_date"
+                                                        id="deadline_date">
+                                                </div>
+
                                             </div>
                                         </form>
-                                        <hr>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label for="priority_level" class="form-label text-primary">Priority
-                                                    Level</label>
-                                                <select class="form-control" name="priority_level" id="priority_level">
-                                                    <option value="normal" selected>Normal</option>
-                                                    <option value="high">High</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6" id="priority-deadline-group" style="display: none;">
-                                                <label for="deadline_date" class="form-label text-primary">
-                                                    Deadline (If High Priority)
-                                                </label>
-                                                <input type="datetime-local" class="form-control" name="deadline_date"
-                                                    id="deadline_date">
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="modal-footer d-sm-flex align-items-center">
                                         <button type="button" class="btn btn-secondary"

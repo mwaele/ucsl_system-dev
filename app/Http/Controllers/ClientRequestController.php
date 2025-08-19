@@ -26,6 +26,7 @@ use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\HtmlString;
 use App\Traits\PdfReportTrait;
+use App\Services\RequestIdService;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 use App\Jobs\SendCollectionNotificationsJob;
@@ -33,6 +34,13 @@ use App\Jobs\SendCollectionNotificationsJob;
 class ClientRequestController extends Controller
 {
     use PdfReportTrait;
+
+    protected $requestIdService;
+
+    public function __construct(RequestIdService $requestIdService)
+    {
+        $this->requestIdService = $requestIdService;
+    }
     
     /**
      * Display a listing of the resource.
@@ -41,26 +49,6 @@ class ClientRequestController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-
-        // Determine the correct CAST expression based on DB driver
-        $driver = DB::getDriverName();
-        $castExpression = $driver === 'pgsql'
-            ? 'CAST(SUBSTRING("requestId" FROM 5) AS INTEGER)'
-            : 'CAST(SUBSTRING(requestId, 5) AS UNSIGNED)';
-
-        // Generate Unique Request ID
-        $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-            ->orderByRaw("$castExpression DESC")
-            ->value('requestId');
-
-        $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-        $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
-        $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
-        $request_id = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         // Prepare query
         $query = ClientRequest::with([
@@ -173,7 +161,6 @@ class ClientRequestController extends Controller
             'vehicles',
             'drivers',
             'client_requests',
-            'request_id',
             'totalRequests',
             'delivered',
             'collected',
@@ -387,6 +374,8 @@ class ClientRequestController extends Controller
 
     public function store(Request $request)
     {
+        $requestId = $this->requestIdService->generate();
+
         //dd($request);
         $validated = $request->validate([
             'clientId' => 'required|integer',
@@ -399,7 +388,6 @@ class ClientRequestController extends Controller
             'sub_category_id' => 'required|integer',
             'priority_level' => 'required|string',
             'deadline_date' => 'nullable|date',
-            'requestId' => 'required|string|unique:client_requests,requestId',
             //'rate_id'=>'nullable',
         ]);
 
@@ -414,7 +402,7 @@ class ClientRequestController extends Controller
                 'dateRequested' => Carbon::parse($validated['dateRequested']),
                 'userId' => $validated['userId'],
                 'vehicleId' => $validated['vehicleId'],
-                'requestId' => $validated['requestId'],
+                'requestId' => $requestId,
                 'category_id' => $validated['category_id'],
                 'sub_category_id' => $validated['sub_category_id'],
                 'priority_level' => $validated['priority_level'],

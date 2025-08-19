@@ -34,6 +34,7 @@ use App\Http\Controllers\ShipmentArrivalController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShipmentArrivalsController;
+use App\Http\Controllers\SearchController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -293,6 +294,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate_loading_sheet/{id}', [LoadingSheetController::class, 'generate_loading_sheet']);
 
     Route::post('/get-shipment-items', [ShipmentItemController::class, 'getItems']);
+    Route::get('/search', [SearchController::class, 'search'])->name('search');;
 
     Route::get('/transporters_report', [TransporterController::class, 'transporter_report']);
 
