@@ -53,9 +53,18 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Payment $payment)
+    public function show($id)
     {
-        //
+        $payments = Payment::where('id',$id)->get();
+        //dd($payments);
+
+        return $this->renderPdfWithPageNumbers(
+            'payments.payments_receipt',
+            ['payments' => $payments],
+            'payments_receipt.pdf',
+            'a4',
+            'potrait'
+        );
     }
 
     /**

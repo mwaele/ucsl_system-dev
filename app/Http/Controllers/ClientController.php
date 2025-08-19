@@ -13,6 +13,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Validator;
+use App\Services\SmsService;
+use App\Mail\GenericMail;
+
+use App\Jobs\SendCollectionNotificationsJob;
+
 class ClientController extends Controller
 {
     use PdfReportTrait;
@@ -74,7 +80,7 @@ class ClientController extends Controller
      * Store a newly created resource in storage.
      */
     
-    public function store(Request $request)
+    public function store(Request $request,  SmsService $smsService)
     {
         //dd($request);
         // Validate the incoming request
@@ -110,7 +116,8 @@ class ClientController extends Controller
         $client->name = $validated['name'];
         $client->email = $validated['email'];
         $client->password = bcrypt($validated['password']);  // Ensure password is hashed
-        $client->contact = $this->normalizePhoneNumber($validated['contact']); 
+        $contact = $this->normalizePhoneNumber($validated['contact']);
+        $client->contact = $contact; 
         $client->address = $validated['address'];
         $client->id_number = $validated['id_number'];
         $client->city = $validated['city'];
@@ -128,8 +135,38 @@ class ClientController extends Controller
         $client->special_rates_status = $validated['special_rates_status'] ?? null;
         $client->sales_person_id = $validated['sales_person_id'];
 
+        // Generate a 6-digit random OTP
+        $otp = rand(100000, 999999);
+
         //dd($client);
         $client->save();  // Save the client to the database
+
+        // Assign to client and save
+        $client->otp = $otp;
+        $client->save();
+
+            $message = "Dear Customer, OTP is (#$otp).Thank you for using Ufanisi Courier Services";
+
+            $smsService->sendSms(
+                phone: $contact,
+                subject: 'OTP',
+                message: $message,
+                addFooter: true
+            );
+
+            // SentMessage::create([
+            //     'request_id' => $request->requestId,
+            //     'client_id' => $request->clientId,
+            //     'recipient_type' => 'receiver',
+            //     'recipient_name' => $request->receiverContactPerson ?? 'Receiver',
+            //     'phone_number' => $receiverPhone,
+            //     'subject' => 'Parcel Booking Confirmation',
+            //     'message' => $parcelMessage,
+            // ]);
+
+        //send OTP SMS to client
+
+
 
         // Get selected category IDs
         $categoryIds = $request->input('category_id');
@@ -182,6 +219,26 @@ class ClientController extends Controller
         
         return redirect()->route('clients.index')->with('Success');
     }
+
+    public function update_otp(Request $request, $id)
+    {
+        
+        $client = Client::find($id);
+        $otp = $client->otp;
+        if($otp == $request->verified_otp){
+        $client->verified_otp = $request->verified_otp;
+        $client->save();
+        return redirect()->route('clients.index')->with('success','OTP Verified');
+        }
+        else{
+            return redirect()->back()->with('error', 'OTP does not march');
+        }
+        
+        
+        
+    }
+
+    
 
     /**
      * Remove the specified resource from storage.

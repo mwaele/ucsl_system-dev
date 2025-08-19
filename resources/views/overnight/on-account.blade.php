@@ -84,7 +84,8 @@
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label for="clientId" class="form-label text-primary">Client</label>
-                                                    <select class="form-control selectpicker" data-live-search="true" id="clientId" name="clientId">
+                                                    <select class="form-control selectpicker" data-live-search="true"
+                                                        id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->id }}">{{ $client->name }}
@@ -235,17 +236,19 @@
                                                 <div class="col-md-3 mb-3">
                                                     <label for="priority_level" class="form-label text-primary">Priority
                                                         Level</label>
-                                                    <select class="form-control" name="priority_level" id="priority_level">
+                                                    <select class="form-control" name="priority_level"
+                                                        id="priority_level">
                                                         <option value="normal" selected>Normal</option>
                                                         <option value="high">High</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-3 mb-3" id="priority-deadline-group" style="display: none;">
+                                                <div class="col-md-3 mb-3" id="priority-deadline-group"
+                                                    style="display: none;">
                                                     <label for="deadline_date" class="form-label text-primary">
                                                         Deadline (If High Priority)
                                                     </label>
-                                                    <input type="datetime-local" class="form-control" name="deadline_date"
-                                                        id="deadline_date">
+                                                    <input type="datetime-local" class="form-control"
+                                                        name="deadline_date" id="deadline_date">
                                                 </div>
                                             </div>
                                         </form>
@@ -457,13 +460,15 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     @endif
-                                    @if ($request->shipmentCollection?->payment_mode === 'M-Pesa')
-                                        {{-- <a href="{{ route('generate-invoice', $request->id) }}">
-                                            <button class="btn btn-sm btn-warning mr-1">
-                                                Generate Receipt
-                                            </button>
-                                        </a> --}}
 
+                                    @if ($request->shipmentCollection?->payment_mode === 'Invoice')
+                                        <a href="{{ route('generate-invoice', $request->id) }}">
+                                            <button class="btn btn-sm btn-info mr-1">
+                                                Preview Invoice
+                                            </button>
+                                        </a>
+                                    @endif
+                                    @if ($request->shipmentCollection?->payment_mode === 'M-Pesa')
                                         <button class="btn btn-sm btn-primary mr-1" title="Print collection"
                                             data-toggle="modal" data-target="#printModal-{{ $request->id }}">
                                             Preview Receipt <i class="fas fa-print"></i>
@@ -504,7 +509,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ $request->shipmentCollection->office->name }}
+                                                                {{ Auth::user()->station->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>
@@ -644,6 +649,7 @@
                                             </div>
                                         </div>
                                     @endif
+
 
                                     <!-- Delete Modal-->
                                     <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"

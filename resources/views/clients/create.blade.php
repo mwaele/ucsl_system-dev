@@ -288,63 +288,67 @@
                     </div> --}}
                 </div>
 
-                <h5 class="mt-4">Contact Person Details</h5>
-                <hr>
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label>Contact Person</label>
-                        <input type="text" name="contactPerson" class="form-control">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Phone</label>
-                        <input type="text" name="contactPersonPhone" class="form-control">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Email</label>
-                        <input type="email" name="contactPersonEmail" class="form-control">
-                    </div>
-                </div>
+                <div id="contactPersonSection">
+                    <h5 class="mt-4">Contact Person Details</h5>
+                    <hr>
 
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label>KRA Pin</label>
-                        <input type="text" name="kraPin" id="kraPin" class="form-control">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>Contact Person</label>
+                            <input type="text" name="contactPerson" class="form-control">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Phone</label>
+                            <input type="text" name="contactPersonPhone" class="form-control">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Email</label>
+                            <input type="email" name="contactPersonEmail" class="form-control">
+                        </div>
                     </div>
-                    <div class="form-group col-md-4">
-                        <label>Postal Code</label>
-                        <input type="text" name="postalCode" class="form-control">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>KRA Pin</label>
+                            <input type="text" name="kraPin" id="kraPin" class="form-control">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Postal Code</label>
+                            <input type="text" name="postalCode" class="form-control">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group col-md-4">
-                        <label>Status</label>
-                        <select name="status" class="form-control">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-                <h5 class="mt-4">Sales Person Details</h5>
-                <hr>
-                <div class="form-row">
-                    <div class="form-group col-md-3">
-                        <label>Sales Person</label>
-                        <select name="sales_person_id" id="salesPersonSelect" class="form-control">
-                            <option value="">Select Sales Person</option>
-                            @foreach ($sales_person as $sale_person)
-                                <option value="{{ $sale_person->id }}">{{ $sale_person->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label>Phone</label>
-                        <input type="text" id="phone_number" class="form-control" readonly>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label>ID Number</label>
-                        <input type="number" id="id_no" class="form-control" readonly>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label>Email</label>
-                        <input type="email" id="email_s" class="form-control" readonly>
+
+                    <h5 class="mt-4">Sales Person Details</h5>
+                    <hr>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>Sales Person</label>
+                            <select name="sales_person_id" id="salesPersonSelect" class="form-control">
+                                <option value="">Select Sales Person</option>
+                                @foreach ($sales_person as $sale_person)
+                                    <option value="{{ $sale_person->id }}">{{ $sale_person->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Phone</label>
+                            <input type="text" id="phone_number" class="form-control" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>ID Number</label>
+                            <input type="number" id="id_no" class="form-control" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Email</label>
+                            <input type="email" id="email_s" class="form-control" readonly>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
@@ -358,6 +362,18 @@
             </form>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            // 2. Hide Contact Person if walkin
+            $('#type').on('change', function() {
+                if ($(this).val() === 'walkin') {
+                    $('#contactPersonSection').hide();
+                } else {
+                    $('#contactPersonSection').show();
+                }
+            });
+        });
+    </script>
 
     <script>
         $('#salesPersonSelect').on('change', function() {

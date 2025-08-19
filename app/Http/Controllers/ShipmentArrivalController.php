@@ -49,6 +49,7 @@ class ShipmentArrivalController extends Controller
         $dispatchers = Dispatcher::where('office_id', Auth::user()->station)->get();
 
         $sheets = LoadingSheet::with('rate')
+            ->where('office_id', Auth::user()->station)
             ->withCount('waybills') // adds waybills_count
             ->orderBy('created_at', 'desc')
             ->get();

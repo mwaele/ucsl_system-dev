@@ -32,6 +32,8 @@ class Client extends Authenticatable
         'verificationCode',
         'special_rates_status',
         'sales_person_id',
+        'otp',
+        'verified_otp',
     ];
     /**
      * The attributes that should be hidden for arrays (e.g., when returned in API).

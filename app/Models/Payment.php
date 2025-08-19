@@ -37,6 +37,11 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'received_by');
     }
 
+    public function paidBy()
+    {
+        return $this->belongsTo(User::class, 'paid_by');
+    }
+
     /**
      * Sum of ALL payments tied to this shipment_collection_id
      */
