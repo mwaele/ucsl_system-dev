@@ -33,21 +33,57 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
-        $user->station = $request->station;
-        $user->role = $request->role;
-        $user->status = $request->status;
-        $user->password = Hash::make($request->password);
-        $user->save();
+        try {
+            $user = new User();
+            $user->name         = $request->name;
+            $user->email        = $request->email;
+            $user->phone_number = $request->phone_number;
+            $user->station      = $request->station;
+            $user->role         = $request->role;
+            $user->status       = $request->status;
+            $plainPassword      = $request->password;
+            $user->password     = Hash::make($plainPassword);
 
-        // Dispatch email job
+            if ($user->save()) {
+                // $loginUrl = url('/login');
+                // $terms    = env('TERMS_AND_CONDITIONS', '#');
+
+                // $subject = "Your UCS Account Has Been Created";
+                // $message = "
+                //     Dear {$user->name},<br><br>
+                //     Your user account has been created successfully.<br><br>
+
+                //     Here are your login credentials:<br>
+                //     <strong>Email:</strong> {$user->email}<br>
+                //     <strong>Password:</strong> {$plainPassword}<br><br>
+
+                //     You can log in to the UCS Portal using the link below:<br>
+                //     <a href=\"{$loginUrl}\" target=\"_blank\">Login to UCS Portal</a><br><br>
+
+                //     <p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                //     <p>Thank you for using Ufanisi Courier Services. For we are Fast, Reliable and Secure.</p>
+                // ";
+
+                // // Send email
+                // EmailHelper::sendHtmlEmail($user->email, $subject, $message);
+                // Dispatch email job
         SendUserAccountEmail::dispatch($user, $request->password);
 
         return redirect()->back()->with('success', 'User account created.');
+
+                return redirect()->back()->with('success', 'User account created successfully.');
+            } else {
+                return redirect()->back()->with('error', 'Failed to create User account. Please try again.');
+            }
+
+        } catch (\Exception $e) {
+            // Log the actual error for debugging
+            \Log::error('User creation failed: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'An unexpected error occurred while creating the account. Please contact support.');
+        }
     }
+
 
     public function update(Request $request, $id)
     {

@@ -108,61 +108,77 @@ class LoadingSheetController extends Controller
     }
 
     public function loadingsheet_waybills($id)
-    {
-        $loadingSheet = LoadingSheet::findOrFail($id);
+{
+    $loadingSheet = LoadingSheet::findOrFail($id);
 
-        // Build the base query
-        $shipmentQuery = ShipmentCollection::join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-            ->where('client_requests.status', 'verified')
-            ->where('shipment_collections.waybill_no', '!=', '') // Exclude empty waybill numbers
-            ->select('shipment_collections.*');
+    // Build the base query (no ->get() yet)
+    $shipmentQuery = ShipmentCollection::join(
+            'client_requests',
+            'shipment_collections.requestId',
+            '=',
+            'client_requests.requestId'
+        )
+        ->where('client_requests.status', 'verified')
+        ->where('shipment_collections.waybill_no', '!=', '') // Exclude empty waybill numbers
+        ->whereNull('shipment_collections.loading_status') // Correct way to check NULL
+        ->select('shipment_collections.*');
 
-        // If destination_id is NOT 0, filter by destination
-        if ($loadingSheet->destination_id != 0) {
-            $shipmentQuery->where('shipment_collections.destination_id', $loadingSheet->destination_id);
-        }
-
-        $shipment_collections = $shipmentQuery->get();
-
-        // Get destination name (if applicable)
-        $destination = DB::table('loading_sheets')
-            ->join('rates', 'loading_sheets.destination', '=', 'rates.id')
-            ->where('loading_sheets.id', $id)
-            ->select('rates.destination as destination_name')
-            ->first();
-
-        $loadingSheets = DB::table('loading_sheets')
-            ->join('transporters', 'loading_sheets.transported_by', '=', 'transporters.id')
-            ->join('transporter_trucks', 'transporters.id', '=', 'transporter_trucks.transporter_id')
-            ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
-            ->first();
-
-        return view('loading-sheet.loading_waybills')->with([
-            'shipment_collections' => $shipment_collections,
-            'ls_id' => $id,
-            'loadingSheet' => $loadingSheets,
-            'loading_sheet' => $loadingSheet,
-            'destination' => $destination,
-        ]);
+    // If destination_id is NOT 0, filter by destination
+    if ($loadingSheet->destination_id != 0) {
+        $shipmentQuery->where('shipment_collections.destination_id', $loadingSheet->destination_id);
     }
+
+    // Fetch results at the end
+    $shipment_collections = $shipmentQuery->get();
+
+    // Get destination name (if applicable)
+    $destination = DB::table('loading_sheets')
+        ->join('rates', 'loading_sheets.destination', '=', 'rates.id')
+        ->where('loading_sheets.id', $id)
+        ->select('rates.destination as destination_name')
+        ->first();
+
+    $loadingSheets = DB::table('loading_sheets')
+        ->join('transporters', 'loading_sheets.transported_by', '=', 'transporters.id')
+        ->join('transporter_trucks', 'transporters.id', '=', 'transporter_trucks.transporter_id')
+        ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
+        ->first();
+
+    return view('loading-sheet.loading_waybills')->with([
+        'shipment_collections' => $shipment_collections,
+        'ls_id' => $id,
+        'loadingSheet' => $loadingSheets,
+        'loading_sheet' => $loadingSheet,
+        'destination' => $destination,
+    ]);
+}
+
 
 
     public function generate_loading_sheet($id)
     {
-        // Fetch loading sheet details
+                // Fetch loading sheet details
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
+
+        // Destination (fallback if not found)
         $destination = Rate::find($loadingSheet->destination);
-        //dd($loadingSheet);
+        if ($destination === null) {
+            $destination = (object)[
+                'id'          => null,
+                'destination' => $loadingSheet->office->name ?? 'Unknown Destination',
+            ];
+        }
+
         // Main table data
         $data = DB::table('loading_sheet_waybills as lsw')
             ->join('shipment_items as si', 'lsw.shipment_item_id', '=', 'si.id')
             ->join('shipment_collections as sc', 'lsw.shipment_id', '=', 'sc.id')
-            ->join('rates as r', 'sc.destination_id', '=', 'r.id')
+            ->leftJoin('rates as r', 'sc.destination_id', '=', 'r.id') // allow missing rates
             ->join('clients as c', 'sc.client_id', '=', 'c.id')
             ->select(
                 'lsw.waybill_no',
                 'lsw.id',
-                'r.destination',
+                DB::raw('COALESCE(r.destination, "'.$destination->destination.'") as destination'),
                 'sc.total_cost',
                 'sc.payment_mode',
                 'c.name as client_name',
@@ -171,7 +187,15 @@ class LoadingSheetController extends Controller
                 DB::raw('SUM(si.actual_weight) as total_weight')
             )
             ->where('lsw.loading_sheet_id', $id)
-            ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost', 'sc.payment_mode', 'r.destination','lsw.id')
+            ->groupBy(
+                'lsw.waybill_no', 
+                'c.name', 
+                'r.id', 
+                'sc.total_cost', 
+                'sc.payment_mode', 
+                'r.destination',
+                'lsw.id'
+            )
             ->orderBy('lsw.id', 'desc')
             ->get();
 
@@ -187,7 +211,7 @@ class LoadingSheetController extends Controller
             ->where('lsw.loading_sheet_id', $id)
             ->first();
 
-        // Use your unified PDF generation method
+        // Generate PDF
         return $this->renderPdfWithPageNumbers(
             'loading-sheet.loading-sheet-pdf',
             [
@@ -200,6 +224,7 @@ class LoadingSheetController extends Controller
             'a4',
             'portrait'
         );
+
     }
 
 
@@ -317,13 +342,13 @@ class LoadingSheetController extends Controller
             'trackId' => $trackingId,
             'date' => now(),
             'details' => 'Parcel dispatched',
-            'remarks' => ''.$sheet->dispatcher->name.' dispatched the parcel '.' from '.$shipment->client->name.', request ID '.$shipment->requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$shipment->consignment_no.'',
+            'remarks' => ''.$sheet->dispatcher->name.' dispatched the parcel '.' from '.$shipment->client->name.', request ID '.$shipment->requestId,
             'created_at' => now(),
             'updated_at' => now()
         ]);
         // Send receiver SMS
                 $receiverPhone = $shipment->receiver_phone;
-                $parcelMessage = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
+                $parcelMessage = "Dear Customer, your parcel (Request ID: $shipment->requestId) has been dispatched. . We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
 
                 $smsService->sendSms(
                     phone: $receiverPhone,
@@ -338,18 +363,18 @@ class LoadingSheetController extends Controller
                     'recipient_type' => 'receiver',
                     'recipient_name' => $shipment->receiver_name ?? 'Receiver',
                     'phone_number' => $receiverPhone,
-                    'subject' => 'Parcel Dispatched Alert',
+                    'subject' => 'Parcel Dispatch Alert',
                     'message' => $parcelMessage,
                 ]);
 
                 // send sender message
 
                 $senderPhone = $shipment->receiver_phone;
-                $parcelMessageSender = "Dear Customer, Parcel(#$waybill_no) has been dispatched successfully. Request ID: $shipment->requestId. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
+                $parcelMessageSender = "Dear Customer, your parcel(Request ID: $shipment->requestId) has been dispatched. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
 
                 $smsService->sendSms(
                     phone: $senderPhone,
-                    subject: 'Parcel Dispatched Alert',
+                    subject: 'Parcel Dispatch Alert',
                     message: $parcelMessageSender,
                     addFooter: true
                 );
@@ -360,9 +385,19 @@ class LoadingSheetController extends Controller
                     'recipient_type' => 'sender',
                     'recipient_name' => $shipment->receiver_name ?? 'Sender',
                     'phone_number' => $senderPhone,
-                    'subject' => 'Parcel Dispatched Alert',
+                    'subject' => 'Parcel Dispatch Alert',
                     'message' => $parcelMessageSender,
                 ]);
+
+                // sender email
+            $senderSubject = 'Parcel Dispatch Alert';
+            $clientEmail = $shipment->client->email;
+            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+            $fullSenderMessage = $parcelMessageSender . $footer;
+
+            $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);
 
 
             $sheet->dispatch_date = Carbon::now(); // or now()

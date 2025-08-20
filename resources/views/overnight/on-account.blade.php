@@ -462,7 +462,7 @@
                                     @endif
 
                                     @if ($request->shipmentCollection?->payment_mode === 'Invoice')
-                                        <a href="{{ route('generate-invoice', $request->id) }}">
+                                        <a href="{{ route('generate-invoice', $request->id - 1) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Preview Invoice
                                             </button>
@@ -509,7 +509,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ Auth::user()->station->name }}
+                                                                {{ Auth::user()->office->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>

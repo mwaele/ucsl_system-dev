@@ -53,7 +53,7 @@
         <div class="row justify-content-center align-items-center mb-4">
             <div class="text-center">
                 <img src="{{ asset('images/UCSLogo1.png') }}" height="100" alt="Logo" class="mb-3">
-                <h2 class="text-primary fw-bold"><strong>Parcel Tracking</strong></h2>
+                <h2 class="text-primary fw-bold"><strong>U-Parms Parcel Tracking</strong></h2>
             </div>
         </div>
 

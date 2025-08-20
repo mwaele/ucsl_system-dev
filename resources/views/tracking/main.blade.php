@@ -122,11 +122,14 @@
                                 '<p class="text-muted">No shipment items found.</p>';
                         }
 
+                        // <h5 class="text-primary mb-2">
+                        //         Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</strong> 
+                        //         <span >${data.tracking_label ? data.tracking_label : ''}</span>
+                        //     </h5>
+
                         let html =
-                            `<h5 class="text-primary mb-2">
-                                Tracking Results for <strong>${data.requestId}</strong> For <strong>${clientName}</strong> 
-                                <span >${data.tracking_label ? data.tracking_label : ''}</span>
-                            </h5>
+                            `
+                            
  
                         <section class="mb-3">
                         <div class="row mb-1">
@@ -172,7 +175,7 @@
                 <span class="timeline-icon">
                     <i class="fas fa-check text-white fa-sm fa-fw"></i>
                 </span>
-                <h5 class="fw-bold text-primary"><strong>${info.details}</strong></h5>
+                 <h5 class="fw-bold text-primary"><strong>${info.details}</strong></h5>
                 <p class="text-dark mb-1 fw-bold">${new Date(info.date).toLocaleString('en-US', {
                     month: 'long',
                     day: 'numeric',
@@ -181,10 +184,11 @@
                     minute: '2-digit',
                     hour12: true
                 })}</p>
-                <p class="text-dark mb-1">${info.remarks}</p>
+                
                 ${isLast ? `<p class="text-success p-0 m-0 fst-italic"><strong>Current Status: ${data.current_status}</strong></p>` : ''}
             </li>
         `;
+                                // <p class="text-dark mb-1">${info.remarks}</p>
                             });
                         } else {
                             html +=

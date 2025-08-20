@@ -186,7 +186,7 @@
                 {{ count($shipment_items) }} {{ Str::plural('item', count($shipment_items)) }}
             </strong> {{ $trackingData['tracking_label'] }}
         </h3>
-        
+
     </div>
     <section class="mb-3">
         <table width="100%" cellpadding="1" cellspacing="0"
@@ -198,8 +198,8 @@
                     </p>
                     <p class="p">
                         Destination: <span style="color: #212529;">{{ $data['destination_name'] }}</span>
-                        </p>
-                    </td>
+                    </p>
+                </td>
                 <td class="td">
                     <p class="p">
                         Sender: <span style="color: #212529;">{{ $data['sender_name'] }}</span>

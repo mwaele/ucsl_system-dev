@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ClientRequest;
 use App\Models\ShipmentCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RequestIdService
 {
@@ -20,22 +21,24 @@ class RequestIdService
 
         DB::beginTransaction();
         try {
-            $lastRequestFromClient = ClientRequest::where('requestId', 'like', 'REQ-%')
-                ->orderByRaw("$castExpression DESC")
-                ->lockForUpdate()
-                ->value('requestId');
+            $lastRequest = ClientRequest::latest('id')->first();
 
-            $lastRequestFromCollection = ShipmentCollection::where('requestId', 'like', 'REQ-%')
-                ->orderByRaw("$castExpression DESC")
-                ->lockForUpdate()
-                ->value('requestId');
+            if ($lastRequest && preg_match('/-(\d+)$/', $lastRequest->requestId, $matches)) {
+                $lastNumber = (int) $matches[1];
+                $nextNumber = $lastNumber + 1;
+            } else {
+                // Start from 10000 if no records exist
+                $nextNumber = 10000;
+            }
 
-            $clientNumber = $lastRequestFromClient ? (int)substr($lastRequestFromClient, 4) : 0;
-            $collectionNumber = $lastRequestFromCollection ? (int)substr($lastRequestFromCollection, 4) : 0;
+            // Generate random 3 uppercase letters
+            $prefix = collect(range('A', 'Z'))
+            ->random(3)                // pick 3 random letters
+            ->implode('');
 
-            $nextNumber = max(max($clientNumber, $collectionNumber) + 1, 10000);
 
-            $requestId = 'REQ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+            // Build new requestId
+            $requestId = $prefix . '-' . $nextNumber;
 
             DB::commit();
             return $requestId;

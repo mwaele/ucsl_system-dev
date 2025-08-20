@@ -39,7 +39,8 @@
                                             <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
-                                                <select class="form-control selectpicker" data-live-search="true" id="clientId" name="clientId">
+                                                <select class="form-control selectpicker" data-live-search="true"
+                                                    id="clientId" name="clientId">
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
                                                         <option value="{{ $client->id }}">{{ $client->name }}
@@ -480,7 +481,7 @@
                                         </div>
                                     @endif
                                     @if ($request->shipmentCollection->payment_mode == 'Invoice')
-                                        <a href="{{ route('generate-invoice', $request->id) }}">
+                                        <a href="{{ route('generate-invoice', $request->id - 1) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Generate Invoice
                                             </button>
@@ -533,7 +534,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ $request->shipmentCollection->office->name }}
+                                                                {{ Auth::user()->office->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>

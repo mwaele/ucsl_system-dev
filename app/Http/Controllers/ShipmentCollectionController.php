@@ -196,8 +196,8 @@ class ShipmentCollectionController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
-                'details' => 'Parcel received from Walk-in Client',
-                'remarks' => ''.auth()->user()->name.' received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName.', generated client request ID '.$requestId.', with waybill number '.$waybill_no.' and a consignment note with ID '.$request->consignment_no.'',
+                'details' => 'Parcel received from'. $clientName,
+                'remarks' => ''.auth()->user()->station.' office received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -258,27 +258,73 @@ class ShipmentCollectionController extends Controller
 
             DB::commit();
 
-            // Send receiver SMS
-            $waybill = $waybill_no;
-            $receiverPhone = $request->receiverPhone;
-            $parcelMessage = "Dear Customer, Parcel(#$waybill) has been booked successfully. We will notify when the parcel arrives. Thank you for using Ufanisi Courier Services";
+              // ----------------------------
+            // ✅ SMS Notifications Logic
+            // ----------------------------
+            try {
+                $senderPhone = $client->contact;
+                $senderName = $client->name;
+                $receiverPhone = $request->receiver_phone;
+                $receiverName = $request->receiver_name;
+                $clientId = $request->client_id;
 
-            $smsService->sendSms(
-                phone: $receiverPhone,
-                subject: 'Parcel Booking Confirmation',
-                message: $parcelMessage,
-                addFooter: true
-            );
+                // Send receiver SMS
+                $waybill = $waybill_no;
+                $receiverPhone = $request->receiverPhone;
+                $parcelMessage = "Dear Customer, your parcel $requestId has been booked. We will notify you when it arrives. Thank you for choosing Ufanisi Courier Services";
 
-            SentMessage::create([
-                'request_id' => $requestId,
-                'client_id' => $request->clientId,
-                'recipient_type' => 'receiver',
-                'recipient_name' => $request->receiverContactPerson ?? 'Receiver',
-                'phone_number' => $receiverPhone,
-                'subject' => 'Parcel Booking Confirmation',
-                'message' => $parcelMessage,
-            ]);
+                $smsService->sendSms(
+                    phone: $receiverPhone,
+                    subject: 'Parcel Booking Confirmation',
+                    message: $parcelMessage,
+                    addFooter: true
+                );
+
+                SentMessage::create([
+                    'request_id' => $requestId,
+                    'client_id' => $request->clientId,
+                    'recipient_type' => 'receiver',
+                    'recipient_name' => $request->receiverContactPerson ?? 'Receiver',
+                    'phone_number' => $receiverPhone,
+                    'subject' => 'Parcel Booking Confirmation',
+                    'message' => $parcelMessage,
+                ]);
+
+            // Notify Sender
+                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId}. Thank you for choosing Ufanisi Courier Services";
+                $smsService->sendSms(
+                    phone: $senderPhone,
+                    subject: 'Parcel Booked',
+                    message: $senderMsg,
+                    addFooter: true
+                );
+                // $smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
+
+                SentMessage::create([
+                    'request_id' => $request->requestId,
+                    'client_id' => $clientId,
+                    'rider_id' => auth()->id(),
+                    'recipient_type' => 'sender',
+                    'recipient_name' => $senderName,
+                    'phone_number' => $senderPhone,
+                    'subject' => 'Parcel booked',
+                    'message' => $senderMsg,
+                ]);
+
+            // sender email
+            $senderSubject = 'Parcel Collected';
+            $clientEmail = $client->email;
+            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+            $fullSenderMessage = $senderMsg . $footer;
+
+            $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);
+
+            } catch (\Exception $e) {
+                \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
+            }
+
 
             return redirect()->back()->with('success', 'Shipment collection created and receiver notified successfully.');
 
@@ -444,7 +490,7 @@ class ShipmentCollectionController extends Controller
                 'trackId' => $id,
                 'date' => now(),
                 'details' => 'Parcel Collected at Client Premises',
-                'remarks' => "Rider arrived at client premises for collection; Collected {$itemCount} {$text} with total weight of {$totalWeight} {$text2}. Generated Consignment Note Number {$consignment_no}",
+                'remarks' => "Rider arrived at client premises and collected; Collected {$itemCount} {$text} with total weight of {$totalWeight} {$text2}.",
             ]);
 
             // -------------------------
@@ -803,7 +849,7 @@ class ShipmentCollectionController extends Controller
                 'trackId' => $trackId,
                 'date' => now(),
                 'details' => 'Parcel Verified and ready for dispatch',
-                'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated ' . $waybill_no,
+                'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; ',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);

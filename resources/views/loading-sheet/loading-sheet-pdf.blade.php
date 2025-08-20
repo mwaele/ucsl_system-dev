@@ -239,7 +239,11 @@
     </table>
     <div class="head">
         <h2 style="text-align: center">Parcel Manifest <strong>From</strong> {{ $loading_sheet->office->name }}
-            <strong>To </strong> {{ $destination->destination }}
+            <strong>To </strong>
+            {{ optional($loading_sheet->office)->name === optional($destination)->destination
+                ? 'Various'
+                : optional($destination)->destination ?? 'N/A' }}
+
         </h2>
         <h1 class="text-danger mb-3 " style="text-align: right">
             <strong>No. {{ str_pad($loading_sheet->batch_no, 4, '0', STR_PAD_LEFT) }}

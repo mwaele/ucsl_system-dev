@@ -39,7 +39,8 @@
                                                 <div class="col-md-6">
 
                                                     <label for="clientId" class="form-label text-primary">Client</label>
-                                                    <select class="form-control selectpicker" data-live-search="true" id="clientId" name="clientId">
+                                                    <select class="form-control selectpicker" data-live-search="true"
+                                                        id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->id }}">{{ $client->name }}
@@ -120,7 +121,8 @@
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="unallocatedRiders" value="unallocated">
-                                                        <label class="form-check-label" for="unallocatedRiders">Unallocated
+                                                        <label class="form-check-label"
+                                                            for="unallocatedRiders">Unallocated
                                                             Riders</label>
                                                     </div>
                                                 </div>
@@ -205,18 +207,20 @@
                                                 <div class="col-md-3 mb-3">
                                                     <label for="priority_level" class="form-label text-primary">Priority
                                                         Level</label>
-                                                    <select class="form-control" name="priority_level" id="priority_level">
+                                                    <select class="form-control" name="priority_level"
+                                                        id="priority_level">
                                                         <option value="normal" selected>Normal</option>
                                                         <option value="high">High</option>
                                                     </select>
                                                 </div>
-                                                
-                                                <div class="col-md-3 mb-3" id="priority-deadline-group" style="display: none;">
+
+                                                <div class="col-md-3 mb-3" id="priority-deadline-group"
+                                                    style="display: none;">
                                                     <label for="deadline_date" class="form-label text-primary">
                                                         Deadline (If High Priority)
                                                     </label>
-                                                    <input type="datetime-local" class="form-control" name="deadline_date"
-                                                        id="deadline_date">
+                                                    <input type="datetime-local" class="form-control"
+                                                        name="deadline_date" id="deadline_date">
                                                 </div>
 
                                             </div>
@@ -335,7 +339,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ $request->shipmentCollection->office->name }}
+                                                                {{ Auth::user()->office->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>

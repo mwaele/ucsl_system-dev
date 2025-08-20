@@ -18,6 +18,9 @@ use App\Services\SmsService;
 use App\Mail\GenericMail;
 
 use App\Jobs\SendCollectionNotificationsJob;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
 
 class ClientController extends Controller
 {
@@ -80,109 +83,128 @@ class ClientController extends Controller
      * Store a newly created resource in storage.
      */
     
-    public function store(Request $request,  SmsService $smsService)
+    public function store(Request $request, SmsService $smsService)
     {
-        //dd($request);
-        // Validate the incoming request
-        $validated = $request->validate([
-            'accountNo' => 'required|unique:clients|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'password' => 'required|string|min:8',
-            'contact' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'building' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-            //'category_id' => 'required|string|max:11',
-            'type' => 'required|string|max:255',
-            'contactPerson' => 'required|string|max:255',
-            'contactPersonPhone' => 'required|string|max:255',
-            'contactPersonEmail' => 'required|email|max:255',
-            'kraPin' => 'required|string|max:255',
-            'postalCode' => 'required|string|max:255',
-            'status' => 'required|string|in:active,inactive',
-            'special_rates_status'=>'nullable|string',
-            'sales_person_id'=>'nullable|string',
-            'id_number'=>'nullable|string',
-        ]);
-    
+        try {
+            // Common validation rules
+            $rules = [
+                'accountNo' => 'required|unique:clients|max:255',
+                'name' => 'required|string|max:255',
+                'password' => 'required|string|min:8',
+                'contact' => 'required|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+                'building' => 'nullable|string|max:255',
+                'country' => 'required|string|max:255',
+                'type' => 'required|string|in:on_account,walkin',
+                'status' => 'required|string|in:active,inactive',
+                'special_rates_status' => 'nullable|string',
+                'sales_person_id' => 'nullable|string',
+                'id_number' => 'nullable|string',
+            ];
 
-        //dd($validated);
-        // If validation passes, create the new client with a unique account number
-         // Insert the validated data
-        $client = new Client();
-        $client->accountNo = $validated['accountNo'];
-        $client->name = $validated['name'];
-        $client->email = $validated['email'];
-        $client->password = bcrypt($validated['password']);  // Ensure password is hashed
-        $contact = $this->normalizePhoneNumber($validated['contact']);
-        $client->contact = $contact; 
-        $client->address = $validated['address'];
-        $client->id_number = $validated['id_number'];
-        $client->city = $validated['city'];
-        $client->building = $validated['building'];
-        $client->country = $validated['country'];
-        $client->category = 'NULL';
-        //$client->category_id = $validated['category_id'];
-        $client->type = $validated['type'];
-        $client->contactPerson = $validated['contactPerson'];
-        $client->contactPersonPhone = $validated['contactPersonPhone'];
-        $client->contactPersonEmail = $validated['contactPersonEmail'];
-        $client->kraPin = $validated['kraPin'];
-        $client->postalCode = $validated['postalCode'];
-        $client->status = $validated['status'];
-        $client->special_rates_status = $validated['special_rates_status'] ?? null;
-        $client->sales_person_id = $validated['sales_person_id'];
+            // Add extra requirements for on-account clients
+            if ($request->input('type') !== 'walkin') {
+                $rules = array_merge($rules, [
+                    'contactPerson' => 'required|string|max:255',
+                    'contactPersonPhone' => 'required|string|max:255',
+                    'contactPersonEmail' => 'required|email|max:255',
+                    'kraPin' => 'required|string|max:255',
+                    'postalCode' => 'required|string|max:255',
+                    'email' => 'required|email',
+                ]);
+            } else {
+                // Walk-in clients → optional fields
+                $rules = array_merge($rules, [
+                    'contactPerson' => 'nullable|string|max:255',
+                    'contactPersonPhone' => 'nullable|string|max:255',
+                    'contactPersonEmail' => 'nullable|email|max:255',
+                    'kraPin' => 'nullable|string|max:255',
+                    'postalCode' => 'nullable|string|max:255',
+                    'email' => 'nullable',
+                ]);
+            }
 
-        // Generate a 6-digit random OTP
-        $otp = rand(100000, 999999);
+            $validated = $request->validate($rules);
 
-        //dd($client);
-        $client->save();  // Save the client to the database
+            // Transaction ensures DB integrity
+            DB::beginTransaction();
 
-        // Assign to client and save
-        $client->otp = $otp;
-        $client->save();
+            $client = new Client();
+            $client->accountNo = $validated['accountNo'];
+            $client->name = $validated['name'];
+            $client->email = $validated['email'];
+            $client->password = bcrypt($validated['password']);
+            $client->contact = $this->normalizePhoneNumber($validated['contact']);
+            $client->address = $validated['address'];
+            $client->id_number = $validated['id_number'] ?? null;
+            $client->city = $validated['city'];
+            $client->building = $validated['building'];
+            $client->country = $validated['country'];
+            $client->category = 'NULL'; // TODO: remove if not needed
+            $client->type = $validated['type'];
+            $client->contactPerson = $validated['contactPerson'] ?? null;
+            $client->contactPersonPhone = $validated['contactPersonPhone'] ?? null;
+            $client->contactPersonEmail = $validated['contactPersonEmail'] ?? null;
+            $client->kraPin = $validated['kraPin'] ?? null;
+            $client->postalCode = $validated['postalCode'] ?? null;
+            $client->status = $validated['status'];
+            $client->special_rates_status = $validated['special_rates_status'] ?? null;
+            $client->sales_person_id = $validated['sales_person_id'] ?? null;
 
-            $message = "Dear Customer, OTP is (#$otp).Thank you for using Ufanisi Courier Services";
+            // Generate and assign OTP
+            $client->otp = rand(100000, 999999);
+            $client->save();
 
-            $smsService->sendSms(
-                phone: $contact,
-                subject: 'OTP',
-                message: $message,
-                addFooter: true
-            );
+            // Save categories safely
+            $categoryIds = (array) $request->input('category_id', []);
+            foreach ($categoryIds as $catId) {
+                if (!empty($catId)) {
+                    ClientCategory::create([
+                        'client_id' => $client->id,
+                        'category_id' => $catId,
+                    ]);
+                }
+            }
 
-            // SentMessage::create([
-            //     'request_id' => $request->requestId,
-            //     'client_id' => $request->clientId,
-            //     'recipient_type' => 'receiver',
-            //     'recipient_name' => $request->receiverContactPerson ?? 'Receiver',
-            //     'phone_number' => $receiverPhone,
-            //     'subject' => 'Parcel Booking Confirmation',
-            //     'message' => $parcelMessage,
-            // ]);
+            DB::commit();
 
-        //send OTP SMS to client
+            // Try sending SMS, but don’t fail client creation if SMS fails
+            try {
+                $message = "Your OTP is {$client->otp}.";
+                $smsService->sendSms(
+                    phone: $client->contact,
+                    subject:'',
+                    message: $message,
+                    addFooter: true
+                );
+            } catch (\Throwable $e) {
+                Log::error("Failed to send OTP SMS to client {$client->id}: " . $e->getMessage());
+                // Don’t rollback — client is already created
+            }
 
+            return redirect()->route('clients.index')
+                            ->with('success', 'Client created successfully!');
 
-
-        // Get selected category IDs
-        $categoryIds = $request->input('category_id');
-
-        // Save to pivot table client_categories
-        foreach ($categoryIds as $catId) {
-            ClientCategory::create([
-                'client_id' => $client->id,
-                'category_id' => $catId,
-            ]);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            Log::error("Database error while creating client: " . $e->getMessage());
+            return back()->withErrors(['error' => 'Could not save client. Please try again.'])
+                        ->withInput();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error("Unexpected error while creating client: " . $e->getMessage());
+            return back()->withErrors(['error' => 'An unexpected error occurred. Please try again.'])
+                        ->withInput();
         }
-
-
-        return redirect()->route('clients.index')->with('success', 'Client created successfully!');
-
     }
+
+    public function checkClient($id = null)
+    {
+        $client = Client::where('id_number', $id)->first();
+        return response()->json(['exists' => $client ? true : false]);
+    }
+
     
 
     /**

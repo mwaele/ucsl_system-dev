@@ -21,25 +21,25 @@
                             placeholder="Enter Account Number" readonly>
                     </div>
                     <div class="form-group col-md-4">
-                        <label>Full Name</label>
+                        <label>Full Name <span class="text-danger">*</span> </label>
                         <input type="text" name="name" class="form-control" placeholder="Enter Full Name">
                     </div>
                     <div class="form-group col-md-4">
-                        <label>Email Address</label>
+                        <label>Email Address <span class="text-danger">*</span> </label>
                         <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>ID Number</label>
+                        <label>ID Number <span class="text-danger">*</span> </label>
                         <input type="text" name="id_number" id="id_number" class="form-control"
-                            placeholder="Enter ID Number">
+                            placeholder="Enter ID Number" required>
                     </div>
                     <div class="form-group col-md-4">
-                        <label>Phone Number</label>
+                        <label>Phone Number <span class="text-danger">*</span> </label>
                         <input type="text" name="contact" id="contact" class="form-control"
-                            placeholder="Enter Phone Number">
+                            placeholder="Enter Phone Number" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label>Address</label>
@@ -57,8 +57,8 @@
                         <input type="text" name="building" class="form-control">
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="country">Country</label>
-                        <select name="country" data-live-search id="country" class="form-control">
+                        <label for="country">Country <span class="text-danger">*</span> </label>
+                        <select name="country" data-live-search id="country" class="form-control" required>
                             <option value="">-- Select Country --</option>
                             <option value="Afghanistan">Afghanistan</option>
                             <option value="Albania">Albania</option>
@@ -260,10 +260,10 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>Category (Select single or multiple)</label>
+                        <label>Category (Select single or multiple) <span class="text-danger">*</span> </label>
                         {{-- <input type="text" name="category" class="form-control"> --}}
                         <select name="category_id[]" class="form-control" id="categories-multiselect"
-                            multiple="multiple">
+                            multiple="multiple" required>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
@@ -271,8 +271,8 @@
 
                     </div>
                     <div class="form-group col-md-4">
-                        <label>Type</label>
-                        <select name="type" class="form-control" id="type">
+                        <label>Type <span class="text-danger">*</span> </label>
+                        <select name="type" class="form-control" id="type" required>
                             <option value="">Select Account Type</option>
                             <option value="on_account">On Account</option>
                             <option value="walkin">Walkin</option>
@@ -280,7 +280,8 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label>Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Enter Password">
+                        <input type="password" name="password" class="form-control" value="password"
+                            placeholder="Enter Password">
                     </div>
                     {{-- <div class="form-group col-md-4">
                         <label>Industry</label>
@@ -370,6 +371,28 @@
                     $('#contactPersonSection').hide();
                 } else {
                     $('#contactPersonSection').show();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // 1. Check if client exists by ID Number
+            $('#id_number').on('keyup', function() {
+                let idNumber = $(this).val().trim();
+
+                if (idNumber.length > 4) { // check only after typing at least 5 digits
+                    $.ajax({
+                        url: "/check-client/" + idNumber,
+                        type: "GET",
+                        success: function(response) {
+                            if (response.exists) {
+                                alert("Client with this ID Number already exists!");
+                                $('#id_number').val('');
+                            }
+                        }
+                    });
                 }
             });
         });

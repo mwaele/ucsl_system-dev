@@ -33,8 +33,7 @@
                     <i class="fas fa-download fa-sm text-white"></i> Generate Report Based on Filtering
                 </a>
 
-                <a href="/shipment_arrivals_report_detail" id="generateReportBtn"
-                    class="btn btn-primary btn-sm ml-md-2 mb-2 mb-md-0 shadow-sm">
+                <a href="#" id="generateReportBtn" class="btn btn-primary btn-sm ml-md-2 mb-2 mb-md-0 shadow-sm">
                     <i class="fas fa-download fa-sm text-white"></i> Generate Storage Charges Report
                 </a>
 
@@ -49,10 +48,9 @@
                     <i class="fas fa-download fa-sm text-white"></i> Generate Uncollected Parcels Report
                 </a>
 
-                <a href="/shipment_arrivals_report_detail" id="generateReportBtn"
-                    class="btn btn-primary btn-sm ml-md-2 mb-2 mb-md-0 shadow-sm">
+                {{-- <a href="#" id="generateReportBtn" class="btn btn-primary btn-sm ml-md-2 mb-2 mb-md-0 shadow-sm">
                     <i class="fas fa-download fa-sm text-white"></i> Generate General Report
-                </a>
+                </a> --}}
 
 
             </div>

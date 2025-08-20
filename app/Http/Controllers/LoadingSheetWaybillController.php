@@ -39,6 +39,9 @@ class LoadingSheetWaybillController extends Controller
     foreach ($request->waybill_no as $shipmentId) {
         $shipment = ShipmentCollection::find($shipmentId);
 
+        $shipment->loading_status = 'loaded';
+        $shipment->save();
+
         if ($shipment) {
             $shipmentItems = DB::table('shipment_items')
                 ->where('shipment_id', $shipment->id)

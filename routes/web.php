@@ -240,6 +240,9 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/update_collections/{id}', [ShipmentCollectionController::class, 'update_collections'])->name('shipments.update_collections');
 
+    Route::get('/check-client/{id?}', [ClientController::class, 'checkClient'])->name('check.client');
+
+
     //Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
 
     //Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);

@@ -75,7 +75,7 @@ class SameDayController extends Controller
 
     public function walk_in()
     {
-         $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
+        $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
         $offices = Office::where('id',Auth::user()->station)->get();
         $vehicles = Vehicle::all();
         $loggedInUserId = Auth::user()->id;
@@ -123,7 +123,7 @@ class SameDayController extends Controller
             ->get();
 
 
-        return view('same_day.walk_in', compact('clientRequests', 'offices',
+        return view('same_day.walk_in', compact('clientRequests',      'offices',
             'loggedInUserId',
             'destinations',
             'walkInClients',
@@ -329,7 +329,14 @@ class SameDayController extends Controller
         $client_request->status= "collected";
         $client_request->vehicleId = $validatedData['userId'];
         $client_request->userId = $validatedData['vehicleId'];
-        $client_request->save();       
+        $client_request->save();  
+        
+        //update shipment_collection status to collected
+        $shipment_collection = ShipmentCollection::where('requestId',$requestId)->first();
+
+        $shipment_collection->status="collected";
+        $shipment_collection->save();
+
 
 
         $rider = User::findOrFail($validatedData['userId']);
