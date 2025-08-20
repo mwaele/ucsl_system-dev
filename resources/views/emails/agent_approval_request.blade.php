@@ -6,18 +6,16 @@ A Same Day On-Account delivery request (ID: **{{ $requestId }}**) has been initi
 
 **Agent Details**
 - **Name:** {{ $agentName }}
-- **ID Number:** {{ $agentIdNumber }}
+- **ID Number:** {{ $agentId }}
 - **Phone:** {{ $agentPhone }}
 - **Reason:** {{ $agentReason }}
 
 Please login to take action:
 
-<x-mail::button :url="route('sameday.on-account', $requestId)">
+<x-mail::button :url="$approvalUrl">
     View Request
 </x-mail::button>
 
 Thank you,<br>
 {{ config('app.name') }}
 </x-mail::message>
-
-

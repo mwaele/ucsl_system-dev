@@ -19,6 +19,7 @@ use App\Models\ShipmentCollection;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
 use App\Models\SentMessage;
+use Illuminate\Support\Str;
 use App\Helpers\EmailHelper;
 
 class ShipmentDeliveriesController extends Controller
@@ -232,32 +233,67 @@ class ShipmentDeliveriesController extends Controller
         return redirect()->back()->with('success', 'Agent request has been ' . ($action === 'approve' ? 'approved' : 'declined') . '.');
     }
 
-    public function requestApproval(Request $request)
+    public function requestApproval(Request $request) 
     {
-        $requestId = $request->input('requestId');
-        $agentName = $request->input('agentName');
-        $agentId = $request->input('agentId');
-        $agentPhone = $request->input('agentPhone');
+        // Log entry point with request data
+        Log::info('requestApproval() called', ['requestId' => $request->input('requestId')]);
+
+        // Extract agent details
+        $requestId   = $request->input('requestId');
+        $agentName   = $request->input('agentName');
+        $agentId     = $request->input('agentId');
+        $agentPhone  = $request->input('agentPhone');
         $agentReason = $request->input('agentReason');
 
-        // Validate inputs (optional)
+        // Validate inputs
         if (!$agentName || !$agentId || !$agentPhone || !$agentReason) {
+            Log::warning('Missing agent details', ['requestId' => $requestId]);
             return response()->json(['status' => 'error', 'message' => 'Agent details are required.'], 422);
         }
 
+        // Lookup shipment collection
         $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
-
         if (!$shipmentCollection) {
+            Log::error('ShipmentCollection not found', ['requestId' => $requestId]);
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
-        $shipmentCollection->agent_approved = false;
+        // Lookup client request with relations
+        $clientRequest = ClientRequest::with(['client', 'serviceLevel'])
+            ->where('requestId', $requestId)
+            ->first();
+
+        if (!$clientRequest) {
+            Log::error('ClientRequest not found', [
+                'shipmentCollectionId' => $shipmentCollection->id,
+                'requestId' => $requestId
+            ]);
+            return response()->json(['status' => 'error', 'message' => 'Client Request not found.'], 404);
+        }
+
+        // Normalize clientType and serviceLevel to match route names
+        $clientType   = strtolower($clientRequest->client->type ?? 'unknown');
+        $serviceLevel = strtolower($clientRequest->serviceLevel->sub_category_name ?? 'unknown');
+
+        $serviceLevel = Str::slug($serviceLevel, '');  // e.g. "same day" → "sameday"
+        $clientType   = str_replace('_', '-', $clientType); // e.g. "on_account" → "on-account"
+        if ($clientType === 'walkin') {
+            $clientType = 'walk-in';
+        }
+
+        // Build approval route
+        $routeName   = $serviceLevel . '.' . $clientType;
+        $approvalUrl = route($routeName) . '?requestId=' . $requestId;
+        Log::info('Approval URL generated', ['routeName' => $routeName]);
+
+        // Update shipment status
+        $shipmentCollection->agent_approved  = false;
         $shipmentCollection->agent_requested = true;
         $shipmentCollection->save();
+        Log::info('ShipmentCollection updated', ['id' => $shipmentCollection->id]);
 
-        // Add tracking info
+        // Update tracking info
         $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
-
         if ($trackId) {
             DB::table('tracks')
                 ->where('id', $trackId)
@@ -267,20 +303,38 @@ class ShipmentDeliveriesController extends Controller
                 ]);
 
             DB::table('tracking_infos')->insert([
-                'trackId' => $trackId,
-                'date' => now(),
-                'details' => 'Agent Approval Request Submitted',
-                'user_id' => Auth::id(),
-                'remarks' => "Agent Name: {$agentName}, ID: {$agentId}, Phone: {$agentPhone}, Reason: {$agentReason}",
+                'trackId'    => $trackId,
+                'date'       => now(),
+                'details'    => 'Agent Approval Request Submitted',
+                'user_id'    => Auth::id(),
+                'remarks'    => "Agent Name: {$agentName}, ID: {$agentId}, Phone: {$agentPhone}, Reason: {$agentReason}",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            Log::info('Tracking updated', ['trackId' => $trackId]);
         }
 
-        // Send approval email (you may customize the mailable to include agent details)
-        Mail::to('jeff.letting@ufanisi.co.ke')->send(
-            new AgentApprovalRequestMail($requestId, $agentName, $agentId, $agentPhone, $agentReason)
-        );
+        // Send approval email
+        try {
+            Mail::to('jeff.letting@ufanisi.co.ke')
+            ->cc('mwaele@ufanisi.co.ke')
+            ->send(
+                new AgentApprovalRequestMail(
+                    $requestId,
+                    $agentName,
+                    $agentId,
+                    $agentPhone,
+                    $agentReason,
+                    $approvalUrl
+                )
+            );
+            Log::info('Approval email sent');
+        } catch (\Throwable $e) {
+            Log::error('Failed to send approval email', ['error' => $e->getMessage()]);
+        }
+
+        Log::info('requestApproval() completed', ['requestId' => $requestId]);
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
     }

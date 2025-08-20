@@ -532,7 +532,7 @@
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
-                                        <di8v class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
+                                        <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
                                             aria-labelledby="printModalLabel-{{ $collection->id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
@@ -742,7 +742,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </di8v>
+                                        </div>
                                     @endif
 
                                     <!-- Deliver button -->

@@ -18,30 +18,32 @@ class AgentApprovalRequestMail extends Mailable
      */
     public $requestId;
     public $agentName;
-    public $agentIdNumber;
+    public $agentId;
     public $agentPhone;
     public $agentReason;
+    public $approvalUrl;
 
-    public function __construct($requestId, $agentName, $agentIdNumber, $agentPhone, $agentReason)
+    public function __construct($requestId, $agentName, $agentId, $agentPhone, $agentReason, $approvalUrl)
     {
-        $this->requestId = $requestId;
-        $this->agentName = $agentName;
-        $this->agentIdNumber = $agentIdNumber;
-        $this->agentPhone = $agentPhone;
+        $this->requestId   = $requestId;
+        $this->agentName   = $agentName;
+        $this->agentId     = $agentId;
+        $this->agentPhone  = $agentPhone;
         $this->agentReason = $agentReason;
+        $this->approvalUrl = $approvalUrl;
     }
 
     public function build()
     {
-        return $this->subject('Agent Approval Request')
-            ->view('emails.agent_approval_request')
-            ->with([
-                'requestId' => $this->requestId,
-                'agentName' => $this->agentName,
-                'agentIdNumber' => $this->agentIdNumber,
-                'agentPhone' => $this->agentPhone,
-                'agentReason' => $this->agentReason,
-            ]);
+        return $this->view('emails.agent_approval_request')
+                    ->with([
+                        'requestId'   => $this->requestId,
+                        'agentName'   => $this->agentName,
+                        'agentId'     => $this->agentId,
+                        'agentPhone'  => $this->agentPhone,
+                        'agentReason' => $this->agentReason,
+                        'approvalUrl' => $this->approvalUrl,
+                    ]);
     }
 
     /**
