@@ -2,7 +2,7 @@
 # ATTENTION ADMIN
 # Agent Delivery Approval Request
 
-A Same Day On-Account delivery request (ID: **{{ $requestId }}**) has been initiated for the following agent and requires front office approval:
+A delivery request (ID: **{{ $requestId }}**) has been initiated for the following agent and requires front office approval:
 
 **Agent Details**
 - **Name:** {{ $agentName }}
