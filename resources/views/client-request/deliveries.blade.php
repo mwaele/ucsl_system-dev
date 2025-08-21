@@ -18,7 +18,7 @@
                             <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
-                            <th>Service Type</th>
+                            <th>Service Level</th>
                             <th>Telephone Number</th>
                             <th>Pickup Location</th>
                             <th>Parcel Details</th>
@@ -31,7 +31,7 @@
                             <th>#</th>
                             <th>Req ID</th>
                             <th>Client Name</th>
-                            <th>Service Type</th>
+                            <th>Service Level</th>
                             <th>Client Telephone Number</th>
                             <th>Pickup Location</th>
                             <th>Parcel Details</th>
@@ -747,12 +747,14 @@
                                     @endif
 
                                     <!-- Deliver button -->
-                                    @if ($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated')
-                                        <button class="btn btn-sm btn-success" title="Deliver Parcel" data-toggle="modal"
-                                            data-target="#deliverParcel-{{ $collection->id }}">Deliver <i
-                                                class="fas fa-box"></i>
+                                    @if (($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated')
+                                        && $collection->serviceLevel->sub_category_name === 'Same Day')
+                                        <button class="btn btn-sm btn-success" title="Deliver Parcel"
+                                            data-toggle="modal" data-target="#deliverParcel-{{ $collection->id }}">
+                                            Deliver <i class="fas fa-box"></i>
                                         </button>
                                     @endif
+
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="deliverParcel-{{ $collection->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="deliverParcel-{{ $collection->id }}"

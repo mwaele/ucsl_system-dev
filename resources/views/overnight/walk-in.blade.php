@@ -40,11 +40,15 @@
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
                                                 <select class="form-control selectpicker" data-live-search="true"
-                                                    id="clientId" name="clientId">
+                                                        id="clientId" name="clientId">
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
-                                                        <option value="{{ $client->id }}">{{ $client->name }}
-                                                            ({{ $client->accountNo }})
+                                                        <option value="{{ $client->id }}" 
+                                                                data-tokens="{{ $client->id_number }} {{ $client->accountNo }} {{ $client->name }}">
+                                                            {{ $client->name }} 
+                                                                @if(!empty($client->id_number))
+                                                                    (ID: {{ $client->id_number }})
+                                                                @endif
                                                         </option>
                                                     @endforeach
                                                 </select>

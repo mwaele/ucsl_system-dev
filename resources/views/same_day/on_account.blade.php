@@ -37,14 +37,17 @@
 
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-
                                                     <label for="clientId" class="form-label text-primary">Client</label>
                                                     <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
+                                                            id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
-                                                            <option value="{{ $client->id }}">{{ $client->name }}
-                                                                ({{ $client->accountNo }})
+                                                            <option value="{{ $client->id }}" 
+                                                                    data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
+                                                                {{ $client->name }} -
+                                                                    @if(!empty($client->kraPin))
+                                                                        KRA PIN: {{ $client->kraPin }}
+                                                                    @endif
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -211,6 +214,7 @@
                                                         id="priority_level">
                                                         <option value="normal" selected>Normal</option>
                                                         <option value="high">High</option>
+                                                        <option value="special">Fragile / Special Case</option>
                                                     </select>
                                                 </div>
 
@@ -221,6 +225,14 @@
                                                     </label>
                                                     <input type="datetime-local" class="form-control"
                                                         name="deadline_date" id="deadline_date">
+                                                </div>
+
+                                                <div class="col-md-3 mb-3" id="priority-cost-group" style="display: none;">
+                                                    <label for="special_cost" class="form-label text-primary">
+                                                        Special Handling Cost (If Fragile)
+                                                    </label>
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="special_cost" id="special_cost" placeholder="Enter cost override">
                                                 </div>
 
                                             </div>
@@ -755,7 +767,6 @@
                                             </div>
                                         </div>
                                     @endif
-
 
                                     @if ($request->status === 'delivered')
                                         <button class="btn btn-sm btn-warning mr-1" title="Dispatch parcel"

@@ -1576,17 +1576,27 @@
             });
         </script>
 
-        <script>
+        <script> 
             document.addEventListener('DOMContentLoaded', function() {
                 const prioritySelect = document.getElementById('priority_level');
                 const deadlineGroup = document.getElementById('priority-deadline-group');
+                const costGroup = document.getElementById('priority-cost-group');
 
-                function toggleDeadlineField() {
-                    deadlineGroup.style.display = (prioritySelect.value === 'high') ? 'block' : 'none';
+                function toggleFields() {
+                    if (prioritySelect.value === 'high') {
+                        deadlineGroup.style.display = 'block';
+                        costGroup.style.display = 'none';
+                    } else if (prioritySelect.value === 'special') {
+                        deadlineGroup.style.display = 'none';
+                        costGroup.style.display = 'block';
+                    } else {
+                        deadlineGroup.style.display = 'none';
+                        costGroup.style.display = 'none';
+                    }
                 }
 
-                prioritySelect.addEventListener('change', toggleDeadlineField);
-                toggleDeadlineField(); // Run on page load in case value is pre-filled
+                prioritySelect.addEventListener('change', toggleFields);
+                toggleFields(); // Run on page load
             });
         </script>
 

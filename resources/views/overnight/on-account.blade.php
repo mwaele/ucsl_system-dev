@@ -85,11 +85,15 @@
                                                 <div class="col-md-6">
                                                     <label for="clientId" class="form-label text-primary">Client</label>
                                                     <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
+                                                            id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
-                                                            <option value="{{ $client->id }}">{{ $client->name }}
-                                                                ({{ $client->accountNo }})
+                                                            <option value="{{ $client->id }}" 
+                                                                    data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
+                                                                {{ $client->name }} -
+                                                                    @if(!empty($client->kraPin))
+                                                                        KRA PIN: {{ $client->kraPin }}
+                                                                    @endif
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -291,20 +295,19 @@
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
-                                </td>
+                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }} </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td> {{ $request->parcelDetails }} </td>
                                 <td>
                                     <span
                                         class="badge p-2
-                                    @if ($request->status == 'pending collection') bg-secondary
-                                    @elseif ($request->status == 'collected')
-                                        bg-warning
-                                    @elseif ($request->status == 'verified')
-                                        bg-primary @endif
-                                    fs-5 text-white">
+                                            @if ($request->status == 'pending collection') bg-secondary
+                                            @elseif ($request->status == 'collected')
+                                                bg-warning
+                                            @elseif ($request->status == 'verified')
+                                                bg-primary @endif
+                                            fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>
                                 </td>
@@ -859,6 +862,15 @@
 
                                         <input type="hidden" name="base_cost" id="baseCost" value="">
 
+                                        <!-- Fragile Goods Checkbox & Cost -->
+                                        <div class="form-group col-md-2">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="fragileCheck">
+                                                <label class="form-check-label" for="fragileCheck"><small>Fragile Goods?</small></label>
+                                            </div>
+                                            <input type="number" class="form-control mt-2" id="fragileCost" placeholder="Fragile Cost" disabled>
+                                        </div>
+
                                         <div class="form-group col-md-2">
                                             <label class="text-primary"><small>Tax (16%)*</small></label>
                                             <input type="number" class="form-control" name="vat" id="vat" readonly>
@@ -895,11 +907,14 @@
                                         </div>
                                     </div>
 
+
                                     <div class="modal-footer d-flex justify-content-between align-items-center">
                                     <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
                                     <button type="submit" class="btn btn-primary">Submit Verification</button>
                                     </div></form>
                                     `;
+
+                                    
 
 
                                     // ✅ Correct usage
