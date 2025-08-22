@@ -61,4 +61,10 @@ class ClientRequest extends Model
     {
         return $this->hasOne(SubCategory::class, 'id', 'sub_category_id');
     }
+
+    public function agent()
+    {
+        return $this->hasOne(Agent::class, 'request_id', 'requestId');
+    }
+
 }
