@@ -37,6 +37,7 @@ class LoadingSheetController extends Controller
         ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
         ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
         ->where('client_requests.status', 'verified')
+        ->where('shipment_collections.loading_status', null)
         ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
         ->groupBy('rates.destination','rates.id')
         ->get();
@@ -369,39 +370,38 @@ class LoadingSheetController extends Controller
 
                 // send sender message
 
-                $senderPhone = $shipment->receiver_phone;
-                $parcelMessageSender = "Dear Customer, your parcel(Request ID: $shipment->requestId) has been dispatched. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
+                // $senderPhone = $shipment->receiver_phone;
+                // $parcelMessageSender = "Dear Customer, your parcel(Request ID: $shipment->requestId) has been dispatched. We will notify when the parcel is collected. Thank you for using Ufanisi Courier Services";
 
-                $smsService->sendSms(
-                    phone: $senderPhone,
-                    subject: 'Parcel Dispatch Alert',
-                    message: $parcelMessageSender,
-                    addFooter: true
-                );
+                // $smsService->sendSms(
+                //     phone: $senderPhone,
+                //     subject: 'Parcel Dispatch Alert',
+                //     message: $parcelMessageSender,
+                //     addFooter: true
+                // );
 
-                SentMessage::create([
-                    'request_id' => $requestId,
-                    'client_id' => $shipment->client->id,
-                    'recipient_type' => 'sender',
-                    'recipient_name' => $shipment->receiver_name ?? 'Sender',
-                    'phone_number' => $senderPhone,
-                    'subject' => 'Parcel Dispatch Alert',
-                    'message' => $parcelMessageSender,
-                ]);
+                // SentMessage::create([
+                //     'request_id' => $requestId,
+                //     'client_id' => $shipment->client->id,
+                //     'recipient_type' => 'sender',
+                //     'recipient_name' => $shipment->receiver_name ?? 'Sender',
+                //     'phone_number' => $senderPhone,
+                //     'subject' => 'Parcel Dispatch Alert',
+                //     'message' => $parcelMessageSender,
+                // ]);
 
-                // sender email
-            $senderSubject = 'Parcel Dispatch Alert';
-            $clientEmail = $shipment->client->email;
-            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                    <p>Thank you for using Ufanisi Courier Services.</p>";
-            $fullSenderMessage = $parcelMessageSender . $footer;
+            // sender email
+        $parcelSenderMessage = "Dear Customer, your parcel has been dispatched. Track it using tracking no. $shipment->requestId ";
 
-            $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);
-
-
-            $sheet->dispatch_date = Carbon::now(); // or now()
-            $sheet->save();
+        $senderSubject = 'Parcel Dispatch Alert';
+        $clientEmail = $shipment->client->email;
+        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                <p>Thank you for using Ufanisi Courier Services.</p>";
+        $fullSenderMessage = $parcelSenderMessage . $footer;
+        $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);
+        $sheet->dispatch_date = Carbon::now(); // or now()
+        $sheet->save();
     }
 
     return response()->json(['message' => 'Dispatch date updated', 'dispatch_date' => $sheet->dispatch_date,  'redirect' => route('loading_sheets.index')]);

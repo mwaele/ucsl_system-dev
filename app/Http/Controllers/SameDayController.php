@@ -53,7 +53,7 @@ class SameDayController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
-        $locations = Rate::where('office_id', 2)
+        $locations = Rate::where('office_id', Auth::user()->station)
             ->whereIn('type', ['Same Day', 'same_day'])
             ->get();
 
