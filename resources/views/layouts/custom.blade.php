@@ -202,15 +202,7 @@
                 </a>
             </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
 
-            <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('my_deliveries.show') }}">
-                    <i class="fas fa-fw fa-shipping-fast"></i>
-                    <span class="sized">Rider Deliveries</span>
-                </a>
-            </li>
 
             <!-- Divider -->
             {{-- <hr class="sidebar-divider my-0" />
@@ -224,25 +216,6 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
-            <!-- Nav Item - Clients Collapse Menu -->
-            {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                    data-target="#collapseshipment_arrivals" aria-expanded="true"
-                    aria-controls="collapseshipment_arrivals">
-                    <i class="fas fa-fw fa-money-bill-alt"></i>
-                    <span class="sized">Shipment Arrivals</span>
-                </a>
-                <div id="collapseshipment_arrivals"
-                    class="collapse {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}"
-                    aria-labelledby="headingshipment_arrivals" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="nav-link" href="{{ route('shipment_arrivals.index') }}">
-                            <i class="fas fa-fw fa-shipping-fast"></i>
-                            <span class="sized">Shipment Arrivals</span>
-                        </a>
-                    </div>
-                </div>
-            </li> --}}
 
             <li class="nav-item {{ request()->routeIs('shipment_arrivals.*', 'parcel_collection') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -265,6 +238,16 @@
                 </div>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('my_deliveries.show') }}">
+                    <i class="fas fa-fw fa-shipping-fast"></i>
+                    <span class="sized">Rider Deliveries</span>
+                </a>
+            </li>
+
 
             {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('shipment_arrivals.index') }}">
@@ -280,39 +263,15 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsepayments"
                     aria-expanded="true" aria-controls="collapsepayments">
                     <i class="fas fa-fw fa-money-bill-alt"></i>
-                    <span class="sized">Payments</span>
+                    <span class="sized">Reports</span>
                 </a>
                 <div id="collapsepayments" class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
                     aria-labelledby="headingpayments" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('payments.index') }}">All Payments</a>
+                        <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a>
                     </div>
                 </div>
             </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
-                    aria-expanded="true" aria-controls="collapseClients">
-                    <i class="fas fa-fw fa-user"></i>
-                    <span class="sized">Client Registration</span>
-                </a>
-                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
-                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a>
-                    </div>
-                </div>
-            </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-
 
             <!-- Nav Item - Clients Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
@@ -332,6 +291,38 @@
                 </div>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Clients Collapse Menu -->
+            <li
+                class="nav-item {{ request()->routeIs('clients.*', 'categories.*', 'sub_categories.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
+                    aria-expanded="true" aria-controls="collapseClients">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span class="sized">Client Registration</span>
+                </a>
+                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
+                        {{-- <hr class="sidebar-divide my-0" /> --}}
+                        {{-- <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a> --}}
+                        <hr class="sidebar-divide my-0">
+                        <a class="collapse-item" href="{{ route('categories.index') }}">
+                            {{-- <i class="fas fa-fw fa-wrench"></i> --}}
+                            Client Categories
+                        </a>
+                        <hr class="sidebar-divide my-0">
+                        <a class="collapse-item" href="{{ route('sub_categories.index') }}">
+                            {{-- <i class="fas fa-fw fa-wrench"></i> --}}
+                            Client Sub Categories
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -340,7 +331,7 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOffice"
                     aria-expanded="true" aria-controls="collapseOffice">
                     <i class="fas fa-fw fa-home"></i>
-                    <span class="sized">Office</span>
+                    <span class="sized">Operations Offices</span>
                 </a>
                 <div id="collapseOffice" class="collapse {{ request()->routeIs('offices.*') ? 'active' : '' }}"
                     aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
@@ -357,13 +348,14 @@
 
 
             <!-- Nav Item - Vehicles Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVehicles"
                     aria-expanded="true" aria-controls="collapseVehicles">
                     <i class="fas fa-fw fa-truck"></i>
-                    <span class="sized">Vehicles</span>
+                    <span class="sized">Vehicles Info</span>
                 </a>
-                <div id="collapseVehicles" class="collapse {{ request()->routeIs('vehicles.*') ? 'active' : '' }}"
+                <div id="collapseVehicles"
+                    class="collapse {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}"
                     aria-labelledby="headingVehicles" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ route('vehicles.index') }}">All Vehicles</a>
@@ -371,6 +363,8 @@
                         <a class="collapse-item" href="{{ route('vehicles.create') }}">Add Vehicles</a>
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item" href="{{ route('vehicles.create') }}"> Vehicle Allocation</a>
+                        <hr class="sidebar-divide my-0" />
+                        <a class="collapse-item" href="{{ route('transporters.index') }}">Transporters</a>
                     </div>
                 </div>
             </li>
@@ -378,13 +372,13 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Zones Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
                 <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
                     data-toggle="collapse" data-target="#collapseZones"
                     aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
                     aria-controls="collapseZones">
                     <i class="fas fa-fw fa-map"></i>
-                    <span class="sized">Zones</span>
+                    <span class="sized">Rates Info</span>
                 </a>
                 <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
                     aria-labelledby="headingZones" data-parent="#accordionSidebar">
@@ -392,23 +386,27 @@
                         <a class="collapse-item" href="{{ route('zones.index') }}">All Zones</a>
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item " href="{{ route('zones.create') }}">Add Station</a>
+                        <hr class="sidebar-divide my-0" />
+
                     </div>
                 </div>
-            </li>
+            </li> --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
             <!-- Nav Item - Rates Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('rates.*', 'zones.*', 'special_rates.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
                     aria-expanded="true" aria-controls="collapseRates">
                     <i class="fas fa-fw fa-dollar-sign"></i>
                     <span class="sized">Rates</span>
                 </a>
+
                 <div id="collapseRates"
                     class="collapse  {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}"
                     aria-labelledby="headingRates" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{ route('zones.index') }}"> Zones</a>
                         {{-- <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Nairobi Rates</a>
@@ -464,7 +462,7 @@
                     aria-expanded="{{ request()->routeIs('users.*') ? 'true' : 'false' }}"
                     aria-controls="collapseUsers">
                     <i class="fas fa-fw fa-users"></i>
-                    <span class="sized">Users</span>
+                    <span class="sized">Admin</span>
                 </a>
                 <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"
                     aria-labelledby="headingUsers" data-parent="#accordionSidebar">
@@ -480,7 +478,7 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+            {{-- <hr class="sidebar-divider my-0" />
             <li class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('categories.index') }}">
                     <i class="fas fa-fw fa-wrench"></i>
@@ -494,15 +492,15 @@
                     <i class="fas fa-fw fa-wrench"></i>
                     <span class="sized">Sub Categories</span>
                 </a>
-            </li>
+            </li> --}}
             <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+            {{-- <hr class="sidebar-divider my-0" />
             <li class="nav-item {{ request()->routeIs('transporters.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('transporters.index') }}">
                     <i class="fas fa-fw fa-truck"></i>
                     <span class="sized">Transporters</span>
                 </a>
-            </li>
+            </li> --}}
             <!-- Nav Item - Pages Collapse Menu -->
 
 
@@ -1069,61 +1067,61 @@
 
 
                 // // ⬅ Handle suggestion click
-                // $(document).on('click', '#locationSuggestions a', function(e) {
-                //     e.preventDefault();
-                //     const selected = $(this).text();
-                //     $('#collectionLocation').val(selected);
-                //     $('#locationSuggestions').hide();
+                $(document).on('click', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
 
-                //     fetchDriversByLocation(selected); // ✅ fetch drivers on selection
-                // });
+                    fetchDriversByLocation(selected); // ✅ fetch drivers on selection
+                });
 
-                // // ⬅ Handle focusout on input
-                // $('#collectionLocation').on('focusout', function() {
-                //     $('#locationSuggestions').hide();
-                // });
+                // ⬅ Handle focusout on input
+                $('#collectionLocation').on('focusout', function() {
+                    $('#locationSuggestions').hide();
+                });
 
-                // $(document).on('mousedown', '#locationSuggestions a', function(e) {
-                //     e.preventDefault();
-                //     const selected = $(this).text();
-                //     $('#collectionLocation').val(selected);
-                //     $('#locationSuggestions').hide();
-                //     fetchDriversByLocation(selected);
-                // });
+                $(document).on('mousedown', '#locationSuggestions a', function(e) {
+                    e.preventDefault();
+                    const selected = $(this).text();
+                    $('#collectionLocation').val(selected);
+                    $('#locationSuggestions').hide();
+                    fetchDriversByLocation(selected);
+                });
 
 
 
-                // $('#collectionLocation').on('focusout', function() {
-                //     const location = $(this).val().trim();
-                //     //alert(location);
+                $('#collectionLocation').on('focusout', function() {
+                    const location = $(this).val().trim();
+                    //alert(location);
 
-                //     if (location.length > 1) {
-                //         $.ajax({
-                //             url: "{{ route('drivers.byLocation') }}",
-                //             method: "GET",
-                //             data: {
-                //                 location: location
-                //             },
-                //             success: function(data) {
-                //                 const userSelect = $('#userId');
-                //                 userSelect.empty();
-                //                 userSelect.append(`<option value="">Select Rider</option>`);
+                    if (location.length > 1) {
+                        $.ajax({
+                            url: "{{ route('drivers.byLocation') }}",
+                            method: "GET",
+                            data: {
+                                location: location
+                            },
+                            success: function(data) {
+                                const userSelect = $('#userId');
+                                userSelect.empty();
+                                userSelect.append(`<option value="">Select Rider</option>`);
 
-                //                 if (data.length > 0) {
-                //                     data.forEach(driver => {
-                //                         userSelect.append(
-                //                             `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
-                //                         );
-                //                     });
-                //                 } else {
-                //                     userSelect.append(
-                //                         `<option disabled>No drivers found for this location</option>`
-                //                     );
-                //                 }
-                //             }
-                //         });
-                //     }
-                // });
+                                if (data.length > 0) {
+                                    data.forEach(driver => {
+                                        userSelect.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.station})</option>`
+                                        );
+                                    });
+                                } else {
+                                    userSelect.append(
+                                        `<option disabled>No drivers found for this location</option>`
+                                    );
+                                }
+                            }
+                        });
+                    }
+                });
 
                 function fetchDriversByLocation(location) {
                     if (location.length > 1) {
