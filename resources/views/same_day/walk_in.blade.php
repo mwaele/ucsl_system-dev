@@ -40,15 +40,15 @@
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
                                                 <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
+                                                    id="clientId" name="clientId">
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
-                                                        <option value="{{ $client->id }}" 
-                                                                data-tokens="{{ $client->id_number }} {{ $client->accountNo }} {{ $client->name }}">
-                                                            {{ $client->name }} 
-                                                                @if(!empty($client->id_number))
-                                                                    (ID: {{ $client->id_number }})
-                                                                @endif
+                                                        <option value="{{ $client->id }}"
+                                                            data-tokens="{{ $client->id_number }} {{ $client->accountNo }} {{ $client->name }}">
+                                                            {{ $client->name }}
+                                                            @if (!empty($client->id_number))
+                                                                (ID: {{ $client->id_number }})
+                                                            @endif
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -266,13 +266,71 @@
                                                     oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                             </div>
 
-                                            <div class=" mt-2 col-md-2">
+                                            <div class="mt-2 col-md-2">
                                                 <h6 for="priority_level" class="text-primary">Priority Level</h6>
                                                 <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
                                                     <option value="high">High</option>
                                                 </select>
                                             </div>
+
+                                            <div class="mt-2 col-md-2" id="priority-deadline-group"
+                                                style="display:none;">
+                                                <h6 for="deadline_date" class="text-primary">Deadline
+                                                </h6>
+                                                <input type="datetime-local" class="form-control" name="deadline_date"
+                                                    id="deadline_date">
+                                            </div>
+
+                                            <!-- Inline confirmation (hidden by default) -->
+                                            <div class="mt-2 col-md-2" id="priority-confirm" style="display:none;">
+                                                <p class="text-white bg-danger p-2">High priority selected. Do extra
+                                                    charges
+                                                    apply?</p>
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    id="priorityYesBtn">Yes</button>
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                    id="priorityNoBtn">No</button>
+                                            </div>
+
+                                            <!-- Extra charge input (hidden by default) -->
+                                            <div class="mt-2 col-md-2" id="priority-extra-charge-group"
+                                                style="display:none;">
+                                                <h6 for="priority_extra_charge" class="text-primary">Priority Extra Charge
+                                                </h6>
+                                                <input type="number" class="form-control" name="priority_extra_charge"
+                                                    id="priority_extra_charge" placeholder="Enter extra amount">
+                                            </div>
+
+                                            <div class="mt-2 col-md-2">
+                                                <h6 for="fragile" class="text-primary">Fragile?</h6>
+                                                <select class="form-control" name="fragile" id="fragile">
+                                                    <option value="no" selected>No</option>
+                                                    <option value="yes">Yes</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Inline Confirmation (hidden by default) -->
+                                            <div class="mt-2 col-md-2" id="fragile-confirm" style="display:none;">
+                                                <p class="text-white bg-danger p-2">This item is fragile. Do you want to
+                                                    add
+                                                    extra
+                                                    charges?</p>
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    id="fragileYesBtn">Yes</button>
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                    id="fragileNoBtn">No</button>
+                                            </div>
+
+                                            <!-- Fragile Charge Input -->
+                                            <div class="mt-2 col-md-2" id="fragile-charge-group" style="display:none;">
+                                                <h6 for="fragile_charge" class="text-primary">Fragile Extra Charge</h6>
+                                                <input type="number" class="form-control" name="fragile_charge"
+                                                    id="fragile_charge" placeholder="Enter extra amount">
+                                            </div>
+
+
+
                                             <div class="mt-2 col-md-3" id="priority-deadline-group"
                                                 style="display: none;">
                                                 <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)
@@ -868,12 +926,12 @@
                                     </div>
 
                                     <!-- Print Receipt Button -->
-                                    @if ($request->status === 'collected')
+                                    {{-- @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-primary mr-1" title="Print collection"
                                             data-toggle="modal" data-target="#printModal-{{ $request->id }}">
                                             Print <i class="fas fa-print"></i>
                                         </button>
-                                    @endif
+                                    @endif --}}
                                     @if ($request->shipmentCollection)
                                         <div class="modal fade" id="printModal-{{ $request->id }}" tabindex="-1"
                                             aria-labelledby="printModalLabel-{{ $request->id }}" aria-hidden="true">

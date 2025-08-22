@@ -19,7 +19,8 @@
 
     <!-- Bootstrap Select CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-select.min.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -108,7 +109,7 @@
     <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
-    
+
     <!-- Bootstrap Select JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
@@ -1510,14 +1511,16 @@
                     url: '/search',
                     dataType: 'json',
                     delay: 250,
-                    data: function (params) {
+                    data: function(params) {
                         return {
                             q: params.term,
                             type: $(this).data('type')
                         };
                     },
-                    processResults: function (data) {
-                        return { results: data };
+                    processResults: function(data) {
+                        return {
+                            results: data
+                        };
                     }
                 }
             });
@@ -1576,36 +1579,115 @@
             });
         </script>
 
-        <script> 
-            document.addEventListener('DOMContentLoaded', function() {
-                const prioritySelect = document.getElementById('priority_level');
-                const deadlineGroup = document.getElementById('priority-deadline-group');
-                const costGroup = document.getElementById('priority-cost-group');
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // elements
+                const prioritySelect = document.getElementById("priority_level");
+                const deadlineGroup = document.getElementById("priority-deadline-group");
+                const priorityConfirm = document.getElementById("priority-confirm");
+                const priorityExtraGroup = document.getElementById("priority-extra-charge-group");
+                const priorityExtraInput = document.getElementById("priority_extra_charge");
 
-                function toggleFields() {
-                    if (prioritySelect.value === 'high') {
-                        deadlineGroup.style.display = 'block';
-                        costGroup.style.display = 'none';
-                    } else if (prioritySelect.value === 'special') {
-                        deadlineGroup.style.display = 'none';
-                        costGroup.style.display = 'block';
-                    } else {
-                        deadlineGroup.style.display = 'none';
-                        costGroup.style.display = 'none';
-                    }
+                const fragileSelect = document.getElementById("fragile");
+                const fragileConfirm = document.getElementById("fragile-confirm");
+                const fragileExtraGroup = document.getElementById("fragile-charge-group");
+                const fragileExtraInput = document.getElementById("fragile_charge");
+
+                const baseCostInput = document.querySelector("input[name='base_cost']");
+                const costInput = document.querySelector("input[name='cost']");
+                const vatInput = document.querySelector("input[name='vat']");
+                const totalInput = document.querySelector("input[name='total_cost']");
+
+                const priorityYesBtn = document.getElementById("priorityYesBtn");
+                const priorityNoBtn = document.getElementById("priorityNoBtn");
+
+                const fragileYesBtn = document.getElementById("fragileYesBtn");
+                const fragileNoBtn = document.getElementById("fragileNoBtn");
+
+                // helper function to update totals
+                function updateTotals() {
+                    const baseCost = parseFloat(baseCostInput.value) || 0;
+                    const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
+                    const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
+
+                    const itemCost = baseCost + priorityExtra + fragileExtra;
+                    const vat = itemCost * 0.16;
+                    const total = itemCost + vat;
+
+                    costInput.value = itemCost.toFixed(2);
+                    vatInput.value = vat.toFixed(2);
+                    totalInput.value = total.toFixed(2);
                 }
 
-                prioritySelect.addEventListener('change', toggleFields);
-                toggleFields(); // Run on page load
+                // priority selection logic
+                prioritySelect.addEventListener("change", () => {
+                    if (prioritySelect.value === "high") {
+                        deadlineGroup.style.display = "block";
+                        priorityConfirm.style.display = "block";
+                    } else {
+                        deadlineGroup.style.display = "none";
+                        priorityConfirm.style.display = "none";
+                        priorityExtraGroup.style.display = "none";
+                        priorityExtraInput.value = "";
+                        updateTotals();
+                    }
+                });
+
+                priorityYesBtn.addEventListener("click", () => {
+                    priorityExtraGroup.style.display = "block";
+                    priorityConfirm.style.display = "none";
+                });
+
+                priorityNoBtn.addEventListener("click", () => {
+                    // Keep HIGH but with zero charge
+                    priorityConfirm.style.display = "none";
+                    priorityExtraGroup.style.display = "none";
+                    priorityExtraInput.value = "0";
+                    updateTotals();
+                });
+
+                // fragile selection logic
+                fragileSelect.addEventListener("change", () => {
+                    if (fragileSelect.value === "yes") {
+                        fragileConfirm.style.display = "block";
+                    } else {
+                        fragileConfirm.style.display = "none";
+                        fragileExtraGroup.style.display = "none";
+                        fragileExtraInput.value = "";
+                        updateTotals();
+                    }
+                });
+
+                fragileYesBtn.addEventListener("click", () => {
+                    fragileExtraGroup.style.display = "block";
+                    fragileConfirm.style.display = "none";
+                });
+
+                fragileNoBtn.addEventListener("click", () => {
+                    // Keep YES but with zero charge
+                    fragileConfirm.style.display = "none";
+                    fragileExtraGroup.style.display = "none";
+                    fragileExtraInput.value = "0";
+                    updateTotals();
+                });
+
+                // watch extra charge inputs
+                priorityExtraInput.addEventListener("input", updateTotals);
+                fragileExtraInput.addEventListener("input", updateTotals);
+
+                // initial calc
+                updateTotals();
             });
         </script>
+
+
 
         <script>
             function printModalContent(id, type = null) {
                 // Default content id if no type provided
-                var contentId = type 
-                    ? 'print-content-' + id + '-' + type
-                    : 'print-content-' + id;
+                var contentId = type ?
+                    'print-content-' + id + '-' + type :
+                    'print-content-' + id;
 
                 var element = document.getElementById(contentId);
                 if (!element) {

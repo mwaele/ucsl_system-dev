@@ -43,7 +43,11 @@ class ShipmentCollection extends Model
         'status',
         'billing_party',
         'payment_mode',
-        'reference'
+        'reference',
+        'priority_level',
+        'fragile_item',
+        'priority_level_amount',
+        'fragile_item_amount',  
     ];
 
     public function clientRequest()

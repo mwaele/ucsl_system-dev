@@ -111,7 +111,11 @@ class ShipmentCollectionController extends Controller
                 'reference' => $request->reference,
                 'collected_by' => auth()->id(),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
+                'priority_level' => $request->priority_level,
+                'deadline_date' => $request->deadline_date,
+                'priority_extra_charge' => $request->priority_extra_charge,
+                'fragile_extra_charge' => $request->fragile_extra_charge,
             ]);
 
             // 2. Rebuild items array from flat structure

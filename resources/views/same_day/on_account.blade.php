@@ -21,7 +21,7 @@
                         @csrf
                         <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
+                            <div class="modal-dialog modal-xl" role="document"> <!-- Added modal-lg for wider layout -->
                                 <div class="modal-content">
                                     <div class="modal-header bg-gradient-primary">
                                         <h3 class="modal-title text-white" id="exampleModalLabel">Create Same Day
@@ -39,21 +39,22 @@
                                                 <div class="col-md-6">
                                                     <label for="clientId" class="form-label text-primary">Client</label>
                                                     <select class="form-control selectpicker" data-live-search="true"
-                                                            id="clientId" name="clientId">
+                                                        id="clientId" name="clientId">
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
-                                                            <option value="{{ $client->id }}" 
-                                                                    data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
+                                                            <option value="{{ $client->id }}"
+                                                                data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
                                                                 {{ $client->name }} -
-                                                                    @if(!empty($client->kraPin))
-                                                                        KRA PIN: {{ $client->kraPin }}
-                                                                    @endif
+                                                                @if (!empty($client->kraPin))
+                                                                    KRA PIN: {{ $client->kraPin }}
+                                                                @endif
                                                             </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="collectionLocation" class="form-label text-primary">Drop off </label>
+                                                    <label for="collectionLocation" class="form-label text-primary">Drop off
+                                                    </label>
                                                     <select name="collectionLocation" id="collectionLocation"
                                                         class="form-control selectpicker" data-live-search="true">
                                                         <option value="">-- Select Location --</option>
@@ -207,32 +208,84 @@
                                                     </script>
                                                 </div>
 
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="priority_level" class="form-label text-primary">Priority
-                                                        Level</label>
+                                                <div class="mt-2 col-md-2">
+                                                    <h6 for="priority_level" class="text-primary">Priority Level</h6>
                                                     <select class="form-control" name="priority_level"
                                                         id="priority_level">
                                                         <option value="normal" selected>Normal</option>
                                                         <option value="high">High</option>
-                                                        <option value="special">Fragile / Special Case</option>
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-3 mb-3" id="priority-deadline-group"
-                                                    style="display: none;">
-                                                    <label for="deadline_date" class="form-label text-primary">
-                                                        Deadline (If High Priority)
-                                                    </label>
+                                                <div class="mt-2 col-md-2" id="priority-deadline-group"
+                                                    style="display:none;">
+                                                    <h6 for="deadline_date" class="text-primary">Deadline
+                                                    </h6>
                                                     <input type="datetime-local" class="form-control"
                                                         name="deadline_date" id="deadline_date">
                                                 </div>
 
-                                                <div class="col-md-3 mb-3" id="priority-cost-group" style="display: none;">
-                                                    <label for="special_cost" class="form-label text-primary">
-                                                        Special Handling Cost (If Fragile)
-                                                    </label>
-                                                    <input type="number" step="0.01" class="form-control"
-                                                        name="special_cost" id="special_cost" placeholder="Enter cost override">
+                                                <!-- Inline confirmation (hidden by default) -->
+                                                <div class="mt-2 col-md-2" id="priority-confirm" style="display:none;">
+                                                    <p class="text-white bg-danger p-2">High priority selected. Do extra
+                                                        charges
+                                                        apply?</p>
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        id="priorityYesBtn">Yes</button>
+                                                    <button type="button" class="btn btn-sm btn-success"
+                                                        id="priorityNoBtn">No</button>
+                                                </div>
+
+                                                <!-- Extra charge input (hidden by default) -->
+                                                <div class="mt-2 col-md-2" id="priority-extra-charge-group"
+                                                    style="display:none;">
+                                                    <h6 for="priority_extra_charge" class="text-primary">Priority Extra
+                                                        Charge
+                                                    </h6>
+                                                    <input type="number" class="form-control"
+                                                        name="priority_extra_charge" id="priority_extra_charge"
+                                                        placeholder="Enter extra amount">
+                                                </div>
+
+                                                <div class="mt-2 col-md-2">
+                                                    <h6 for="fragile" class="text-primary">Fragile?</h6>
+                                                    <select class="form-control" name="fragile" id="fragile">
+                                                        <option value="no" selected>No</option>
+                                                        <option value="yes">Yes</option>
+                                                    </select>
+                                                </div>
+
+                                                <!-- Inline Confirmation (hidden by default) -->
+                                                <div class="mt-2 col-md-2" id="fragile-confirm" style="display:none;">
+                                                    <p class="text-white bg-danger p-2">This item is fragile. Do you want
+                                                        to
+                                                        add
+                                                        extra
+                                                        charges?</p>
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        id="fragileYesBtn">Yes</button>
+                                                    <button type="button" class="btn btn-sm btn-success"
+                                                        id="fragileNoBtn">No</button>
+                                                </div>
+
+                                                <!-- Fragile Charge Input -->
+                                                <div class="mt-2 col-md-2" id="fragile-charge-group"
+                                                    style="display:none;">
+                                                    <h6 for="fragile_charge" class="text-primary">Fragile Extra Charge
+                                                    </h6>
+                                                    <input type="number" class="form-control" name="fragile_charge"
+                                                        id="fragile_charge" placeholder="Enter extra amount">
+                                                </div>
+
+
+
+                                                <div class="mt-2 col-md-3" id="priority-deadline-group"
+                                                    style="display: none;">
+                                                    <h6 for="deadline_date" class="text-primary">Deadline (If High
+                                                        Priority)
+                                                    </h6>
+                                                    <input type="datetime-local" class="form-control"
+                                                        name="deadline_date" id="deadline_date">
                                                 </div>
 
                                             </div>
@@ -715,11 +768,11 @@
                                         </div>
                                     </div>
 
-                                    @if ($request->status === 'collected')
+                                    {{-- @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-primary mr-1" title="View Client Request">
                                             View <i class="fas fa-eye"></i>
                                         </button>
-                                    @endif
+                                    @endif --}}
 
                                     @if ($request->status === 'collected')
                                         <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"

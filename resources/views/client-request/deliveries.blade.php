@@ -747,10 +747,11 @@
                                     @endif
 
                                     <!-- Deliver button -->
-                                    @if (($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated')
-                                        && $collection->serviceLevel->sub_category_name === 'Same Day')
-                                        <button class="btn btn-sm btn-success" title="Deliver Parcel"
-                                            data-toggle="modal" data-target="#deliverParcel-{{ $collection->id }}">
+                                    @if (
+                                        ($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated') &&
+                                            $collection->serviceLevel->sub_category_name === 'Same Day')
+                                        <button class="btn btn-sm btn-success" title="Deliver Parcel" data-toggle="modal"
+                                            data-target="#deliverParcel-{{ $collection->id }}">
                                             Deliver <i class="fas fa-box"></i>
                                         </button>
                                     @endif

@@ -313,6 +313,7 @@ class SameDayController extends Controller
         $client_request = ClientRequest::findOrFail($id);
 
         //dd($client_request);
+        //dd($validatedData['userId']);
 
         $now = now();
         $authId = Auth::id();
@@ -325,10 +326,10 @@ class SameDayController extends Controller
 
         DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $client_request) {
 
-        //dd($validatedData['delivery_rider']);
+        
         $client_request->status= "collected";
-        $client_request->vehicleId = $validatedData['userId'];
-        $client_request->userId = $validatedData['vehicleId'];
+        $client_request->vehicleId = $validatedData['vehicleId'];
+        $client_request->userId = $validatedData['userId'];
         $client_request->save();  
         
         //update shipment_collection status to collected
@@ -375,7 +376,7 @@ class SameDayController extends Controller
         });
 
         try {
-            $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
+            $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId}. Thank you for choosing UCSL.";
             $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
 
             DB::table('sent_messages')->insert([
@@ -395,7 +396,7 @@ class SameDayController extends Controller
             $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
 
-            EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
+            EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Rider Allocated', $receiverMsg . $footer);
         } catch (\Exception $e) {
             \Log::error('Notification Error: ' . $e->getMessage());
         }
