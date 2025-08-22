@@ -674,51 +674,42 @@
                                         </a>
                                     @endif
 
-                                    <!-- Agent Request Modal -->
+                                    <!-- Agent Request Modal --> 
                                     <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}"
                                         tabindex="-1" role="dialog"
                                         aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}"
                                         aria-hidden="true">
                                         <div class="modal-dialog" role="document">
-                                            <form method="POST" action="{{ route('client-request.agent-approval') }}"
-                                                onsubmit="return validateAgentApprovalForm({{ $request->requestId }})">
+                                            <form method="POST" action="{{ route('client-request.agent-approval') }}">
                                                 @csrf
-                                                <input type="hidden" name="request_id"
-                                                    value="{{ $request->requestId }}">
-                                                <input type="hidden" id="action-{{ $request->requestId }}"
-                                                    name="action" value="approve">
+                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
 
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Review Agent Request</h5>
-                                                        <button type="button" class="close"
-                                                            data-dismiss="modal"><span>&times;</span></button>
+                                                        <button type="button" class="close" data-dismiss="modal">
+                                                            <span>&times;</span>
+                                                        </button>
                                                     </div>
 
                                                     <div class="modal-body">
-                                                        <p>Are you sure you want to approve or decline the agent pickup
-                                                            request for this client?</p>
+                                                        <p>
+                                                            Are you sure you want to approve or decline the agent pickup
+                                                            request for this client?
+                                                        </p>
 
-                                                        <label for="remarks-{{ $request->requestId }}"
-                                                            class="form-label">Remarks <span class="text-muted">(required
-                                                                only if declining)</span>:</label>
+                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks</label>
                                                         <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3"
-                                                            placeholder="Add remarks if necessary..."></textarea>
+                                                            placeholder="Add remarks if necessary..." required></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger"
-                                                            onclick="setAgentAction({{ $request->requestId }}, 'decline')">Decline</button>
-
-                                                        <button type="submit" class="btn btn-success d-inline"
-                                                            id="approve-btn-{{ $request->requestId }}"
-                                                            onclick="setAgentAction({{ $request->requestId }}, 'approve')">
-                                                            Approve
+                                                        <button type="submit" name="action" value="decline" class="btn btn-danger">
+                                                            Decline
                                                         </button>
 
-                                                        <button type="submit" class="btn btn-warning d-none"
-                                                            id="confirm-decline-btn-{{ $request->requestId }}">
-                                                            Confirm Decline
+                                                        <button type="submit" name="action" value="approve" class="btn btn-success">
+                                                            Approve
                                                         </button>
                                                     </div>
                                                 </div>
@@ -779,54 +770,6 @@
                         @endforeach
                     </tbody>
                 </table>
-
-                <script>
-                    function setAgentAction(requestId, action) {
-                        const actionField = document.getElementById(`action-${requestId}`);
-                        const approveBtn = document.getElementById(`approve-btn-${requestId}`);
-                        const confirmDeclineBtn = document.getElementById(`confirm-decline-btn-${requestId}`);
-
-                        if (!actionField || !approveBtn || !confirmDeclineBtn) {
-                            console.warn('Could not find required fields for request ID:', requestId);
-                            return;
-                        }
-
-                        actionField.value = action;
-
-                        if (action === 'decline') {
-                            approveBtn.classList.add('d-none');
-                            confirmDeclineBtn.classList.remove('d-none');
-                        } else {
-                            approveBtn.classList.remove('d-none');
-                            confirmDeclineBtn.classList.add('d-none');
-                        }
-                    }
-
-                    function validateAgentApprovalForm(requestId) {
-                        const action = document.getElementById(`action-${requestId}`).value;
-                        const remarks = document.getElementById(`remarks-${requestId}`).value.trim();
-
-                        if (action === 'decline' && remarks === '') {
-                            alert('Remarks are required when declining a request.');
-                            return false;
-                        }
-
-                        return true;
-                    }
-
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Bind all modal trigger buttons
-                        const allModals = document.querySelectorAll('[id^="agentRequestModal-"]');
-
-                        allModals.forEach(modal => {
-                            modal.addEventListener('shown.bs.modal', function() {
-                                // Reset modal state every time it opens
-                                const id = modal.id.replace('agentRequestModal-', '');
-                                setAgentAction(id, 'approve'); // Reset to default state
-                            });
-                        });
-                    });
-                </script>
 
                 <script>
                     $(document).ready(function() {

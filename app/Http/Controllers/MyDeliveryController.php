@@ -60,6 +60,7 @@ class MyDeliveryController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         
+        
         $approvalStatuses = [];
 
         foreach ($collections as $collection) {

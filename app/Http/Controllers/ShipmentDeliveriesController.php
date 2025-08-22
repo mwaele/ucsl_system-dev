@@ -183,26 +183,42 @@ class ShipmentDeliveriesController extends Controller
 
     public function handleAgentApproval(Request $request)
     {
+        // Log everything coming in
+        Log::info('Agent Approval Request Data', $request->all());
+
         $requestId = $request->input('request_id');
         $action = $request->input('action');
         $remarks = $request->input('remarks');
 
+        Log::info("Processing Agent Approval", [
+            'request_id' => $requestId,
+            'action'     => $action,
+            'remarks'    => $remarks,
+        ]);
+
         $collection = ShipmentCollection::where('requestId', $requestId)->first();
 
         if (!$collection) {
+            Log::warning("Shipment not found", ['request_id' => $requestId]);
             return redirect()->back()->with('error', 'Shipment not found.');
         }
 
         if ($action === 'approve') {
+            Log::info("Action APPROVE triggered");
             $collection->agent_approved = true;
-            $collection->approval_remarks = null; // optional: clear remarks
+            $collection->approval_remarks = null;
         } elseif ($action === 'decline') {
+            Log::info("Action DECLINE triggered");
             $collection->agent_approved = false;
             $collection->agent_requested = false;
-            $collection->approval_remarks = $remarks; // save reason
+            $collection->status = 'On hold';
+            $collection->approval_remarks = $remarks;
+        } else {
+            Log::warning("Unknown action received", ['action' => $action]);
         }
 
         $collection->save();
+        Log::info("Shipment Collection updated", ['collection' => $collection]);
 
         // Add tracking info
         $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
@@ -222,16 +238,25 @@ class ShipmentDeliveriesController extends Controller
                 'date' => now(),
                 'details' => $action === 'approve' ? 'Agent Approval Granted' : 'Agent Approval Declined',
                 'user_id' => Auth::id(),
-                'remarks' => $action === 'approve' 
+                'remarks' => $action === 'approve'
                     ? "Agent request was approved by $userName."
                     : "Agent request declined by $userName. Remarks: $remarks",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            Log::info("Tracking updated", [
+                'trackId' => $trackId,
+                'status'  => $action === 'approve' ? 'Agent Approved' : 'Agent Declined',
+            ]);
         }
 
-        return redirect()->back()->with('success', 'Agent request has been ' . ($action === 'approve' ? 'approved' : 'declined') . '.');
+        return redirect()->back()->with(
+            'success',
+            'Agent request has been ' . ($action === 'approve' ? 'approved' : 'declined') . '.'
+        );
     }
+
 
     public function requestApproval(Request $request) 
     {
@@ -391,7 +416,7 @@ class ShipmentDeliveriesController extends Controller
 
         $shipment = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
         $shipment->agent_approved = false;
-        $shipment->agent_decline_remarks = $request->remarks;
+        $shipment->approval_remarks = $request->remarks;
         $shipment->save();
 
         // Add tracking info
