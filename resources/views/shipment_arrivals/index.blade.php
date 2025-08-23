@@ -91,20 +91,6 @@
         <div class="card-body">
             <div class="d-flex justify-content-center mb-3 shadow-sm  bg-warning pt-2">
                 <div class="form-inline flex-wrap justify-content-center">
-                    <!-- Radio Filters -->
-
-
-
-                    {{-- <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="filterOption" value="date" id="radioDate">
-                        <label class="form-check-label" for="radioDate">Date</label>
-
-                        <!-- Date Picker -->
-                        <input type="date" id="dateFilter" class="form-control ml-2 mb-2" style="width: 200px;"
-                            value="<? // = date('Y-m-d') ?>">
-                    </div> --}}
-
-
 
                     <!-- Date Range Filter -->
                     <div class="form-check form-check-inline">

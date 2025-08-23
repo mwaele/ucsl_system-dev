@@ -128,7 +128,7 @@ class OvernightController extends Controller
         );
     }
 
-    public function walkin_report()
+    public function walkin_report(Request $request)
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
@@ -136,8 +136,17 @@ class OvernightController extends Controller
             ->whereHas('client', function ($query) {
                 $query->where('type', 'walkin');
             })
-            ->with(['client', 'user', 'vehicle'])
-            ->get();
+            ->with(['client', 'user', 'vehicle']);
+
+        // ✅ Apply date range filter if provided
+        if ($request->filled('start') && $request->filled('end')) {
+            $clientRequests->whereBetween('created_at', [
+                $request->start . " 00:00:00",
+                $request->end . " 23:59:59"
+            ]);
+        }
+
+        $clientRequests = $clientRequests->get();
 
         return $this->renderPdfWithPageNumbers(
             'overnight.walkin_report',
@@ -147,5 +156,6 @@ class OvernightController extends Controller
             'landscape'
         );
     }
+
 
 }

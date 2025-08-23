@@ -273,6 +273,9 @@
                 </div>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
             <!-- Nav Item - Clients Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -321,8 +324,7 @@
                     </div>
                 </div>
             </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -392,8 +394,6 @@
                 </div>
             </li> --}}
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
             <!-- Nav Item - Rates Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('rates.*', 'zones.*', 'special_rates.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
@@ -1149,8 +1149,6 @@
                     }
                 }
 
-
-
                 // un allocated riders 
                 $('#unallocatedRiders').on('change', function() {
                     if ($(this).is(':checked')) {
@@ -1212,12 +1210,6 @@
                         }
                     }
                 });
-
-
-
-
-
-
 
                 $('#categories-multiselect').multiselect({
                     includeSelectAllOption: true,
@@ -1524,7 +1516,6 @@
             });
         </script>
 
-
         <script>
             $(document).ready(function() {
 
@@ -1678,8 +1669,6 @@
             });
         </script>
 
-
-
         <script>
             function printModalContent(id, type = null) {
                 // Default content id if no type provided
@@ -1704,6 +1693,7 @@
                 printWindow.print();
             }
         </script>
+
     </div>
 </body>
 

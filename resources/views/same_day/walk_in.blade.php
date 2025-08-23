@@ -872,9 +872,7 @@
                                         </div>
                                     </div>
 
-                                    @if (isset($request->shipmentCollection) &&
-                                            !$request->shipmentCollection->agent_approved &&
-                                            $request->shipmentCollection->agent_requested)
+                                    @if ($request->agent && $request->agent->agent_requested && !$request->agent->agent_approved)
                                         <a href="#" class="btn btn-sm btn-primary mr-1"
                                             title="Review Agent Pickup Request" data-toggle="modal"
                                             data-target="#agentRequestModal-{{ $request->requestId }}">

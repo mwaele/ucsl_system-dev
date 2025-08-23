@@ -126,8 +126,6 @@ class ShipmentArrivalController extends Controller
         $filter = $request->query('filter');
         $value = $request->query('value');
 
-        
-
         // Safely split start/end date
         [$startDate, $endDate] = explode('_', $value) + [null, null];
 

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Clients Report PDF</title>
+    <title>Shipment Arrivals Report PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
