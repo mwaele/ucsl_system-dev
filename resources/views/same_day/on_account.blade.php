@@ -11,11 +11,96 @@
 
                 <h4 class="mb-0 text-warning"><strong> Same Day - On-Account Parcels</strong></h4>
 
-                <div class="d-flex gap-2 ms-auto">
+                <!-- Date Range Filter -->
+                <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
+                    <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
+                    <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
+                    <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
 
-                    <a href="/sameday_account_report" class="d-none d-sm-inline-block btn  btn-danger shadow-sm mr-2">
+                <!-- Generate PDF -->
+                <div class="d-flex gap-2 ms-auto">
+                    <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
-                    </a>
+                    </button>
+
+                    <script>
+                        /**
+                         * Reusable Date Filter + Report Generator
+                         * @param {string} tableId - The ID of the table to filter
+                         * @param {number} dateColIndex - Column index where the date is stored
+                         * @param {string} reportUrl - The base URL for report generation
+                         */
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                            const startInput = document.getElementById(startInputId);
+                            const endInput = document.getElementById(endInputId);
+                            const reportBtn = document.getElementById(reportBtnId);
+                            const clearBtn = document.getElementById(clearBtnId);
+
+                            function filterTable() {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
+
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
+
+                                let rows = table.getElementsByTagName("tr");
+
+                                for (let i = 1; i < rows.length; i++) { // skip header
+                                    let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
+                                    if (dateCell) {
+                                        let rowDateStr = dateCell.getAttribute("data-date");
+                                        let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
+                                        rowDate.setHours(0, 0, 0, 0);
+
+                                        let showRow = true;
+
+                                        if (startDate) {
+                                            let from = new Date(startDate);
+                                            from.setHours(0, 0, 0, 0);
+                                            if (rowDate < from) showRow = false;
+                                        }
+
+                                        if (endDate) {
+                                            let to = new Date(endDate);
+                                            to.setHours(0, 0, 0, 0);
+                                            if (rowDate > to) showRow = false;
+                                        }
+
+                                        rows[i].style.display = showRow ? "" : "none";
+                                    }
+                                }
+                            }
+
+                            function clearFilter() {
+                                startInput.value = "";
+                                endInput.value = "";
+
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
+
+                                let rows = table.getElementsByTagName("tr");
+                                for (let i = 1; i < rows.length; i++) {
+                                    rows[i].style.display = "";
+                                }
+                            }
+
+                            startInput.addEventListener("change", filterTable);
+                            endInput.addEventListener("change", filterTable);
+                            clearBtn.addEventListener("click", clearFilter);
+
+                            reportBtn.addEventListener("click", function () {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
+                                window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
+                            });
+                        }
+
+                        // Example usage for "Overnight walk-in" page
+                        initDateFilter("dataTable", 4, "/sameday_account_report");
+                    </script>
 
                     <form action="{{ route('clientRequestSameDay.store') }}" method="POST">
                         @csrf
@@ -300,6 +385,7 @@
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -331,7 +417,8 @@
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                <td data-date="{{ $request->dateRequested }}">
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Overnight On-account PDF</title>
+    <title>Overnight Walk-in PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
@@ -88,9 +88,8 @@
                         <td> {{ $request->client->name }} </td>
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
                         </td>
-
                         <td> {{ $request->parcelDetails }} </td>
-                        <td> {{ $request->shipmentCollection->actual_total_cost }} </td>
+                        <td> Ksh. {{ number_format($request->shipmentCollection->actual_total_cost, 2) }} </td>
                     </tr>
                 @endforeach
             </tbody>

@@ -12,12 +12,13 @@
 
                 <!-- Date Range Filter -->
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="filterOption" id="filterByDateRange" value="daterange">
-                    <label class="form-check-label" for="filterByDateRange">Date Range</label>
-
                     <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
                         <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
                         <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
+
+                        <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
                     </div>
                 </div>
 
@@ -28,45 +29,80 @@
                     </button>
 
                     <script>
-                        function filterTable() {
-                            let startDate = document.getElementById("startDate").value;
-                            let endDate = document.getElementById("endDate").value;
+                        /**
+                         * Reusable Date Filter + Report Generator
+                         * @param {string} tableId - The ID of the table to filter
+                         * @param {number} dateColIndex - Column index where the date is stored
+                         * @param {string} reportUrl - The base URL for report generation
+                         */
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                            const startInput = document.getElementById(startInputId);
+                            const endInput = document.getElementById(endInputId);
+                            const reportBtn = document.getElementById(reportBtnId);
+                            const clearBtn = document.getElementById(clearBtnId);
 
-                            let table = document.getElementById("dataTable");
-                            let rows = table.getElementsByTagName("tr");
+                            function filterTable() {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
 
-                            for (let i = 1; i < rows.length; i++) { // skip header
-                                let dateCell = rows[i].getElementsByTagName("td")[3]; // column index for "Date"
-                                if (dateCell) {
-                                    let rowDate = new Date(dateCell.innerText);
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
 
-                                    let showRow = true;
+                                let rows = table.getElementsByTagName("tr");
 
-                                    if (startDate && rowDate < new Date(startDate)) {
-                                        showRow = false;
+                                for (let i = 1; i < rows.length; i++) { // skip header
+                                    let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
+                                    if (dateCell) {
+                                        let rowDateStr = dateCell.getAttribute("data-date");
+                                        let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
+                                        rowDate.setHours(0, 0, 0, 0);
+
+                                        let showRow = true;
+
+                                        if (startDate) {
+                                            let from = new Date(startDate);
+                                            from.setHours(0, 0, 0, 0);
+                                            if (rowDate < from) showRow = false;
+                                        }
+
+                                        if (endDate) {
+                                            let to = new Date(endDate);
+                                            to.setHours(0, 0, 0, 0);
+                                            if (rowDate > to) showRow = false;
+                                        }
+
+                                        rows[i].style.display = showRow ? "" : "none";
                                     }
-                                    if (endDate && rowDate > new Date(endDate)) {
-                                        showRow = false;
-                                    }
-
-                                    rows[i].style.display = showRow ? "" : "none";
                                 }
                             }
+
+                            function clearFilter() {
+                                startInput.value = "";
+                                endInput.value = "";
+
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
+
+                                let rows = table.getElementsByTagName("tr");
+                                for (let i = 1; i < rows.length; i++) {
+                                    rows[i].style.display = "";
+                                }
+                            }
+
+                            startInput.addEventListener("change", filterTable);
+                            endInput.addEventListener("change", filterTable);
+                            clearBtn.addEventListener("click", clearFilter);
+
+                            reportBtn.addEventListener("click", function () {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
+                                window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
+                            });
                         }
 
-                        // Trigger filtering when date inputs change
-                        document.getElementById("startDate").addEventListener("change", filterTable);
-                        document.getElementById("endDate").addEventListener("change", filterTable);
-
-                        // Existing report generation code
-                        document.getElementById("generateReport").addEventListener("click", function() {
-                            let startDate = document.getElementById("startDate").value;
-                            let endDate = document.getElementById("endDate").value;
-
-                            window.location.href = `/walkin_report?start=${startDate}&end=${endDate}`;
-                        });
+                        // Example usage for "Overnight walk-in" page
+                        initDateFilter("dataTable", 3, "/walkin_report");
                     </script>
-
 
                     <form action="{{ route('shipment-collections.create') }}" method="POST">
                         @csrf
@@ -490,8 +526,6 @@
             </div>
         </div>
 
-
-
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table text-primary table-bordered table-striped table-hover" id="dataTable" width="100%"
@@ -530,7 +564,8 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
+                                <td data-date="{{ $request->shipmentCollection->created_at }}">
+                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
                                 <td> {{ $request->shipmentCollection->destination->destination }} </td>

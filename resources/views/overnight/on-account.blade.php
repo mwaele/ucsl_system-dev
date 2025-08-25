@@ -10,265 +10,305 @@
                     + Create Parcel
                 </button>
                 <h4 class="mb-0 text-warning"> <strong>Overnight - On-account Parcels</strong></h4>
-                <!-- Time Filter & Date Range Filter -->
-                {{-- <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
-                    <div class="form-row align-items-end">
-                        <div class="col-auto">
-                            <label for="time" class="font-weight-bold">Quick Filter:</label>
-                            <select name="time" id="time" class="form-control text-primary"
-                                onchange="this.form.submit()">
-                                <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
-                                <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
-                                <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
-                                <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days
-                                </option>
-                                <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
-                                <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <label for="start_date" class="font-weight-bold">Start Date:</label>
-                            <input type="date" name="start_date" id="start_date" class="form-control text-primary"
-                                value="{{ request('start_date') }}">
-                        </div>
-                        <div class="col-auto">
-                            <label for="end_date" class="font-weight-bold">End Date:</label>
-                            <input type="date" name="end_date" id="end_date" class="form-control text-primary"
-                                value="{{ request('end_date') }}">
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">Apply</button>
-                        </div>
-                        <div class="col-auto">
-                            <a href="{{ route('dashboard') }}" class="btn btn-warning">Clear</a>
-                        </div>
-                    </div>
-                </form> --}}
 
-
-                {{-- <!-- Content Row -->
-                @php
-                    $queryParams = ['time' => $timeFilter];
-
-                    if (request('start_date') && request('end_date')) {
-                        $queryParams['start_date'] = request('start_date');
-                        $queryParams['end_date'] = request('end_date');
-                    }
-                @endphp --}}
-
-                <div class="d-flex gap-2 ms-auto">
-
-                    <a href="/overnight_account_report" class="d-sm-inline-block   btn btn-danger shadow-sm mr-2">
-                        <i class="fas fa-download fa text-white"></i> Generate Report
-                    </a>
-
-
-                    <form action="{{ route('clientRequests.store') }}" method="POST">
-                        @csrf
-                        <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
-                                <div class="modal-content">
-                                    <div class="modal-header bg-gradient-primary">
-                                        <h5 class="modal-title text-white" id="exampleModalLabel">Create Overnight
-                                            On-account Request</h5>
-                                        <button type="button" class="text-white close" data-dismiss="modal"
-                                            aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <h6 class=" text-primary">Fill in the client details.</h6>
-
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <label for="clientId" class="form-label text-primary">Client</label>
-                                                    <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
-                                                        <option value="">Select Client</option>
-                                                        @foreach ($clients as $client)
-                                                            <option value="{{ $client->id }}"
-                                                                data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
-                                                                {{ $client->name }} -
-                                                                @if (!empty($client->kraPin))
-                                                                    KRA PIN: {{ $client->kraPin }}
-                                                                @endif
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="collectionLocation" class="form-label text-primary">Pickup
-                                                        Location</label>
-                                                    <input type="text" class="form-control" name="collectionLocation"
-                                                        id="collectionLocation" autocomplete="off">
-                                                    <div id="locationSuggestions"
-                                                        class="list-group bg-white position-absolute w-80"
-                                                        style="background-color: white;z-index: 1000;"></div>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-
-                                                    <label for="clientCategories" class="form-label text-primary">Client
-                                                        Categories</label>
-                                                    <!-- Client's Categories -->
-                                                    <select class="form-control mt-1" id="clientCategories"
-                                                        name="category_id">
-                                                        <option value="">Select Client Categories</option>
-                                                    </select>
-
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label for="subCategories" class="form-label text-primary">Service Level
-                                                    </label>
-                                                    <!-- Readonly input to display the name -->
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $sub_category->sub_category_name }}" readonly>
-
-                                                    <!-- Hidden input to store the ID -->
-                                                    <input type="hidden" name="sub_category_id"
-                                                        value="{{ $sub_category->id }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
-                                                    Details</label>
-                                                <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
-                                                    placeholder="Fill in the description of goods."></textarea>
-                                            </div>
-
-                                            <h6 class="text-muted text-primary"> Rider Details.</h6>
-                                            <div class="row mb-2 bg-success">
-                                                <div class="col-md-4">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="riderOption"
-                                                            id="currentLocation" value="currentLocation">
-                                                        <label class="form-check-label" for="allRiders"> Pickup
-                                                            Location</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="riderOption"
-                                                            id="unallocatedRiders" value="unallocated">
-                                                        <label class="form-check-label" for="unallocatedRiders">Unallocated
-                                                            Riders</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="riderOption"
-                                                            id="allRiders" value="all">
-                                                        <label class="form-check-label" for="allRiders">All Riders</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12 mb-3">
-                                                    <label for="userId" class="form-label text-primary">Rider</label>
-                                                    <select class="form-control" id="userId" name="userId">
-                                                        <option value="">Select Rider</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="vehicle" class="form-label text-primary">Vehicle</label>
-                                                    <input type="text" id="vehicle" class="form-control"
-                                                        name="vehicle_display" placeholder="Select rider to populate"
-                                                        readonly>
-                                                    <input type="hidden" id="vehicleId" name="vehicleId">
-                                                </div>
-
-                                                <script>
-                                                    const vehicleMap = {
-                                                        @foreach ($vehicles as $vehicle)
-                                                            "{{ $vehicle->user_id }}": {
-                                                                id: "{{ $vehicle->id }}",
-                                                                regNo: "{{ $vehicle->regNo }}",
-                                                                status: "{{ $vehicle->status }}"
-                                                            },
-                                                        @endforeach
-                                                    };
-
-                                                    document.addEventListener('DOMContentLoaded', function() {
-                                                        const userSelect = document.getElementById('userId');
-                                                        const vehicleInput = document.getElementById('vehicle');
-                                                        const vehicleIdInput = document.getElementById('vehicleId');
-
-                                                        userSelect.addEventListener('change', function() {
-                                                            const selectedUserId = this.value;
-                                                            const vehicle = vehicleMap[selectedUserId];
-
-                                                            if (vehicle) {
-                                                                vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
-                                                                vehicleIdInput.value = vehicle.id;
-                                                            } else {
-                                                                vehicleInput.value = '';
-                                                                vehicleIdInput.value = '';
-                                                            }
-                                                        });
-                                                    });
-                                                </script>
-
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="datetime" class="text-primary">Date of Request</label>
-                                                    <div class="input-group">
-                                                        <input type="text" name="dateRequested" id="datetime"
-                                                            class="form-control" placeholder="Select date & time">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text" id="calendar-trigger"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <script>
-                                                        document.getElementById('calendar-trigger').addEventListener('click', function() {
-                                                            document.getElementById('datetime').focus();
-                                                        });
-                                                    </script>
-                                                </div>
-
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="priority_level" class="form-label text-primary">Priority
-                                                        Level</label>
-                                                    <select class="form-control" name="priority_level"
-                                                        id="priority_level">
-                                                        <option value="normal" selected>Normal</option>
-                                                        <option value="high">High</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3 mb-3" id="priority-deadline-group"
-                                                    style="display: none;">
-                                                    <label for="deadline_date" class="form-label text-primary">
-                                                        Deadline (If High Priority)
-                                                    </label>
-                                                    <input type="datetime-local" class="form-control"
-                                                        name="deadline_date" id="deadline_date">
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer d-flex justify-content-between align-items-center ">
-                                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close
-                                            X</button>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <!-- Date Range Filter -->
+                <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
+                    <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
+                    <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
+                    <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
                 </div>
+
+                <!-- Generate PDF -->
+                <div class="d-flex gap-2 ms-auto">
+                    <button id="generateReport" class="btn btn-danger shadow-sm">
+                        <i class="fas fa-download fa text-white"></i> Generate Report
+                    </button>
+
+                <script>
+                    /**
+                     * Reusable Date Filter + Report Generator
+                     * @param {string} tableId - The ID of the table to filter
+                     * @param {number} dateColIndex - Column index where the date is stored
+                     * @param {string} reportUrl - The base URL for report generation
+                     */
+                    function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        const startInput = document.getElementById(startInputId);
+                        const endInput = document.getElementById(endInputId);
+                        const reportBtn = document.getElementById(reportBtnId);
+                        const clearBtn = document.getElementById(clearBtnId);
+
+                        function filterTable() {
+                            let startDate = startInput.value;
+                            let endDate = endInput.value;
+
+                            let table = document.getElementById(tableId);
+                            if (!table) return;
+
+                            let rows = table.getElementsByTagName("tr");
+
+                            for (let i = 1; i < rows.length; i++) { // skip header
+                                let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
+                                if (dateCell) {
+                                    let rowDateStr = dateCell.getAttribute("data-date");
+                                    let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
+                                    rowDate.setHours(0, 0, 0, 0);
+
+                                    let showRow = true;
+
+                                    if (startDate) {
+                                        let from = new Date(startDate);
+                                        from.setHours(0, 0, 0, 0);
+                                        if (rowDate < from) showRow = false;
+                                    }
+
+                                    if (endDate) {
+                                        let to = new Date(endDate);
+                                        to.setHours(0, 0, 0, 0);
+                                        if (rowDate > to) showRow = false;
+                                    }
+
+                                    rows[i].style.display = showRow ? "" : "none";
+                                }
+                            }
+                        }
+
+                        function clearFilter() {
+                            startInput.value = "";
+                            endInput.value = "";
+
+                            let table = document.getElementById(tableId);
+                            if (!table) return;
+
+                            let rows = table.getElementsByTagName("tr");
+                            for (let i = 1; i < rows.length; i++) {
+                                rows[i].style.display = "";
+                            }
+                        }
+
+                        startInput.addEventListener("change", filterTable);
+                        endInput.addEventListener("change", filterTable);
+                        clearBtn.addEventListener("click", clearFilter);
+
+                        reportBtn.addEventListener("click", function () {
+                            let startDate = startInput.value;
+                            let endDate = endInput.value;
+                            window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
+                        });
+                    }
+
+                    // Example usage for "Overnight walk-in" page
+                    initDateFilter("dataTable", 4, "/overnight_account_report");
+                </script>
+
             </div>
         </div>
+
+        <!-- Create Parcel Modal -->
+        <form action="{{ route('clientRequests.store') }}" method="POST">
+            @csrf
+            <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
+                    <div class="modal-content">
+                        <div class="modal-header bg-gradient-primary">
+                            <h5 class="modal-title text-white" id="exampleModalLabel">Create Overnight
+                                On-account Request</h5>
+                            <button type="button" class="text-white close" data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <h6 class=" text-primary">Fill in the client details.</h6>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="clientId" class="form-label text-primary">Client</label>
+                                        <select class="form-control selectpicker" data-live-search="true"
+                                            id="clientId" name="clientId">
+                                            <option value="">Select Client</option>
+                                            @foreach ($clients as $client)
+                                                <option value="{{ $client->id }}"
+                                                    data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
+                                                    {{ $client->name }} -
+                                                    @if (!empty($client->kraPin))
+                                                        KRA PIN: {{ $client->kraPin }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="collectionLocation" class="form-label text-primary">Pickup
+                                            Location</label>
+                                        <input type="text" class="form-control" name="collectionLocation"
+                                            id="collectionLocation" autocomplete="off">
+                                        <div id="locationSuggestions"
+                                            class="list-group bg-white position-absolute w-80"
+                                            style="background-color: white;z-index: 1000;"></div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+
+                                        <label for="clientCategories" class="form-label text-primary">Client
+                                            Categories</label>
+                                        <!-- Client's Categories -->
+                                        <select class="form-control mt-1" id="clientCategories"
+                                            name="category_id">
+                                            <option value="">Select Client Categories</option>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="subCategories" class="form-label text-primary">Service Level
+                                        </label>
+                                        <!-- Readonly input to display the name -->
+                                        <input type="text" class="form-control"
+                                            value="{{ $sub_category->sub_category_name }}" readonly>
+
+                                        <!-- Hidden input to store the ID -->
+                                        <input type="hidden" name="sub_category_id"
+                                            value="{{ $sub_category->id }}">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
+                                        Details</label>
+                                    <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
+                                        placeholder="Fill in the description of goods."></textarea>
+                                </div>
+
+                                <h6 class="text-muted text-primary"> Rider Details.</h6>
+                                <div class="row mb-2 bg-success">
+                                    <div class="col-md-4">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="riderOption"
+                                                id="currentLocation" value="currentLocation">
+                                            <label class="form-check-label" for="allRiders"> Pickup
+                                                Location</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="riderOption"
+                                                id="unallocatedRiders" value="unallocated">
+                                            <label class="form-check-label" for="unallocatedRiders">Unallocated
+                                                Riders</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="riderOption"
+                                                id="allRiders" value="all">
+                                            <label class="form-check-label" for="allRiders">All Riders</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="userId" class="form-label text-primary">Rider</label>
+                                        <select class="form-control" id="userId" name="userId">
+                                            <option value="">Select Rider</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3 mb-3">
+                                        <label for="vehicle" class="form-label text-primary">Vehicle</label>
+                                        <input type="text" id="vehicle" class="form-control"
+                                            name="vehicle_display" placeholder="Select rider to populate"
+                                            readonly>
+                                        <input type="hidden" id="vehicleId" name="vehicleId">
+                                    </div>
+
+                                    <script>
+                                        const vehicleMap = {
+                                            @foreach ($vehicles as $vehicle)
+                                                "{{ $vehicle->user_id }}": {
+                                                    id: "{{ $vehicle->id }}",
+                                                    regNo: "{{ $vehicle->regNo }}",
+                                                    status: "{{ $vehicle->status }}"
+                                                },
+                                            @endforeach
+                                        };
+
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const userSelect = document.getElementById('userId');
+                                            const vehicleInput = document.getElementById('vehicle');
+                                            const vehicleIdInput = document.getElementById('vehicleId');
+
+                                            userSelect.addEventListener('change', function() {
+                                                const selectedUserId = this.value;
+                                                const vehicle = vehicleMap[selectedUserId];
+
+                                                if (vehicle) {
+                                                    vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                                                    vehicleIdInput.value = vehicle.id;
+                                                } else {
+                                                    vehicleInput.value = '';
+                                                    vehicleIdInput.value = '';
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                    <div class="col-md-3 mb-3">
+                                        <label for="datetime" class="text-primary">Date of Request</label>
+                                        <div class="input-group">
+                                            <input type="text" name="dateRequested" id="datetime"
+                                                class="form-control" placeholder="Select date & time">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="calendar-trigger"
+                                                    style="cursor: pointer;">
+                                                    <i class="fa fa-calendar"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            document.getElementById('calendar-trigger').addEventListener('click', function() {
+                                                document.getElementById('datetime').focus();
+                                            });
+                                        </script>
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+                                        <label for="priority_level" class="form-label text-primary">Priority
+                                            Level</label>
+                                        <select class="form-control" name="priority_level"
+                                            id="priority_level">
+                                            <option value="normal" selected>Normal</option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3" id="priority-deadline-group"
+                                        style="display: none;">
+                                        <label for="deadline_date" class="form-label text-primary">
+                                            Deadline (If High Priority)
+                                        </label>
+                                        <input type="datetime-local" class="form-control"
+                                            name="deadline_date" id="deadline_date">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-between align-items-center ">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close
+                                X</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         <div class="card-body">
             <div class="table-responsive">
@@ -295,7 +335,8 @@
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                <td data-date="{{ $request->dateRequested }}">
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
