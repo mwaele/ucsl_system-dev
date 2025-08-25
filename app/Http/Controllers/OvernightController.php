@@ -108,25 +108,16 @@ class OvernightController extends Controller
         ));
     }
 
-    public function overnight_account_report(Request $request)
+    public function overnight_account_report()
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
             ->whereHas('client', function ($query) {
-                $query->where('type', 'on-account');
+                $query->where('type', 'on_account');
             })
-            ->with(['client', 'user', 'vehicle']);
-
-        // ✅ Apply date range filter if provided
-        if ($request->filled('start') && $request->filled('end')) {
-            $clientRequests->whereBetween('created_at', [
-                $request->start . " 00:00:00",
-                $request->end . " 23:59:59"
-            ]);
-        }
-
-        $clientRequests = $clientRequests->get();
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
 
         return $this->renderPdfWithPageNumbers(
             'overnight.overnight_account_report',
