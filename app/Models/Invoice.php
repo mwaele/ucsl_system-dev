@@ -16,7 +16,7 @@ class Invoice extends Model
         'status',
     ];
 
-    public function shipment_collection_id()
+    public function shipment_collection()
     {
         return $this->belongsTo(ShipmentCollection::class, 'shipment_collection_id');
     }

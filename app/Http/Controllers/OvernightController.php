@@ -34,7 +34,6 @@ class OvernightController extends Controller
     public function on_account(Request $request )
     {
         $timeFilter = $request->query('time', 'all'); // default to all
-
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 

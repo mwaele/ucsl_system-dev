@@ -35,6 +35,12 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShipmentArrivalsController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Accounts\Debtors\InvoiceController as DebtorInvoiceController;
+use App\Http\Controllers\Accounts\Debtors\ReceiptController as DebtorReceiptController;
+use App\Http\Controllers\Accounts\Debtors\DebitNoteController;
+use App\Http\Controllers\Accounts\Debtors\CreditNoteController;
+use App\Http\Controllers\Accounts\Creditors\InvoiceController as CreditorInvoiceController;
+use App\Http\Controllers\Accounts\LedgerController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -97,7 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users_report', [UserController::class, 'users_report']);
     Route::put('/client/{id}', [ClientController::class, 'update'])->name('clients.update');
 
-     Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');
+    Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');
    
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -213,9 +219,6 @@ Route::middleware('auth')->group(function () {
     //parcel receipts
     Route::resource('parcelReceipts','App\Http\Controllers\ParcelReceiptController');
 
-    
-
-
     // Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
     Route::resource('parcelReceiptItems','App\Http\Controllers\ParcelReceiptItemController');
@@ -254,15 +257,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
     Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
-        ->name('shipment_arrivals_report');
+    ->name('shipment_arrivals_report');
 
     Route::get('/shipment_arrivals_report_detail', [ShipmentArrivalController::class, 'generateParcels'])
-          ->name('shipment_arrivals_report_detail');
+    ->name('shipment_arrivals_report_detail');
 
-          Route::get('/shipment_arrivals_report_uncollected/{id}/{type}', [ShipmentArrivalController::class, 'generateParcelsUncollected'])
-          ->name('shipment_arrivals_report_uncollected');
-
-          
+    Route::get('/shipment_arrivals_report_uncollected/{id}/{type}', [ShipmentArrivalController::class, 'generateParcelsUncollected'])
+    ->name('shipment_arrivals_report_uncollected');
 
     Route::get('/arrival_details/{id}', [ShipmentArrivalController::class, 'arrival_details'])->name('arrival_details');
     Route::get('/parcel_collection', [ShipmentArrivalController::class, 'parcel_collection'])->name('parcel_collection');
@@ -311,6 +312,30 @@ Route::middleware('auth')->group(function () {
     Route::resource('client_categories','App\Http\Controllers\ClientCategoryController');
 
     Route::get('/locations/search', [LocationController::class, 'search'])->name('locations.search');
+
+    Route::prefix('accounts')->name('accounts.')->group(function () {
+
+    // ---------------- Debtors (AR) ----------------
+    Route::prefix('debtors')->name('debtors.')->group(function () {
+        Route::resource('invoices', DebtorInvoiceController::class)->names('invoices');
+        Route::resource('receipts', DebtorReceiptController::class)->names('receipts');
+        Route::resource('debit-notes', DebitNoteController::class)->names('debit_notes');
+        Route::resource('credit-notes', CreditNoteController::class)->names('credit_notes');
+    });
+
+    // ---------------- Creditors (AP) ----------------
+    Route::prefix('creditors')->name('creditors.')->group(function () {
+        Route::resource('invoices', CreditorInvoiceController::class)->names('invoices');
+    });
+
+    // ---------------- General Ledger ----------------
+    Route::prefix('ledger')->name('ledger.')->group(function () {
+        Route::get('journals', [LedgerController::class, 'journals'])->name('journals');
+        Route::get('trial-balance', [LedgerController::class, 'trialBalance'])->name('trial_balance');
+        Route::get('reports', [LedgerController::class, 'reports'])->name('reports');
+    });
+
+});
    
 
 });

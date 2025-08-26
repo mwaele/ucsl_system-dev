@@ -325,6 +325,72 @@
                 </div>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Account Management Collapse Menu -->
+            <li class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAccountManagement"
+                    aria-expanded="true" aria-controls="collapseAccountManagement">
+                    <i class="fas fa-fw fa-wallet"></i>
+                    <span class="sized">Accounting</span>
+                </a>
+                <div id="collapseAccountManagement" class="collapse {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'show' : '' }}"
+                    aria-labelledby="headingAccountManagement" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+
+                        <hr class="sidebar-divide my-0" />
+
+                        {{-- Collapsible: Debtors (AR) --}}
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseDebtors" aria-expanded="false"
+                            aria-controls="collapseDebtors">
+                            Debtors (AR)
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseDebtors" class="collapse ml-3" aria-labelledby="headingDebtors"
+                            data-parent="#collapseAccountManagement">
+                            <a class="collapse-item" href="{{ route('accounts.debtors.invoices.index') }}">Invoices</a>
+                            <a class="collapse-item" href="">Debit Notes</a>
+                            <a class="collapse-item" href="">Receipts</a>
+                            <a class="collapse-item" href="">Credit Notes</a>
+                        </div>
+
+                        <hr class="sidebar-divide my-0" />
+
+                        {{-- Collapsible: Creditors (AP) --}}
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseCreditors" aria-expanded="false"
+                            aria-controls="collapseCreditors">
+                            Creditors (AP)
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseCreditors" class="collapse ml-3" aria-labelledby="headingCreditors"
+                            data-parent="#collapseAccountManagement">
+                            <a class="collapse-item" href="">Invoices</a>
+                            <a class="collapse-item" href="">Payments</a>
+                            <a class="collapse-item" href="">Credit Notes</a>
+                        </div>
+
+                        <hr class="sidebar-divide my-0" />
+
+                        {{-- Collapsible: General Ledger --}}
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseLedger" aria-expanded="false"
+                            aria-controls="collapseLedger">
+                            General Ledger
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseLedger" class="collapse ml-3" aria-labelledby="headingLedger"
+                            data-parent="#collapseAccountManagement">
+                            <a class="collapse-item" href="">Journals</a>
+                            <a class="collapse-item" href="">Trial Balance</a>
+                            <a class="collapse-item" href="">Reports</a>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
