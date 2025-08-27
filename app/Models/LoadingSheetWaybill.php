@@ -17,14 +17,18 @@ class LoadingSheetWaybill extends Model
     {
         return $this->belongsTo(LoadingSheet::class, 'loading_sheet_id');
     }
-    public function shipment_collection(){
+    
+    public function shipment_collection()
+    {
         return $this->belongsTo(ShipmentCollection::class, 'shipment_id');
     }
-    public function shipment_item(){
+
+    public function shipment_item()
+    {
         return $this->belongsTo(ShipmentItem::class, 'shipment_item_id');
     }
 
-      public function shipmentItem()
+    public function shipmentItem()
     {
         return $this->belongsTo(ShipmentItem::class, 'shipment_item_id');
     }
@@ -38,6 +42,5 @@ class LoadingSheetWaybill extends Model
     {
         return $this->belongsTo(LoadingSheet::class, 'loading_sheet_id');
     }
-
     
 }

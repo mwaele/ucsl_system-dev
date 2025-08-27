@@ -143,10 +143,10 @@
                                 <td> {{ $payment->client->name }} </td>
                                 <td> {{ $payment->shipment_collection->requestId }} </td>
                                 <td> {{ $payment->shipment_collection->waybill_no }} </td>
-                                <td> {{ $payment->shipment_collection->total_cost }} </td>
-                                <td> {{ $payment->amount }} </td>
+                                <td> Ksh {{ number_format($payment->shipment_collection->total_cost, 2) }} </td>
+                                <td> Ksh {{ number_format($payment->amount, 2) }} </td>
                                 <td> {{ $payment->reference_no }} </td>
-                                <td> {{ $payment->shipment_collection->total_cost - $payment->amount }} </td>
+                                <td> Ksh {{ number_format($payment->shipment_collection->total_cost - $payment->amount, 2) }} </td>
                                 <td data-date="{{ $payment->date_paid }}"> {{ $payment->date_paid }} </td>
                                 <td> {{ $payment->user->name }} </td>
                                 <td class="row pl-4">

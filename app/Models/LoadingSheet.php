@@ -29,32 +29,46 @@ class LoadingSheet extends Model
         'destination_id', 
         'offloading_clerk'
     ];
+    
     public function office()
     {
         return $this->belongsTo(Office::class, 'office_id');
     }
+
     public function transporter()
     {
         return $this->belongsTo(Transporter::class, 'transported_by');
     }
+
     public function dispatcher()
     {
         return $this->belongsTo(Dispatcher::class, 'dispatcher_id');
     }
+
     public function transporter_truck()
     {
         return $this->belongsTo(TransporterTrucks::class, 'vehicle_reg_no');
     }
+
     public function rate()
     {
         return $this->belongsTo(Rate::class, 'destination_id');
     }
+
     public function special_destination()
     {
         return $this->belongsTo(SpecialRate::class, 'destination');
     }
+
     public function waybills()
     {
         return $this->hasMany(LoadingSheetWaybill::class);
+    }
+
+    public function getBatchNoFormattedAttribute()
+    {
+        return $this->batch_no
+            ? sprintf('%04d', $this->batch_no)
+            : null;
     }
 }

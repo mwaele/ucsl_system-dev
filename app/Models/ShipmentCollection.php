@@ -103,7 +103,12 @@ class ShipmentCollection extends Model
     {
         return $this->hasMany(Invoice::class, 'shipment_collection_id');
     }
-    
+
+    public function loadingSheetWaybills()
+    {
+        return $this->hasOne(LoadingSheetWaybill::class, 'shipment_id');
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class, 'shipment_collection_id');
