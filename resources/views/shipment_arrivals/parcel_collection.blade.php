@@ -8,11 +8,97 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 text-primary">Client Parcel Collection</h4>
 
-                <div class="d-flex gap-2 ms-auto">
-                    <a href="{{ url('/parcel-collection-report') }}"
-                        class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                <!-- Right Side (Date Filter + Generate PDF) -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Date Range Filter -->
+                    <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
+                        <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
+                        <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <button id="clearFilter" class="btn btn-secondary mr-2">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+
+                    <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
-                    </a>
+                    </button>
+
+                    <script>
+                        /**
+                         * Reusable Date Filter + Report Generator
+                         * @param {string} tableId - The ID of the table to filter
+                         * @param {number} dateColIndex - Column index where the date is stored
+                         * @param {string} reportUrl - The base URL for report generation
+                         */
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                            const startInput = document.getElementById(startInputId);
+                            const endInput = document.getElementById(endInputId);
+                            const reportBtn = document.getElementById(reportBtnId);
+                            const clearBtn = document.getElementById(clearBtnId);
+
+                            function filterTable() {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
+
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
+
+                                let rows = table.getElementsByTagName("tr");
+
+                                for (let i = 1; i < rows.length; i++) { // skip header
+                                    let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
+                                    if (dateCell) {
+                                        let rowDateStr = dateCell.getAttribute("data-date");
+                                        let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
+                                        rowDate.setHours(0, 0, 0, 0);
+
+                                        let showRow = true;
+
+                                        if (startDate) {
+                                            let from = new Date(startDate);
+                                            from.setHours(0, 0, 0, 0);
+                                            if (rowDate < from) showRow = false;
+                                        }
+
+                                        if (endDate) {
+                                            let to = new Date(endDate);
+                                            to.setHours(0, 0, 0, 0);
+                                            if (rowDate > to) showRow = false;
+                                        }
+
+                                        rows[i].style.display = showRow ? "" : "none";
+                                    }
+                                }
+                            }
+
+                            function clearFilter() {
+                                startInput.value = "";
+                                endInput.value = "";
+
+                                let table = document.getElementById(tableId);
+                                if (!table) return;
+
+                                let rows = table.getElementsByTagName("tr");
+                                for (let i = 1; i < rows.length; i++) {
+                                    rows[i].style.display = "";
+                                }
+                            }
+
+                            startInput.addEventListener("change", filterTable);
+                            endInput.addEventListener("change", filterTable);
+                            clearBtn.addEventListener("click", clearFilter);
+
+                            reportBtn.addEventListener("click", function () {
+                                let startDate = startInput.value;
+                                let endDate = endInput.value;
+                                window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
+                            });
+                        }
+
+                        // Example usage for "Overnight walk-in" page
+                        initDateFilter("dataTable", 2, "/parcel-collection-report");
+                    </script>
                 </div>
             </div>
         </div>
@@ -25,6 +111,7 @@
                         <tr class="text-success">
                             <th>#</th>
                             <th>Request ID</th>
+                            <th>Date Received</th>
                             <th>Waybill No.</th>
                             <th>Verified By</th>
                             <th>Payment Status</th>
@@ -37,6 +124,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $arrival->requestId }}</td>
+                                <td data-date="{{ $arrival->date_received }}">{{ \Carbon\Carbon::parse($arrival->date_received)->format('d M, Y') }}</td>
                                 <td>{{ $arrival->shipmentCollection->waybill_no }}</td>
                                 <td>{{ $arrival->verifiedBy->name ?? null }}</td>
                                 <td>

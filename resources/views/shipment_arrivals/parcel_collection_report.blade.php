@@ -64,7 +64,8 @@
             <thead>
                 <tr>
                     <th style="width: 5%;">#</th>
-                    <th style="width: 20%;">Request ID</th>
+                    <th style="width: 15%;">Request ID</th>
+                    <th style="width: 15%;">Date Received</th>
                     <th style="width: 15%;">Waybill No.</th>
                     <th style="width: 15%;">Parcel Details</th>
                     <th style="width: 15%;">Cost</th>
@@ -79,6 +80,7 @@
                     <tr>
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $arrival->requestId }} </td>
+                        <td> {{ \Carbon\Carbon::parse($arrival->date_received)->format('d M, Y') }}</td>
                         <td> {{ $arrival->shipmentCollection->waybill_no }} </td>
                         <td> {{ $arrival->shipmentCollection->items->pluck('item_name')->join(', ') }} </td>
                         <td>Ksh {{ number_format($arrival->total_cost, 2) }}</td>

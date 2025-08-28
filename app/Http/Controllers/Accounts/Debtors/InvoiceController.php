@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Accounts\Debtors;
 
 use App\Http\Controllers\Controller;
+use App\Traits\PdfReportTrait;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
+    use PdfReportTrait;
+
     public function index()
     {
-        $invoices = Invoice::latest()->paginate(10);
+        $invoices = Invoice::whereHas('client', function ($query) {
+            $query->where('type', 'on_account');
+        })->get();
         return view('accounts.debtors.invoices.index', compact('invoices'));
     }
 
@@ -31,5 +36,20 @@ class InvoiceController extends Controller
 
         return redirect()->route('accounts.debtors.invoices.index')
                          ->with('success', 'Invoice created successfully.');
+    }
+
+    public function unposted_invoices_report()
+    {
+        $invoices = Invoice::whereHas('client', function ($query) {
+            $query->where('type', 'on_account');
+        })->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'accounts.debtors.invoices.unposted_invoices_report',
+            ['invoices' => $invoices],
+            'unposted_invoices_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 }

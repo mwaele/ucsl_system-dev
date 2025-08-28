@@ -9,20 +9,18 @@
             <div class="d-sm-flex align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-danger">List of all Shipment Payments </h6>
 
-                <!-- Date Range Filter -->
-                <div class="form-check form-check-inline">
-                    <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
-                        <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
-                        <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
-
-                        <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
+                <!-- Right Side (Date Filter + Generate PDF) -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Date Range Filter -->
+                    <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
+                        <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
+                        <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <button id="clearFilter" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-                </div>
 
-                <!-- Generate PDF -->
-                <div class="d-flex gap-2 ms-auto">
                     <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </button>
@@ -110,6 +108,7 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Client</th>
                             <th>Request Id</th>
                             <th>Waybill No</th>
@@ -124,6 +123,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Client</th>
                             <th>Request Id</th>
                             <th>Waybill No</th>
@@ -140,6 +140,7 @@
                     <tbody>
                         @foreach ($payments as $payment)
                             <tr>
+                                <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $payment->client->name }} </td>
                                 <td> {{ $payment->shipment_collection->requestId }} </td>
                                 <td> {{ $payment->shipment_collection->waybill_no }} </td>
@@ -147,7 +148,7 @@
                                 <td> Ksh {{ number_format($payment->amount, 2) }} </td>
                                 <td> {{ $payment->reference_no }} </td>
                                 <td> Ksh {{ number_format($payment->shipment_collection->total_cost - $payment->amount, 2) }} </td>
-                                <td data-date="{{ $payment->date_paid }}"> {{ $payment->date_paid }} </td>
+                                <td data-date="{{ $payment->date_paid }}"> {{ \Carbon\Carbon::parse($payment->date_paid)->format('d M, Y') }} </td>
                                 <td> {{ $payment->user->name }} </td>
                                 <td class="row pl-4">
                                     <a href="{{ route('payments.show', $payment->id) }}">

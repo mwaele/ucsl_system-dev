@@ -315,27 +315,31 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('accounts')->name('accounts.')->group(function () {
 
-    // ---------------- Debtors (AR) ----------------
-    Route::prefix('debtors')->name('debtors.')->group(function () {
-        Route::resource('invoices', DebtorInvoiceController::class)->names('invoices');
-        Route::resource('receipts', DebtorReceiptController::class)->names('receipts');
-        Route::resource('debit-notes', DebitNoteController::class)->names('debit_notes');
-        Route::resource('credit-notes', CreditNoteController::class)->names('credit_notes');
+        // ---------------- Debtors (AR) ----------------
+        Route::prefix('debtors')->name('debtors.')->group(function () {
+            Route::resource('invoices', DebtorInvoiceController::class)->names('invoices');
+            Route::resource('receipts', DebtorReceiptController::class)->names('receipts');
+            Route::resource('debit-notes', DebitNoteController::class)->names('debit_notes');
+            Route::resource('credit-notes', CreditNoteController::class)->names('credit_notes');
+            Route::get('invoices/unposted-report', [DebtorInvoiceController::class, 'unposted_invoices_report'])
+                ->name('invoices.unposted_report');
+        });
+
+        // ---------------- Creditors (AP) ----------------
+        Route::prefix('creditors')->name('creditors.')->group(function () {
+            Route::resource('invoices', CreditorInvoiceController::class)->names('invoices');
+        });
+
+        // ---------------- General Ledger ----------------
+        Route::prefix('ledger')->name('ledger.')->group(function () {
+            Route::get('journals', [LedgerController::class, 'journals'])->name('journals');
+            Route::get('trial-balance', [LedgerController::class, 'trialBalance'])->name('trial_balance');
+            Route::get('reports', [LedgerController::class, 'reports'])->name('reports');
+        });
+
     });
 
-    // ---------------- Creditors (AP) ----------------
-    Route::prefix('creditors')->name('creditors.')->group(function () {
-        Route::resource('invoices', CreditorInvoiceController::class)->names('invoices');
-    });
-
-    // ---------------- General Ledger ----------------
-    Route::prefix('ledger')->name('ledger.')->group(function () {
-        Route::get('journals', [LedgerController::class, 'journals'])->name('journals');
-        Route::get('trial-balance', [LedgerController::class, 'trialBalance'])->name('trial_balance');
-        Route::get('reports', [LedgerController::class, 'reports'])->name('reports');
-    });
-
-});
+    Route::get('/unposted_invoices_report', [DebtorInvoiceController::class, 'unposted_invoices_report'])->name('unposted_invoices_report');
    
 
 });

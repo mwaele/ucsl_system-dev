@@ -50,8 +50,8 @@
                             <th>INV No</th>
                             <th>Parcel Desc.</th>
                             <th>INV Amt.</th>
-                            <th>VAT</th>
-                            <th>Total Amnt.</th>
+                            <th>VAT  Amt.</th>
+                            <th>Total Amt.</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -67,7 +67,13 @@
                                 <td> {{ $invoice->shipment_collection->sender_name }} </td>
                                 <td> {{ $invoice->shipment_collection->requestId }} </td>
                                 <td> {{ $invoice->shipment_collection->waybill_no }} </td>
-                                <td> {{ $invoice->loading_sheet_waybills->loading_sheet->batch_no_formatted ?? null }} </td>
+                                <td>
+                                    @if(optional(optional($invoice->loading_sheet_waybills)->loading_sheet)->batch_no_formatted)
+                                        {{ $invoice->loading_sheet_waybills->loading_sheet->batch_no_formatted }}
+                                    @else
+                                        <span class="badge bg-warning text-white p-2">Pending dispatch</span>
+                                    @endif
+                                </td>
                                 <td> {{ $invoice->invoice_no }} </td>
                                 <td> {!! $invoice->shipment_collection->items->pluck('item_name')->join('<br>') !!} </td>
                                 <td> Ksh {{ number_format($invoice->shipment_collection->actual_cost, 2) }}</td>
@@ -227,7 +233,7 @@
                 }
 
                 // Example usage for "Overnight walk-in" page
-                initDateFilter("dataTable", 1, "/payments_report");
+                initDateFilter("dataTable", 2, "/unposted_invoices_report");
             </script>
             <script>
                 // Select/Deselect all

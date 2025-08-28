@@ -11,17 +11,18 @@
 
                 <h4 class="mb-0 text-warning"><strong> Same Day - Walk-in Parcels</strong></h4>
 
-                <!-- Date Range Filter -->
-                <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
-                    <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
-                    <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
-                    <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
-                        <i class="fas fa-times"></i> Clear
-                    </button>
-                </div>
+                <!-- Right Side (Date Filter + Generate PDF) -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Date Range Filter -->
+                    <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
+                        <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
+                        <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <button id="clearFilter" class="btn btn-secondary mr-2">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
 
-                <!-- Generate PDF -->
-                <div class="d-flex gap-2 ms-auto">
                     <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </button>
@@ -99,7 +100,7 @@
                         }
 
                         // Example usage for "Overnight walk-in" page
-                        initDateFilter("dataTable", 4, "/sameday_account_report");
+                        initDateFilter("dataTable", 3, "/sameday_account_report");
                     </script>
 
                     <form action="{{ route('shipment-collections.create') }}" method="POST">
@@ -585,7 +586,7 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
+                                <td data-date="{{ $request->shipmentCollection->created_at }}"> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
                                 <td> {{ $request->shipmentCollection->destination->destination }} </td>

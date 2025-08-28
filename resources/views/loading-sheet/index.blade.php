@@ -8,22 +8,20 @@
                 <button type="button"class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
                     data-target="#createLoadingSheet"><i class="fas fa-plus fa-sm text-white"></i> Create Loading
                     Sheet</button>
-                <h6 class="m-0 font-weight-bold text-danger">All Loading Sheets</h6>
+                <h4 class="m-0 font-weight-bold text-danger">All Loading Sheets</h4>
 
-                <!-- Date Range Filter -->
-                <div class="form-check form-check-inline">
-                    <div id="dateRangeFilter" class="d-flex flex-wrap justify-content-center mt-2">
-                        <input type="date" id="startDate" class="form-control ml-2 mb-2" style="width: 200px;">
-                        <input type="date" id="endDate" class="form-control ml-2 mb-2" style="width: 200px;">
-
-                        <button id="clearFilter" class="btn btn-secondary ml-2 mb-2">
+                <!-- Right Side (Date Filter + Generate PDF) -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <!-- Date Range Filter -->
+                    <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
+                        <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
+                        <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <button id="clearFilter" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-                </div>
 
-                <!-- Generate PDF -->
-                <div class="d-flex gap-2 ms-auto">
                     <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </button>

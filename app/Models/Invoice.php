@@ -27,4 +27,9 @@ class Invoice extends Model
         return $this->hasOne(LoadingSheetWaybill::class, 'shipment_id', 'shipment_collection_id');
     }
 
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
 }
