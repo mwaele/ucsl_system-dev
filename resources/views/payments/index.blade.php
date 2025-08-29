@@ -7,7 +7,7 @@
 
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-danger">List of all Shipment Payments </h6>
+                <h4 class="m-0 font-weight-bold text-danger">List of all Shipment Payments </h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">

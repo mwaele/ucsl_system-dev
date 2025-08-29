@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Traits\PdfReportTrait;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\AccountsReceivableMain;
+use App\Models\AccountsReceivableTransaction;
 
 class InvoiceController extends Controller
 {
@@ -52,4 +54,54 @@ class InvoiceController extends Controller
             'landscape'
         );
     }
+
+    public function postInvoice(Request $request, $id)
+    {
+        $invoice = Invoice::with(['client', 'shipment_collection'])->findOrFail($id);
+
+        if ($invoice->status === 'posted') {
+            return redirect()->back()->with('warning', 'Invoice already posted.');
+        }
+
+        // 1. Ensure Accounts Receivable Main exists for this client
+        $arMain = AccountsReceivableMain::firstOrCreate(
+            ['client_id' => $invoice->client_id],
+            [
+                'balance'  => 0,
+                'current'  => 0,
+                '30_days'  => 0,
+                '60_days'  => 0,
+                '90_days'  => 0,
+            ]
+        );
+
+        // 2. Create the Accounts Receivable Transaction
+        AccountsReceivableTransaction::create([
+            'client_id'           => $invoice->client_id,
+            'request_id'          => $invoice->shipment_collection->requestId ?? null,
+            'batch_no'            => optional($invoice->loading_sheet_waybills->loading_sheet ?? null)->batch_no_formatted,
+            'waybill_no'          => $invoice->shipment_collection->waybill_no ?? null,
+            'reference'           => $invoice->invoice_no,
+            'details'             => 'Invoice Posting for Waybill ' . ($invoice->shipment_collection->waybill_no ?? ''),
+            'date'                => now()->toDateString(),
+            'datetime'            => now(),
+            'posted_by'           => auth()->id(),
+            'amount'              => $invoice->shipment_collection->actual_cost,
+            'vat'                 => $invoice->shipment_collection->actual_vat,
+            'total'               => $invoice->amount,
+            'dr'                  => $invoice->amount, // debit AR
+            'cr'                  => 0,
+            'type_of_transaction' => 'invoice',
+        ]);
+
+        // 3. Update AR Main balance
+        $arMain->increment('balance', $invoice->amount);
+        $arMain->increment('current', $invoice->amount);
+
+        // 4. Mark Invoice as Posted
+        $invoice->update(['status' => 'posted']);
+
+        return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} posted successfully.");
+    }
+
 }

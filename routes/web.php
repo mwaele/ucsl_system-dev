@@ -321,8 +321,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('receipts', DebtorReceiptController::class)->names('receipts');
             Route::resource('debit-notes', DebitNoteController::class)->names('debit_notes');
             Route::resource('credit-notes', CreditNoteController::class)->names('credit_notes');
-            Route::get('invoices/unposted-report', [DebtorInvoiceController::class, 'unposted_invoices_report'])
-                ->name('invoices.unposted_report');
+            Route::get('invoices/unposted-report', [DebtorInvoiceController::class, 'unposted_invoices_report'])->name('invoices.unposted_report');
         });
 
         // ---------------- Creditors (AP) ----------------
@@ -340,7 +339,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/unposted_invoices_report', [DebtorInvoiceController::class, 'unposted_invoices_report'])->name('unposted_invoices_report');
-   
+    Route::post('/accounts/debtors/invoice/post-invoice/{id}', [DebtorInvoiceController::class, 'postInvoice'])->name('accounts.debtors.invoices.postInvoice');
+    Route::get('/accounts/debtors/invoice/statement/{id}', [DebtorInvoiceController::class, 'unposted_invoices_report'])->name('accounts-receivable.statement');
 
 });
 

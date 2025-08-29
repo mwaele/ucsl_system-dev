@@ -86,43 +86,21 @@
                                         <span class="badge bg-success text-white p-2">Posted</span>
                                     @endif
                                 </td>
-                                <td>
-                                    @if(strtolower(str_replace(' ', '', $invoice->status)) === 'paid')
-                                        <button class="btn btn-sm btn-success" disabled>Posted</button>
+                                <td> 
+                                    @if(strtolower(str_replace(' ', '', $invoice->status)) === 'posted')
+                                        <!-- Show Posted + View Statement -->
+                                        <a href="{{ route('accounts-receivable.statement', $invoice->id) }}" 
+                                        class="btn btn-sm btn-info ml-2">
+                                            View Statement
+                                        </a>
                                     @else
                                         <!-- Trigger button -->
-                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#post-invoice-{{ $invoice->id }}">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-primary" 
+                                                data-toggle="modal" 
+                                                data-target="#post-invoice-{{ $invoice->id }}">
                                             Post
                                         </button>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="post-invoice-{{ $invoice->id }}" tabindex="-1"
-                                            role="dialog" aria-labelledby="postInvoiceLabel-{{ $invoice->id }}" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="postInvoiceLabel-{{ $invoice->id }}">Confirm Post Invoice</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-
-                                                    <form action="" method="POST">
-                                                        @csrf
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to post Invoice <strong>{{ $invoice->invoice_no }}</strong>?</p>
-                                                            <p>Amount: <strong>Ksh {{ number_format($invoice->amount, 2) }}</strong></p>
-                                                        </div>
-
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                            <button type="submit" class="btn btn-primary">Yes, Post</button>
-                                                        </div>
-                                                    </form>
-
-                                                </div>
-                                            </div>
-                                        </div>
                                     @endif
                                 </td>
                             </tr>
