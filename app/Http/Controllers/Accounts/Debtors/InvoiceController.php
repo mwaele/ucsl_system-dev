@@ -104,4 +104,29 @@ class InvoiceController extends Controller
         return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} posted successfully.");
     }
 
+
+    public function client_statement($id)
+    {
+        $invoice = Invoice::with(['client', 'shipment_collection'])->findOrFail($id);
+
+        // Get all AR transactions for this client
+        $transactions = AccountsReceivableTransaction::where('client_id', $invoice->client_id)
+            ->orderBy('date')
+            ->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'accounts.debtors.invoices.statement',
+            [
+                'client'       => $invoice->client,
+                'invoice'      => $invoice,
+                'transactions' => $transactions,
+                'printedOn'    => now()->format('d-M-Y'),
+            ],
+            "ClientStatement-{$invoice->client->accountNo}.pdf",
+            'a4',
+            'portrait'
+        );
+    }
+
+
 }
