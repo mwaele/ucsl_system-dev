@@ -86,21 +86,138 @@
                                         <span class="badge bg-success text-white p-2">Posted</span>
                                     @endif
                                 </td>
-                                <td> 
-                                    @if(strtolower(str_replace(' ', '', $invoice->status)) === 'posted')
-                                        <!-- Show Posted + View Statement -->
+                                <td>
+                                    @if(strtolower(str_replace(' ', '', $invoice->status)) === 'paid')
+                                        <!-- Already paid -->
+                                        <button class="btn btn-sm btn-success" disabled>Posted</button>
                                         <a href="{{ route('accounts-receivable.statement', $invoice->id) }}" 
-                                        class="btn btn-sm btn-info ml-2">
+                                        class="btn btn-sm btn-info ml-2" target="_blank">
                                             View Statement
                                         </a>
+                                    @elseif(strtolower(str_replace(' ', '', $invoice->status)) === 'posted')
+                                        <!-- Posted Invoice → Allow Payment -->
+                                        <a href="{{ route('accounts-receivable.statement', $invoice->id) }}" 
+                                        class="btn btn-sm btn-info mr-2" target="_blank">
+                                            View Statement
+                                        </a>
+                                        <!-- Trigger Payment Modal -->
+                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                data-toggle="modal" data-target="#payment-{{ $invoice->id }}">
+                                            Record Payment
+                                        </button>
+
+                                        <!-- Payment Modal -->
+                                        <div class="modal fade" id="payment-{{ $invoice->id }}" tabindex="-1" role="dialog"
+                                            aria-labelledby="paymentLabel-{{ $invoice->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary" id="paymentLabel-{{ $invoice->id }}">
+                                                            Record Payment for Invoice {{ $invoice->invoice_no }}
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <form action="{{ route('accounts.debtors.invoices.postPayment', $invoice->id) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="payment_date" class="text-primary">Payment Date</label>
+                                                                <input type="date" name="payment_date" class="form-control" value="{{ now()->toDateString() }}" required>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="reference" class="text-primary">Reference (e.g. MPESA, Bank Slip)</label>
+                                                                <input type="text" name="reference" class="form-control" required>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="amount" class="text-primary">Amount Paid</label>
+                                                                <input type="number" step="0.01" name="amount" class="form-control" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-warning">Record Payment</button>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
                                     @else
-                                        <!-- Trigger button -->
-                                        <button type="button" 
-                                                class="btn btn-sm btn-primary" 
-                                                data-toggle="modal" 
-                                                data-target="#post-invoice-{{ $invoice->id }}">
+                                        <!-- Invoice not yet posted -->
+                                        <button type="button" class="btn btn-sm btn-primary" 
+                                                data-toggle="modal" data-target="#post-invoice-{{ $invoice->id }}">
                                             Post
                                         </button>
+
+                                        <!-- Post Invoice Modal -->
+                                        <div class="modal fade" id="post-invoice-{{ $invoice->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="postInvoiceLabel-{{ $invoice->id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="postInvoiceLabel-{{ $invoice->id }}">Confirm Post Invoice</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <form action="{{ route('accounts.debtors.invoices.postInvoice', $invoice->id) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <p>
+                                                                You are about to post Invoice 
+                                                                <strong>{{ $invoice->invoice_no }}</strong> 
+                                                                for client <strong>{{ $invoice->client->name }}</strong>.
+                                                            </p>
+
+                                                            <ul class="list-group mb-3">
+                                                                <li class="list-group-item d-flex justify-content-between">
+                                                                    <span>Waybill No</span>
+                                                                    <strong>{{ $invoice->shipment_collection->waybill_no }}</strong>
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between">
+                                                                    <span>Invoice Amount</span>
+                                                                    <strong>Ksh {{ number_format($invoice->shipment_collection->actual_cost, 2) }}</strong>
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between">
+                                                                    <span>VAT</span>
+                                                                    <strong>Ksh {{ number_format($invoice->shipment_collection->actual_vat, 2) }}</strong>
+                                                                </li>
+                                                                <li class="list-group-item d-flex justify-content-between">
+                                                                    <span>Total</span>
+                                                                    <strong>Ksh {{ number_format($invoice->amount, 2) }}</strong>
+                                                                </li>
+                                                            </ul>
+
+                                                            <div class="form-group">
+                                                                <label class="text-primary" for="posting_date">Posting Date</label>
+                                                                <input type="date" name="posting_date" class="form-control" 
+                                                                    value="{{ now()->toDateString() }}">
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="text-primary" for="reference">Reference (Optional)</label>
+                                                                <input type="text" name="reference" class="form-control" 
+                                                                    placeholder="INV / Journal Ref">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">Yes, Post</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>

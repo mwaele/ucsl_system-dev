@@ -128,5 +128,42 @@ class InvoiceController extends Controller
         );
     }
 
+    public function postPayment(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'reference' => 'required|string|max:255',
+            'payment_date' => 'required|date',
+        ]);
+
+        $invoice = Invoice::with('client', 'shipment_collection')->findOrFail($id);
+
+        // 1. Create a credit transaction
+        AccountsReceivableTransaction::create([
+            'client_id'           => $invoice->client_id,
+            'request_id'          => $invoice->shipment_collection->requestId ?? null,
+            'batch_no'            => optional($invoice->loading_sheet_waybills->loading_sheet ?? null)->batch_no_formatted,
+            'waybill_no'          => $invoice->shipment_collection->waybill_no,
+            'reference'           => $request->reference,
+            'details'             => "Payment received for Invoice {$invoice->invoice_no}",
+            'date'                => $request->payment_date,
+            'datetime'            => now(),
+            'posted_by'           => auth()->id(),
+            'amount'              => 0,
+            'vat'                 => 0,
+            'total'               => $request->amount,
+            'dr'                  => 0,
+            'cr'                  => $request->amount,
+            'type_of_transaction' => 'payment',
+        ]);
+
+        // 2. Reduce balance in AR Main
+        $arMain = AccountsReceivableMain::where('client_id', $invoice->client_id)->first();
+        if ($arMain) {
+            $arMain->decrement('balance', $request->amount);
+        }
+
+        return redirect()->back()->with('success', "Payment of Ksh {$request->amount} recorded successfully for Invoice {$invoice->invoice_no}.");
+    }
 
 }

@@ -212,7 +212,7 @@
                                                                 @if (!$hasPayment)
                                                                     <span class="badge bg-danger text-white">
                                                                         Unpaid – To pay Ksh.
-                                                                        {{ number_format($arrival->shipmentCollection->total_cost, 0) }}
+                                                                        {{ number_format($arrival->shipmentCollection->actual_total_cost, 0) }}
                                                                     </span>
                                                                 @else
                                                                     <span class="badge bg-info text-white">
