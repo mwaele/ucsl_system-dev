@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ShipmentDeliveries;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Payment;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
 use App\Models\Client;
@@ -48,6 +49,41 @@ class ShipmentDeliveriesController extends Controller
     {
         Log::info("GRN Saved", ['requestId' => $request->requestId, 'grn_no' => $request->grn_no]);
 
+        $request->validate([
+            'requestId' => 'required|exists:client_requests,requestId',
+            'client_id' => 'required|exists:clients,id',
+            'receiver_name' => 'required|string|max:255',
+            'receiver_phone' => 'required|string|max:20',
+            'receiver_id_no' => 'nullable|string|max:50',
+            'receiver_type' => 'required|in:agent,receiver',
+            'agent_name' => 'nullable|required_if:receiver_type,agent|string|max:255',
+            'agent_phone' => 'nullable|required_if:receiver_type,agent|string|max:20',
+            'agent_id_no' => 'nullable|required_if:receiver_type,agent|string|max:50',
+            'delivery_location' => 'required|string|max:255',
+            'remarks' => 'nullable|string|max:500',
+            'grn_no' => 'required|string|unique:shipment_collections,grn_no',
+            // Payment fields
+            'payment_mode' => 'nullable|string',
+            'reference' => 'nullable|string|max:10',
+            'amount_paid' => 'nullable|numeric|min:1',
+        ]);
+
+
+        // 0. Insert payment record
+        $payment = Payment::create([
+            'type' => $request->payment_mode,
+            'amount' => $request->amount_paid,
+            'reference_no' => $request->reference,
+            'date_paid' => now(),
+            'client_id' => $request->client_id,
+            'shipment_collection_id' => $request->shipment_collection_id,
+            'status' => 'Pending Verification',
+            'paid_by' => auth()->id(),
+            'received_by' => auth()->id(),
+            'verified_by' => auth()->id(),
+        ]);
+
+        // 1. Insert delivery record
         $delivery = ShipmentDeliveries::create([
             'requestId' => $request->requestId,
             'client_id' => $request->client_id,

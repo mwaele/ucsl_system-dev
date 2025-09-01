@@ -15,9 +15,12 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $invoices = Invoice::whereHas('client', function ($query) {
-            $query->where('type', 'on_account');
-        })->get();
+        $invoices = Invoice::where('status', 'Un Paid')
+            ->whereHas('client', function ($query) { 
+                $query->where('type', 'on_account');
+            })
+            ->get();
+
         return view('accounts.debtors.invoices.index', compact('invoices'));
     }
 
@@ -42,9 +45,11 @@ class InvoiceController extends Controller
 
     public function unposted_invoices_report()
     {
-        $invoices = Invoice::whereHas('client', function ($query) {
-            $query->where('type', 'on_account');
-        })->get();
+        $invoices = Invoice::where('status', 'Un Paid')
+            ->whereHas('client', function ($query) { 
+                $query->where('type', 'on_account');
+            })
+            ->get();
 
         return $this->renderPdfWithPageNumbers(
             'accounts.debtors.invoices.unposted_invoices_report',
@@ -103,7 +108,6 @@ class InvoiceController extends Controller
 
         return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} posted successfully.");
     }
-
 
     public function client_statement($id)
     {

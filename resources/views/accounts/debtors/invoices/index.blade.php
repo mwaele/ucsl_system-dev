@@ -76,9 +76,9 @@
                                 </td>
                                 <td> {{ $invoice->invoice_no }} </td>
                                 <td> {!! $invoice->shipment_collection->items->pluck('item_name')->join('<br>') !!} </td>
-                                <td> Ksh {{ number_format($invoice->shipment_collection->actual_cost, 2) }}</td>
-                                <td> Ksh {{ number_format($invoice->shipment_collection->actual_vat, 2) }}</td>
-                                <td> Ksh {{ number_format($invoice->amount, 2) }}</td>
+                                <td> {{ number_format($invoice->shipment_collection->actual_cost, 2) }}</td>
+                                <td> {{ number_format($invoice->shipment_collection->actual_vat, 2) }}</td>
+                                <td> {{ number_format($invoice->amount, 2) }}</td>
                                 <td>
                                     @if(strtolower(str_replace(' ', '', $invoice->status)) === 'unpaid')
                                         <span class="badge bg-info text-white p-2">Unposted</span>

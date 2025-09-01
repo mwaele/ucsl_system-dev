@@ -202,8 +202,6 @@
                 </a>
             </li>
 
-
-
             <!-- Divider -->
             {{-- <hr class="sidebar-divider my-0" />
 
@@ -255,6 +253,7 @@
                     <span class="sized">Shipment Arrivals</span>
                 </a>
             </li> --}}
+
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
@@ -394,6 +393,7 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
+
             <!-- Nav Item - Clients Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('offices.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOffice"
@@ -413,7 +413,6 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
-
 
             <!-- Nav Item - Vehicles Collapse Menu -->
             <li class="nav-item {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}">
@@ -436,6 +435,7 @@
                     </div>
                 </div>
             </li>
+            
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 

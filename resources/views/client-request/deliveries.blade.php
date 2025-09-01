@@ -872,12 +872,96 @@
                                                             <!-- Always submitted hidden fields -->
                                                             <input type="hidden" name="grn_no"
                                                                 value="{{ $grn_no }}">
+                                                            <input type="hidden" name="shipment_collection_id"
+                                                                value="{{ $collection->shipmentCollection->id }}">
                                                             <input type="hidden" name="client_id"
                                                                 value="{{ $collection->client->id }}">
                                                             <input type="hidden" name="requestId"
                                                                 value="{{ $collection->requestId }}">
                                                             <input type="hidden" name="delivery_location"
                                                                 value="{{ $collection->shipmentCollection->destination->destination }}">
+
+                                                            @php
+                                                                $hasPayment = $collection->shipmentCollection->payment !== null;
+                                                                $balance = $hasPayment ? $collection->shipmentCollection->payment->balance : null;
+                                                            @endphp
+
+                                                            {{-- Payment Section (Only if unpaid or has balance) --}}
+                                                            @if (!$hasPayment || $balance > 0)
+                                                                <div class="mb-3">
+                                                                    @if (!$hasPayment)
+                                                                        <span class="badge bg-danger text-white">
+                                                                            Unpaid – To pay Ksh.
+                                                                            {{ number_format($collection->shipmentCollection->actual_total_cost, 0) }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-info text-white">
+                                                                            Paid:
+                                                                            {{ $collection->shipmentCollection->payment_mode }}
+                                                                        </span>
+                                                                        <span class="badge bg-primary text-white">
+                                                                            Ksh.
+                                                                            {{ number_format($collection->payments->amount, 0) }}
+                                                                        </span>
+                                                                        <span class="badge bg-warning text-white">
+                                                                            Balance: Ksh. {{ number_format($balance, 0) }}
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+
+                                                                {{-- Record Payment --}}
+                                                                <div class="card shadow-sm border-primary mb-3">
+                                                                    <div class="card-header bg-primary text-white">
+                                                                        Record Payment
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <div class="row">
+                                                                            {{-- Payment Mode --}}
+                                                                            <div class="col-md-4">
+                                                                                <label for="payment_mode" class="text-primary">
+                                                                                    <h6>Payment Mode</h6>
+                                                                                </label>
+                                                                                <select id="payment_mode" name="payment_mode"
+                                                                                    class="form-control" required>
+                                                                                    <option value="" selected>-- Select --
+                                                                                    </option>
+                                                                                    <option value="M-Pesa">M-Pesa</option>
+                                                                                    <option value="Cash">Cash</option>
+                                                                                    <option value="Cheque">Cheque</option>
+                                                                                    <option value="Invoice">Invoice</option>
+                                                                                </select>
+                                                                            </div>
+
+                                                                            {{-- Reference --}}
+                                                                            <div class="col-md-4">
+                                                                                <label for="reference" class="text-primary">
+                                                                                    <h6>Reference</h6>
+                                                                                </label>
+                                                                                <input type="text" id="reference"
+                                                                                    name="reference"
+                                                                                    class="form-control text-uppercase"
+                                                                                    placeholder="e.g. TH647CDTNA" maxlength="10"
+                                                                                    pattern="[A-Z0-9]{10}"
+                                                                                    title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)"
+                                                                                    required>
+                                                                            </div>
+
+                                                                            {{-- Amount --}}
+                                                                            <div class="col-md-4">
+                                                                                <label for="amount_paid" class="text-primary">
+                                                                                    <h6>Amount</h6>
+                                                                                </label>
+                                                                                <input type="number" id="amount_paid"
+                                                                                    name="amount_paid" class="form-control"
+                                                                                    placeholder="Enter amount paid"
+                                                                                    value="{{ $arrival->shipmentCollection->actual_total_cost ?? '' }}"
+                                                                                    required>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
 
                                                             <!-- Selection: Receiver or Agent -->
                                                             <div class="form-group">
