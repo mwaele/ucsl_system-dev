@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\AccountsReceivableMain;
+use App\Models\AccountsReceivableTransaction;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -14,44 +15,43 @@ class AgeReceivablesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct()
     {
         //
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        // Get all receivables with a balance > 0
         $receivables = AccountsReceivableMain::where('balance', '>', 0)->get();
 
         foreach ($receivables as $receivable) {
-            $invoiceDate = Carbon::parse($receivable->date); // invoice date
+            // 👇 Find the oldest transaction for this client
+            $oldestTransaction = AccountsReceivableTransaction::where('client_id', $receivable->client_id)
+                ->orderBy('date', 'asc')
+                ->first();
+
+            if (!$oldestTransaction) {
+                continue;
+            }
+
+            $invoiceDate = Carbon::parse($oldestTransaction->date);
             $days = $invoiceDate->diffInDays(Carbon::today());
 
-            // Reset aging buckets
-            $receivable->current    = 0;
-            $receivable->days_30    = 0;
-            $receivable->days_60    = 0;
-            $receivable->days_90    = 0;
-            $receivable->over_90    = 0;
+            // Reset buckets
+            $receivable->current  = 0;
+            $receivable->{'30_days'} = 0;
+            $receivable->{'60_days'} = 0;
+            $receivable->{'90_days'} = 0;
 
-            // Place balance in correct bucket
+            // Place balance into correct bucket
             if ($days <= 30) {
                 $receivable->current = $receivable->balance;
             } elseif ($days <= 60) {
-                $receivable->days_30 = $receivable->balance;
+                $receivable->{'30_days'} = $receivable->balance;
             } elseif ($days <= 90) {
-                $receivable->days_60 = $receivable->balance;
-            } elseif ($days <= 120) {
-                $receivable->days_90 = $receivable->balance;
+                $receivable->{'60_days'} = $receivable->balance;
             } else {
-                $receivable->over_90 = $receivable->balance;
+                $receivable->{'90_days'} = $receivable->balance;
             }
 
             $receivable->save();

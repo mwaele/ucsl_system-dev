@@ -47,175 +47,192 @@ class ShipmentDeliveriesController extends Controller
      */
     public function store(Request $request, SmsService $smsService)
     {
-        Log::info("GRN Saved", ['requestId' => $request->requestId, 'grn_no' => $request->grn_no]);
+        DB::beginTransaction();
 
-        $request->validate([
-            'requestId' => 'required|exists:client_requests,requestId',
-            'client_id' => 'required|exists:clients,id',
-            'receiver_name' => 'required|string|max:255',
-            'receiver_phone' => 'required|string|max:20',
-            'receiver_id_no' => 'nullable|string|max:50',
-            'receiver_type' => 'required|in:agent,receiver',
-            'agent_name' => 'nullable|required_if:receiver_type,agent|string|max:255',
-            'agent_phone' => 'nullable|required_if:receiver_type,agent|string|max:20',
-            'agent_id_no' => 'nullable|required_if:receiver_type,agent|string|max:50',
-            'delivery_location' => 'required|string|max:255',
-            'remarks' => 'nullable|string|max:500',
-            'grn_no' => 'required|string|unique:shipment_collections,grn_no',
-            // Payment fields
-            'payment_mode' => 'nullable|string',
-            'reference' => 'nullable|string|max:10',
-            'amount_paid' => 'nullable|numeric|min:1',
-        ]);
+        try {
+            Log::info("Store Delivery Request Started", ['requestId' => $request->requestId]);
 
+            $request->validate([
+                'requestId' => 'required|exists:client_requests,requestId',
+                'client_id' => 'required|exists:clients,id',
+                'receiver_name' => 'nullable|string|max:255',
+                'receiver_phone' => 'nullable|string|max:20',
+                'receiver_id_no' => 'nullable|string|max:50',
+                'receiver_type' => 'nullable|in:agent,receiver',
+                'agent_name' => 'nullable|required_if:receiver_type,agent|string|max:255',
+                'agent_phone' => 'nullable|required_if:receiver_type,agent|string|max:20',
+                'agent_id_no' => 'nullable|required_if:receiver_type,agent|string|max:50',
+                'delivery_location' => 'required|string|max:255',
+                'remarks' => 'nullable|string|max:500',
+                'grn_no' => 'required|string',
+                'payment_mode' => 'nullable|string',
+                'reference' => 'nullable|string|max:10',
+                'amount_paid' => 'nullable|numeric|min:1',
+            ]);
+            Log::info("Validation Passed", ['requestId' => $request->requestId]);
 
-        // 0. Insert payment record
-        $payment = Payment::create([
-            'type' => $request->payment_mode,
-            'amount' => $request->amount_paid,
-            'reference_no' => $request->reference,
-            'date_paid' => now(),
-            'client_id' => $request->client_id,
-            'shipment_collection_id' => $request->shipment_collection_id,
-            'status' => 'Pending Verification',
-            'paid_by' => auth()->id(),
-            'received_by' => auth()->id(),
-            'verified_by' => auth()->id(),
-        ]);
+            // 0. Insert payment record
+            $payment = Payment::create([
+                'type' => $request->payment_mode,
+                'amount' => $request->amount_paid,
+                'reference_no' => $request->reference,
+                'date_paid' => now(),
+                'client_id' => $request->client_id,
+                'shipment_collection_id' => $request->shipment_collection_id,
+                'status' => 'Pending Verification',
+                'paid_by' => auth()->id(),
+                'received_by' => auth()->id(),
+                'verified_by' => auth()->id(),
+            ]);
+            Log::info("Payment Created", ['paymentId' => $payment->id, 'requestId' => $request->requestId]);
 
-        // 1. Insert delivery record
-        $delivery = ShipmentDeliveries::create([
-            'requestId' => $request->requestId,
-            'client_id' => $request->client_id,
-            'receiver_name' => $request->receiver_name,
-            'receiver_phone' => $request->receiver_phone,
-            'receiver_id_no' => $request->receiver_id_no,
-            'receiver_type' => $request->receiver_type,
-            'agent_name' => $request->agent_name,
-            'agent_phone' => $request->agent_phone,
-            'agent_id_no' => $request->agent_id_no,
-            'delivery_location' => $request->delivery_location,
-            'delivery_datetime' => now(),
-            'remark' => $request->remarks,
-            'delivered_by'=> Auth::user()->id,
-        ]);
+            // 1. Insert delivery record
+            $delivery = ShipmentDeliveries::create([
+                'requestId' => $request->requestId,
+                'client_id' => $request->client_id,
+                'receiver_name' => $request->receiver_name,
+                'receiver_phone' => $request->receiver_phone,
+                'receiver_id_no' => $request->receiver_id_no,
+                'receiver_type' => $request->receiver_type,
+                'agent_name' => $request->agent_name,
+                'agent_phone' => $request->agent_phone,
+                'agent_id_no' => $request->agent_id_no,
+                'delivery_location' => $request->delivery_location,
+                'delivery_datetime' => now(),
+                'remark' => $request->remarks,
+                'delivered_by'=> Auth::user()->id,
+            ]);
+            Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
 
-        // 2. Create goods received note number
-        ShipmentCollection::where('requestId', $request->requestId)
-            ->update(['grn_no' => $request->grn_no]);
+            // 2. Create goods received note number
+            ShipmentCollection::where('requestId', $request->requestId)
+                ->update(['status' => 'parcel_delivered', 'grn_no' => $request->grn_no ]);
+            Log::info("ShipmentCollection Updated with GRN", ['requestId' => $request->requestId, 'grn_no' => $request->grn_no]);
 
-        // 3. Insert or update tracking record
-        $existingTrack = DB::table('tracks')->where('requestId', $request->requestId)->first();
+            // 3. Insert or update tracking record
+            $existingTrack = DB::table('tracks')->where('requestId', $request->requestId)->first();
 
-        if ($existingTrack) {
-            DB::table('tracks')
-                ->where('id', $existingTrack->id)
-                ->update([
+            if ($existingTrack) {
+                DB::table('tracks')
+                    ->where('id', $existingTrack->id)
+                    ->update([
+                        'current_status' => 'Delivered',
+                        'updated_at' => now(),
+                    ]);
+                $trackingId = $existingTrack->id;
+                Log::info("Track Updated", ['trackId' => $trackingId, 'requestId' => $request->requestId]);
+            } else {
+                $trackingId = DB::table('tracks')->insertGetId([
+                    'requestId' => $request->requestId,
+                    'clientId' => $request->client_id,
                     'current_status' => 'Delivered',
+                    'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-            $trackingId = $existingTrack->id;
-        } else {
-            $trackingId = DB::table('tracks')->insertGetId([
-                'requestId' => $request->requestId,
-                'clientId' => $request->client_id,
-                'current_status' => 'Delivered',
+                Log::info("Track Created", ['trackId' => $trackingId, 'requestId' => $request->requestId]);
+            }
+
+            // 4. Create tracking info
+            $riderName = Auth::user()->name;
+            $riderId = Auth::id();
+            $receiverTown = DB::table('shipment_collections')
+                ->where('requestId', $request->requestId)
+                ->value('receiver_town');
+
+            $deliveredTo = match ($request->receiver_type) {
+                'agent' => $request->agent_name,
+                'receiver' => $request->receiver_name,
+                default => 'Unknown Receiver'
+            };
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Parcel Delivered and GRN Created',
+                'user_id' => $riderId,
+                'remarks' => "Parcel with request ID {$request->requestId} was delivered to {$deliveredTo} at {$request->delivery_location}, {$receiverTown} by rider {$riderName}. GRN No: {$request->grn_no}",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        }
+            Log::info("Tracking Info Inserted", ['trackingId' => $trackingId, 'requestId' => $request->requestId]);
 
-        // 4. Create tracking info
-        $riderName = Auth::user()->name;
-        $riderId = Auth::id();
-        $receiverTown = DB::table('shipment_collections')
-            ->where('requestId', $request->requestId)
-            ->value('receiver_town');
+            // 5. Notifications (SMS + Email)
+            $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
+            $frontOfficeNumber = $creator?->phone_number ?? '+254725525484';
+            $creatorName = $creator?->name ?? 'Staff';
 
-        $deliveredTo = match ($request->receiver_type) {
-            'agent' => $request->agent_name,
-            'receiver' => $request->receiver_name,
-            default => 'Unknown Receiver'
-        };
+            $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
 
-        DB::table('tracking_infos')->insert([
-            'trackId' => $trackingId,
-            'date' => now(),
-            'details' => 'Parcel Delivered and GRN Created',
-            'user_id' => $riderId,
-            'remarks' => "Parcel with request ID {$request->requestId} was delivered to {$deliveredTo} at {$request->delivery_location}, {$receiverTown} by rider {$riderName}. GRN No: {$request->grn_no}",
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            Log::info("Preparing Front Office SMS", ['requestId' => $request->requestId]);
+            $smsService->sendSms(
+                phone: $frontOfficeNumber,
+                subject: 'Parcel Delivered',
+                message: $frontMessage,
+                addFooter: true
+            );
+            Log::info("Front Office SMS Sent", ['requestId' => $request->requestId]);
 
-        Log::info('Tracking Updated for Delivery', [
-            'requestId' => $request->requestId,
-            'deliveredTo' => $deliveredTo,
-            'deliveredBy' => $riderName,
-            'grn_no' => $request->grn_no,
-        ]);
+            SentMessage::create([
+                'request_id' => $request->requestId,
+                'client_id' => $request->client_id,
+                'rider_id' => Auth::id(),
+                'recipient_type' => 'staff',
+                'recipient_name' => $creatorName ?? 'Front Office',
+                'phone_number' => $frontOfficeNumber,
+                'subject' => 'Parcel Delivered',
+                'message' => $frontMessage,
+            ]);
+            Log::info("Front Office Message Record Saved", ['requestId' => $request->requestId]);
 
+            $office_subject = 'Parcel Delivered';
+            $office_email = $creator->email;
+            $terms = env('TERMS_AND_CONDITIONS', '#');
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+            $fullOfficeMessage = $frontMessage . $footer;
 
-        $riderName = Auth::user()->name;
+            Log::info("Preparing Front Office Email", ['requestId' => $request->requestId]);
+            $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
+            Log::info("Front Office Email Sent", ['emailResponse' => $emailResponse, 'requestId' => $request->requestId]);
 
-        // Get the front office creator of the client request
-        $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
-        $frontOfficeNumber = $creator?->phone_number ?? '+254725525484'; // fallback
-        $creatorName = $creator?->name ?? 'Staff';
+            $senderName = 'Valued Client';
 
-        // Front Office Message
-        $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
-
-        $smsService->sendSms(
-            phone: $frontOfficeNumber,
-            subject: 'Parcel Delivered',
-            message: $frontMessage,
-            addFooter: true
-        );
-
-        SentMessage::create([
-            'request_id' => $request->requestId,
-            'client_id' => $request->client_id,
-            'rider_id' => Auth::id(),
-            'recipient_type' => 'staff',
-            'recipient_name' => $creatorName ?? 'Front Office',
-            'phone_number' => $frontOfficeNumber,
-            'subject' => 'Parcel Delivered',
-            'message' => $frontMessage,
-        ]);
-
-        // front office email
-        $office_subject = 'Parcel Delivered';
-        $office_email = $creator->email;
-        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                <p>Thank you for using Ufanisi Courier Services.</p>";
-        $fullOfficeMessage = $frontMessage . $footer;
-
-        $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
-    
-        $senderName = 'Valued Client';
-        $riderName = Auth::user()->name;
-
-            // sender email
-        $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
-        $sender_subject = 'Parcel Delivered';
-        $client = Client::find($request->client_id); // or whatever key you have
+            $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
+            $sender_subject = 'Parcel Delivered';
+            $client = Client::find($request->client_id);
 
             if ($client) {
-                $sender_email = $client->email; // or whatever column name is used for the email
+                $sender_email = $client->email;
             } else {
-                // handle case where client isn't found
-                $sender_email = null; // or throw an error / log
+                $sender_email = null;
+                Log::warning("Client Not Found for Sender Email", ['requestId' => $request->requestId, 'clientId' => $request->client_id]);
             }
-        $fullOfficeMessage = $senderMessage . $footer;
+            $fullOfficeMessage = $senderMessage . $footer;
 
-        ClientRequest::where('requestId', $request->requestId)
-        ->update(['status' => 'delivered']);
-        $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
+            ClientRequest::where('requestId', $request->requestId)
+                ->update(['status' => 'delivered']);
+            Log::info("ClientRequest Updated to Delivered", ['requestId' => $request->requestId]);
 
-        return redirect()->back()->with('success', 'Delivery inserted successfully.');
+            Log::info("Preparing Client Email", ['requestId' => $request->requestId]);
+            $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
+            Log::info("Client Email Sent", ['emailResponse' => $emailResponse, 'requestId' => $request->requestId]);
 
+            DB::commit();
+            Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);
+
+            return redirect()->back()->with('success', 'Delivery inserted successfully.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error("Error in Store Delivery Request", [
+                'requestId' => $request->requestId ?? null,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()->with('error', 'An error occurred while processing the delivery.');
+        }
     }
 
     public function requestApproval(Request $request)  
@@ -344,7 +361,6 @@ class ShipmentDeliveriesController extends Controller
         ]);
 
         $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
-
         if (!$shipmentCollection) {
             Log::warning("Shipment not found", ['request_id' => $requestId]);
             return redirect()->back()->with('error', 'Shipment not found.');
@@ -358,12 +374,14 @@ class ShipmentDeliveriesController extends Controller
 
         if ($action === 'approve') {
             Log::info("Action APPROVE triggered");
+            $shipmentCollection->status = 'agent_delivery_approved';
             $agent->agent_approved = true;
             $agent->agent_approval_remarks = $remarks;
             $agent->agent_approved_at = now();
             $agent->agent_approved_by = Auth::id();
         } elseif ($action === 'decline') {
             Log::info("Action DECLINE triggered");
+            $shipmentCollection->status = 'on_hold';
             $agent->agent_declined = true;
             $agent->agent_approval_remarks = $remarks;
             $agent->agent_approved_at = now();
@@ -374,6 +392,9 @@ class ShipmentDeliveriesController extends Controller
 
         $agent->save();
         Log::info("Agent updated", ['agent' => $agent]);
+
+        $shipmentCollection->save();
+        Log::info("ShipmentCollection updated", ['shipmentCollection' => $shipmentCollection]);
 
         // === Keep tracking updates (still useful for shipment tracking) ===
         $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');

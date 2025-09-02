@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\AccountsReceivableMain;
 use App\Models\AccountsReceivableTransaction;
+use App\Jobs\AgeReceivablesJob;
 
 class InvoiceController extends Controller
 {
@@ -27,6 +28,15 @@ class InvoiceController extends Controller
     public function create()
     {
         return view('accounts.debtors.invoices.create');
+    }
+
+    public function testAging()
+    {
+        AgeReceivablesJob::dispatch(); // push to queue (async)
+        // OR run immediately without queue
+        // (new AgeReceivablesJob())->handle();
+
+        return back()->with('success', 'Aging job executed successfully!');
     }
 
     public function store(Request $request)

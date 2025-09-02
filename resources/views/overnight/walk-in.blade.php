@@ -563,7 +563,7 @@
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
                                 <td data-date="{{ $request->shipmentCollection->created_at }}">
-                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
+                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
                                 <td> {{ $request->shipmentCollection->destination->destination }} </td>

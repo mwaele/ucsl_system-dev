@@ -337,7 +337,7 @@
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
                                 <td data-date="{{ $request->dateRequested }}">
-                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>

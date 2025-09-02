@@ -54,19 +54,24 @@ class MyDeliveryController extends Controller
 
         $consignment_no = 'CN-' . $newNumber;
 
-        $collections = ClientRequest::with('shipmentCollection.office', 'shipmentCollection.destination', 'shipmentCollection.items')
+        $collections = ClientRequest::with('shipmentCollection.office', 'shipmentCollection.destination', 'shipmentCollection.items', 'shipmentCollection.agent')
             ->where('delivery_rider_id', $loggedInUserId)
             ->orWhere('userId', $loggedInUserId)
             ->orderBy('created_at', 'desc')
             ->get();
         
         
-        $approvalStatuses = [];
+        // $approvalStatuses = [];
 
-        foreach ($collections as $collection) {
-            $shipment = $collection->shipmentCollection;
-            $approvalStatuses[$collection->requestId] = $shipment?->agent_approved ?? false;
-        }
+        // foreach ($collections as $collection) {
+        //     $shipment = $collection->shipmentCollection;
+        //     $approvalStatuses[$collection->requestId] = $shipment?->agent_approved ?? false;
+        // }
+
+        $approvalStatuses = $collections->mapWithKeys(function ($collection) {
+            $agent = $collection->shipmentCollection?->agent;
+            return [$collection->requestId => $agent?->agent_approved ?? false];
+        });
 
         return view('client-request.deliveries', compact(
             'collections',

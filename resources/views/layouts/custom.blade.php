@@ -1085,9 +1085,10 @@
                         }
                         // Add other customizations if needed
                     },
-                    // order: [
-                    //     [0, 'desc']
-                    // ] // assuming "id" is in column index 0
+                    paging: false,       // Disable pagination
+                    info: true,          // Still shows "Showing 1 to N of N"
+                    scrollY: "500px",    // Adjust height as needed (e.g. 500px, 70vh)
+                    scrollCollapse: true // Collapse table height if fewer rows
                 });
 
                 // Listen for change

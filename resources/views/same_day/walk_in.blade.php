@@ -586,7 +586,8 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td data-date="{{ $request->shipmentCollection->created_at }}"> {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('F j, Y \a\t g:i A') }}
+                                <td data-date="{{ $request->shipmentCollection->created_at }}">
+                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
                                 <td> {{ $request->shipmentCollection->destination->destination }} </td>
@@ -607,7 +608,7 @@
                                             @elseif ($status === 'verified') bg-primary
                                             @else bg-dark @endif
                                             fs-5 text-white">
-                                            {{ \Illuminate\Support\Str::title($status) }}
+                                            {{ \Illuminate\Support\Str::title($status) }} - {{ $request->shipmentCollection->status ?? '' }}
                                         </span>
                                     @else
                                         <span class="badge p-2 bg-light text-muted fs-5">No Status</span>
@@ -959,7 +960,7 @@
                                         </div>
                                     </div>
 
-                                    @if ($request->agent && $request->agent->agent_requested && !$request->agent->agent_approved)
+                                    @if ($request->agent && $request->agent->agent_requested && !$request->agent->agent_approved && !$request->agent->agent_declined)
                                         <a href="#" class="btn btn-sm btn-primary mr-1"
                                             title="Review Agent Pickup Request" data-toggle="modal"
                                             data-target="#agentRequestModal-{{ $request->requestId }}">

@@ -955,7 +955,7 @@
                                                                                 <input type="number" id="amount_paid"
                                                                                     name="amount_paid" class="form-control"
                                                                                     placeholder="Enter amount paid"
-                                                                                    value="{{ $arrival->shipmentCollection->actual_total_cost ?? '' }}"
+                                                                                    value="{{ $collection->shipmentCollection->actual_total_cost ?? '' }}"
                                                                                     required>
                                                                             </div>
                                                                         </div>
@@ -1058,7 +1058,7 @@
                                                                                         Name</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_name">
+                                                                                        name="agent_name" value="{{ $collection->shipmentCollection?->agent->agent_name ?? '' }}">
                                                                                     <input type="hidden"
                                                                                         name="receiver_type"
                                                                                         value="agent">
@@ -1069,7 +1069,7 @@
                                                                                         Phone Number</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_phone">
+                                                                                        name="agent_phone" value="{{ $collection->shipmentCollection?->agent->agent_phone_no ?? '' }}">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="form-row">
@@ -1079,7 +1079,7 @@
                                                                                         ID Number</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_id_no" maxlength="8">
+                                                                                        name="agent_id_no" maxlength="8" value="{{ $collection->shipmentCollection?->agent->agent_id_no ?? '' }}">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
                                                                                     <label class="form-label text-primary">
@@ -1088,7 +1088,7 @@
                                                                                     </label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="remarks">
+                                                                                        name="remarks" value="{{ $collection->shipmentCollection?->agent->agent_reason ?? '' }}">
                                                                                 </div>
                                                                             </div>
                                                                         </div>

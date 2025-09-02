@@ -109,6 +109,7 @@ class ShipmentCollectionController extends Controller
                 'billing_party' => $request->billing_party,
                 'payment_mode' => $request->payment_mode,
                 'reference' => $request->reference,
+                'status' => 'parcel_booked',
                 'collected_by' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now(),

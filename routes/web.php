@@ -342,7 +342,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/accounts/debtors/invoice/post-invoice/{id}', [DebtorInvoiceController::class, 'postInvoice'])->name('accounts.debtors.invoices.postInvoice');
     Route::get('/accounts/debtors/invoice/statement/{id}', [DebtorInvoiceController::class, 'client_statement'])->name('accounts-receivable.statement');
     Route::post('/accounts/debtors/invoices/{id}/payment', [DebtorInvoiceController::class, 'postPayment'])->name('accounts.debtors.invoices.postPayment');
-
+    Route::get('/test-aging', [DebtorInvoiceController::class, 'testAging']);
 
 });
 

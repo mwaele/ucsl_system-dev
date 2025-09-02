@@ -351,7 +351,7 @@ class SameDayController extends Controller
          // Update shipment status
         DB::table('shipment_collections')
             ->where('id', $shipment->id)
-            ->update(['status' => 'Delivery Rider Allocated', 'updated_at' => $now]);
+            ->update(['status' => 'delivery_rider_allocated', 'updated_at' => $now]);
 
         // Update track and get ID in one go
         $trackId = DB::table('tracks')

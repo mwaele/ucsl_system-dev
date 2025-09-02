@@ -107,7 +107,7 @@
                         @csrf
                         <div class="modal fade" id="createParcelModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl" role="document"> <!-- Added modal-lg for wider layout -->
+                            <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                                 <div class="modal-content">
                                     <div class="modal-header bg-gradient-primary">
                                         <h3 class="modal-title text-white" id="exampleModalLabel">Create Same Day
@@ -417,7 +417,7 @@
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
                                 <td data-date="{{ $request->dateRequested }}">
-                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>

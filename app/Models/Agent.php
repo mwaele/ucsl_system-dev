@@ -60,4 +60,9 @@ class Agent extends Model
         return $this->belongsTo(ClientRequest::class, 'request_id', 'requestId');
     }
 
+    public function shipmentCollection()
+    {
+        return $this->belongsTo(ShipmentCollection::class, 'request_id', 'requestId');
+    }
+
 }
