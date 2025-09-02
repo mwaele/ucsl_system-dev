@@ -16,10 +16,14 @@
                 @csrf
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>Account Number</label>
-                        <input type="text" value="{{ $accountNo }}" name="accountNo" class="form-control"
-                            placeholder="Enter Account Number" readonly>
+                        <label>Client Type <span class="text-danger">*</span> </label>
+                        <select name="type" class="form-control" id="type" required>
+                            <option value="">Select Account Type</option>
+                            <option value="on_account">On Account</option>
+                            <option value="walkin">Walkin</option>
+                        </select>
                     </div>
+
                     <div class="form-group col-md-4">
                         <label>Full Name <span class="text-danger">*</span> </label>
                         <input type="text" name="name" class="form-control" placeholder="Enter Full Name">
@@ -270,14 +274,14 @@
                         </select>
 
                     </div>
+
                     <div class="form-group col-md-4">
-                        <label>Type <span class="text-danger">*</span> </label>
-                        <select name="type" class="form-control" id="type" required>
-                            <option value="">Select Account Type</option>
-                            <option value="on_account">On Account</option>
-                            <option value="walkin">Walkin</option>
-                        </select>
+                        <label>Account Number</label>
+                        <input type="text" value="{{ $accountNo }}" name="accountNo" class="form-control"
+                            placeholder="Enter Account Number" readonly>
                     </div>
+
+
                     <div class="form-group col-md-4">
                         <label>Password</label>
                         <input type="password" name="password" class="form-control" value="password"

@@ -203,6 +203,14 @@
                                     <input name="password" type="password" class="form-control"
                                         value="{{ $client->password }}">
                                 </div>
+                                <div class="form-group col-md-6">
+                                    <label>Role</label>
+                                    <select name="role" id="" class="form-control">
+                                        <option value="">Select</option>
+                                        <option value="client">Client</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="modal-footer d-flex justify-content-between align-items-center">

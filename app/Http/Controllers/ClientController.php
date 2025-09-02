@@ -236,10 +236,11 @@ class ClientController extends Controller
         $client->email = $request->email;
         $client->contact = $request->contact;
         $client->type = $request->type;
+        $client->role = $request->role;
         $client->password = bcrypt($request->password);
         $client->save();
         
-        return redirect()->route('clients.index')->with('Success');
+        return redirect()->route('clients.index')->with('success','Successfully Updated');
     }
 
     public function update_otp(Request $request, $id)

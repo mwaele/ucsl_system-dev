@@ -251,6 +251,16 @@ class ShipmentDeliveriesController extends Controller
             Log::warning('Missing agent details', ['requestId' => $requestId]);
             return response()->json(['status' => 'error', 'message' => 'Agent details are required.'], 422);
         }
+        // Check if agentId already exists
+        $existingAgent = Agent::where('agent_id_no', $agentId)->first();
+
+        if ($existingAgent) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Agent with this ID already exists.'
+            ], 200);
+        }
+
 
         // Save agent request in our new table
         $agent = Agent::create([

@@ -88,8 +88,15 @@
         </div>
 
         <button id="trackBtn" class="btn btn-primary mb-1 me-2"><i class="bi bi-search"></i> Track</button>
-        <button id="generatePdfBtn" class="btn btn-warning mb-1" style="display: none;"><i
-                class="bi bi-filetype-pdf"></i> Generate PDF</button>
+        @php
+            $role = optional(auth('client')->user())->role;
+        @endphp
+
+        @if (strtolower($role ?? '') === 'admin')
+            <button id="generatePdfBtn" class="btn btn-warning mb-1">
+                <i class="bi bi-filetype-pdf"></i> Generate PDF
+            </button>
+        @endif
 
 
         <div id="trackingResults" class="timeline mt-2"></div>

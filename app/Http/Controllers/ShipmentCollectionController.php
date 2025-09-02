@@ -201,7 +201,7 @@ class ShipmentCollectionController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
-                'details' => 'Parcel received from'. $clientName,
+                'details' => 'Parcel received  ',
                 'remarks' => ''.auth()->user()->station.' office received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName,
                 'created_at' => now(),
                 'updated_at' => now()

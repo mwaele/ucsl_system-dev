@@ -58,7 +58,10 @@ Route::post('/client/login', [ClientAuthController::class, 'login']);
 // Route::middleware('client.auth')->group(function () {
 Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');
 
+Route::post('/download-chart-pdf', [DashboardController::class, 'downloadPdf']);
 
+
+Route::post('/export-pdf', [DashboardController::class, 'exportPDF'])->name('export.pdf');
 
 Route::get('client_login', [AuthController::class, 'showSignIn'])->name('client_login');
 Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');

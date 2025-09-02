@@ -286,10 +286,32 @@
             </td>
         </tr>
     </table>
-    <h1 class="text-primary" style="text-align: right; padding-right:0 !important; margin-right:0 !important">
-        <strong>Ref: {{ $invoice->invoice_no }}
-        </strong>
-    </h1>
+
+    <table style="width:100%;">
+        <tr>
+            <!-- Empty left spacer -->
+            <td style="width:33%;"></td>
+
+            <!-- Centered INVOICE -->
+            <td style="width:34%; text-align:center;">
+                <h1 class="text-primary" style="margin:0;">
+                    <strong>INVOICE</strong>
+                </h1>
+            </td>
+
+            <!-- Right aligned REF -->
+            <td style="width:33%; text-align:right; white-space:nowrap;">
+                <h2 class="text-primary" style="margin:0;">
+                    <strong>Ref: {{ $invoice->invoice_no ?? '' }}</strong>
+                </h2>
+            </td>
+        </tr>
+    </table>
+
+
+
+
+
     <section class="mb-3">
         <table width="100%" class="bg-secondary" cellpadding="1" cellspacing="0"
             style=" font-family: sans-serif; margin-top:10px; margin-bottom:20px; border: 1px solid rgb(238, 237, 237);  padding:3px">
@@ -337,7 +359,7 @@
                 <th style="text-align: left">Waybill Number</th>
                 <th style="text-align: left">Request ID</th>
                 <th style="text-align: left">Status</th>
-                <th style="text-align: left">Remaining Days</th>
+                <th style="text-align: left">Payment Due in</th>
             </tr>
             <tr>
                 <td>{{ $invoice->waybill_no }}</td>
@@ -365,9 +387,9 @@
             style=" font-family: sans-serif; margin-top:10px; margin-bottom:10px" class="bordered-table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Item Name</th>
-                    <th class="text-right">Quantity</th>
+                    <th>No.</th>
+                    <th>Item Details</th>
+                    <th class="text-center" style="text-align: center !important">Quantity</th>
                     <th class="text-right">Weight (Kgs) </th>
                     <th class="text-right">Amount (KES.)</th>
                 </tr>
@@ -377,8 +399,8 @@
                     <tr>
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $item->item_name }} </td>
-                        <td class="text-right"> {{ $item->packages_no }} </td>
-                        <td class="text-right"> {{ $item->weight }} </td>
+                        <td class="text-center" style="text-align: center"> {{ $item->packages_no }} </td>
+                        <td class="text-right"> {{ number_format($item->weight, 2) }} </td>
                         <td></td>
                     </tr>
                 @endforeach
@@ -405,10 +427,10 @@
                     <p>Prepared By: {{ Auth::user()->name }} </p>
                 </td>
                 <td style=" padding:10px">
-                    <p>Checked By: </p>
+                    <p>Checked By:________________ </p>
                 </td>
                 <td style=" padding:10px">
-                    <p>Approved By: </p>
+                    <p>Approved By:_______________ </p>
                 </td>
             </tr>
         </table>
@@ -422,7 +444,7 @@
         </div> --}}
         <div class="footer">
             <p class="text-primary" style="padding-top:0; margin-top:0">
-                Ufanisi Courier Services Limited - Fast . Reliable . Secure
+                Ufanisi Courier Services Limited - Fast | Reliable | Secure
             </p>
             <span class="page-number"></span>
         </div>

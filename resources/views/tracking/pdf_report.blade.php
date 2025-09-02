@@ -179,13 +179,56 @@
         </tr>
     </table>
     <div class="head">
-        <h3 class="mb-2 mt-2 fw-bold text-primary">
+        <h2 class="mb-2 mt-2 fw-bold text-center text-primary" style="text-align: center">
+            <strong> Internal</strong>
+        </h2>
 
-            Tracking Report For Request ID: <strong>{{ $trackingData['requestId'] }}</strong>
-            Client: <strong>{{ $trackingData['client']['name'] ?? 'N/A' }} for
-                {{ count($shipment_items) }} {{ Str::plural('item', count($shipment_items)) }}
-            </strong> {{ $trackingData['tracking_label'] }}
+        <h3 class="mb-2 mt-2 fw-bold text-center text-primary" style="text-align: center">
+            <strong> Tracking Report</strong>
         </h3>
+
+        <table width="100%" style="border-collapse: collapse; font-family: sans-serif;">
+            <thead>
+                <tr>
+                    <td class="td">
+                        <p class="p">
+                            Tracking ID: <span style="color: #212529;">{{ $trackingData['requestId'] }}</span>
+                        </p>
+                        <p class="p">
+                            Client: <span style="color: #212529;">{{ $trackingData['client']['name'] ?? 'N/A' }}</span>
+                        </p>
+
+                    </td>
+                    <td class="td">
+                        <p class="p">
+                            Service Type: <span style="color: #212529;">{{ $trackingData['tracking_label'] }}</span>
+                        </p>
+                        <p class="p">
+                            Items: <span style="color: #212529;">{{ count($shipment_items) }}
+                                {{ Str::plural('item', count($shipment_items)) }}</span>
+                        </p>
+                    </td>
+                </tr>
+            </thead>
+            {{-- <tr>
+                <td class="td">
+                    <span style="color: #212529;">
+                        </span>
+                </td>
+                <td class="td">
+                    <span style="color: #212529;">
+                        </span>
+                </td>
+                <td class="td">
+                    <span style="color: #212529;">
+                        </span>
+                </td>
+                <td class="td">
+                    <span style="color: #212529;">
+                        </span>
+                </td>
+            </tr> --}}
+        </table>
 
     </div>
     <section class="mb-3">

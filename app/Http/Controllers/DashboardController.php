@@ -9,6 +9,9 @@ use App\Models\ShipmentCollection;
 use App\Models\User;
 use App\Models\Office;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class DashboardController extends Controller
@@ -36,6 +39,9 @@ class DashboardController extends Controller
                 default => null
             };
         }
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May'];
+        $data = [10, 20, 15, 30, 25];
 
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)
@@ -95,8 +101,41 @@ class DashboardController extends Controller
             'stationStats',
             'timeFilter',
             'startDate',
-            'endDate'
+            'endDate',
+            'labels',
+            'data'
         ));
     }
+
+    public function downloadPdf(Request $request)
+    {
+        $chart = $request->input('chart'); // Base64 image
+
+        $html = '
+            <h3 style="text-align:center;">Earnings Overview</h3>
+            <img src="'.$chart.'" style="width:100%; max-height:500px;" />
+        ';
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="chart.pdf"');
+    }
+    public function exportPdf(Request $request)
+{
+    $chartImage = $request->input('chartImage'); // Base64 string
+    $pdf = Pdf::loadView('pdf.report', compact('chartImage'));
+
+    return $pdf->download('report.pdf'); // triggers download
+}
+
+    
 }
 

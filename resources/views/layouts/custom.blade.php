@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Ufanisi Courier Services Limited Management Information System" />
     <meta name="author" content="ICT" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     <title>U-PARMS</title>
 
@@ -15,6 +17,10 @@
 
     <!-- Bootstrap Multiselect CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-multiselect.css') }}">
+
+    {{-- Chart.js --}}
+    <script src="{{ asset('assets/js/chart.js') }}"></script>
+
 
 
     <!-- Bootstrap Select CSS -->
@@ -105,6 +111,8 @@
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 
     <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
@@ -328,13 +336,16 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Account Management Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAccountManagement"
-                    aria-expanded="true" aria-controls="collapseAccountManagement">
+            <li
+                class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                    data-target="#collapseAccountManagement" aria-expanded="true"
+                    aria-controls="collapseAccountManagement">
                     <i class="fas fa-fw fa-wallet"></i>
                     <span class="sized">Accounting</span>
                 </a>
-                <div id="collapseAccountManagement" class="collapse {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'show' : '' }}"
+                <div id="collapseAccountManagement"
+                    class="collapse {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'show' : '' }}"
                     aria-labelledby="headingAccountManagement" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
 
@@ -342,14 +353,15 @@
 
                         {{-- Collapsible: Debtors (AR) --}}
                         <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseDebtors" aria-expanded="false"
-                            aria-controls="collapseDebtors">
+                            href="#" data-toggle="collapse" data-target="#collapseDebtors"
+                            aria-expanded="false" aria-controls="collapseDebtors">
                             Debtors (AR)
                             <i class="fas fa-angle-down"></i>
                         </a>
                         <div id="collapseDebtors" class="collapse ml-3" aria-labelledby="headingDebtors"
                             data-parent="#collapseAccountManagement">
-                            <a class="collapse-item" href="{{ route('accounts.debtors.invoices.index') }}">Invoices</a>
+                            <a class="collapse-item"
+                                href="{{ route('accounts.debtors.invoices.index') }}">Invoices</a>
                             <a class="collapse-item" href="">Debit Notes</a>
                             <a class="collapse-item" href="">Receipts</a>
                             <a class="collapse-item" href="">Credit Notes</a>
@@ -359,8 +371,8 @@
 
                         {{-- Collapsible: Creditors (AP) --}}
                         <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseCreditors" aria-expanded="false"
-                            aria-controls="collapseCreditors">
+                            href="#" data-toggle="collapse" data-target="#collapseCreditors"
+                            aria-expanded="false" aria-controls="collapseCreditors">
                             Creditors (AP)
                             <i class="fas fa-angle-down"></i>
                         </a>
@@ -375,8 +387,8 @@
 
                         {{-- Collapsible: General Ledger --}}
                         <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseLedger" aria-expanded="false"
-                            aria-controls="collapseLedger">
+                            href="#" data-toggle="collapse" data-target="#collapseLedger"
+                            aria-expanded="false" aria-controls="collapseLedger">
                             General Ledger
                             <i class="fas fa-angle-down"></i>
                         </a>
@@ -1216,6 +1228,8 @@
                     }
                 }
 
+                
+
                 // un allocated riders 
                 $('#unallocatedRiders').on('change', function() {
                     if ($(this).is(':checked')) {
@@ -1240,6 +1254,7 @@
                         });
                     }
                 });
+
 
                 // all riders
 
@@ -1387,30 +1402,30 @@
 
                 // Total weight calculation and cost update
                 // function recalculateCosts() {
-                //     let totalWeight = 0;
+                // let totalWeight = 0;
 
-                //     $('#shipmentTable tbody tr').each(function() {
-                //         const row = $(this);
-                //         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
-                //         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
-                //         totalWeight += weight * packages;
-                //     });
+                // $('#shipmentTable tbody tr').each(function() {
+                // const row = $(this);
+                // const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                // const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                // totalWeight += weight * packages;
+                // });
 
-                //     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+                // $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
-                //     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                //     let cost = baseCost;
+                // const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                // let cost = baseCost;
 
-                //     if (totalWeight > 25) {
-                //         const extraWeight = totalWeight - 25;
-                //         cost += extraWeight * 50;
-                //     }
+                // if (totalWeight > 25) {
+                // const extraWeight = totalWeight - 25;
+                // cost += extraWeight * 50;
+                // }
 
-                //     $('input[name="cost"]').val(cost.toFixed(2));
+                // $('input[name="cost"]').val(cost.toFixed(2));
 
-                //     const vat = cost * 0.16;
-                //     $('input[name="vat"]').val(vat.toFixed(2));
-                //     $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                // const vat = cost * 0.16;
+                // $('input[name="vat"]').val(vat.toFixed(2));
+                // $('input[name="total_cost"]').val((cost + vat).toFixed(2));
                 // }
                 function recalculateCosts() {
                     let totalWeight = 0;
@@ -1768,7 +1783,8 @@
              * @param {number} dateColIndex - Column index where the date is stored
              * @param {string} reportUrl - The base URL for report generation
              */
-            function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+            function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                 const startInput = document.getElementById(startInputId);
                 const endInput = document.getElementById(endInputId);
                 const reportBtn = document.getElementById(reportBtnId);
@@ -1826,7 +1842,7 @@
                 endInput.addEventListener("change", filterTable);
                 clearBtn.addEventListener("click", clearFilter);
 
-                reportBtn.addEventListener("click", function () {
+                reportBtn.addEventListener("click", function() {
                     let startDate = startInput.value;
                     let endDate = endInput.value;
                     window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;

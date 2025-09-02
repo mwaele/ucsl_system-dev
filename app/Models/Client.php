@@ -34,6 +34,7 @@ class Client extends Authenticatable
         'sales_person_id',
         'otp',
         'verified_otp',
+        'role'  // Added role field
     ];
     /**
      * The attributes that should be hidden for arrays (e.g., when returned in API).

@@ -34,7 +34,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -92,7 +93,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -510,7 +511,7 @@
                                                     const length = parseFloat(row.querySelector('[name="length[]"]').value) || 0;
                                                     const width = parseFloat(row.querySelector('[name="width[]"]').value) || 0;
                                                     const height = parseFloat(row.querySelector('[name="height[]"]').value) || 0;
-                                                    const volume = length * width * height;
+                                                    const volume = length * width * height / 5000;
                                                     row.querySelector('[name="volume[]"]').value = volume;
 
                                                     // Recalculate totals
@@ -594,7 +595,7 @@
                                 <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
-                                <td></td>
+                                <td>{{ $request->user->name ?? '' }}</td>
                                 <td>
                                     @php
                                         $status = $request->shipmentCollection->clientRequestById->status ?? null;
@@ -842,28 +843,28 @@
                                                                 </label>
                                                             </div>
 
-                                                            <div class="col-md-4">
+                                                            {{-- <div class="col-md-4">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio"
-                                                                        name="riderOption" id="currentLocation"
+                                                                    <input class="form-check-input currentLocation"
+                                                                        type="radio" name="riderOption"
                                                                         value="currentLocation">
                                                                     <label class="form-check-label"
                                                                         for="currentLocation">Pickup Location</label>
                                                                 </div>
-                                                            </div>
-                                                            <div class="col-md-4">
+                                                            </div> --}}
+                                                            <div class="col-md-6">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio"
-                                                                        name="riderOption" id="unallocatedRiders"
+                                                                    <input class="form-check-input unallocatedRiders"
+                                                                        type="radio" name="riderOption"
                                                                         value="unallocated">
                                                                     <label class="form-check-label"
                                                                         for="unallocatedRiders">Unallocated Riders</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4">
+                                                            <div class="col-md-6">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio"
-                                                                        name="riderOption" id="allRiders" value="all">
+                                                                    <input class="form-check-input allRiders"
+                                                                        type="radio" name="riderOption" value="all">
                                                                     <label class="form-check-label" for="allRiders">All
                                                                         Riders</label>
                                                                 </div>
@@ -872,8 +873,8 @@
                                                             <div class="col-md-12 mb-3 mt-2">
                                                                 <label for="userId"
                                                                     class="form-label text-primary">Rider</label>
-                                                                <select class="form-control" id="userId"
-                                                                    name="userId" required>
+                                                                <select class="form-control userId" name="userId"
+                                                                    required>
                                                                     <option value="">Select Rider</option>
                                                                 </select>
                                                             </div>
@@ -881,10 +882,10 @@
                                                             <div class="col-md-8 mb-3">
                                                                 <label for="vehicle"
                                                                     class="form-label text-primary">Vehicle</label>
-                                                                <input type="text" id="vehicle" class="form-control"
+                                                                <input type="text" class="form-control vehicle"
                                                                     name="vehicle_display"
                                                                     placeholder="Select rider to populate" readonly>
-                                                                <input type="hidden" id="vehicleId" name="vehicleId">
+                                                                <input type="hidden" class="vehicleId" name="vehicleId">
                                                             </div>
                                                         </div>
 
@@ -897,36 +898,7 @@
                                                     </form>
                                                 </div>
 
-                                                <script>
-                                                    const vehicleMap = {
-                                                        @foreach ($vehicles as $vehicle)
-                                                            "{{ $vehicle->user_id }}": {
-                                                                id: "{{ $vehicle->id }}",
-                                                                regNo: "{{ $vehicle->regNo ?? '-' }}",
-                                                                status: "{{ $vehicle->status }}"
-                                                            },
-                                                        @endforeach
-                                                    };
 
-                                                    document.addEventListener('DOMContentLoaded', function() {
-                                                        const userSelect = document.getElementById('userId');
-                                                        const vehicleInput = document.getElementById('vehicle');
-                                                        const vehicleIdInput = document.getElementById('vehicleId');
-
-                                                        userSelect.addEventListener('change', function() {
-                                                            const selectedUserId = this.value;
-                                                            const vehicle = vehicleMap[selectedUserId];
-
-                                                            if (vehicle) {
-                                                                vehicleInput.value = `${vehicle.regNo ?? '-'} (${vehicle.status})`;
-                                                                vehicleIdInput.value = vehicle.id;
-                                                            } else {
-                                                                vehicleInput.value = '';
-                                                                vehicleIdInput.value = '';
-                                                            }
-                                                        });
-                                                    });
-                                                </script>
 
                                             </div>
                                         </div>
@@ -968,7 +940,7 @@
                                         </a>
                                     @endif
 
-                                    <!-- Agent Request Modal --> 
+                                    <!-- Agent Request Modal -->
                                     <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}"
                                         tabindex="-1" role="dialog"
                                         aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}"
@@ -976,7 +948,8 @@
                                         <div class="modal-dialog" role="document">
                                             <form method="POST" action="{{ route('client-request.agent-approval') }}">
                                                 @csrf
-                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
+                                                <input type="hidden" name="request_id"
+                                                    value="{{ $request->requestId }}">
 
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -992,17 +965,20 @@
                                                             request for this client?
                                                         </p>
 
-                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks</label>
+                                                        <label for="remarks-{{ $request->requestId }}"
+                                                            class="form-label">Remarks</label>
                                                         <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3"
                                                             placeholder="Add remarks if necessary..." required></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="submit" name="action" value="decline" class="btn btn-danger">
+                                                        <button type="submit" name="action" value="decline"
+                                                            class="btn btn-danger">
                                                             Decline
                                                         </button>
 
-                                                        <button type="submit" name="action" value="approve" class="btn btn-success">
+                                                        <button type="submit" name="action" value="approve"
+                                                            class="btn btn-success">
                                                             Approve
                                                         </button>
                                                     </div>
@@ -1012,12 +988,41 @@
                                     </div>
 
                                     <!-- Print Receipt Button -->
-                                    {{-- @if ($request->status === 'collected')
-                                        <button class="btn btn-sm btn-primary mr-1" title="Print collection"
-                                            data-toggle="modal" data-target="#printModal-{{ $request->id }}">
-                                            Print <i class="fas fa-print"></i>
+                                    @if ($request->status === 'collected')
+                                        <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
+                                            data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
+                                            Waybill <i class="fas fa-file-invoice"></i>
                                         </button>
-                                    @endif --}}
+
+                                        <div class="modal fade" id="waybillModal{{ $request->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body"
+                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <iframe src="{{ route('waybill.preview', $request->requestId) }}"
+                                                            width="100%" height="500" frameborder="0"></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+                                                        <a href="{{ route('waybill.generate', $request->requestId) }}"
+                                                            target="_blank" class="btn btn-primary">
+                                                            Generate
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     @if ($request->shipmentCollection)
                                         <div class="modal fade" id="printModal-{{ $request->id }}" tabindex="-1"
                                             aria-labelledby="printModalLabel-{{ $request->id }}" aria-hidden="true">
@@ -1241,6 +1246,18 @@
         </div>
     </div>
     <script>
+        window.vehicleMap = {
+            @foreach ($vehicles as $vehicle)
+                "{{ $vehicle->user_id }}": {
+                    id: "{{ $vehicle->id }}",
+                    regNo: "{{ $vehicle->regNo ?? '-' }}",
+                    status: "{{ $vehicle->status }}"
+                },
+            @endforeach
+        };
+    </script>
+
+    <script>
         $(document).ready(function() {
             // Simulate onchange after 10 seconds if user is still on page
             // setTimeout(function() {
@@ -1267,6 +1284,91 @@
                     $('#reference').val(''); // clear for other modes
                 }
             });
+
+            // Unallocated Riders
+            $(document).on('change', '.unallocatedRiders', function() {
+                const modal = $(this).closest('.modal'); // find current modal
+                const select = modal.find('.userId');
+
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: "{{ route('drivers.unallocated') }}",
+                        method: "GET",
+                        success: function(drivers) {
+                            select.empty().append('<option value="">Select Rider</option>');
+
+                            if (drivers.length > 0) {
+                                drivers.forEach(driver => {
+                                    select.append(
+                                        `<option value="${driver.id}">${driver.name} (Unallocated)</option>`
+                                    );
+                                });
+                            } else {
+                                select.append(
+                                    '<option disabled>No unallocated riders found</option>');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // All Riders
+            $(document).on('change', '.allRiders', function() {
+                const modal = $(this).closest('.modal');
+                const select = modal.find('.userId');
+
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: "{{ route('drivers.all') }}",
+                        method: "GET",
+                        success: function(drivers) {
+                            select.empty().append('<option value="">Select Rider</option>');
+
+                            if (drivers.length > 0) {
+                                drivers.forEach(driver => {
+                                    select.append(
+                                        `<option value="${driver.id}">${driver.name} (${driver.collectionLocations ?? 'Unallocated'})</option>`
+                                    );
+                                });
+                            } else {
+                                select.append('<option disabled>No riders found</option>');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Current Location
+            $(document).on('change', '.currentLocation', function() {
+                const modal = $(this).closest('.modal');
+                const location = modal.find('.collectionLocation').val()?.trim();
+
+                if ($(this).is(':checked')) {
+                    if (location && location.length > 1) {
+                        fetchDriversByLocation(location, modal.find('.userId'));
+                    } else {
+                        alert('Please enter a collection location first.');
+                    }
+                }
+            });
+
+            // Vehicle mapping on Rider selection
+            $(document).on('change', '.userId', function() {
+                const modal = $(this).closest('.modal');
+                const selectedUserId = $(this).val();
+                const vehicleInput = modal.find('.vehicle');
+                const vehicleIdInput = modal.find('.vehicleId');
+
+                const vehicle = vehicleMap[selectedUserId];
+                if (vehicle) {
+                    vehicleInput.val(`${vehicle.regNo ?? '-'} (${vehicle.status})`);
+                    vehicleIdInput.val(vehicle.id);
+                } else {
+                    vehicleInput.val('');
+                    vehicleIdInput.val('');
+                }
+            });
+
         });
     </script>
 @endsection

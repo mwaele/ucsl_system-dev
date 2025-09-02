@@ -30,7 +30,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -88,7 +89,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -143,13 +144,13 @@
 
                                 <td>
                                     <span
-                                        class="badge p-2 fs-5 text-white
+                                        class="badge p-2 fs-5 text-primary
                                         {{ $collection->status == 'pending collection'
                                             ? 'bg-secondary'
                                             : ($collection->status == 'collected'
                                                 ? 'bg-warning'
                                                 : ($collection->status == 'delivered'
-                                                    ? 'bg-primary'
+                                                    ? 'bg-success'
                                                     : '')) }}">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </span>
@@ -261,7 +262,8 @@
                                                                             <div class="form-group col-md-6">
                                                                                 <label
                                                                                     class="form-label text-primary text-primary">Sender
-                                                                                    Email <span class="text-danger">*</span>
+                                                                                    Email <span
+                                                                                        class="text-danger">*</span>
                                                                                 </label>
                                                                                 <input type="email" class="form-control"
                                                                                     name="senderEmail" id="senderEmail"
@@ -619,8 +621,43 @@
                                     @if ($collection->status === 'collected')
                                         <button class="btn btn-sm btn-primary mr-1" title="Print collection"
                                             data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
-                                            Print <i class="fas fa-print"></i>
+                                            Consignment Note <i class="fas fa-print"></i>
                                         </button>
+
+                                        <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
+                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                            Waybill <i class="fas fa-file-invoice"></i>
+                                        </button>
+
+                                        <div class="modal fade" id="waybillModal{{ $collection->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body"
+                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <iframe
+                                                            src="{{ route('waybill.preview', $collection->requestId) }}"
+                                                            width="100%" height="500" frameborder="0"></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+                                                        <a href="{{ route('waybill.generate', $collection->requestId) }}"
+                                                            target="_blank" class="btn btn-primary">
+                                                            Generate
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
@@ -818,8 +855,8 @@
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div><br>
                                                                 <hr style="margin: 6px 0;">
-                                                                These are provisional charges based on details provided by
-                                                                sender.<br><br>
+                                                                {{-- These are provisional charges based on details provided by
+                                                                sender.<br><br> --}}
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
                                                                 conditions overleaf.
@@ -839,13 +876,16 @@
 
                                     <!-- Deliver button -->
                                     @if (
-                                        ($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated') &&
-                                            $collection->serviceLevel->sub_category_name === 'Same Day')
+                                        (($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated') &&
+                                            $collection->serviceLevel->sub_category_name === 'Same Day') ||
+                                            ($collection->serviceLevel->sub_category_name === 'Overnight' && $collection->status != 'delivered'))
                                         <button class="btn btn-sm btn-success" title="Deliver Parcel" data-toggle="modal"
                                             data-target="#deliverParcel-{{ $collection->id }}">
                                             Deliver <i class="fas fa-box"></i>
                                         </button>
                                     @endif
+
+
 
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="deliverParcel-{{ $collection->id }}" tabindex="-1"
