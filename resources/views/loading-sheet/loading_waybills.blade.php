@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="text-white" for="reg_no">Reg No.</label>
-                        <input type="text" value="{{ $loadingSheet->reg_no }}" class="form-control" readonly>
+                        <input type="text" value="{{ $loading_sheet->transporter_truck->reg_no }}" class="form-control" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="text-white" for="origin">Origin</label>

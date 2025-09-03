@@ -791,7 +791,7 @@
                                                                 Thank you for shipping with us.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
-                                                                conditions overleaf.
+                                                                conditions. Visit www.ufanisicourier.co.ke/terms
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1222,7 +1222,7 @@
                                                                 sender.<br><br>
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
-                                                                conditions overleaf.
+                                                                conditions. Visit www.ufanisicourier.co.ke/terms
                                                             </div>
                                                         </div>
                                                     </div>

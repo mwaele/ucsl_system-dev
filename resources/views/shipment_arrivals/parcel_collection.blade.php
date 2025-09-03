@@ -662,7 +662,7 @@
                                                             <div style="text-align: left; font-size: 12px;">
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and
-                                                                conditions overleaf.
+                                                                conditions. Visit www.ufanisicourier.co.ke/terms
                                                             </div>
                                                         </div>
                                                     </div>

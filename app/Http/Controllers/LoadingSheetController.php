@@ -109,52 +109,50 @@ class LoadingSheetController extends Controller
     }
 
     public function loadingsheet_waybills($id)
-{
-    $loadingSheet = LoadingSheet::findOrFail($id);
+    {
+        $loadingSheet = LoadingSheet::findOrFail($id);
 
-    // Build the base query (no ->get() yet)
-    $shipmentQuery = ShipmentCollection::join(
-            'client_requests',
-            'shipment_collections.requestId',
-            '=',
-            'client_requests.requestId'
-        )
-        ->where('client_requests.status', 'verified')
-        ->where('shipment_collections.waybill_no', '!=', '') // Exclude empty waybill numbers
-        ->whereNull('shipment_collections.loading_status') // Correct way to check NULL
-        ->select('shipment_collections.*');
+        // Build the base query (no ->get() yet)
+        $shipmentQuery = ShipmentCollection::join(
+                'client_requests',
+                'shipment_collections.requestId',
+                '=',
+                'client_requests.requestId'
+            )
+            ->where('client_requests.status', 'verified')
+            ->where('shipment_collections.waybill_no', '!=', '') // Exclude empty waybill numbers
+            ->whereNull('shipment_collections.loading_status') // Correct way to check NULL
+            ->select('shipment_collections.*');
 
-    // If destination_id is NOT 0, filter by destination
-    if ($loadingSheet->destination_id != 0) {
-        $shipmentQuery->where('shipment_collections.destination_id', $loadingSheet->destination_id);
+        // If destination_id is NOT 0, filter by destination
+        if ($loadingSheet->destination_id != 0) {
+            $shipmentQuery->where('shipment_collections.destination_id', $loadingSheet->destination_id);
+        }
+
+        // Fetch results at the end
+        $shipment_collections = $shipmentQuery->get();
+
+        // Get destination name (if applicable)
+        $destination = DB::table('loading_sheets')
+            ->join('rates', 'loading_sheets.destination', '=', 'rates.id')
+            ->where('loading_sheets.id', $id)
+            ->select('rates.destination as destination_name')
+            ->first();
+
+        $loadingSheets = DB::table('loading_sheets')
+            ->join('transporters', 'loading_sheets.transported_by', '=', 'transporters.id')
+            ->join('transporter_trucks', 'transporters.id', '=', 'transporter_trucks.transporter_id')
+            ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
+            ->first();
+
+        return view('loading-sheet.loading_waybills')->with([
+            'shipment_collections' => $shipment_collections,
+            'ls_id' => $id,
+            'loadingSheet' => $loadingSheets,
+            'loading_sheet' => $loadingSheet,
+            'destination' => $destination,
+        ]);
     }
-
-    // Fetch results at the end
-    $shipment_collections = $shipmentQuery->get();
-
-    // Get destination name (if applicable)
-    $destination = DB::table('loading_sheets')
-        ->join('rates', 'loading_sheets.destination', '=', 'rates.id')
-        ->where('loading_sheets.id', $id)
-        ->select('rates.destination as destination_name')
-        ->first();
-
-    $loadingSheets = DB::table('loading_sheets')
-        ->join('transporters', 'loading_sheets.transported_by', '=', 'transporters.id')
-        ->join('transporter_trucks', 'transporters.id', '=', 'transporter_trucks.transporter_id')
-        ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
-        ->first();
-
-    return view('loading-sheet.loading_waybills')->with([
-        'shipment_collections' => $shipment_collections,
-        'ls_id' => $id,
-        'loadingSheet' => $loadingSheets,
-        'loading_sheet' => $loadingSheet,
-        'destination' => $destination,
-    ]);
-}
-
-
 
     public function generate_loading_sheet($id)
     {
