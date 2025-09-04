@@ -266,7 +266,7 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('payments.*', 'reports.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsepayments"
                     aria-expanded="true" aria-controls="collapsepayments">
                     <i class="fas fa-fw fa-money-bill-alt"></i>
@@ -275,7 +275,11 @@
                 <div id="collapsepayments" class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
                     aria-labelledby="headingpayments" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a>
+                        <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
+                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
+                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Client performance</a>
+                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Office performance</a>
+                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Dispatch summaries</a>
                     </div>
                 </div>
             </li>

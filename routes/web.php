@@ -22,6 +22,7 @@ use App\Http\Controllers\LoadingSheetController;
 use App\Http\Controllers\OvernightController;
 use App\Http\Controllers\SameDayController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SpecialRateController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\API\ClientAuthController;
@@ -346,6 +347,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/accounts/debtors/invoice/statement/{id}', [DebtorInvoiceController::class, 'client_statement'])->name('accounts-receivable.statement');
     Route::post('/accounts/debtors/invoices/{id}/payment', [DebtorInvoiceController::class, 'postPayment'])->name('accounts.debtors.invoices.postPayment');
     Route::get('/test-aging', [DebtorInvoiceController::class, 'testAging']);
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/shipment-reports', [ReportController::class, 'shipmentReport'])->name('reports.shipment');
+
+        Route::get('/sameday', [ReportController::class, 'samedayOvernight'])->name('reports.sameday');
+        Route::get('/parcel-collection', [ReportController::class, 'parcelCollection'])->name('reports.collection');
+        Route::get('/rider-performance', [ReportController::class, 'riderPerformance'])->name('reports.rider');
+        Route::get('/driver-shipment', [ReportController::class, 'driverShipment'])->name('reports.driver');
+        Route::get('/cod-cash', [ReportController::class, 'codCash'])->name('reports.codcash');
+    });
 
 });
 
