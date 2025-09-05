@@ -358,6 +358,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/cod-cash', [ReportController::class, 'codCash'])->name('reports.codcash');
     });
 
+    Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
+    Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
+    Route::get('/shipment_report/generate', [ReportController::class, 'exportPdf'])->name('shipment_report.generate');
+
 });
 
 

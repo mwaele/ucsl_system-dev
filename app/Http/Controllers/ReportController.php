@@ -112,4 +112,41 @@ class ReportController extends Controller
 
         return view('reports.partials.codcash', compact('data'));
     }
+
+    public function filter(Request $request)
+    {
+        $query = ClientRequest::with(['client','shipmentCollection','serviceLevel','user','vehicle','createdBy']);
+
+        if ($request->fromDate && $request->toDate) {
+            $query->whereBetween('created_at', [$request->fromDate, $request->toDate]);
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $clientRequests = $query->get();
+
+        // return only the <tbody> rows
+        return view('reports.partials.reports_table_rows', compact('clientRequests'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = ClientRequest::with(['client','shipmentCollection','serviceLevel','user','vehicle','createdBy']);
+
+        if ($request->fromDate && $request->toDate) {
+            $query->whereBetween('created_at', [$request->fromDate, $request->toDate]);
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $clientRequests = $query->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('clientRequests'));
+        return $pdf->download('filtered_report.pdf');
+    }
+
 }
