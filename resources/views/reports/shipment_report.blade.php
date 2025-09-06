@@ -61,9 +61,37 @@
         </div>
 
         <div class="d-flex align-items-center ms-auto">
+            <!-- Status Type Filter -->
+            <div class="form-group mx-3">
+                <label for="status" class="form-label text-primary mb-0"><strong>Status:</strong></label>
+                <select id="status" class="form-control">
+                    <option value="">All</option>
+                    <option value="pending_collection_by_rider">Pending collection</option>
+                    <option value="collected_by_rider">Collected by rider</option>
+                    <option value="verified_by_front_office">Verified by front office</option>
+                    <option value="dispatched_from_front_office">Dispatched from front office</option>
+                    <option value="received_at_destination">Received at destination</option>
+                    <option value="verified_at_destination">Verified at destination</option>
+                    <option value="collected_by_recipient">Collected by recipient</option>
+                    <option value="delivered_to_recipient">Delivered to recipient</option>
+                    <option value="on_hold">Disputed</option>
+                </select>
+            </div>
+
+            <!-- Payment Type Filter -->
+            <div class="form-group mx-3">
+                <label for="paymentType" class="form-label text-primary mb-0"><strong>Payment Type:</strong></label>
+                <select id="paymentType" class="form-control">
+                    <option value="">All</option>
+                    <option value="cash">Cash</option>
+                    <option value="cod">CoD</option>
+                    <option value="invoice">Invoice</option>
+                </select>
+            </div>
+
             <!-- Client Type Filter -->
-            <div class="form-group mx-2">
-                <label for="clientType" class="form-label mb-0"><strong>Client Type:</strong></label>
+            <div class="form-group mx-3">
+                <label for="clientType" class="form-label text-primary  mb-0"><strong>Client Type:</strong></label>
                 <select id="clientType" class="form-control">
                     <option value="">All</option>
                     <option value="walkin">Walk-in</option>
@@ -72,8 +100,8 @@
             </div>
 
             <!-- Service Level Filter -->
-            <div class="form-group mx-2">
-                <label for="serviceLevel" class="form-label mb-0"><strong>Service Level:</strong></label>
+            <div class="form-group mx-3">
+                <label for="serviceLevel" class="form-label text-primary mb-0"><strong>Service Level:</strong></label>
                 <select id="serviceLevel" class="form-control">
                     <option value="">All</option>
                     <option value="Same Day">Same Day</option>
@@ -195,7 +223,7 @@
 
 
                 // Example usage for "Overnight walk-in" page
-                initDateFilter("dataTable", 2, "/shipment_report.generate");
+                initDateFilter("dataTable", 2, "/shipment_report/generate");
             </script>
 
         </div>
@@ -261,124 +289,9 @@
                         <tr><td colspan="13" class="text-center">No records found</td></tr>
                     @endforelse
                 </tbody>
-                <script>
-                $(document).ready(function () {
-                    // Apply filters
-                    $('#applyFilters').on('click', function () {
-                        $.ajax({
-                            url: "{{ route('reports.filter') }}",
-                            type: "GET",
-                            data: $('#filterForm').serialize(),
-                            success: function (data) {
-                                $('#reportsTableBody').html(data);
-                            },
-                            error: function () {
-                                alert('Something went wrong while filtering.');
-                            }
-                        });
-                    });
-
-                    // Download PDF with filters
-                    $('#downloadPdf').on('click', function () {
-                        let query = $('#filterForm').serialize();
-                        window.location.href = "{{ route('reports.exportPdf') }}?" + query;
-                    });
-                });
-                </script>
             </table>
         </div>
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-$(function () {
-    let table = $('#reportsTable').DataTable({
-        dom: 'frtip', // still needed for Buttons to initialize
-        buttons: [
-            {
-                extend: 'excelHtml5',
-                text: 'Export Excel',
-                exportOptions: {
-                    columns: ':visible',
-                    modifier: { search: 'applied', order: 'applied' }
-                }
-            },
-            {
-                extend: 'csvHtml5',
-                text: 'Export CSV',
-                exportOptions: {
-                    columns: ':visible',
-                    modifier: { search: 'applied', order: 'applied' }
-                }
-            },
-            {
-                extend: 'pdfHtml5',
-                text: 'Export PDF',
-                exportOptions: {
-                    columns: ':visible',
-                    modifier: { search: 'applied', order: 'applied' }
-                }
-            },
-            {
-                extend: 'print',
-                text: 'Print',
-                exportOptions: {
-                    columns: ':visible',
-                    modifier: { search: 'applied', order: 'applied' }
-                }
-            }
-        ],
-        paging: false,
-        info: true,
-        scrollY: "500px",
-        scrollCollapse: true,
-        language: {
-            lengthMenu: 'Showing _MENU_ Entries Per Page',
-            search: 'Search:',
-            info: "Showing _START_ to _END_ of _TOTAL_ Entries",
-            paginate: {
-                first: "First",
-                last: "Last",
-                next: "Next",
-                previous: "Previous"
-            }
-        },
-        initComplete: function () {
-            this.api()
-                .columns()
-                .every(function () {
-                    let column = this;
-                    let headerCell = $(column.header());
-                    let title = headerCell.text();
-
-                    headerCell.empty().append(
-                        $('<div>').css({ display: 'flex', flexDirection: 'column' }).append(
-                            $('<span>').text(title),
-                            $('<select>').append($('<option>')).on('change', function () {
-                                let val = $.fn.dataTable.util.escapeRegex($(this).val());
-                                column.search(val ? '^' + val + '$' : '', true, false).draw();
-                            })
-                        )
-                    );
-
-                    column.data().unique().sort().each(function (d) {
-                        if (d) {
-                            headerCell.find('select').append(new Option(d));
-                        }
-                    });
-                });
-        }
-    });
-
-    // Move buttons into custom container
-    table.buttons().container()
-        .appendTo('#exportButtons')
-        .find('button')
-        .removeClass('dt-button')
-        .addClass('btn btn-sm btn-primary me-2');
-});
-</script>
-@endpush
 

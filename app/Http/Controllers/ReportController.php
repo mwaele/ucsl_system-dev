@@ -6,11 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\ClientRequest;
 use App\Models\ShipmentCollection;
 use App\Models\ShipmentItem;
+use App\Traits\PdfReportTrait;
 use App\Models\User;
 use App\Models\Payment;
 
 class ReportController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Show the main reports dashboard
      */
@@ -131,22 +134,75 @@ class ReportController extends Controller
         return view('reports.partials.reports_table_rows', compact('clientRequests'));
     }
 
-    public function exportPdf(Request $request)
+    public function shipmentReportGenerate(Request $request)
     {
-        $query = ClientRequest::with(['client','shipmentCollection','serviceLevel','user','vehicle','createdBy']);
+        $startDate = $request->input('start');
+        $endDate = $request->input('end');
+        $clientType = $request->input('clientType');
+        $serviceLevel = $request->input('serviceLevel');
 
-        if ($request->fromDate && $request->toDate) {
-            $query->whereBetween('created_at', [$request->fromDate, $request->toDate]);
+        $query = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy']);
+
+        if ($startDate) {
+            $query->whereDate('dateRequested', '>=', $startDate);
         }
 
-        if ($request->status) {
-            $query->where('status', $request->status);
+        if ($endDate) {
+            $query->whereDate('dateRequested', '<=', $endDate);
         }
 
-        $clientRequests = $query->get();
+        if ($clientType) {
+            $query->whereHas('client', function ($q) use ($clientType) {
+                $q->where('type', $clientType);
+            });
+        }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('clientRequests'));
-        return $pdf->download('filtered_report.pdf');
+        if ($serviceLevel) {
+            $query->whereHas('serviceLevel', function ($q) use ($serviceLevel) {
+                $q->where('sub_category_name', $serviceLevel);
+            });
+        }
+
+        $clientRequests = $query->orderBy('dateRequested', 'desc')->get();
+
+        // Dynamically build the report title
+        $reportTitle = 'Shipment Report';
+
+        if ($clientType || $serviceLevel || $startDate || $endDate) {
+            $filters = [];
+
+            if ($clientType) {
+                $filters[] = ucfirst(str_replace('_', ' ', $clientType)) . " Clients";
+            }
+
+            if ($serviceLevel) {
+                $filters[] = "$serviceLevel Service Level";
+            }
+
+            if ($startDate && $endDate) {
+                $filters[] = "From " . \Carbon\Carbon::parse($startDate)->format('M d, Y') . " to " . \Carbon\Carbon::parse($endDate)->format('M d, Y');
+            } elseif ($startDate) {
+                $filters[] = "From " . \Carbon\Carbon::parse($startDate)->format('M d, Y');
+            } elseif ($endDate) {
+                $filters[] = "Until " . \Carbon\Carbon::parse($endDate)->format('M d, Y');
+            }
+
+            $reportTitle .= ' - ' . implode(', ', $filters);
+        } else {
+            $reportTitle .= ' - All Shipments';
+        }
+
+        return $this->renderPdfWithPageNumbers(
+            'reports.pdf.shipment_pdf_report',
+            [
+                'clientRequests' => $clientRequests,
+                'reportTitle' => $reportTitle
+            ],
+            'shipment_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
+
 
 }

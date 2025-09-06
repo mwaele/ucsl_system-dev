@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Shipment Report PDF</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 12px;
+            margin-left: 50px;
+            margin-right: 20px;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table.bordered th,
+        table.bordered td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            margin-bottom: 0;
+        }
+
+        @page {
+            margin: 50px 30px;
+        }
+
+        .content {
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <!-- Report Header -->
+        <table>
+            <tr>
+                <td style="text-align: left;">
+                    <h2><strong>{{ $reportTitle }}</strong></h2>
+                    <p><strong>Generated on:</strong> {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                </td>
+                <td style="text-align: right; vertical-align: top;">
+                    <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Main Table -->
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Request ID</th>
+                    <th>Date</th>
+                    <th>Consigner</th>
+                    <th>Client Type</th>
+                    <th>Consignee</th>
+                    <th>Service level</th>
+                    <th>Items</th>
+                    <th>No. of packages</th>
+                    <th>Assigned rider & truck</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Collection status</th>
+                    <th>Processed by</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($clientRequests as $collection)
+                    <tr>
+                        <td>{{ $loop->iteration }}.</td>
+                        <td>{{ $collection->requestId }}</td>
+                        <td data-date="{{ $collection->dateRequested }}">
+                            {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
+                        </td>
+                        <td>{{ $collection->client->name ?? '' }}</td>
+                        <td>{{ $collection->client->type ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
+                        <td>{{ $collection->serviceLevel->sub_category_name }}</td>
+                        <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->packages_no ?? '' }}</td>
+                        <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>
+                        <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
+                        <td class="uppercase">{{ $collection->status ?? '' }}</td>
+                        <td>{{ $collection->createdBy->name ?? 'N/A' }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="13" class="text-center">No records found</td></tr>
+                @endforelse
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>#</th>
+                    <th>Request ID</th>
+                    <th>Date</th>
+                    <th>Consigner</th>
+                    <th>Client Type</th>
+                    <th>Consignee</th>
+                    <th>Service level</th>
+                    <th>Items</th>
+                    <th>No. of packages</th>
+                    <th>Assigned rider & truck</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Collection status</th>
+                    <th>Processed by</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+
+</html>
