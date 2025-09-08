@@ -9,6 +9,7 @@ use App\Models\ShipmentItem;
 use App\Traits\PdfReportTrait;
 use App\Models\User;
 use App\Models\Payment;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -176,15 +177,15 @@ class ReportController extends Controller
             }
 
             if ($serviceLevel) {
-                $filters[] = "$serviceLevel Service Level";
+                $filters[] = "$serviceLevel parcels";
             }
 
             if ($startDate && $endDate) {
-                $filters[] = "From " . \Carbon\Carbon::parse($startDate)->format('M d, Y') . " to " . \Carbon\Carbon::parse($endDate)->format('M d, Y');
+                $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y') . " to " . Carbon::parse($endDate)->format('M d, Y');
             } elseif ($startDate) {
-                $filters[] = "From " . \Carbon\Carbon::parse($startDate)->format('M d, Y');
+                $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y');
             } elseif ($endDate) {
-                $filters[] = "Until " . \Carbon\Carbon::parse($endDate)->format('M d, Y');
+                $filters[] = "Until " . Carbon::parse($endDate)->format('M d, Y');
             }
 
             $reportTitle .= ' - ' . implode(', ', $filters);
