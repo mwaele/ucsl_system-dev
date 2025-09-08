@@ -84,6 +84,7 @@
                     <th>Assigned rider & truck</th>
                     <th>From</th>
                     <th>To</th>
+                    <th>Payment Terms</th>
                     <th>Collection status</th>
                     <th>Processed by</th>
                 </tr>
@@ -105,6 +106,7 @@
                         <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>
                         <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
                         <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->payment_mode ?? '' }}</td>
                         <td class="uppercase">{{ $collection->status ?? '' }}</td>
                         <td>{{ $collection->createdBy->name ?? 'N/A' }}</td>
                     </tr>
@@ -126,6 +128,7 @@
                     <th>Assigned rider & truck</th>
                     <th>From</th>
                     <th>To</th>
+                    <th>Payment Terms</th>
                     <th>Collection status</th>
                     <th>Processed by</th>
                 </tr>

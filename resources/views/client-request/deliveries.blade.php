@@ -977,7 +977,7 @@
                                                                                     </option>
                                                                                     <option value="M-Pesa">M-Pesa</option>
                                                                                     <option value="Cash">Cash</option>
-                                                                                    <option value="CoD">CoD</option>
+                                                                                    <option value="COD">COD</option>
                                                                                     <option value="Cheque">Cheque</option>
                                                                                     <option value="Invoice">Invoice
                                                                                     </option>

@@ -20,7 +20,7 @@ class ReportController extends Controller
      */
     public function shipmentReport()
     {
-        $clientRequests = ClientRequest::all();
+        $clientRequests = ClientRequest::latest()->get();
         
         return view('reports.shipment_report', compact('clientRequests'));
     }
@@ -141,6 +141,7 @@ class ReportController extends Controller
         $endDate = $request->input('end');
         $clientType = $request->input('clientType');
         $serviceLevel = $request->input('serviceLevel');
+        $paymentType = $request->input('paymentType');
 
         $query = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy']);
 
@@ -161,6 +162,12 @@ class ReportController extends Controller
         if ($serviceLevel) {
             $query->whereHas('serviceLevel', function ($q) use ($serviceLevel) {
                 $q->where('sub_category_name', $serviceLevel);
+            });
+        }
+
+        if ($paymentType) {
+            $query->whereHas('shipmentCollection', function ($q) use ($paymentType) {
+                $q->where('payment_mode', $paymentType);
             });
         }
 
@@ -204,6 +211,4 @@ class ReportController extends Controller
             'landscape'
         );
     }
-
-
 }

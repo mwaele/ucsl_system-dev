@@ -83,12 +83,14 @@
                 <label for="paymentType" class="form-label text-primary mb-0"><strong>Payment Type:</strong></label>
                 <select id="paymentType" class="form-control">
                     <option value="">All</option>
-                    <option value="cash">Cash</option>
-                    <option value="cod">CoD</option>
-                    <option value="invoice">Invoice</option>
+                    <option value="M-Pesa">M-Pesa</option>
+                    <option value="Cash">Cash</option>
+                    <option value="COD">COD</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Invoice">Invoice</option>
                 </select>
             </div>
-
+            
             <!-- Client Type Filter -->
             <div class="form-group mx-3">
                 <label for="clientType" class="form-label text-primary  mb-0"><strong>Client Type:</strong></label>
@@ -131,21 +133,25 @@
                  * @param {string} reportUrl - The base URL for report generation
                  */
 
-                function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
-                    reportBtnId = "generateReport", clearBtnId = "clearFilter") {
-
+                function initDateFilter(
+                    tableId, dateColIndex, reportUrl, 
+                    startInputId = "startDate", endInputId = "endDate",
+                    reportBtnId = "generateReport", clearBtnId = "clearFilter"
+                ) {
                     const startInput = document.getElementById(startInputId);
                     const endInput = document.getElementById(endInputId);
                     const reportBtn = document.getElementById(reportBtnId);
                     const clearBtn = document.getElementById(clearBtnId);
                     const clientTypeFilter = document.getElementById("clientType");
                     const serviceLevelFilter = document.getElementById("serviceLevel");
+                    const paymentTypeFilter = document.getElementById("paymentType");
 
                     function filterTable() {
                         let startDate = startInput.value;
                         let endDate = endInput.value;
                         let clientType = clientTypeFilter.value.toLowerCase();
                         let serviceLevel = serviceLevelFilter.value.toLowerCase();
+                        let paymentType = paymentTypeFilter.value.toLowerCase();
 
                         let table = document.getElementById(tableId);
                         if (!table) return;
@@ -156,8 +162,9 @@
                             let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
                             let clientTypeCell = rows[i].getElementsByTagName("td")[4];
                             let serviceLevelCell = rows[i].getElementsByTagName("td")[6];
+                            let paymentTypeCell = rows[i].getElementsByTagName("td")[12];
 
-                            if (!dateCell || !clientTypeCell || !serviceLevelCell) continue;
+                            if (!dateCell || !clientTypeCell || !serviceLevelCell || !paymentTypeCell) continue;
 
                             let rowDateStr = dateCell.getAttribute("data-date");
                             let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
@@ -185,6 +192,10 @@
                                 showRow = false;
                             }
 
+                            if (paymentType && paymentTypeCell.innerText.toLowerCase() !== paymentType) {
+                                showRow = false;
+                            }
+
                             rows[i].style.display = showRow ? "" : "none";
                         }
                     }
@@ -194,6 +205,7 @@
                         endInput.value = "";
                         clientTypeFilter.value = "";
                         serviceLevelFilter.value = "";
+                        paymentTypeFilter.value = ""; // ✅ reset payment filter
 
                         let table = document.getElementById(tableId);
                         if (!table) return;
@@ -208,6 +220,7 @@
                     endInput.addEventListener("change", filterTable);
                     clientTypeFilter.addEventListener("change", filterTable);
                     serviceLevelFilter.addEventListener("change", filterTable);
+                    paymentTypeFilter.addEventListener("change", filterTable); // ✅ new listener
                     clearBtn.addEventListener("click", clearFilter);
 
                     reportBtn.addEventListener("click", function () {
@@ -215,12 +228,12 @@
                         let endDate = endInput.value;
                         let clientType = clientTypeFilter.value;
                         let serviceLevel = serviceLevelFilter.value;
+                        let paymentType = paymentTypeFilter.value; // ✅ include in report
 
                         // Include filters in report URL
-                        window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}&clientType=${clientType}&serviceLevel=${serviceLevel}`;
+                        window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}&clientType=${clientType}&serviceLevel=${serviceLevel}&paymentType=${paymentType}`;
                     });
                 }
-
 
                 // Example usage for "Overnight walk-in" page
                 initDateFilter("dataTable", 2, "/shipment_report/generate");
@@ -237,17 +250,18 @@
                         <th>Consigner</th>
                         <th>Client Type</th>
                         <th>Consignee</th>
-                        <th>Service level</th>
+                        <th>Service Level</th>
                         <th>Items</th>
                         <th>No. of packages</th>
                         <th>Assigned rider & truck</th>
                         <th>From</th>
                         <th>To</th>
-                        <th>Collection status</th>
+                        <th>Payment Terms</th>
+                        <th>Collection Status</th>
                         <th>Processed by</th>
                     </tr>
                 </thead>
-                <tfoot>
+                <tfoot class="text-success">
                     <tr>
                         <th>#</th>
                         <th>Request ID</th>
@@ -261,11 +275,12 @@
                         <th>Assigned rider & truck</th>
                         <th>From</th>
                         <th>To</th>
+                        <th>Payment Terms</th>
                         <th>Collection status</th>
                         <th>Processed by</th>
                     </tr>
                 </tfoot>
-                <tbody>
+                <tbody class="text-primary">
                     @forelse ($clientRequests as $collection)
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
@@ -282,6 +297,7 @@
                             <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>
                             <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->payment_mode ?? '' }}</td>
                             <td>{{ $collection->status ?? '' }}</td>
                             <td>{{ $collection->createdBy->name ?? 'N/A' }}</td>
                         </tr>
