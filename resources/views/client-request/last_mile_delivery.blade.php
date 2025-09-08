@@ -584,6 +584,9 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
+                                                            </div>
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->sender_contact;
@@ -602,6 +605,9 @@
 
                                                             <div style="font-weight: bold;">Receiver:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                                            </div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
                                                             </div>
                                                             @php
                                                                 $phone =
@@ -1224,6 +1230,9 @@
 
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->sender_name }}
+                                                            </div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
                                                             </div>
                                                             @php
                                                                 $phone =

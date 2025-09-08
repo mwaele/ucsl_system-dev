@@ -254,6 +254,7 @@
                                 const base_cost = $(this).data('base-cost');
                                 const data_v = $(this).data('v');
                                 const data_name = $(this).data('name');
+                                const loading_sheet_id = {{ $loading_sheet->id }};
 
                                 $.ajax({
                                     url: '/shipments/' + shipment_id + '/items',
@@ -387,6 +388,7 @@
                                                 <div class="form-group col-md-2">
                                                     <label class="text-primary"><small>Cost Difference</small></label>
                                                     <input type="text" name="cost_diff" class="form-control" >
+                                                    <input type="hidden" name="loading_sheet_id" value="${loading_sheet_id}">
                                                 </div>
                                             </div>
                                         `;

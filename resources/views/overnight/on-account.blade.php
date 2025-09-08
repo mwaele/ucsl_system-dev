@@ -305,40 +305,40 @@
                 </div>
             </form>
 
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table text-primary table-bordered table-striped table-hover" id="dataTable" width="100%"
-                    cellspacing="0" style="font-size: 14px;">
-                    <thead>
-                        <tr class="text-success">
-                            <th>#</th>
-                            <th>Request ID</th>
-                            <th>Client</th>
-                            <th>Pick-up Location</th>
-                            <th>Date Requested</th>
-                            <th>Rider</th>
-                            <th>Vehicle</th>
-                            <th>Desc.</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($clientRequests as $request)
-                            <tr>
-                                <td> {{ $loop->iteration }}. </td>
-                                <td> {{ $request->requestId }} </td>
-                                <td> {{ $request->client->name }} </td>
-                                <td> {{ $request->collectionLocation }} </td>
-                                <td data-date="{{ $request->dateRequested }}">
-                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
-                                </td>
-                                <td> {{ $request->user->name ?? '—' }} </td>
-                                <td> {{ $request->vehicle->regNo ?? '—' }} </td>
-                                <td> {{ $request->parcelDetails }} </td>
-                                <td>
-                                    <span
-                                        class="badge p-2
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table text-primary table-bordered table-striped table-hover" id="dataTable"
+                        width="100%" cellspacing="0" style="font-size: 14px;">
+                        <thead>
+                            <tr class="text-success">
+                                <th>#</th>
+                                <th>Request ID</th>
+                                <th>Client</th>
+                                <th>Pick-up Location</th>
+                                <th>Date Requested</th>
+                                <th>Rider</th>
+                                <th>Vehicle</th>
+                                <th>Desc.</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($clientRequests as $request)
+                                <tr>
+                                    <td> {{ $loop->iteration }}. </td>
+                                    <td> {{ $request->requestId }} </td>
+                                    <td> {{ $request->client->name }} </td>
+                                    <td> {{ $request->collectionLocation }} </td>
+                                    <td data-date="{{ $request->dateRequested }}">
+                                        {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
+                                    </td>
+                                    <td> {{ $request->user->name ?? '—' }} </td>
+                                    <td> {{ $request->vehicle->regNo ?? '—' }} </td>
+                                    <td> {{ $request->parcelDetails }} </td>
+                                    <td>
+                                        <span
+                                            class="badge p-2
                                             @if ($request->status == 'pending collection') bg-secondary
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
@@ -570,6 +570,9 @@
 
                                                                 <div style="font-weight: bold;">Sender:</div>
                                                                 <div>Name: {{ $request->shipmentCollection->sender_name }}
+                                                                </div>
+                                                                <div>KRA PIN:
+                                                                    {{ $request->shipmentCollection->client->kraPin }}
                                                                 </div>
                                                                 @php
                                                                     $phone =

@@ -33,7 +33,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -91,7 +92,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -328,6 +329,7 @@
                                                 <select name="payment_mode" id="payment_mode" class="form-control">
                                                     <option value="" selected>-- Select --</option>
                                                     <option value="M-Pesa">M-Pesa</option>
+                                                    <option value="COD">COD</option>
                                                     <option value="Cash">Cash</option>
                                                     <option value="Cheque">Cheque</option>
                                                     <option value="Invoice">Invoice</option>
@@ -628,7 +630,7 @@
                                         </div>
                                     @endif
                                     @if ($request->shipmentCollection->payment_mode == 'Invoice')
-                                        <a href="{{ route('generate-invoice', $request->id - 1) }}">
+                                        <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Generate Invoice
                                             </button>
@@ -698,6 +700,10 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $request->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $request->shipmentCollection->client->kraPin ?? 'N/A' }}
+                                                            </div>
+
                                                             @php
                                                                 $phone = $request->shipmentCollection->sender_contact;
                                                                 $maskedPhone =

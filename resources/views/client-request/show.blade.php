@@ -30,7 +30,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -88,7 +89,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -220,6 +221,9 @@
 
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->client->name }}</div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
+                                                            </div>
                                                             @php
                                                                 $phone = $collection->client->contact;
                                                                 $maskedPhone =
@@ -318,7 +322,8 @@
                                                                     <strong>Collected By:</strong>
                                                                     <span> {{ $collection->user->name }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Contact:</strong>
                                                                     @php
                                                                         $phone = $collection->user->phone_number;
@@ -329,7 +334,8 @@
                                                                     @endphp
                                                                     <span> {{ $maskedPhone }} </span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div><br>
@@ -353,18 +359,18 @@
                                     @endif
 
                                     <!-- <a href="#">
-                                        <button class="btn btn-sm btn-warning mr-1" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </a>
-                                    <a href="#">
-                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                        data-target="#delete_floor-{{ $collection->id }}"><i
-                                            class="fas fa-trash"></i></button> -->
+                                            <button class="btn btn-sm btn-warning mr-1" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </a>
+                                        <a href="#">
+                                            <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                            data-target="#delete_floor-{{ $collection->id }}"><i
+                                                class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -832,13 +838,13 @@
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                                                                                                                                                                                <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                                                                                                                                                                                        class="text-danger">*</span>
-                                                                                                                                                                                                                                                                                                                                                                                                </label>
-                                                                                                                                                                                                                                                                                                                                                                                                <input type="number" min="0"
-                                                                                                                                                                                                                                                                                                                                                                                                    class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                                                                                                                                                                                    readonly>
-                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                                                                                                                                                                                                                                                                            class="text-danger">*</span>
+                                                                                                                                                                                                                                                                                                                                                                                                    </label>
+                                                                                                                                                                                                                                                                                                                                                                                                    <input type="number" min="0"
+                                                                                                                                                                                                                                                                                                                                                                                                        class="form-control" name="total_cost" required
+                                                                                                                                                                                                                                                                                                                                                                                                        readonly>
+                                                                                                                                                                                                                                                                                                                                                                                                </div> -->
                                                             </div>
 
                                                             <!-- Submit -->

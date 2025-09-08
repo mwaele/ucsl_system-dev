@@ -716,6 +716,10 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
+                                                            </div>
+
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->sender_contact;
@@ -922,8 +926,11 @@
                                                                 value="{{ $collection->shipmentCollection->destination->destination }}">
 
                                                             @php
-                                                                $hasPayment = $collection->shipmentCollection->payment !== null;
-                                                                $balance = $hasPayment ? $collection->shipmentCollection->payment->balance : null;
+                                                                $hasPayment =
+                                                                    $collection->shipmentCollection->payment !== null;
+                                                                $balance = $hasPayment
+                                                                    ? $collection->shipmentCollection->payment->balance
+                                                                    : null;
                                                             @endphp
 
                                                             {{-- Payment Section (Only if unpaid or has balance) --}}
@@ -958,30 +965,35 @@
                                                                         <div class="row">
                                                                             {{-- Payment Mode --}}
                                                                             <div class="col-md-4">
-                                                                                <label for="payment_mode" class="text-primary">
+                                                                                <label for="payment_mode"
+                                                                                    class="text-primary">
                                                                                     <h6>Payment Mode</h6>
                                                                                 </label>
-                                                                                <select id="payment_mode" name="payment_mode"
+                                                                                <select id="payment_mode"
+                                                                                    name="payment_mode"
                                                                                     class="form-control" required>
-                                                                                    <option value="" selected>-- Select --
+                                                                                    <option value="" selected>--
+                                                                                        Select --
                                                                                     </option>
                                                                                     <option value="M-Pesa">M-Pesa</option>
                                                                                     <option value="Cash">Cash</option>
                                                                                     <option value="Cheque">Cheque</option>
-                                                                                    <option value="Invoice">Invoice</option>
+                                                                                    <option value="Invoice">Invoice
+                                                                                    </option>
                                                                                 </select>
                                                                             </div>
 
                                                                             {{-- Reference --}}
                                                                             <div class="col-md-4">
-                                                                                <label for="reference" class="text-primary">
+                                                                                <label for="reference"
+                                                                                    class="text-primary">
                                                                                     <h6>Reference</h6>
                                                                                 </label>
                                                                                 <input type="text" id="reference"
                                                                                     name="reference"
                                                                                     class="form-control text-uppercase"
-                                                                                    placeholder="e.g. TH647CDTNA" maxlength="10"
-                                                                                    pattern="[A-Z0-9]{10}"
+                                                                                    placeholder="e.g. TH647CDTNA"
+                                                                                    maxlength="10" pattern="[A-Z0-9]{10}"
                                                                                     title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
                                                                                     oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)"
                                                                                     required>
@@ -989,11 +1001,13 @@
 
                                                                             {{-- Amount --}}
                                                                             <div class="col-md-4">
-                                                                                <label for="amount_paid" class="text-primary">
+                                                                                <label for="amount_paid"
+                                                                                    class="text-primary">
                                                                                     <h6>Amount</h6>
                                                                                 </label>
                                                                                 <input type="number" id="amount_paid"
-                                                                                    name="amount_paid" class="form-control"
+                                                                                    name="amount_paid"
+                                                                                    class="form-control"
                                                                                     placeholder="Enter amount paid"
                                                                                     value="{{ $collection->shipmentCollection->actual_total_cost ?? '' }}"
                                                                                     required>
@@ -1098,7 +1112,8 @@
                                                                                         Name</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_name" value="{{ $collection->shipmentCollection?->agent->agent_name ?? '' }}">
+                                                                                        name="agent_name"
+                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_name ?? '' }}">
                                                                                     <input type="hidden"
                                                                                         name="receiver_type"
                                                                                         value="agent">
@@ -1109,7 +1124,8 @@
                                                                                         Phone Number</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_phone" value="{{ $collection->shipmentCollection?->agent->agent_phone_no ?? '' }}">
+                                                                                        name="agent_phone"
+                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_phone_no ?? '' }}">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="form-row">
@@ -1119,7 +1135,8 @@
                                                                                         ID Number</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="agent_id_no" maxlength="8" value="{{ $collection->shipmentCollection?->agent->agent_id_no ?? '' }}">
+                                                                                        name="agent_id_no" maxlength="8"
+                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_id_no ?? '' }}">
                                                                                 </div>
                                                                                 <div class="form-group col-md-6">
                                                                                     <label class="form-label text-primary">
@@ -1128,7 +1145,8 @@
                                                                                     </label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        name="remarks" value="{{ $collection->shipmentCollection?->agent->agent_reason ?? '' }}">
+                                                                                        name="remarks"
+                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_reason ?? '' }}">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1461,6 +1479,10 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $collection->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $collection->shipmentCollection->client->kraPin }}
+                                                            </div>
+
                                                             @php
                                                                 $phone =
                                                                     $collection->shipmentCollection->sender_contact;

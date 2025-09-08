@@ -34,7 +34,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -92,7 +93,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -507,6 +508,9 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $request->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $request->shipmentCollection->client->kraPin }}
+                                                            </div>
                                                             @php
                                                                 $phone = $request->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
@@ -802,7 +806,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     @if ($request->agent && $request->agent->agent_requested && !$request->agent->agent_approved)
                                         <a href="#" class="btn btn-sm btn-primary mr-1"
                                             title="Review Agent Pickup Request" data-toggle="modal"
@@ -811,7 +815,7 @@
                                         </a>
                                     @endif
 
-                                    <!-- Agent Request Modal --> 
+                                    <!-- Agent Request Modal -->
                                     <div class="modal fade" id="agentRequestModal-{{ $request->requestId }}"
                                         tabindex="-1" role="dialog"
                                         aria-labelledby="agentRequestModalLabel-{{ $request->requestId }}"
@@ -819,7 +823,8 @@
                                         <div class="modal-dialog" role="document">
                                             <form method="POST" action="{{ route('client-request.agent-approval') }}">
                                                 @csrf
-                                                <input type="hidden" name="request_id" value="{{ $request->requestId }}">
+                                                <input type="hidden" name="request_id"
+                                                    value="{{ $request->requestId }}">
 
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -835,17 +840,20 @@
                                                             request for this client?
                                                         </p>
 
-                                                        <label for="remarks-{{ $request->requestId }}" class="form-label">Remarks</label>
+                                                        <label for="remarks-{{ $request->requestId }}"
+                                                            class="form-label">Remarks</label>
                                                         <textarea class="form-control" name="remarks" id="remarks-{{ $request->requestId }}" rows="3"
                                                             placeholder="Add remarks if necessary..." required></textarea>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button type="submit" name="action" value="decline" class="btn btn-danger">
+                                                        <button type="submit" name="action" value="decline"
+                                                            class="btn btn-danger">
                                                             Decline
                                                         </button>
 
-                                                        <button type="submit" name="action" value="approve" class="btn btn-success">
+                                                        <button type="submit" name="action" value="approve"
+                                                            class="btn btn-success">
                                                             Approve
                                                         </button>
                                                     </div>

@@ -473,8 +473,9 @@ class ShipmentArrivalController extends Controller
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
 
-    public function issue(Request $request, $id) 
+    public function issue(Request $request, $id,  SmsService $smsService) 
     {
+        //dd($request->all());
         $arrival = ShipmentArrival::with('shipmentCollection.client', 'shipmentCollection.payments')->findOrFail($id);
 
         // Always validate if there's a balance or no payment yet
@@ -519,15 +520,17 @@ class ShipmentArrivalController extends Controller
                 'remarks' => $request->remarks ?? null,
             ]);
 
+            $otp = rand(100000, 999999); // Generate a 6-digit OTP
+
             // 2️⃣ Create goods received note number
             ShipmentCollection::where('requestId', $arrival->shipmentCollection->requestId)
-                ->update(['grn_no' => $request->grn_no]);
+                ->update(['grn_no' => $request->grn_no,'receiver_otp' => $otp,'status'=>'Delivered']);
 
             // Update track status
             DB::table('tracks')
                 ->where('requestId', $arrival->shipmentCollection->requestId)
                 ->update([
-                    'current_status' => 'Parcel Delivered in Good Order',
+                    'current_status' => 'Parcel Delivered in Good Condition',
                     'updated_at' => now(),
                 ]);
 
@@ -539,7 +542,7 @@ class ShipmentArrivalController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId'   => $trackId,
                 'date'      => now(),
-                'details'   => 'Parcel delivered to receiver/agent',
+                'details'   => 'Parcel delivered to '.$request->receiver_name.' - '.$request->receiver_phone,
                 'user_id'   => auth()->id(),
                 'vehicle_id'=> null,
                 'remarks'   => "Delivered parcel for request ID {$arrival->shipmentCollection->requestId} to designated receiver/agent.",
@@ -558,7 +561,10 @@ class ShipmentArrivalController extends Controller
             SendIssueNotificationsJob::dispatch(
                 $arrival->shipmentCollection,
                 $arrival->shipmentCollection->client,
-                auth()->user()
+                auth()->user(),
+                $request->receiver_name,
+                $request->receiver_phone,
+                $otp,
             );
         } catch (\Exception $e) {
             Log::warning('Failed to dispatch SendIssueNotificationsJob', ['message' => $e->getMessage()]);

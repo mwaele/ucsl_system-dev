@@ -238,7 +238,7 @@
         </tr>
     </table>
     <div class="head">
-        <h2 style="text-align: center">Parcel Manifest <strong>From</strong> {{ $loading_sheet->office->name }}
+        <h2 style="text-align: center">Loading Manifest <strong>From</strong> {{ $loading_sheet->office->name }}
             <strong>To </strong>
             {{ optional($loading_sheet->office)->name === optional($destination)->destination
                 ? 'Various'
@@ -255,17 +255,21 @@
             style=" font-family: sans-serif; margin-top:10px; margin-bottom:10px" class="bordered-table">
             <thead>
                 <tr>
-                    <th>DISPATCH DATE</th>
+
                     <th>OFFICE OF ORIGIN</th>
                     <th>DESTINATION</th>
+                    <th>DISPATCH DATE</th>
+                    <th>ARRIVAL DATE</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
+
                     <td>{{ $loading_sheet->office->name }} </td>
                     <td>{{ $destination->destination }}
                     </td>
+                    <td>{{ $loading_sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
+                    <td>{{ $loading_sheet->received_date ?? 'Pending Arrival' }} </td>
                 </tr>
             </tbody>
 
@@ -294,7 +298,11 @@
                         <td style="text-align:right">{{ $item->total_quantity }}</td>
                         <td style="text-align:right">{{ $item->total_weight }}</td>
                         <td style="text-align:right"> {{ number_format($item->total_cost, 2) }}</td>
-                        <td>{{ $item->payment_mode }}</td>
+                        <td>
+                            @if ($item->payment_mode === 'Invoice')
+                                {{ 'Account' }}
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
                 <tr>
@@ -364,7 +372,7 @@
 
                 <p>NAME: {{ $loading_sheet->transporter->name }}</p>
 
-                <p>PHONE NUMBER: {{ $loading_sheet->transporter->phone_no }}</p>
+                <p>DRIVER PHONE NUMBER: {{ $loading_sheet->transporter_truck->driver_contact }}</p>
                 <div class="signature-row">
                     <p class="signature-text">SIGNATURE:</p>
                     @php

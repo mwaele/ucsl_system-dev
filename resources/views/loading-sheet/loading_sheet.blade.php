@@ -137,13 +137,19 @@
 
                 <div class="col-md-6">
                     <p>NAME: {{ $loading_sheet->transporter->name }}</p>
+                    <p>DRIVER ID NO: {{ $loading_sheet->transporter_truck->driver_id_no }}</p>
                 </div>
 
                 <div class="col-md-6">
-                    <p>PHONE NUMBER: {{ $loading_sheet->transporter->phone_no }}</p>
+
+
+                    <p>DRIVER NAME: {{ $loading_sheet->transporter_truck->driver_name }}</p>
+
+
+                    <p>DRIVER PHONE NUMBER: {{ $loading_sheet->transporter_truck->driver_contact }}</p>
                 </div>
                 <div class="col-md-6">
-                    <p>REG. DETAILS: {{ $loading_sheet->transporter->reg_details }}</p>
+                    <p>VEHICLE REG. NO: {{ $loading_sheet->transporter_truck->reg_no }}</p>
                 </div>
                 <div class="col-md-6">
                     <p>SIGNATURE: <img class="img-fluid" style="height: 20px"

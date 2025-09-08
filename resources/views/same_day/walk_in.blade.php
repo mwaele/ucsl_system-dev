@@ -609,7 +609,8 @@
                                             @elseif ($status === 'verified') bg-primary
                                             @else bg-dark @endif
                                             fs-5 text-white">
-                                            {{ \Illuminate\Support\Str::title($status) }} - {{ $request->shipmentCollection->status ?? '' }}
+                                            {{ \Illuminate\Support\Str::title($status) }} -
+                                            {{ $request->shipmentCollection->status ?? '' }}
                                         </span>
                                     @else
                                         <span class="badge p-2 bg-light text-muted fs-5">No Status</span>
@@ -682,6 +683,9 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $request->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $request->shipmentCollection->client->kraPin }}
+                                                            </div>
                                                             @php
                                                                 $phone = $request->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
@@ -700,6 +704,7 @@
                                                             <div style="font-weight: bold;">Receiver:</div>
                                                             <div>Name: {{ $request->shipmentCollection->receiver_name }}
                                                             </div>
+
                                                             @php
                                                                 $phone = $request->shipmentCollection->receiver_phone;
                                                                 $maskedPhone =
@@ -932,7 +937,11 @@
                                         </div>
                                     </div>
 
-                                    @if ($request->agent && $request->agent->agent_requested && !$request->agent->agent_approved && !$request->agent->agent_declined)
+                                    @if (
+                                        $request->agent &&
+                                            $request->agent->agent_requested &&
+                                            !$request->agent->agent_approved &&
+                                            !$request->agent->agent_declined)
                                         <a href="#" class="btn btn-sm btn-primary mr-1"
                                             title="Review Agent Pickup Request" data-toggle="modal"
                                             data-target="#agentRequestModal-{{ $request->requestId }}">
@@ -1078,6 +1087,9 @@
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $request->shipmentCollection->sender_name }}
                                                             </div>
+                                                            <div>KRA PIN:
+                                                                {{ $request->shipmentCollection->client->kraPin }}
+                                                            </div>
                                                             @php
                                                                 $phone = $request->shipmentCollection->sender_contact;
                                                                 $maskedPhone =
@@ -1090,6 +1102,9 @@
                                                             <div>Location:
                                                                 {{ $request->shipmentCollection->sender_address }}</div>
                                                             <div>Town: {{ $request->shipmentCollection->sender_town }}
+                                                            </div>
+                                                            <div>KRA PIN:
+                                                                {{ $request->shipmentCollection->client->kraPin }}
                                                             </div>
                                                             <hr style="margin: 4px 0;">
 

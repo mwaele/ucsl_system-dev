@@ -31,7 +31,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -89,7 +90,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -124,7 +125,8 @@
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $arrival->requestId }}</td>
-                                <td data-date="{{ $arrival->date_received }}">{{ \Carbon\Carbon::parse($arrival->date_received)->format('d M, Y') }}</td>
+                                <td data-date="{{ $arrival->date_received }}">
+                                    {{ \Carbon\Carbon::parse($arrival->date_received)->format('d M, Y') }}</td>
                                 <td>{{ $arrival->shipmentCollection->waybill_no }}</td>
                                 <td>{{ $arrival->verifiedBy->name ?? null }}</td>
                                 <td>
@@ -198,8 +200,10 @@
 
                                                         {{-- Hidden Fields --}}
                                                         <input type="hidden" name="grn_no" value="{{ $grn_no }}">
-                                                        <input type="hidden" name="requestId" value="{{ $arrival->requestId }}">
-                                                        <input type="hidden" name="client_id" value="{{ $arrival->shipmentCollection->client_id }}">
+                                                        <input type="hidden" name="requestId"
+                                                            value="{{ $arrival->requestId }}">
+                                                        <input type="hidden" name="client_id"
+                                                            value="{{ $arrival->shipmentCollection->client_id }}">
 
                                                         @php
                                                             $hasPayment = $arrival->payment !== null;
@@ -296,8 +300,8 @@
                                                             </div>
                                                             <div class="form-check form-check-inline">
                                                                 <input class="form-check-input" type="radio"
-                                                                    name="issue_type" id="issue_agent_{{ $arrival->id }}"
-                                                                    value="agent">
+                                                                    name="issue_type"
+                                                                    id="issue_agent_{{ $arrival->id }}" value="agent">
                                                                 <label class="form-check-label"
                                                                     for="issue_agent_{{ $arrival->id }}">Agent</label>
                                                             </div>
@@ -556,6 +560,9 @@
 
                                                             <div style="font-weight: bold;">Sender:</div>
                                                             <div>Name: {{ $arrival->shipmentCollection->sender_name }}
+                                                            </div>
+                                                            <div>KRA PIN:
+                                                                {{ $arrival->shipmentCollection->client->kraPin }}
                                                             </div>
                                                             @php
                                                                 $phone = $arrival->shipmentCollection->sender_contact;

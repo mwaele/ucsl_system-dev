@@ -47,7 +47,9 @@ class ShipmentCollection extends Model
         'priority_level',
         'fragile_item',
         'priority_level_amount',
-        'fragile_item_amount',  
+        'fragile_item_amount', 
+        'receiver_otp',
+        'grn_no',
     ];
 
     public function clientRequest()

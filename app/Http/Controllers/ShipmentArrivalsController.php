@@ -205,11 +205,13 @@ class ShipmentArrivalsController extends Controller
             'items.*.height' => 'nullable|numeric',
             'items.*.volume' => 'nullable|numeric',
             'items.*.remarks' => 'nullable|string',
+            'loading_sheet_id' => 'nullable|integer',
         ]);
 
         $now = now();
         $authId = Auth::id();
         $requestId = $validatedData['requestId'];
+
 
         // Preload shipment + track in one query
         $shipment = ShipmentCollection::with(['track:id,requestId,current_status'])
@@ -258,6 +260,14 @@ class ShipmentArrivalsController extends Controller
                 ->where('id', $shipment->id)
                 ->update(['status' => 'arrived', 'updated_at' => $now]);
 
+            //update loading sheet if provided
+            if (!empty($validatedData['loading_sheet_id'])) {
+                DB::table('loading_sheets')
+                    ->where('id', $validatedData['loading_sheet_id'])
+                    ->update(['received_date' => $now, 'updated_at' => $now]);
+            }
+            
+
             // Update track and get ID in one go
             $trackId = DB::table('tracks')
                 ->where('requestId', $requestId)
@@ -282,7 +292,7 @@ class ShipmentArrivalsController extends Controller
 
         // Send notifications after commit
         try {
-            $receiverMsg = "Hello {$shipment->receiver_name}, your parcel has arrived and is ready for collection. Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
+            $receiverMsg = "Hello {$shipment->receiver_name}, your parcel has arrived and is ready for collection. Track No: {$requestId}. Carry your original national ID. Thank you for choosing UCSL.";
             $smsService->sendSms($shipment->receiver_phone, 'Parcel Arrived', $receiverMsg, true);
 
             DB::table('sent_messages')->insert([
