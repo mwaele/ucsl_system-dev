@@ -194,61 +194,39 @@
                 <thead class="text-success">
                     <tr>
                         <th>#</th>
-                        <th>Request ID</th>
-                        <th>Date</th>
-                        <th>Consigner</th>
-                        <th>Client Type</th>
-                        <th>Consignee</th>
-                        <th>Service Level</th>
-                        <th>Items</th>
-                        <th>No. of packages</th>
-                        <th>Assigned rider & truck</th>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Payment Terms</th>
-                        <th>Collection Status</th>
-                        <th>Processed by</th>
+                        <th>Client Name</th>
+                        <th>Shipments (#)</th>
+                        <th>Total Weight (Kg)</th>
+                        <th>Revenue</th>
+                        <th>Avg. Revenue/Shipment</th>
+                        <th>Payment mix</th>
                     </tr>
                 </thead>
                 <tfoot class="text-success">
                     <tr>
                         <th>#</th>
-                        <th>Request ID</th>
-                        <th>Date</th>
-                        <th>Consigner</th>
-                        <th>Client Type</th>
-                        <th>Consignee</th>
-                        <th>Service level</th>
-                        <th>Items</th>
-                        <th>No. of packages</th>
-                        <th>Assigned rider & truck</th>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Payment Terms</th>
-                        <th>Collection status</th>
-                        <th>Processed by</th>
+                        <th>Client Name</th>
+                        <th>Shipments (#)</th>
+                        <th>Total Weight (Kg)</th>
+                        <th>Revenue</th>
+                        <th>Avg. Revenue/Shipment</th>
+                        <th>Payment mix</th>
                     </tr>
                 </tfoot>
                 <tbody class="text-primary">
-                    @forelse ($clientRequests as $collection)
+                    @forelse ($clients as $client)
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
-                            <td>{{ $collection->requestId }}</td>
-                            <td data-date="{{ $collection->dateRequested }}">
-                                {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
+                            <td>{{ $client->name }}</td>
+                            <td>{{ $client->items_count }}</td>
+                            <td>{{ $client->total_weight ?? 0 }} kg</td>
+                            <td>Ksh. {{ number_format($client->total_revenue ?? 0, 2) }}</td>
+                            <td>Ksh. {{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
+                            <td>
+                                @foreach($client->payment_mix as $mode => $percentage)
+                                    {{ $mode }}: {{ $percentage }} <br>
+                                @endforeach
                             </td>
-                            <td>{{ $collection->client->name ?? '' }}</td>
-                            <td>{{ $collection->client->type ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
-                            <td>{{ $collection->serviceLevel->sub_category_name }}</td>
-                            <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->packages_no ?? '' }}</td>
-                            <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>
-                            <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->payment_mode ?? '' }}</td>
-                            <td>{{ $collection->status ?? '' }}</td>
-                            <td>{{ $collection->createdBy->name ?? 'N/A' }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="13" class="text-center">No records found</td></tr>

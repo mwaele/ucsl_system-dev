@@ -8,6 +8,7 @@ use App\Models\ShipmentCollection;
 use App\Models\ShipmentItem;
 use App\Traits\PdfReportTrait;
 use App\Models\User;
+use App\Models\Client;
 use App\Models\Payment;
 use Carbon\Carbon;
 
@@ -26,114 +27,53 @@ class ReportController extends Controller
     }
 
     /**
-     * 1. Sameday & Overnight Report
+     * 2. Client Performance Report
      */
-    public function samedayOvernight(Request $request)
+    public function clientPerformanceReport()
     {
-        $query = ClientRequest::with('client')
-            ->whereIn('type', ['sameday', 'overnight']);
-
-        $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
-
-        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
-            ->with(['client', 'user', 'vehicle'])
+        $clients = Client::withCount('shipmentItems as items_count')
+            ->withSum('shipmentItems as total_weight', 'weight')
+            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
+            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
             ->get();
-
-        if ($request->filled('from') && $request->filled('to')) {
-            $clientRequests->whereBetween('created_at', [$request->from, $request->to]);
+        // Add payment mix and premium services manually
+        foreach ($clients as $client) {
+            // Payment Mix
+            $paymentMix = $client->shipmentCollection()
+                ->selectRaw('payment_mode, COUNT(*) as count')
+                ->groupBy('payment_mode')
+                ->pluck('count', 'payment_mode')
+                ->toArray();
+            $client->payment_mix = $paymentMix;
         }
 
-        $samedayReports = $clientRequests->orderBy('created_at', 'desc')->get();
-
-        return view('reports.partials.sameday', compact('samedayReports'));
+        return view('reports.client_performance_report', compact('clients'));
     }
 
     /**
-     * 2. Parcel Collection Report
+     * 3. Office Performance Report
      */
-    public function parcelCollection(Request $request)
+    public function officePerformanceReport()
     {
-        $query = ShipmentCollection::with('clientRequest.client', 'items');
-
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('created_at', [$request->from, $request->to]);
+        $offices = Office::withCount('shipmentItems as items_count')
+            ->withSum('shipmentItems as total_weight', 'weight')
+            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
+            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
+            ->get();
+        // Add payment mix and premium services manually
+        foreach ($clients as $client) {
+            // Payment Mix
+            $paymentMix = $client->shipmentCollection()
+                ->selectRaw('payment_mode, COUNT(*) as count')
+                ->groupBy('payment_mode')
+                ->pluck('count', 'payment_mode')
+                ->toArray();
+            $client->payment_mix = $paymentMix;
         }
 
-        $data = $query->orderBy('created_at', 'desc')->get();
-
-        return view('reports.partials.collection', compact('data'));
+        return view('reports.client_performance_report', compact('clients'));
     }
 
-    /**
-     * 3. Rider Performance Report
-     */
-    public function riderPerformance(Request $request)
-    {
-        $query = ShipmentCollection::with('rider')
-            ->selectRaw('rider_id, COUNT(*) as total_collections')
-            ->groupBy('rider_id');
-
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('created_at', [$request->from, $request->to]);
-        }
-
-        $data = $query->get();
-
-        return view('reports.partials.rider', compact('data'));
-    }
-
-    /**
-     * 4. Driver Shipment Analysis
-     */
-    public function driverShipment(Request $request)
-    {
-        $query = ShipmentCollection::with('driver', 'items')
-            ->selectRaw('driver_id, COUNT(*) as total_shipments')
-            ->groupBy('driver_id');
-
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('created_at', [$request->from, $request->to]);
-        }
-
-        $data = $query->get();
-
-        return view('reports.partials.driver', compact('data'));
-    }
-
-    /**
-     * 5. CoD & Cash Reports
-     */
-    public function codCash(Request $request)
-    {
-        $query = Payment::with('shipmentCollection.clientRequest.client')
-            ->select('id', 'shipment_collection_id', 'amount', 'method', 'status', 'created_at');
-
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('created_at', [$request->from, $request->to]);
-        }
-
-        $data = $query->orderBy('created_at', 'desc')->get();
-
-        return view('reports.partials.codcash', compact('data'));
-    }
-
-    public function filter(Request $request)
-    {
-        $query = ClientRequest::with(['client','shipmentCollection','serviceLevel','user','vehicle','createdBy']);
-
-        if ($request->fromDate && $request->toDate) {
-            $query->whereBetween('created_at', [$request->fromDate, $request->toDate]);
-        }
-
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
-
-        $clientRequests = $query->get();
-
-        // return only the <tbody> rows
-        return view('reports.partials.reports_table_rows', compact('clientRequests'));
-    }
 
     public function shipmentReportGenerate(Request $request)
     {
@@ -176,8 +116,12 @@ class ReportController extends Controller
         // Dynamically build the report title
         $reportTitle = 'Shipment Report';
 
-        if ($clientType || $serviceLevel || $startDate || $endDate) {
+        if ($paymentType || $clientType || $serviceLevel || $startDate || $endDate) {
             $filters = [];
+
+            if ($paymentType) {
+                $filters[] = "$paymentType Payments";
+            }
 
             if ($clientType) {
                 $filters[] = ucfirst(str_replace('_', ' ', $clientType)) . " Clients";

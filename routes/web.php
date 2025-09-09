@@ -349,13 +349,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/test-aging', [DebtorInvoiceController::class, 'testAging']);
 
     Route::prefix('reports')->group(function () {
-        Route::get('/shipment-reports', [ReportController::class, 'shipmentReport'])->name('reports.shipment');
-
-        Route::get('/sameday', [ReportController::class, 'samedayOvernight'])->name('reports.sameday');
-        Route::get('/parcel-collection', [ReportController::class, 'parcelCollection'])->name('reports.collection');
-        Route::get('/rider-performance', [ReportController::class, 'riderPerformance'])->name('reports.rider');
-        Route::get('/driver-shipment', [ReportController::class, 'driverShipment'])->name('reports.driver');
-        Route::get('/cod-cash', [ReportController::class, 'codCash'])->name('reports.codcash');
+        Route::get('/shipment-report', [ReportController::class, 'shipmentReport'])->name('reports.shipment');
+        Route::get('/client-performance-report', [ReportController::class, 'clientPerformanceReport'])->name('reports.client_performance');
+        Route::get('/office-performance-report', [ReportController::class, 'officePerformanceReport'])->name('reports.office_performance');
     });
 
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');

@@ -294,8 +294,8 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
                         <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
-                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Client performance</a>
-                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Office performance</a>
+                        <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client performance</a>
+                        <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office performance</a>
                         <a class="collapse-item" href="{{ route('reports.shipment') }}">Dispatch summaries</a>
                     </div>
                 </div>

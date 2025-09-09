@@ -61,4 +61,20 @@ class Client extends Authenticatable
         return $this->hasMany(ClientRequest::class, 'clientId');
     }
 
+    public function shipmentCollection()
+    {
+        return $this->hasMany(ShipmentCollection::class, 'client_id', 'id');
+    }
+
+    public function shipmentItems()
+    {
+        return $this->hasManyThrough(
+            ShipmentItem::class,
+            ShipmentCollection::class,
+            'client_id',   // Foreign key on shipment_collections
+            'shipment_id', // Foreign key on shipment_items
+            'id',          // Local key on clients
+            'client_id'    // Local key on shipment_collections
+        );
+    }
 }
