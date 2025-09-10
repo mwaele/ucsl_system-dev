@@ -352,6 +352,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/shipment-report', [ReportController::class, 'shipmentReport'])->name('reports.shipment');
         Route::get('/client-performance-report', [ReportController::class, 'clientPerformanceReport'])->name('reports.client_performance');
         Route::get('/office-performance-report', [ReportController::class, 'officePerformanceReport'])->name('reports.office_performance');
+        Route::get('/dispatch-summary-report', [ReportController::class, 'dispatchSummaryReport'])->name('reports.dispatch_summary');
     });
 
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');

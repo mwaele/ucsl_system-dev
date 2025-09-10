@@ -10,6 +10,7 @@ use App\Traits\PdfReportTrait;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\Payment;
+use App\Models\Office;
 use Carbon\Carbon;
 
 class ReportController extends Controller
@@ -55,26 +56,145 @@ class ReportController extends Controller
      */
     public function officePerformanceReport()
     {
-        $offices = Office::withCount('shipmentItems as items_count')
-            ->withSum('shipmentItems as total_weight', 'weight')
-            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
-            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
-            ->get();
-        // Add payment mix and premium services manually
-        foreach ($clients as $client) {
-            // Payment Mix
-            $paymentMix = $client->shipmentCollection()
-                ->selectRaw('payment_mode, COUNT(*) as count')
-                ->groupBy('payment_mode')
-                ->pluck('count', 'payment_mode')
-                ->toArray();
-            $client->payment_mix = $paymentMix;
-        }
+        $offices = Office::withCount([
+                'clientRequests as total_requests' => function ($query) {
+                    $query->whereNotNull('id');
+                }
+            ])
+            ->get()
+            ->map(function ($office) {
+                // Join shipment_collections via client_requests.requestId
+                $shipments = \DB::table('shipment_collections as sc')
+                    ->join('client_requests as cr', 'cr.requestId', '=', 'sc.requestId')
+                    ->where('cr.office_id', $office->id);
 
-        return view('reports.client_performance_report', compact('clients'));
+                // Total shipments
+                $office->total_shipments = $shipments->count();
+
+                // Total weight
+                $office->total_weight = (clone $shipments)->sum('sc.total_weight');
+
+                // Total revenue
+                $office->total_revenue = (clone $shipments)->sum('sc.actual_total_cost');
+
+                // Average revenue per shipment
+                $office->avg_revenue_per_shipment = $office->total_shipments > 0
+                    ? $office->total_revenue / $office->total_shipments
+                    : 0;
+
+                // Payment mix breakdown
+                $paymentModes = (clone $shipments)
+                    ->select('sc.payment_mode', \DB::raw('count(*) as count'))
+                    ->groupBy('sc.payment_mode')
+                    ->pluck('count', 'payment_mode');
+
+                $totalPayments = $paymentModes->sum();
+                $office->payment_mix = $paymentModes->map(function ($count) use ($totalPayments) {
+                    return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
+                });
+
+                // Premium services (priority or fragile)
+                $office->premium_services = (clone $shipments)
+                    ->where(function ($q) {
+                        $q->where('sc.priority_level', 1)
+                        ->orWhere('sc.fragile_item', 1);
+                    })
+                    ->count();
+
+                return $office;
+            });
+
+        return view('reports.office_performance_report', compact('offices'));
     }
 
+    /**
+     * 4. Dispatch Summary Report (Office-Wide)
+     */
+    public function dispatchSummaryReport(Request $request)
+    {
+        // Optional: allow date range filters
+        $startDate = $request->input('start_date', now()->startOfMonth());
+        $endDate   = $request->input('end_date', now());
 
+        $offices = Office::withCount([
+                // Total dispatches (client requests tied to this office in given period)
+                'clientRequests as total_dispatches' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+            ])
+            ->with(['clientRequests' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }])
+            ->get()
+            ->map(function ($office) {
+                $requests = $office->clientRequests;
+
+                // Total shipments dispatched (count of related shipment_collections)
+                $totalShipments = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->count();
+
+                // Total weight
+                $totalWeight = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->sum('total_weight');
+
+                // Total revenue
+                $totalRevenue = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->sum('actual_total_cost');
+
+                // Avg revenue per shipment
+                $avgRevenue = $totalShipments > 0 ? $totalRevenue / $totalShipments : 0;
+
+                // Payment mix
+                $paymentModes = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->select('payment_mode', \DB::raw('count(*) as count'))
+                    ->groupBy('payment_mode')
+                    ->pluck('count', 'payment_mode');
+
+                $totalPayments = $paymentModes->sum();
+                $paymentMix = $paymentModes->map(function ($count) use ($totalPayments) {
+                    return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
+                });
+
+                // Premium services (fragile or priority)
+                $premiumServices = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->where(function ($q) {
+                        $q->where('priority_level', 1)
+                        ->orWhere('fragile_item', 1);
+                    })
+                    ->count();
+
+                // Destination breakdown (group by destination office)
+                $destBreakdown = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->select('destination_id', \DB::raw('count(*) as shipments'), \DB::raw('sum(actual_total_cost) as revenue'))
+                    ->groupBy('destination_id')
+                    ->with('destination:id,destination')
+                    ->get()
+                    ->map(function ($row) {
+                        return [
+                            'office'   => $row->destination->destination ?? 'Unknown',
+                            'shipments'=> $row->shipments,
+                            'revenue'  => $row->revenue,
+                        ];
+                    });
+
+                // Attach calculated values
+                $office->total_shipments = $totalShipments;
+                $office->total_weight = $totalWeight;
+                $office->total_revenue = $totalRevenue;
+                $office->avg_revenue_per_shipment = $avgRevenue;
+                $office->payment_mix = $paymentMix;
+                $office->premium_services = $premiumServices;
+                $office->destination_breakdown = $destBreakdown;
+
+                return $office;
+            });
+
+        return view('reports.dispatch_summary_report', compact('offices', 'startDate', 'endDate'));
+    }
+
+    /**
+     * Generate the shipment report PDF based on filters
+     */
     public function shipmentReportGenerate(Request $request)
     {
         $startDate = $request->input('start');

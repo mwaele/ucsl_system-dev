@@ -194,25 +194,29 @@
                 <thead class="text-success">
                     <tr>
                         <th>#</th>
-                        <th>Office Name</th>
+                        <th>Office</th>
+                        <th>Total Dispatches</th>
                         <th>Total Shipments</th>
-                        <th>Total Weight (Kg)</th>
+                        <th>Total Weight (kg)</th>
                         <th>Total Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
-                        <th>Premium parcels (Fragile/Priority)</th>
+                        <th>Avg Revenue/Shipment</th>
+                        <th>Payment Mix</th>
+                        <th>Premium Services</th>
+                        <th>Destination Breakdown</th>
                     </tr>
                 </thead>
                 <tfoot class="text-success">
                     <tr>
                         <th>#</th>
-                        <th>Office Name</th>
+                        <th>Office</th>
+                        <th>Total Dispatches</th>
                         <th>Total Shipments</th>
-                        <th>Total Weight (Kg)</th>
+                        <th>Total Weight (kg)</th>
                         <th>Total Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
-                        <th>Premium parcels (Fragile/Priority)</th>
+                        <th>Avg Revenue/Shipment</th>
+                        <th>Payment Mix</th>
+                        <th>Premium Services</th>
+                        <th>Destination Breakdown</th>
                     </tr>
                 </tfoot>
                 <tbody class="text-primary">

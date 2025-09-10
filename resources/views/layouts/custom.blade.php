@@ -296,7 +296,7 @@
                         <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
                         <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client performance</a>
                         <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office performance</a>
-                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Dispatch summaries</a>
+                        <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch summaries</a>
                     </div>
                 </div>
             </li>
