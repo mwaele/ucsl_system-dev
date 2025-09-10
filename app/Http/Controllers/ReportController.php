@@ -275,4 +275,34 @@ class ReportController extends Controller
             'landscape'
         );
     }
+
+    /**
+     * Generate the shipment report PDF based on filters
+     */
+    public function clientPerformanceReportGenerate(Request $request)
+    {
+        $clients = Client::withCount('shipmentItems as items_count')
+            ->withSum('shipmentItems as total_weight', 'weight')
+            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
+            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
+            ->get();
+        // Add payment mix and premium services manually
+        foreach ($clients as $client) {
+            // Payment Mix
+            $paymentMix = $client->shipmentCollection()
+                ->selectRaw('payment_mode, COUNT(*) as count')
+                ->groupBy('payment_mode')
+                ->pluck('count', 'payment_mode')
+                ->toArray();
+            $client->payment_mix = $paymentMix;
+        }
+
+        return $this->renderPdfWithPageNumbers(
+            'reports.pdf.client_performance_pdf_report',
+            ['clients' => $clients],
+            'client_performance_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
 }

@@ -224,16 +224,30 @@
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $office->name }}</td>
+                            <td>{{ $office->total_dispatches }}</td>
                             <td>{{ $office->total_shipments }}</td>
-                            <td>{{ $office->total_weight }}</td>
-                            <td>Ksh {{ number_format($office->total_revenue, 2) }}</td>
-                            <td>Ksh {{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
+                            <td>{{ number_format($office->total_weight, 2) }}</td>
+                            <td>{{ number_format($office->total_revenue, 2) }}</td>
+                            <td>{{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
+
+                            <!-- Payment Mix -->
                             <td>
-                                @foreach ($office->payment_mix as $mode => $percent)
-                                    {{ $mode }}: {{ $percent }}%<br>
+                                @foreach($office->payment_mix as $mode => $percentage)
+                                    {{ $mode ?? 'N/A' }}: {{ $percentage }}% <br>
                                 @endforeach
                             </td>
+
+                            <!-- Premium Services -->
                             <td>{{ $office->premium_services }}</td>
+
+                            <!-- Destination Breakdown -->
+                            <td>
+                                <ul class="mb-0">
+                                    @foreach($office->destination_breakdown as $dest)
+                                        <li>{{ $dest['office'] }}: {{ $dest['shipments'] }} (KES {{ number_format($dest['revenue'], 2) }})</li>
+                                    @endforeach
+                                </ul>
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="13" class="text-center">No records found</td></tr>

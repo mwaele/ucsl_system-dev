@@ -358,12 +358,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
     Route::get('/reports/pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
     Route::get('/shipment_report/generate', [ReportController::class, 'shipmentReportGenerate'])->name('shipment_report.generate');
+    Route::get('/client_performance_report/generate', [ReportController::class, 'clientPerformanceReportGenerate'])->name('client_performance_report.generate');
 
 });
-
-
-
-
 
 
 require __DIR__.'/auth.php';
