@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Office;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\OfficeUser;
 use Auth;
 
 class OfficeController extends Controller
@@ -13,8 +15,9 @@ class OfficeController extends Controller
      */
     public function index()
     {
-        $offices = Office::all();
-        return view('offices.index')->with('offices',$offices);
+        $offices = Office::with(['users.office', 'officeUsers'])->get();
+        return view('offices.index', compact('offices'));
+    
     }
 
     /**
@@ -82,7 +85,24 @@ class OfficeController extends Controller
      */
     public function update(Request $request, Office $office)
     {
-        //
+        // Validate request
+        $validated = $request->validate([
+            'user'   => 'required|exists:users,id',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        // Insert or update office_users
+        OfficeUser::updateOrCreate(
+            [
+                'office_id' => $office->id,
+                'user_id'   => $validated['user'],
+            ],
+            [
+                'status'    => $validated['status'],
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Office user updated successfully.');
     }
 
     /**

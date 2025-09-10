@@ -50,6 +50,8 @@ class ShipmentCollection extends Model
         'fragile_item_amount', 
         'receiver_otp',
         'grn_no',
+        'manual_waybill_status',
+        'manual_waybill'    
     ];
 
     public function clientRequest()

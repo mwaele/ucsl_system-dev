@@ -44,6 +44,11 @@ class ShipmentCollectionController extends Controller
     public function create(Request $request, SmsService $smsService)
     {
         $requestId = $this->requestIdService->generate();
+        // Validate input
+        $validated = $request->validate([
+            'manualWaybillStatus' => 'required|in:yes,no',
+            // add other fields here if needed
+        ]);
 
         DB::beginTransaction();
 
@@ -117,6 +122,7 @@ class ShipmentCollectionController extends Controller
                 'deadline_date' => $request->deadline_date,
                 'priority_extra_charge' => $request->priority_extra_charge,
                 'fragile_extra_charge' => $request->fragile_extra_charge,
+                'manual_waybill_status' => $validated['manualWaybillStatus'] === 'yes' ? 1 : 0, // New field
             ]);
 
             // 2. Rebuild items array from flat structure

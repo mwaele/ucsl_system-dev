@@ -27,6 +27,7 @@ class Office extends Model
         'mpesaPaybillC2bValidation',   
         'approvedBy',                  
         'status',
+        'front_office_email'
     ];
 
     /**
@@ -77,6 +78,21 @@ class Office extends Model
     public function destinationShipments()
     {
         return $this->hasMany(ShipmentCollection::class, 'destination_id', 'id');
+    }
+
+    public function officeUsers()
+    {
+        return $this->hasMany(OfficeUser::class);
+    }
+    public function activeFrontOfficeUsers()
+    {
+        return $this->officeUsers()
+            ->where('status', 'active')
+            ->with('user'); // eager load the actual User model
+    }
+    public function users()
+    {
+        return $this->hasMany(User::class, 'station', 'id');
     }
 
 }

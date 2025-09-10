@@ -145,8 +145,6 @@ class LoadingSheetController extends Controller
             ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
             ->first();
 
-       // dd($loadingSheets);
-
     return view('loading-sheet.loading_waybills')->with([
         'shipment_collections' => $shipment_collections,
         'ls_id' => $id,

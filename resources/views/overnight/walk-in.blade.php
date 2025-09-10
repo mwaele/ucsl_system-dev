@@ -512,15 +512,39 @@
                                                 }
                                             </script>
                                         @endpush
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <div class="row mb-3">
+                                            <div class="form-check mt-4">
+                                                <label class="form-check-label text-warning" for="termsCheckbox">
+                                                    <strong>Is Manual Waybill Generated? </strong></label>
+                                                <div class="col-md-3 p-0">
+                                                    <div
+                                                        style="display:flex; gap:2rem; align-items:center; font-size:20px;">
+                                                        <label
+                                                            style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                                            <input type="radio" name="manualWaybillStatus"
+                                                                value="yes" required>
+                                                            Yes
+                                                        </label>
+
+                                                        <label
+                                                            style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                                            <input type="radio" name="manualWaybillStatus"
+                                                                value="no">
+                                                            No
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -629,6 +653,7 @@
                                             </div>
                                         </div>
                                     @endif
+
                                     @if ($request->shipmentCollection->payment_mode == 'Invoice')
                                         <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
