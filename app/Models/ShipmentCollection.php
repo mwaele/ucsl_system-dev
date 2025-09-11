@@ -51,7 +51,8 @@ class ShipmentCollection extends Model
         'receiver_otp',
         'grn_no',
         'manual_waybill_status',
-        'manual_waybill'    
+        'manual_waybill',
+        'manual_waybillNo'    
     ];
 
     public function clientRequest()

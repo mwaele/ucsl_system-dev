@@ -15,6 +15,7 @@ return new class extends Migration
            $table->boolean('manual_waybill_status')->default(0)
         ->after('status');
             $table->string('manual_waybill')->nullable()->after('manual_waybill_status');
+            $table->string('manual_waybillNo')->nullable();
         });
     }
 
@@ -26,6 +27,7 @@ return new class extends Migration
         Schema::table('shipment_collections', function (Blueprint $table) {
             $table->dropColumn('manual_waybill_status');
             $table->dropColumn('manual_waybill');
+            $table->dropColumn('manual_waybillNo');
         });
     }
 };

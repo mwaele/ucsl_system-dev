@@ -46,8 +46,9 @@ class ShipmentCollectionController extends Controller
         $requestId = $this->requestIdService->generate();
         // Validate input
         $validated = $request->validate([
-            'manualWaybillStatus' => 'required|in:yes,no',
-            // add other fields here if needed
+            'manualWaybillStatus' => 'nullable|in:yes,no',
+            'manualWaybillImage'  => 'sometimes|nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'manualWaybillNo'     => 'sometimes|nullable|string|max:13',
         ]);
 
         DB::beginTransaction();
@@ -124,6 +125,19 @@ class ShipmentCollectionController extends Controller
                 'fragile_extra_charge' => $request->fragile_extra_charge,
                 'manual_waybill_status' => $validated['manualWaybillStatus'] === 'yes' ? 1 : 0, // New field
             ]);
+            // 1b. Handle manual waybill number + image upload
+            if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
+            $collection->manual_waybillNo = $validated['manualWaybillNo'] ?? null;
+
+            if ($request->hasFile('manualWaybillImage')) {
+                $file = $request->file('manualWaybillImage');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads'), $filename);
+                $collection->manual_waybill = $filename;
+            }
+
+            $collection->save();
+        }
 
             // 2. Rebuild items array from flat structure
             $itemCount = count($request->input('item_name', []));

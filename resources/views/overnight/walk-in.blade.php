@@ -103,7 +103,7 @@
                         initDateFilter("dataTable", 3, "/walkin_report");
                     </script>
 
-                    <form action="{{ route('shipment-collections.create') }}" method="POST">
+                    <form action="{{ route('shipment-collections.create') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal fade" id="registerParcel" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -522,18 +522,36 @@
                                                         <label
                                                             style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                                                             <input type="radio" name="manualWaybillStatus"
-                                                                value="yes" required>
+                                                                value="yes" id="radioYes" required>
                                                             Yes
                                                         </label>
 
                                                         <label
                                                             style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                                                             <input type="radio" name="manualWaybillStatus"
-                                                                value="no">
+                                                                value="no" id="radioNo">
                                                             No
                                                         </label>
                                                     </div>
 
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <!-- Hidden file input section -->
+                                                    <div id="fileUploadSection" style="display:none; margin-top:1rem;">
+                                                        <label class="text-primary"><strong>Enter Manual Waybill
+                                                                No:</strong></label>
+                                                        <input type="text" name="manual_waybillNo"
+                                                            id="manual_waybillNo" class="form-control mb-2"
+                                                            placeholder="Enter Waybill Number">
+
+
+                                                        <label>Upload
+                                                            Image:</label>
+                                                        <input type="file" id="fileInput" name="manualWaybillImage"
+                                                            accept="image/*" style="display:block; margin-top:0.5rem;">
+                                                        <img id="previewImage"
+                                                            style="display:none; margin-top:1rem; max-width:300px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -661,6 +679,17 @@
                                             </button>
                                         </a>
                                     @endif
+                                    @if ($request->shipmentCollection->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
+                                        <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
+                                            target="_blank"
+                                            download="{{ $request->shipmentCollection->manual_waybill }}">
+                                            <button type="button" class="btn btn-sm btn-dark mr-1">
+                                                Download Manual Waybill
+                                            </button>
+                                        </a>
+                                    @endif
+
+
                                     @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
                                         {{-- <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-warning mr-1">
@@ -919,6 +948,37 @@
                     $('#reference').val(''); // clear for other modes
                 }
             });
+        });
+    </script>
+    <script>
+        const radioYes = document.getElementById('radioYes');
+        const radioNo = document.getElementById('radioNo');
+        const fileUploadSection = document.getElementById('fileUploadSection');
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
+        const manual_waybillNo = document.getElementById('manual_waybillNo');
+
+        // Show/Hide file upload
+        radioYes.addEventListener('change', () => {
+            fileUploadSection.style.display = 'block';
+        });
+        radioNo.addEventListener('change', () => {
+            fileUploadSection.style.display = 'none';
+            previewImage.style.display = 'none';
+            fileInput.value = ''; // reset file
+            manual_waybillNo.value = '';
+            previewImage.src = '';
+        });
+
+        // Preview image
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                previewImage.src = URL.createObjectURL(file);
+                previewImage.style.display = 'block';
+            } else {
+                previewImage.style.display = 'none';
+            }
         });
     </script>
 @endsection
