@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Client Performance Report PDF</title>
+    <title>Office Performance Report PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
@@ -50,12 +50,12 @@
         <table style="width: 100%; text-align: center;">
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px; margin-bottom: 10px;">
+                    <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px; margin-bottom: 5px;">
                 </td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <h2><strong>Client Performance Report</strong></h2>
+                    <h2><strong>Office Performance Report</strong></h2>
                 </td>
             </tr>
             <tr>
@@ -70,31 +70,33 @@
 
         <!-- Main Table -->
         <table class="bordered">
-            <thead class="text-success">
+            <thead>
                 <tr>
                     <th>#</th>
-                    <th>Client Name</th>
-                    <th>Shipments (#)</th>
+                    <th>Office Name</th>
+                    <th>Total Shipments</th>
                     <th>Total Weight (Kg)</th>
-                    <th>Revenue</th>
+                    <th>Total Revenue</th>
                     <th>Avg. Revenue/Shipment</th>
                     <th>Payment mix</th>
+                    <th>Premium parcels (Fragile/Priority)</th>
                 </tr>
             </thead>
             <tbody class="text-primary">
-                @forelse ($clients as $client)
+                @forelse ($offices as $office)
                     <tr>
                         <td>{{ $loop->iteration }}.</td>
-                        <td>{{ $client->name }}</td>
-                        <td>{{ $client->items_count }}</td>
-                        <td>{{ $client->total_weight ?? 0 }} kg</td>
-                        <td>Ksh. {{ number_format($client->total_revenue ?? 0, 2) }}</td>
-                        <td>Ksh. {{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
+                        <td>{{ $office->name }}</td>
+                        <td>{{ $office->total_shipments }}</td>
+                        <td>{{ $office->total_weight }}</td>
+                        <td>Ksh {{ number_format($office->total_revenue, 2) }}</td>
+                        <td>Ksh {{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
                         <td>
-                            @foreach($client->payment_mix as $mode => $percentage)
-                                {{ $mode }}: {{ $percentage }} <br>
+                            @foreach ($office->payment_mix as $mode => $percent)
+                                {{ $mode }}: {{ $percent }}%<br>
                             @endforeach
                         </td>
+                        <td>{{ $office->premium_services }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="13" class="text-center">No records found</td></tr>
@@ -103,12 +105,13 @@
             <tfoot class="text-success">
                 <tr>
                     <th>#</th>
-                    <th>Client Name</th>
-                    <th>Shipments (#)</th>
+                    <th>Office Name</th>
+                    <th>Total Shipments</th>
                     <th>Total Weight (Kg)</th>
-                    <th>Revenue</th>
+                    <th>Total Revenue</th>
                     <th>Avg. Revenue/Shipment</th>
                     <th>Payment mix</th>
+                    <th>Premium parcels (Fragile/Priority)</th>
                 </tr>
             </tfoot>
         </table>

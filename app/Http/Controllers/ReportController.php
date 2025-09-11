@@ -57,52 +57,52 @@ class ReportController extends Controller
     public function officePerformanceReport()
     {
         $offices = Office::withCount([
-                'clientRequests as total_requests' => function ($query) {
-                    $query->whereNotNull('id');
-                }
-            ])
-            ->get()
-            ->map(function ($office) {
-                // Join shipment_collections via client_requests.requestId
-                $shipments = \DB::table('shipment_collections as sc')
-                    ->join('client_requests as cr', 'cr.requestId', '=', 'sc.requestId')
-                    ->where('cr.office_id', $office->id);
+            'clientRequests as total_requests' => function ($query) {
+                $query->whereNotNull('id');
+            }
+        ])
+        ->get()
+        ->map(function ($office) {
+            // Join shipment_collections via client_requests.requestId
+            $shipments = \DB::table('shipment_collections as sc')
+                ->join('client_requests as cr', 'cr.requestId', '=', 'sc.requestId')
+                ->where('cr.office_id', $office->id);
 
-                // Total shipments
-                $office->total_shipments = $shipments->count();
+            // Total shipments
+            $office->total_shipments = $shipments->count();
 
-                // Total weight
-                $office->total_weight = (clone $shipments)->sum('sc.total_weight');
+            // Total weight
+            $office->total_weight = (clone $shipments)->sum('sc.total_weight');
 
-                // Total revenue
-                $office->total_revenue = (clone $shipments)->sum('sc.actual_total_cost');
+            // Total revenue
+            $office->total_revenue = (clone $shipments)->sum('sc.actual_total_cost');
 
-                // Average revenue per shipment
-                $office->avg_revenue_per_shipment = $office->total_shipments > 0
-                    ? $office->total_revenue / $office->total_shipments
-                    : 0;
+            // Average revenue per shipment
+            $office->avg_revenue_per_shipment = $office->total_shipments > 0
+                ? $office->total_revenue / $office->total_shipments
+                : 0;
 
-                // Payment mix breakdown
-                $paymentModes = (clone $shipments)
-                    ->select('sc.payment_mode', \DB::raw('count(*) as count'))
-                    ->groupBy('sc.payment_mode')
-                    ->pluck('count', 'payment_mode');
+            // Payment mix breakdown
+            $paymentModes = (clone $shipments)
+                ->select('sc.payment_mode', \DB::raw('count(*) as count'))
+                ->groupBy('sc.payment_mode')
+                ->pluck('count', 'payment_mode');
 
-                $totalPayments = $paymentModes->sum();
-                $office->payment_mix = $paymentModes->map(function ($count) use ($totalPayments) {
-                    return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
-                });
-
-                // Premium services (priority or fragile)
-                $office->premium_services = (clone $shipments)
-                    ->where(function ($q) {
-                        $q->where('sc.priority_level', 1)
-                        ->orWhere('sc.fragile_item', 1);
-                    })
-                    ->count();
-
-                return $office;
+            $totalPayments = $paymentModes->sum();
+            $office->payment_mix = $paymentModes->map(function ($count) use ($totalPayments) {
+                return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
             });
+
+            // Premium services (priority or fragile)
+            $office->premium_services = (clone $shipments)
+                ->where(function ($q) {
+                    $q->where('sc.priority_level', 1)
+                    ->orWhere('sc.fragile_item', 1);
+                })
+                ->count();
+
+            return $office;
+        });
 
         return view('reports.office_performance_report', compact('offices'));
     }
@@ -301,6 +301,68 @@ class ReportController extends Controller
             'reports.pdf.client_performance_pdf_report',
             ['clients' => $clients],
             'client_performance_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+
+    /**
+     * Generate the shipment report PDF based on filters
+     */
+    public function officePerformanceReportGenerate(Request $request)
+    {
+        $offices = Office::withCount([
+            'clientRequests as total_requests' => function ($query) {
+                $query->whereNotNull('id');
+            }
+        ])
+        ->get()
+        ->map(function ($office) {
+            // Join shipment_collections via client_requests.requestId
+            $shipments = \DB::table('shipment_collections as sc')
+                ->join('client_requests as cr', 'cr.requestId', '=', 'sc.requestId')
+                ->where('cr.office_id', $office->id);
+
+            // Total shipments
+            $office->total_shipments = $shipments->count();
+
+            // Total weight
+            $office->total_weight = (clone $shipments)->sum('sc.total_weight');
+
+            // Total revenue
+            $office->total_revenue = (clone $shipments)->sum('sc.actual_total_cost');
+
+            // Average revenue per shipment
+            $office->avg_revenue_per_shipment = $office->total_shipments > 0
+                ? $office->total_revenue / $office->total_shipments
+                : 0;
+
+            // Payment mix breakdown
+            $paymentModes = (clone $shipments)
+                ->select('sc.payment_mode', \DB::raw('count(*) as count'))
+                ->groupBy('sc.payment_mode')
+                ->pluck('count', 'payment_mode');
+
+            $totalPayments = $paymentModes->sum();
+            $office->payment_mix = $paymentModes->map(function ($count) use ($totalPayments) {
+                return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
+            });
+
+            // Premium services (priority or fragile)
+            $office->premium_services = (clone $shipments)
+                ->where(function ($q) {
+                    $q->where('sc.priority_level', 1)
+                    ->orWhere('sc.fragile_item', 1);
+                })
+                ->count();
+
+            return $office;
+        });
+
+        return $this->renderPdfWithPageNumbers(
+            'reports.pdf.office_performance_pdf_report',
+            ['offices' => $offices],
+            'office_performance_report.pdf',
             'a4',
             'landscape'
         );
