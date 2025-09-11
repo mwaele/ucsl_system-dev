@@ -34,13 +34,13 @@ class ReportController extends Controller
     {
         $clients = Client::withCount('shipmentItems as items_count')
             ->withSum('shipmentItems as total_weight', 'weight')
-            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
-            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
+            ->withSum('shipmentCollections as total_revenue', 'actual_total_cost')
+            ->withAvg('shipmentCollections as avg_revenue_per_shipment', 'actual_total_cost')
             ->get();
         // Add payment mix and premium services manually
         foreach ($clients as $client) {
             // Payment Mix
-            $paymentMix = $client->shipmentCollection()
+            $paymentMix = $client->shipmentCollections()
                 ->selectRaw('payment_mode, COUNT(*) as count')
                 ->groupBy('payment_mode')
                 ->pluck('count', 'payment_mode')
@@ -475,18 +475,18 @@ class ReportController extends Controller
     public function clientDetail($id)
     {
         $client = Client::with([
-            'shipments.items',   // items per shipment
-            'shipments.payments' // payment breakdown
+            'shipmentCollections.items',   // all items per shipment collection
+            'shipmentCollections.payments' // payment breakdown
         ])->findOrFail($id);
 
-        // Aggregate metrics
-        $totalShipments = $client->shipments->count();
-        $totalWeight = $client->shipments->sum(fn($s) => $s->items->sum('weight'));
-        $totalRevenue = $client->shipments->sum(fn($s) => $s->payments->sum('amount'));
+        // Use shipmentCollections instead of shipments
+        $totalShipments = $client->shipmentCollections->count();
+        $totalWeight = $client->shipmentCollections->sum(fn($s) => $s->items->sum('weight'));
+        $totalRevenue = $client->shipmentCollections->sum(fn($s) => $s->payments->sum('amount'));
         $avgRevenue = $totalShipments > 0 ? $totalRevenue / $totalShipments : 0;
 
         // Payment mix %
-        $paymentCounts = $client->shipments
+        $paymentCounts = $client->shipmentCollections
             ->flatMap->payments
             ->groupBy('mode')
             ->map(fn($group) => round(($group->sum('amount') / $totalRevenue) * 100, 2));
@@ -500,5 +500,6 @@ class ReportController extends Controller
             'paymentCounts'
         ));
     }
+
 
 }

@@ -9,7 +9,8 @@ use Illuminate\Notifications\Notifiable;
 class Client extends Authenticatable
 {
     protected $guard = 'client';
-  //  use HasApiTokens, Notifiable;
+    //  use HasApiTokens, Notifiable;
+
     protected $fillable = [
         'accountNo',
         'name',
@@ -61,14 +62,14 @@ class Client extends Authenticatable
         return $this->hasMany(ClientRequest::class, 'clientId');
     }
 
-    public function shipmentCollection()
+    public function shipmentCollections()
     {
         return $this->hasMany(ShipmentCollection::class, 'client_id', 'id');
     }
 
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'clientId');
+        return $this->hasMany(Payment::class, 'client_id', 'id');
     }
 
     public function shipmentItems()
