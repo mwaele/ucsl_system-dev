@@ -360,6 +360,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipment_report/generate', [ReportController::class, 'shipmentReportGenerate'])->name('shipment_report.generate');
     Route::get('/client_performance_report/generate', [ReportController::class, 'clientPerformanceReportGenerate'])->name('client_performance_report.generate');
     Route::get('/office_performance_report/generate', [ReportController::class, 'officePerformanceReportGenerate'])->name('office_performance_report.generate');
+    Route::get('/dispatch_summary_report/generate', [ReportController::class, 'dispatchSummaryReportGenerate'])->name('dispatch_summary_report.generate');
+
+    Route::get('/reports/office/{office}', [ReportController::class, 'officePerformanceDetail'])->name('reports.office.detail');
+    Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
 });
 

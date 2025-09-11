@@ -26,6 +26,7 @@
                         <th>Revenue</th>
                         <th>Avg. Revenue/Shipment</th>
                         <th>Payment mix</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tfoot class="text-success">
@@ -37,6 +38,7 @@
                         <th>Revenue</th>
                         <th>Avg. Revenue/Shipment</th>
                         <th>Payment mix</th>
+                        <th>Action</th>
                     </tr>
                 </tfoot>
                 <tbody class="text-primary">
@@ -52,6 +54,12 @@
                                 @foreach($client->payment_mix as $mode => $percentage)
                                     {{ $mode }}: {{ $percentage }} <br>
                                 @endforeach
+                            </td>
+                            <td>
+                                <a href="{{ route('reports.client.detail', $client->id) }}" 
+                                class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
                             </td>
                         </tr>
                     @empty

@@ -57,7 +57,12 @@
                                 @endforeach
                             </td>
                             <td>{{ $office->premium_services }}</td>
-                            <td></td>
+                            <td>
+                                <a href="{{ route('reports.office.detail', $office->id) }}" 
+                                class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="13" class="text-center">No records found</td></tr>

@@ -112,7 +112,6 @@ class ReportController extends Controller
      */
     public function dispatchSummaryReport(Request $request)
     {
-        // Optional: allow date range filters
         $startDate = $request->input('start_date', now()->startOfMonth());
         $endDate   = $request->input('end_date', now());
 
@@ -193,7 +192,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Generate the shipment report PDF based on filters
+     * Generate the shipment report PDF
      */
     public function shipmentReportGenerate(Request $request)
     {
@@ -277,7 +276,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Generate the shipment report PDF based on filters
+     * Generate the client performance report PDF
      */
     public function clientPerformanceReportGenerate(Request $request)
     {
@@ -307,7 +306,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Generate the shipment report PDF based on filters
+     * Generate the office performance report PDF 
      */
     public function officePerformanceReportGenerate(Request $request)
     {
@@ -367,4 +366,139 @@ class ReportController extends Controller
             'landscape'
         );
     }
+
+    /**
+     * Generate the office performance report PDF 
+     */
+    public function dispatchSummaryReportGenerate(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth());
+        $endDate   = $request->input('end_date', now());
+
+        $offices = Office::withCount([
+                // Total dispatches (client requests tied to this office in given period)
+                'clientRequests as total_dispatches' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+            ])
+            ->with(['clientRequests' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }])
+            ->get()
+            ->map(function ($office) {
+                $requests = $office->clientRequests;
+
+                // Total shipments dispatched (count of related shipment_collections)
+                $totalShipments = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->count();
+
+                // Total weight
+                $totalWeight = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->sum('total_weight');
+
+                // Total revenue
+                $totalRevenue = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->sum('actual_total_cost');
+
+                // Avg revenue per shipment
+                $avgRevenue = $totalShipments > 0 ? $totalRevenue / $totalShipments : 0;
+
+                // Payment mix
+                $paymentModes = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->select('payment_mode', \DB::raw('count(*) as count'))
+                    ->groupBy('payment_mode')
+                    ->pluck('count', 'payment_mode');
+
+                $totalPayments = $paymentModes->sum();
+                $paymentMix = $paymentModes->map(function ($count) use ($totalPayments) {
+                    return $totalPayments > 0 ? round(($count / $totalPayments) * 100, 2) : 0;
+                });
+
+                // Premium services (fragile or priority)
+                $premiumServices = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->where(function ($q) {
+                        $q->where('priority_level', 1)
+                        ->orWhere('fragile_item', 1);
+                    })
+                    ->count();
+
+                // Destination breakdown (group by destination office)
+                $destBreakdown = ShipmentCollection::whereIn('requestId', $requests->pluck('requestId'))
+                    ->select('destination_id', \DB::raw('count(*) as shipments'), \DB::raw('sum(actual_total_cost) as revenue'))
+                    ->groupBy('destination_id')
+                    ->with('destination:id,destination')
+                    ->get()
+                    ->map(function ($row) {
+                        return [
+                            'office'   => $row->destination->destination ?? 'Unknown',
+                            'shipments'=> $row->shipments,
+                            'revenue'  => $row->revenue,
+                        ];
+                    });
+
+                // Attach calculated values
+                $office->total_shipments = $totalShipments;
+                $office->total_weight = $totalWeight;
+                $office->total_revenue = $totalRevenue;
+                $office->avg_revenue_per_shipment = $avgRevenue;
+                $office->payment_mix = $paymentMix;
+                $office->premium_services = $premiumServices;
+                $office->destination_breakdown = $destBreakdown;
+
+                return $office;
+            });
+
+        return $this->renderPdfWithPageNumbers(
+            'reports.pdf.dispatch_summary_pdf_report',
+            ['offices' => $offices],
+            'dispatch_summary_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+
+    public function officePerformanceDetail($officeId)
+    {
+        $office = Office::findOrFail($officeId);
+
+        // Get all shipments originating from this office
+        $shipments = \DB::table('shipment_collections')
+            ->where('origin_id', $officeId)
+            ->select('id', 'requestId', 'consignment_no', 'waybill_no', 'receiver_name',
+                    'receiver_phone', 'total_weight', 'actual_total_cost', 'payment_mode',
+                    'status', 'created_at')
+            ->get();
+
+        return view('reports.office_performance_detail', compact('office', 'shipments'));
+    }
+
+    public function clientDetail($id)
+    {
+        $client = Client::with([
+            'shipments.items',   // items per shipment
+            'shipments.payments' // payment breakdown
+        ])->findOrFail($id);
+
+        // Aggregate metrics
+        $totalShipments = $client->shipments->count();
+        $totalWeight = $client->shipments->sum(fn($s) => $s->items->sum('weight'));
+        $totalRevenue = $client->shipments->sum(fn($s) => $s->payments->sum('amount'));
+        $avgRevenue = $totalShipments > 0 ? $totalRevenue / $totalShipments : 0;
+
+        // Payment mix %
+        $paymentCounts = $client->shipments
+            ->flatMap->payments
+            ->groupBy('mode')
+            ->map(fn($group) => round(($group->sum('amount') / $totalRevenue) * 100, 2));
+
+        return view('reports.client_detail', compact(
+            'client',
+            'totalShipments',
+            'totalWeight',
+            'totalRevenue',
+            'avgRevenue',
+            'paymentCounts'
+        ));
+    }
+
 }

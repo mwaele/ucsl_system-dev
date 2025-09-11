@@ -66,6 +66,11 @@ class Client extends Authenticatable
         return $this->hasMany(ShipmentCollection::class, 'client_id', 'id');
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'clientId');
+    }
+
     public function shipmentItems()
     {
         return $this->hasManyThrough(
