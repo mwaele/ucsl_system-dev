@@ -45,14 +45,15 @@ use App\Http\Controllers\Accounts\LedgerController;
 
 
 Route::middleware('client.auth')->group(function () {
+    Route::get('/tracking', function () {
+        return view('tracking.index');
+    });
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
     Route::get('/tracker', [TrackController::class, 'index'])->name('tracker');
     Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);
-
-    Route::get('/tracking', function () {
-        return view('tracking.index');
-});
-     
+    
+    Route::get('/parcel/create', [ParcelController::class, 'create'])->name('parcel.create');
+    Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store');
 });
 
 Route::post('/client/login', [ClientAuthController::class, 'login']);
@@ -64,7 +65,7 @@ Route::post('/download-chart-pdf', [DashboardController::class, 'downloadPdf']);
 
 Route::post('/export-pdf', [DashboardController::class, 'exportPDF'])->name('export.pdf');
 
-Route::get('client_login', [AuthController::class, 'showSignIn'])->name('client_login');
+Route::get('/client_login', [AuthController::class, 'showSignIn'])->name('client_login');
 Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');
 
 Route::get('/guest', [AuthController::class, 'showGuest'])->name('guest');

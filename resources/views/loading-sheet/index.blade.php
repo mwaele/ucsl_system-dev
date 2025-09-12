@@ -4,6 +4,7 @@
     <!-- DataTales Example -->
     <div class="card">
         <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('loading_sheets.index') }}</div>
             <div class="d-sm-flex align-items-center justify-content-between">
                 <button type="button"class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
                     data-target="#createLoadingSheet"><i class="fas fa-plus fa-sm text-white"></i> Create Loading

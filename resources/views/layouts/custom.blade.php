@@ -217,6 +217,57 @@
                 </div>
             </li>
 
+            <!-- Nav Item - Shipments -->
+            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
+                    aria-expanded="true" aria-controls="collapseShipments">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span class="sized">Shipments</span>
+                </a>
+
+                <div id="collapseShipments" class="collapse {{ request()->routeIs('shipments.*') ? 'show' : '' }}"
+                    aria-labelledby="headingShipments" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+
+                        <!-- UCSL Collapsible -->
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseUCSL"
+                            aria-expanded="false" aria-controls="collapseUCSL">
+                            UCSL
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseUCSL" class="collapse ml-3" aria-labelledby="headingUCSL" data-parent="#collapseShipments">
+                            <a class="collapse-item" href="{{ route('overnight.walk-in', ['type' => 'ucsl']) }}">Overnight - Walk-in</a>
+                            <a class="collapse-item" href="{{ route('overnight.on-account', ['type' => 'ucsl']) }}">Overnight - On Account</a>
+                            <a class="collapse-item" href="{{ route('sameday.walk-in', ['type' => 'ucsl']) }}">SameDay - Walk-in</a>
+                            <a class="collapse-item" href="{{ route('sameday.on-account', ['type' => 'ucsl']) }}">SameDay - On Account</a>
+                        </div>
+
+                        <hr class="sidebar-divide my-0" />
+
+                        <!-- Client Collapsible -->
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseClient"
+                            aria-expanded="false" aria-controls="collapseClient">
+                            Client
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseClient" class="collapse ml-3" aria-labelledby="headingClient" data-parent="#collapseShipments">
+                            <a class="collapse-item" href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight - Walk-in</a>
+                            <a class="collapse-item" href="{{ route('overnight.on-account', ['type' => 'client']) }}">Overnight - On Account</a>
+                            <a class="collapse-item" href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a>
+                            <a class="collapse-item" href="{{ route('sameday.on-account', ['type' => 'client']) }}">SameDay - On Account</a>
+                        </div>
+
+                        <hr class="sidebar-divide my-0" />
+
+                        <!-- Dispatch Process -->
+                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
+                    </div>
+                </div>
+            </li>
+
+
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 

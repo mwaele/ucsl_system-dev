@@ -4,6 +4,7 @@
     <div class="card">
 
         <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('sameday.walk-in') }}</div>
             <div class="d-flex justify-content-between align-items-center">
                 <button type="button" class="btn  btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">
                     <i class="fas fa-plus fa-sm text-white"></i> Register parcel
