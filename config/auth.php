@@ -40,19 +40,21 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
         'client' => [
-        'driver' => 'session',
-        'provider' => 'clients',
+            'driver' => 'session',
+            'provider' => 'clients',
         ],
 
         'guest' => [
             'driver' => 'session',
             'provider' => 'guests',
         ],
-     'api' => [
-        'driver' => 'sanctum',
-        'provider' => 'guests',
-    ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'guests',
+        ],
     ],
 
     /*
@@ -77,9 +79,10 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+
         'clients' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\Client::class,
+            'driver' => 'eloquent',
+            'model' => App\Models\Client::class,
         ],
 
         'guests' => [

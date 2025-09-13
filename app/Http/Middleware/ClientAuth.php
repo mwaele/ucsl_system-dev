@@ -10,13 +10,22 @@ class ClientAuth
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::guard('client')->check() && !Auth::guard('guest')->check()) {
+        // Allow access if authenticated as client
+        if (Auth::guard('client')->check()) {
+            return $next($request);
+        }
+
+        // If you want to also allow "guest" logins
+        if (Auth::guard('guest')->check()) {
+            return $next($request);
+        }
+
+        // Otherwise redirect to client login
         \Log::info('Redirecting unauthenticated client from: ' . $request->path());
-        return redirect()->route('client_login')->withErrors(['message' => 'You must be logged in to access this page.']);
-    }
 
-
-        return $next($request);
+        return redirect()
+            ->route('client_login')
+            ->withErrors(['message' => 'You must be logged in to access this page.']);
     }
 }
 

@@ -56,6 +56,11 @@ Route::middleware('client.auth')->group(function () {
     Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store');
 });
 
+// Client auth routes
+Route::get('/client/login', [ClientAuthController::class, 'showLoginForm'])->name('client.login');
+Route::post('/client/login', [ClientAuthController::class, 'login']);
+Route::post('/client/logout', [ClientAuthController::class, 'logout'])->name('client.logout');
+
 Route::post('/client/login', [ClientAuthController::class, 'login']);
 // Route::middleware('client.auth')->group(function () {
 Route::post('/guests', [GuestController::class, 'store'])->name('guests.store');

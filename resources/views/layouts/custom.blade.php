@@ -169,7 +169,7 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li
+            <!-- <li
                 class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
@@ -215,7 +215,7 @@
                         <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
                     </div>
                 </div>
-            </li>
+            </li> -->
 
             <!-- Nav Item - Shipments -->
             <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
