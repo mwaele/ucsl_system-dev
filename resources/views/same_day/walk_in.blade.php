@@ -4,7 +4,8 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('sameday.walk-in') }}</div>
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('sameday.walk-in') }}
+            </div>
             <div class="d-flex justify-content-between align-items-center">
                 <button type="button" class="btn  btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">
                     <i class="fas fa-plus fa-sm text-white"></i> Register parcel
@@ -105,7 +106,7 @@
                         initDateFilter("dataTable", 3, "/sameday_account_report");
                     </script>
 
-                    <form action="{{ route('shipment-collections.create') }}" method="POST">
+                    <form action="{{ route('shipment-collections.create') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal fade" id="registerParcel" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -534,6 +535,47 @@
                                             </script>
                                         @endpush
                                     </div>
+                                    <div class="row mb-3">
+                                        <div class="form-check mt-4">
+                                            <label class="form-check-label text-warning" for="termsCheckbox">
+                                                <strong>Is Manual Waybill Generated? </strong></label>
+                                            <div class="col-md-3 p-0">
+                                                <div style="display:flex; gap:2rem; align-items:center; font-size:20px;">
+                                                    <label
+                                                        style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                                        <input type="radio" name="manualWaybillStatus" value="yes"
+                                                            id="radioYes" required>
+                                                        Yes
+                                                    </label>
+
+                                                    <label
+                                                        style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                                        <input type="radio" name="manualWaybillStatus" value="no"
+                                                            id="radioNo">
+                                                        No
+                                                    </label>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-12">
+                                                <!-- Hidden file input section -->
+                                                <div id="fileUploadSection" style="display:none; margin-top:1rem;">
+                                                    <label class="text-primary"><strong>Enter Manual Waybill
+                                                            No:</strong></label>
+                                                    <input type="text" name="manual_waybillNo" id="manual_waybillNo"
+                                                        class="form-control mb-2" placeholder="Enter Waybill Number">
+
+
+                                                    <label>Upload
+                                                        Image:</label>
+                                                    <input type="file" id="fileInput" name="manualWaybillImage"
+                                                        accept="image/*" style="display:block; margin-top:0.5rem;">
+                                                    <img id="previewImage"
+                                                        style="display:none; margin-top:1rem; max-width:300px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-dismiss="modal">Close</button>
@@ -623,6 +665,16 @@
                                         <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Preview Invoice
+                                            </button>
+                                        </a>
+                                    @endif
+
+                                    @if ($request->shipmentCollection->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
+                                        <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
+                                            target="_blank"
+                                            download="{{ $request->shipmentCollection->manual_waybill }}">
+                                            <button type="button" class="btn btn-sm btn-dark mr-1">
+                                                Download Manual Waybill
                                             </button>
                                         </a>
                                     @endif
@@ -1386,6 +1438,37 @@
                 }
             });
 
+        });
+    </script>
+    <script>
+        const radioYes = document.getElementById('radioYes');
+        const radioNo = document.getElementById('radioNo');
+        const fileUploadSection = document.getElementById('fileUploadSection');
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
+        const manual_waybillNo = document.getElementById('manual_waybillNo');
+
+        // Show/Hide file upload
+        radioYes.addEventListener('change', () => {
+            fileUploadSection.style.display = 'block';
+        });
+        radioNo.addEventListener('change', () => {
+            fileUploadSection.style.display = 'none';
+            previewImage.style.display = 'none';
+            fileInput.value = ''; // reset file
+            manual_waybillNo.value = '';
+            previewImage.src = '';
+        });
+
+        // Preview image
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                previewImage.src = URL.createObjectURL(file);
+                previewImage.style.display = 'block';
+            } else {
+                previewImage.style.display = 'none';
+            }
         });
     </script>
 @endsection
