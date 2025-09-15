@@ -339,7 +339,7 @@
 
                                             <div class="mt-2 col-md-2">
                                                 <label for="reference" class="text-primary">
-                                                    <h6>Reference</h6>
+                                                    <h6>Payment Reference</h6>
                                                 </label>
                                                 <input type="text" id="reference" name="reference"
                                                     class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"

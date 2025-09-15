@@ -988,7 +988,7 @@
                                                                             <div class="col-md-4">
                                                                                 <label for="reference"
                                                                                     class="text-primary">
-                                                                                    <h6>Reference</h6>
+                                                                                    <h6>Payment Reference</h6>
                                                                                 </label>
                                                                                 <input type="text" id="reference"
                                                                                     name="reference"
