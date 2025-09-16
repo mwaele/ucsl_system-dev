@@ -15,9 +15,9 @@
                 <label for="status" class="form-label text-primary mb-0"><strong>Status:</strong></label>
                 <select id="status" class="form-control">
                     <option value="">All</option>
-                    <option value="pending_collection_by_rider">Pending collection</option>
-                    <option value="collected_by_rider">Collected by rider</option>
-                    <option value="verified_by_front_office">Verified by front office</option>
+                    <option value="pending_collection">Pending collection</option>
+                    <option value="collected">Collected by rider</option>
+                    <option value="verified">Verified by front office</option>
                     <option value="dispatched_from_front_office">Dispatched from front office</option>
                     <option value="received_at_destination">Received at destination</option>
                     <option value="verified_at_destination">Verified at destination</option>
@@ -197,6 +197,7 @@
                         <th>Request ID</th>
                         <th>Date</th>
                         <th>Consigner</th>
+                        <th>Consigner contact</th>
                         <th>Client Type</th>
                         <th>Consignee</th>
                         <th>Service Level</th>
@@ -216,6 +217,7 @@
                         <th>Request ID</th>
                         <th>Date</th>
                         <th>Consigner</th>
+                        <th>Consigner contact</th>
                         <th>Client Type</th>
                         <th>Consignee</th>
                         <th>Service level</th>
@@ -238,6 +240,7 @@
                                 {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
                             </td>
                             <td>{{ $collection->client->name ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->sender_contact ?? '' }}</td>
                             <td>{{ $collection->client->type ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
                             <td>{{ $collection->serviceLevel->sub_category_name }}</td>

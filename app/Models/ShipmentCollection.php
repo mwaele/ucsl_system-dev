@@ -120,6 +120,11 @@ class ShipmentCollection extends Model
         return $this->hasMany(Payment::class, 'shipment_collection_id');
     }
 
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'shipment_collection_id');
+    }
+
     public function agent()
     {
         return $this->hasOne(Agent::class, 'request_id', 'requestId');

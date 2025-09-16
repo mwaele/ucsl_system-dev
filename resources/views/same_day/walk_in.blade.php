@@ -936,6 +936,9 @@
                                                                     required>
                                                                     <option value="">Select Rider</option>
                                                                 </select>
+                                                                <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
+                                                                    Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                </div>
                                                             </div>
 
                                                             <div class="col-md-8 mb-3">

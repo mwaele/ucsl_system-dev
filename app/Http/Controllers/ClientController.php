@@ -12,11 +12,9 @@ use App\Models\SalesPerson;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\Validator;
 use App\Services\SmsService;
 use App\Mail\GenericMail;
-
 use App\Jobs\SendCollectionNotificationsJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -205,8 +203,6 @@ class ClientController extends Controller
         return response()->json(['exists' => $client ? true : false]);
     }
 
-    
-
     /**
      * Display the specified resource.
      */
@@ -255,13 +251,8 @@ class ClientController extends Controller
         }
         else{
             return redirect()->back()->with('error', 'OTP does not march');
-        }
-        
-        
-        
+        }    
     }
-
-    
 
     /**
      * Remove the specified resource from storage.
