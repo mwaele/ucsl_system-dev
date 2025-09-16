@@ -287,11 +287,12 @@ class ShipmentCollectionController extends Controller
                 $receiverPhone = $request->receiver_phone;
                 $receiverName = $request->receiver_name;
                 $clientId = $request->client_id;
+                $trackingUrl = env('TRACKING_URL');
 
                 // Send receiver SMS
                 $waybill = $waybill_no;
                 $receiverPhone = $request->receiverPhone;
-                $parcelMessage = "Dear Customer, your parcel $requestId has been booked. We will notify you when it arrives. Thank you for choosing Ufanisi Courier Services";
+                $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId}.To track click $trackingUrl.";
 
                 $smsService->sendSms(
                     phone: $receiverPhone,
@@ -311,7 +312,7 @@ class ShipmentCollectionController extends Controller
                 ]);
 
             // Notify Sender
-                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId}. Thank you for choosing Ufanisi Courier Services";
+                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId}. To track click $trackingUrl. ";
                 $smsService->sendSms(
                     phone: $senderPhone,
                     subject: 'Parcel Booked',

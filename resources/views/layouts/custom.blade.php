@@ -25,9 +25,12 @@
 
     <!-- Bootstrap Select CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-select.min.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
 
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet" />
     <style>
         .results tr[visible='false'],
         .no-result {
@@ -94,7 +97,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/flatpickr/flatpickr.min.css') }}">
 
     <!-- Optional: Flatpickr Bootstrap Theme -->
-    <link rel="stylesheet" href="{{ asset('assets/flatpickr/material_blue.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('assets/flatpickr/material_blue.css') }}"> --}}
     <!-- Custom styles for this page -->
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
@@ -103,13 +106,40 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
 
+    <style>
+        /* Default for large screens */
+        .navbar-bg {
+            background-image: url('{{ asset('images/U-Parkms Orange-1.jpg') }}');
+            background-size: auto 100%;
+            /* fills nav keeping aspect ratio */
+            background-position: left;
+            background-repeat: no-repeat;
+        }
+
+        /* Medium screens (tablets) */
+        @media (max-width: 992px) {
+            .navbar-bg {
+                background-size: auto 100%;
+                /* still cover, adjusts automatically */
+            }
+        }
+
+        /* Small screens (phones) */
+        @media (max-width: 576px) {
+            .navbar-bg {
+                background-size: auto 100%;
+                /* force-fit on very small screens */
+            }
+        }
+    </style>
+
     <!-- Datatable JS -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script> --}}
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"></script>
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"> --}}
     <script src="https://cdn.datatables.net/2.3.3/css/dataTables.bootstrap4.css"></script>
 
     <!-- Include DataTables + Buttons CSS -->
@@ -218,7 +248,8 @@
             </li> -->
 
             <!-- Nav Item - Shipments -->
-            <li class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
+            <li
+                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
                     aria-expanded="true" aria-controls="collapseShipments">
                     <i class="fas fa-fw fa-cogs"></i>
@@ -231,22 +262,46 @@
 
                         <!-- UCSL Collapsible -->
                         <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseUCSL"
-                            aria-expanded="false" aria-controls="collapseUCSL">
+                            href="#" data-toggle="collapse" data-target="#collapseUCSL" aria-expanded="false"
+                            aria-controls="collapseUCSL">
                             UCSL
                             <i class="fas fa-angle-down"></i>
                         </a>
-                        <div id="collapseUCSL" class="collapse ml-3" aria-labelledby="headingUCSL" data-parent="#collapseShipments">
-                            <a class="collapse-item" href="{{ route('overnight.walk-in', ['type' => 'ucsl']) }}">Overnight - Walk-in</a>
-                            <a class="collapse-item" href="{{ route('overnight.on-account', ['type' => 'ucsl']) }}">Overnight - On Account</a>
-                            <a class="collapse-item" href="{{ route('sameday.walk-in', ['type' => 'ucsl']) }}">SameDay - Walk-in</a>
-                            <a class="collapse-item" href="{{ route('sameday.on-account', ['type' => 'ucsl']) }}">SameDay - On Account</a>
+                        <div id="collapseUCSL" class="collapse ml-3" aria-labelledby="headingUCSL"
+                            data-parent="#collapseShipments">
+                            <a class="collapse-item"
+                                href="{{ route('overnight.walk-in', ['type' => 'ucsl']) }}">Overnight - Walk-in</a>
+                            <a class="collapse-item"
+                                href="{{ route('overnight.on-account', ['type' => 'ucsl']) }}">Overnight - On
+                                Account</a>
+                            <a class="collapse-item"
+                                href="{{ route('sameday.walk-in', ['type' => 'ucsl']) }}">SameDay - Walk-in</a>
+                            <a class="collapse-item"
+                                href="{{ route('sameday.on-account', ['type' => 'ucsl']) }}">SameDay - On Account</a>
                         </div>
 
                         <hr class="sidebar-divide my-0" />
 
                         <!-- Client Collapsible -->
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Client</a>
+                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                            href="#" data-toggle="collapse" data-target="#collapseClient"
+                            aria-expanded="false" aria-controls="collapseClient">
+                            Client
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <div id="collapseClient" class="collapse ml-3" aria-labelledby="headingClient"
+                            data-parent="#collapseShipments">
+                            <a class="collapse-item"
+                                href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight - Walk-in</a>
+                            <a class="collapse-item"
+                                href="{{ route('overnight.on-account', ['type' => 'client']) }}">Overnight - On
+                                Account</a>
+                            <a class="collapse-item"
+                                href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a>
+                            <a class="collapse-item"
+                                href="{{ route('sameday.on-account', ['type' => 'client']) }}">SameDay - On
+                                Account</a>
+                        </div>
 
                         <hr class="sidebar-divide my-0" />
 
@@ -334,9 +389,12 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
                         <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
-                        <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client performance</a>
-                        <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office performance</a>
-                        <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch summaries</a>
+                        <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client
+                            performance</a>
+                        <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office
+                            performance</a>
+                        <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch
+                            summaries</a>
                     </div>
                 </div>
             </li>
@@ -508,7 +566,7 @@
                     </div>
                 </div>
             </li>
-            
+
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
@@ -665,15 +723,20 @@
             <!-- Main Content -->
             <div id="content">
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-gradient-primary topbar mb-4 static-top shadow">
+                <nav
+                    class="navbar navbar-expand navbar-light bg-gradient-primary topbar mb-4 static-top shadow navbar-bg">
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
 
+                    {{-- <img src="{{ asset('images/U-Parkms Orange-1.jpg') }}" alt="" class="image-fluid"> --}}
+
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
+
+
                         <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1 text-white ">
@@ -725,6 +788,8 @@
                                     {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->office->name ?? 'No Office' }}
                                 </span>
                                 <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
+
+
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -1158,9 +1223,9 @@
                         }
                         // Add other customizations if needed
                     },
-                    paging: false,       // Disable pagination
-                    info: true,          // Still shows "Showing 1 to N of N"
-                    scrollY: "500px",    // Adjust height as needed (e.g. 500px, 70vh)
+                    paging: false, // Disable pagination
+                    info: true, // Still shows "Showing 1 to N of N"
+                    scrollY: "500px", // Adjust height as needed (e.g. 500px, 70vh)
                     scrollCollapse: true // Collapse table height if fewer rows
                 });
 
@@ -1289,7 +1354,7 @@
                     }
                 }
 
-                
+
 
                 // un allocated riders 
                 $('#unallocatedRiders').on('change', function() {
@@ -1936,30 +2001,32 @@
 
         <script>
             new DataTable('#reports', {
-                initComplete: function () {
+                initComplete: function() {
                     this.api()
                         .columns()
-                        .every(function () {
+                        .every(function() {
                             let column = this;
-            
+
                             // Create select element
                             let select = document.createElement('select');
                             select.add(new Option(''));
                             column.header().replaceChildren(select);
-            
+
                             // Apply listener for user change in value
-                            select.addEventListener('change', function () {
+                            select.addEventListener('change', function() {
                                 column
-                                    .search(select.value, {exact: true})
+                                    .search(select.value, {
+                                        exact: true
+                                    })
                                     .draw();
                             });
-            
+
                             // Add list of options
                             column
                                 .data()
                                 .unique()
                                 .sort()
-                                .each(function (d, j) {
+                                .each(function(d, j) {
                                     select.add(new Option(d));
                                 });
                         });

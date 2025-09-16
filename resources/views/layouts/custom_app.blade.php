@@ -18,7 +18,19 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fa;
+            background-image: url('{{ asset('images/Sys-0 WallPaper.jpg') }}');
+            background-size: 100% 100%;
+            /* Ensures the image always covers the screen */
+            background-position: center;
+            /* Keeps the focus centered */
+            background-repeat: no-repeat;
+            /* Prevents tiling */
+            min-height: 100vh;
+            /* Ensures full screen height */
+            margin: 0;
+            /* Removes default body margin */
         }
+
 
         .auth-wrapper {
             min-height: 100vh;
