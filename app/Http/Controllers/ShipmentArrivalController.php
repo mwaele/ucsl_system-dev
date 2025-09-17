@@ -373,8 +373,13 @@ class ShipmentArrivalController extends Controller
 
         $grn_no = 'GRN-' . $newNumber;
 
+        $approvalStatuses = $shipmentArrivals->mapWithKeys(function ($arrival) {
+            $agent = $arrival->shipmentCollection?->agent;
+            return [$arrival->requestId => $agent?->agent_approved ?? false];
+        });
+
         // Pass data to the view
-        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no'));
+        return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no', 'approvalStatuses'));
     } 
 
     public function update(Request $request, $id, SmsService $smsService)
@@ -533,7 +538,7 @@ class ShipmentArrivalController extends Controller
         }
 
         // 🔎 Recalculate total paid and balance across all payments
-        $totalPaid = $arrival->shipmentCollection->payments->sum('amount');
+        $totalPaid = Payment::where('shipment_collection_id', $arrival->shipment_collection_id)->sum('amount');
         $totalCost = $arrival->shipmentCollection->total_cost ?? 0;
         $balance   = max(0, $totalCost - $totalPaid);
 
