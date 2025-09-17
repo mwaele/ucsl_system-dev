@@ -473,31 +473,63 @@ class ShipmentArrivalController extends Controller
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
 
-    public function issue(Request $request, $id,  SmsService $smsService) 
+    public function issue(Request $request, $id, SmsService $smsService) 
     {
-        //dd($request->all());
-        $arrival = ShipmentArrival::with('shipmentCollection.client', 'shipmentCollection.payments')->findOrFail($id);
+        Log::info("📦 Entered issue() function", [
+            'request_id' => $id,
+            'request_data' => $request->all(),
+            'user_id' => auth()->id()
+        ]);
+
+        try {
+            $arrival = ShipmentArrival::with('shipmentCollection.client', 'shipmentCollection.payments')
+                ->findOrFail($id);
+            Log::info("✅ Loaded ShipmentArrival", [
+                'arrival_id' => $arrival->id,
+                'shipment_collection_id' => $arrival->shipment_collection_id
+            ]);
+        } catch (\Exception $e) {
+            Log::error("❌ Failed to load ShipmentArrival", ['message' => $e->getMessage()]);
+            return back()->withErrors(['error' => 'Shipment not found']);
+        }
 
         // Always validate if there's a balance or no payment yet
         if (!$arrival->payment || $arrival->payment->balance > 0) {
-            $request->validate([
-                'payment_mode' => 'required|string',
-                'reference' => 'required|string|max:10',
-                'amount_paid' => 'required|numeric|min:1',
+            Log::info("💰 Payment validation triggered", [
+                'has_payment' => (bool) $arrival->payment,
+                'balance' => $arrival->payment->balance ?? null
             ]);
 
-            Payment::create([
-                'type' => $request->payment_mode,
-                'amount' => $request->amount_paid,
-                'reference_no' => $request->reference,
-                'date_paid' => now(),
-                'client_id' => $arrival->shipmentCollection->client_id,
-                'shipment_collection_id' => $arrival->shipment_collection_id,
-                'status' => 'Pending Verification',
-                'paid_by' => auth()->id(),
-                'received_by' => auth()->id(),
-                'verified_by' => auth()->id(),
-            ]);
+            try {
+                $request->validate([
+                    'payment_mode' => 'required|string',
+                    'reference' => 'required|string|max:10',
+                    'amount_paid' => 'required|numeric|min:1',
+                ]);
+                Log::info("✅ Payment validation passed");
+            } catch (\Exception $e) {
+                Log::error("❌ Payment validation failed", ['message' => $e->getMessage()]);
+                return back()->withErrors(['error' => $e->getMessage()]);
+            }
+
+            try {
+                $payment = Payment::create([
+                    'type' => $request->payment_mode,
+                    'amount' => $request->amount_paid,
+                    'reference_no' => $request->reference,
+                    'date_paid' => now(),
+                    'client_id' => $arrival->shipmentCollection->client_id,
+                    'shipment_collection_id' => $arrival->shipment_collection_id,
+                    'status' => 'Pending Verification',
+                    'paid_by' => auth()->id(),
+                    'received_by' => auth()->id(),
+                    'verified_by' => auth()->id(),
+                ]);
+                Log::info("✅ Payment created", ['payment_id' => $payment->id]);
+            } catch (\Exception $e) {
+                Log::error("❌ Failed to create payment", ['message' => $e->getMessage()]);
+                return back()->withErrors(['error' => 'Payment creation failed']);
+            }
         }
 
         // 🔎 Recalculate total paid and balance across all payments
@@ -505,8 +537,14 @@ class ShipmentArrivalController extends Controller
         $totalCost = $arrival->shipmentCollection->total_cost ?? 0;
         $balance   = max(0, $totalCost - $totalPaid);
 
-        // 🚫 If balance still exists, do not issue
+        Log::info("💰 Payment summary", [
+            'total_cost' => $totalCost,
+            'total_paid' => $totalPaid,
+            'balance' => $balance
+        ]);
+
         if ($balance > 0) {
+            Log::warning("🚫 Balance still exists, cannot release parcel", ['balance' => $balance]);
             return back()->withErrors([
                 'error' => "Cannot release parcel. Balance of Ksh. " . number_format($balance, 0) . " is still pending."
             ]);
@@ -514,27 +552,30 @@ class ShipmentArrivalController extends Controller
 
         DB::beginTransaction();
         try {
-            // ✅ No balance, update to issued
             $arrival->update([
                 'status' => 'delivered',
                 'remarks' => $request->remarks ?? null,
             ]);
+            Log::info("✅ ShipmentArrival updated to delivered", ['arrival_id' => $arrival->id]);
 
             $otp = rand(100000, 999999); // Generate a 6-digit OTP
 
-            // 2️⃣ Create goods received note number
             ShipmentCollection::where('requestId', $arrival->shipmentCollection->requestId)
-                ->update(['grn_no' => $request->grn_no,'receiver_otp' => $otp,'status'=>'Delivered']);
+                ->update([
+                    'grn_no' => $request->grn_no,
+                    'receiver_otp' => $otp,
+                    'status' => 'Delivered'
+                ]);
+            Log::info("✅ ShipmentCollection updated", ['requestId' => $arrival->shipmentCollection->requestId]);
 
-            // Update track status
             DB::table('tracks')
                 ->where('requestId', $arrival->shipmentCollection->requestId)
                 ->update([
                     'current_status' => 'Parcel Delivered in Good Condition',
                     'updated_at' => now(),
                 ]);
+            Log::info("✅ Track updated", ['requestId' => $arrival->shipmentCollection->requestId]);
 
-            // Add tracking info
             $trackId = DB::table('tracks')
                 ->where('requestId', $arrival->shipmentCollection->requestId)
                 ->value('id');
@@ -549,14 +590,15 @@ class ShipmentArrivalController extends Controller
                 'created_at'=> now(),
                 'updated_at'=> now(),
             ]);
+            Log::info("✅ Tracking info inserted", ['track_id' => $trackId]);
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error("❌ Failed during transaction", ['message' => $e->getMessage()]);
             return back()->withErrors(['error' => 'Failed to deliver parcel: ' . $e->getMessage()]);
         }
 
-        // Send notification
         try {
             SendIssueNotificationsJob::dispatch(
                 $arrival->shipmentCollection,
@@ -566,10 +608,15 @@ class ShipmentArrivalController extends Controller
                 $request->receiver_phone,
                 $otp,
             );
+            Log::info("📩 Notification job dispatched", [
+                'receiver_name' => $request->receiver_name,
+                'receiver_phone' => $request->receiver_phone
+            ]);
         } catch (\Exception $e) {
-            Log::warning('Failed to dispatch SendIssueNotificationsJob', ['message' => $e->getMessage()]);
+            Log::warning("⚠️ Failed to dispatch notification job", ['message' => $e->getMessage()]);
         }
 
+        Log::info("✅ Parcel issued successfully", ['arrival_id' => $arrival->id]);
         return back()->with('success', 'Parcel delivered successfully.');
     }
 

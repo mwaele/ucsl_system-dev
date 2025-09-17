@@ -141,7 +141,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="collectionLocation" class="form-label text-primary">Drop off
+                                                    <label for="collectionLocation" class="form-label text-primary">Pickup Location
                                                     </label>
                                                     <select name="collectionLocation" id="collectionLocation"
                                                         class="form-control selectpicker" data-live-search="true">
