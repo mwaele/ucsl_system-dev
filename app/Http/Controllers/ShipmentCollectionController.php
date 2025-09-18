@@ -50,7 +50,7 @@ class ShipmentCollectionController extends Controller
             'manualWaybillImage'  => 'sometimes|nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'manualWaybillNo'     => 'sometimes|nullable|string|max:13',
         ]);
-
+      
         DB::beginTransaction();
 
         try {
@@ -206,7 +206,7 @@ class ShipmentCollectionController extends Controller
             ]);
 
             DB::table('tracks')
-            ->where('requestId',$requestId,)
+            ->where('requestId',$requestId)
             ->update([
                 'current_status' => 'Awaiting Dispatch',
                 'updated_at' => now()
@@ -287,12 +287,18 @@ class ShipmentCollectionController extends Controller
                 $receiverPhone = $request->receiver_phone;
                 $receiverName = $request->receiver_name;
                 $clientId = $request->client_id;
-                $trackingUrl = env('TRACKING_URL');
+                
+                $trackingUrl = "https://www.ufanisicourier.co.ke/tracking";
+                //dd($trackingUrl); 
+                
+                $track = "Tracking link: ".$trackingUrl;
+
+                
 
                 // Send receiver SMS
                 $waybill = $waybill_no;
                 $receiverPhone = $request->receiverPhone;
-                $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId}.To track click $trackingUrl.";
+                $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId} . {$trackingUrl}";
 
                 $smsService->sendSms(
                     phone: $receiverPhone,
@@ -310,16 +316,21 @@ class ShipmentCollectionController extends Controller
                     'subject' => 'Parcel Booking Confirmation',
                     'message' => $parcelMessage,
                 ]);
+                
+                $track = "<strong>Tracking Link:</strong> <a href=\"{$trackingUrl}\" target=\"_blank\">Click To Track</a>";
+                
 
             // Notify Sender
-                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId}. To track click $trackingUrl. ";
+                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} . {$trackingUrl}";
+                
+                $senderEmail = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} ".$track;
                 $smsService->sendSms(
                     phone: $senderPhone,
                     subject: 'Parcel Booked',
                     message: $senderMsg,
                     addFooter: true
                 );
-                // $smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
+                //$smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
 
                 SentMessage::create([
                     'request_id' => $request->requestId,
@@ -336,9 +347,9 @@ class ShipmentCollectionController extends Controller
             $senderSubject = 'Parcel Collected';
             $clientEmail = $client->email;
             $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
-            $fullSenderMessage = $senderMsg . $footer;
+            $fullSenderMessage = $senderEmail . $footer;
 
             $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);
 

@@ -301,7 +301,12 @@
                         <td>
                             @if ($item->payment_mode === 'Invoice')
                                 {{ 'Account' }}
+                            @elseif ($item->payment_mode === 'MPESA')
+                                {{ 'Cash' }}
+                            @else
+                                {{ $item->payment_mode }}
                             @endif
+
                         </td>
                     </tr>
                 @endforeach

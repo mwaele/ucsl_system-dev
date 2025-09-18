@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tracking Status</title>
+    <title>Client Portal</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -53,7 +53,7 @@
         <div class="row justify-content-center align-items-center mb-4">
             <div class="text-center">
                 <img src="{{ asset('images/UCSLogo1.png') }}" height="100" alt="Logo" class="mb-3">
-                <h2 class="text-primary fw-bold"><strong>U-Parms Parcel Tracking</strong></h2>
+                <h2 class="text-primary fw-bold"><strong>U-Parms Client Portal</strong></h2>
             </div>
         </div>
 
@@ -84,7 +84,7 @@
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">Sign In</button>
-                            <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-3">Continue as Guest</a>
+                            {{-- <a href="{{ route('guest') }}" class="btn btn-link w-100 mt-3">Continue as Guest</a> --}}
                         </form>
 
                         <div id="loginError" class="text-danger mt-2"></div>
@@ -119,7 +119,7 @@
                     const data = await res.json();
                     if (!res.ok) throw data;
 
-                    window.location.href = '/tracker';
+                    window.location.href = '/client_portal';
                 })
                 .catch(err => {
                     document.getElementById('loginError').innerText = err.message || 'Login failed.';

@@ -42,18 +42,29 @@ use App\Http\Controllers\Accounts\Debtors\DebitNoteController;
 use App\Http\Controllers\Accounts\Debtors\CreditNoteController;
 use App\Http\Controllers\Accounts\Creditors\InvoiceController as CreditorInvoiceController;
 use App\Http\Controllers\Accounts\LedgerController;
+use App\Http\Controllers\ClientPortalController;
 
 
 Route::middleware('client.auth')->group(function () {
     Route::get('/tracking', function () {
         return view('tracking.index');
-    });
+    })->name('tracking.index');
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
     Route::get('/tracker', [TrackController::class, 'index'])->name('tracker');
     Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);
     
     Route::get('/parcel/create', [ParcelController::class, 'create'])->name('parcel.create');
-    Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store');
+    Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store'); 
+
+    // client portal
+    Route::get('/client_portal', [ClientPortalController::class, 'index'])->name('client_portal');
+    Route::get('/client_portal/dashboard', [ClientPortalController::class, 'dashboard'])->name('client_portal_dashboard');
+    Route::get('/client_portal/overnight-walkin', [ClientPortalController::class, 'overnight_walkin'])->name('overnight_walkin');
+    Route::get('/client_portal/overnight-on-account', [ClientPortalController::class, 'overnight_onaccount'])->name('overnight_onaccount');
+    Route::get('/client_portal/sameday-walkin', [ClientPortalController::class, 'sameday_walkin'])->name('sameday_walkin');
+    Route::get('/client_portal/sameday-on-account', [ClientPortalController::class, 'sameday_on_account'])->name('sameday_on_account');
+
+    Route::post('/client_portal_request', [ClientPortalController::class, 'store'])->name('clientPortalRequest.store');
 });
 
 // Client auth routes

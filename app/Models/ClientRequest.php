@@ -27,7 +27,8 @@ class ClientRequest extends Model
         'delivery_rider_id',
         'fragile_item',
         'priority_level_amount',
-        'fragile_item_amount', 
+        'fragile_item_amount',
+        'source', 
     ];
 
     public function client()

@@ -25,13 +25,14 @@
                 <div class="row mb-3 bg-primary p-3">
                     <div class="col-md-3 ">
                         <label for="batch_no" class="text-white">Batch No.</label>
-                        <input type="text" value="{{ str_pad($loadingSheet->batch_no, 5, '0', STR_PAD_LEFT) }}
+                        <input type="text" value="{{ str_pad($loading_sheet->batch_no, 5, '0', STR_PAD_LEFT) }}
 "
                             class="form-control" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="text-white" for="reg_no">Reg No.</label>
-                        <input type="text" value="{{ $loading_sheet->transporter_truck->reg_no }}" class="form-control" readonly>
+                        <input type="text" value="{{ $loading_sheet->transporter_truck->reg_no }}" class="form-control"
+                            readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="text-white" for="origin">Origin</label>
