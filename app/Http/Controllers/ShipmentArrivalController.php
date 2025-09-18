@@ -106,11 +106,34 @@ class ShipmentArrivalController extends Controller
             'dispatchers' => 'required|exists:users,id',
         ]);
 
-        $sheet = LoadingSheet::find($request->loading_sheet_id);
-        $sheet->offloading_clerk = $request->dispatchers;
-        $sheet->save();
+        try {
+            $sheet = LoadingSheet::with('truck')->findOrFail($request->loading_sheet_id);
 
-        return response()->json(['success' => true, 'message' => 'Updated successfully']);
+            // Update the offloading clerk
+            $sheet->update([
+                'offloading_clerk' => $request->dispatchers,
+            ]);
+
+            // Update vehicle status if linked
+            if ($sheet->truck) {
+                $sheet->truck->update(['status' => 'available']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Updated successfully and vehicle set to available',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in updateArrivalDetails', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating',
+            ], 500);
+        }
     }
 
     /**

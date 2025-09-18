@@ -263,28 +263,28 @@
 
                                         // ✅ Start form
                                         let formHtml = `
-                <form id="shipmentReceiptForm">
-                    @csrf
-                    @method('POST')
-                    <div class="row">
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Request ID</label>
-                            <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Transporter</label>
-                            <input type="text" name="userId" class="form-control" value="${data_name}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Vehicle Reg No.</label>
-                            <input type="text" class="form-control" name="vehicleDisplay" value="${data_v}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label class="text-primary">Date Dispatched</label>
-                            <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
-                        </div>
-                    </div>
-            `;
+                                            <form id="shipmentReceiptForm">
+                                                @csrf
+                                                @method('POST')
+                                                <div class="row">
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Request ID</label>
+                                                        <input type="text" name="requestId" class="form-control" value="${request_id}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Transporter</label>
+                                                        <input type="text" name="userId" class="form-control" value="${data_name}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Vehicle Reg No.</label>
+                                                        <input type="text" class="form-control" name="vehicleDisplay" value="${data_v}" readonly>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label class="text-primary">Date Dispatched</label>
+                                                        <input type="datetime-local" name="dateRequested" class="form-control" value="${date_requested}" readonly>
+                                                    </div>
+                                                </div>
+                                        `;
 
                                         // ✅ Items table
                                         formHtml += `
