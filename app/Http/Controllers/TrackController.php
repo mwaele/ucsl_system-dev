@@ -23,6 +23,11 @@ class TrackController extends Controller
         return view('tracking.main');
     }
 
+    public function tracking()
+    {
+        return view('client_portal.tracking.index');
+    }
+
     // tracking
 
     // public function getTrackingByRequestId($requestId)

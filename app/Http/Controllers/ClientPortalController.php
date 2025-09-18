@@ -90,10 +90,44 @@ class ClientPortalController extends Controller
     {
         return view('client_portal.shipments.sameday_walkin');
     }
-    public function sameday_onaccount(Request $request)
+    public function sameday_on_account(Request $request)
     {
-        return view('client_portal.shipments.sameday_on_account');    
+
+
+        $timeFilter = $request->query('time', 'all'); // default to all
+
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $clients = Client::where('type', 'on_account')->get();
+        $vehicles = Vehicle::all();
+        $drivers = User::where('role', 'driver')->get();
+        $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
+
+        $locations = [];
+        $offices = Office::all();
+
+        $categories = ClientCategory::where('client_id', auth('client')->user()->id)
+            ->join('categories', 'client_categories.category_id', '=', 'categories.id')
+            ->select('categories.id as category_id', 'categories.category_name')
+            ->get();
+
+        $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where(['type'=>'on_account','id'=>auth('client')->user()->id]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+
+
+        return view('client_portal.shipments.same_day_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
+            'startDate','categories','offices',
+            'endDate', 'sub_category','locations'));   
     }
+    
 
 
     public function store(Request $request)

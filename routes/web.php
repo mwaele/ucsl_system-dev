@@ -46,9 +46,10 @@ use App\Http\Controllers\ClientPortalController;
 
 
 Route::middleware('client.auth')->group(function () {
-    Route::get('/tracking', function () {
-        return view('tracking.index');
-    })->name('tracking.index');
+    // Route::get('/tracking', function () {
+    //     return view('tracking.index');
+    // })->name('tracking.index');
+    Route::get('/tracking', [TrackController::class, 'tracking'])->name('tracking.index');
     Route::get('/track/{requestId}', [TrackController::class, 'getTrackingByRequestId']);
     Route::get('/tracker', [TrackController::class, 'index'])->name('tracker');
     Route::get('/track/{requestId}/pdf', [TrackController::class, 'generateTrackingPdf']);

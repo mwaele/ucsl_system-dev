@@ -183,7 +183,7 @@
                                         <div class="col-md-6">
 
                                             <label for="clientCategories" class="form-label text-primary">
-                                                Target Office</label>
+                                                Office</label>
                                             <!-- Client's Categories -->
                                             <select class="form-control mt-1" id="offices" name="office_id">
                                                 <option value="">Select Office</option>
@@ -365,10 +365,14 @@
                                         <span
                                             class="badge p-2
                                             @if ($request->status == 'pending collection') bg-secondary
+                                            @elseif ($request->status == 'Pending-Collection')
+                                                bg-info
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
                                             @elseif ($request->status == 'verified')
-                                                bg-primary @endif
+                                                bg-primary 
+                                            @elseif ($request->status == 'delivered')
+                                                bg-info @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($request->status) }}
                                         </span>

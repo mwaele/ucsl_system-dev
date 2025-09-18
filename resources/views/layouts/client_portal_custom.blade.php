@@ -281,7 +281,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
-            <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('tracking.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('tracking.index') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Tracking</span>
@@ -432,7 +432,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid text-dark h-100">
+                <div class="container-fluid text-dark ">>
                     <!-- Page Heading -->
                     @yield('content')
                     @stack('scripts')
