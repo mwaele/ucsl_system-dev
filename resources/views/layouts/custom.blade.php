@@ -2000,6 +2000,121 @@
         </script>
 
         <script>
+            $(document).ready(function() {
+                // Simulate onchange after 10 seconds if user is still on page
+                // setTimeout(function() {
+                //     if ($('#payment_mode').length && $('#payment_mode').val() === 'Invoice') {
+                //         $('#payment_mode').trigger('change');
+                //     }
+                // }, 10000); // 10,000 ms = 10 seconds
+
+                $('#payment_mode').on('change', function() {
+                    const mode = $(this).val();
+
+                    if (mode === 'Invoice') {
+                        $.ajax({
+                            url: '{{ route('get.latest.invoice.no') }}',
+                            type: 'GET',
+                            success: function(data) {
+                                $('#reference').val(data.invoice_no);
+                            },
+                            error: function() {
+                                alert('Unable to fetch invoice number.');
+                            }
+                        });
+                    } else {
+                        $('#reference').val(''); // clear for other modes
+                    }
+                });
+
+                // Unallocated Riders
+                $(document).on('change', '.unallocatedRiders', function() {
+                    const modal = $(this).closest('.modal'); // find current modal
+                    const select = modal.find('.userId');
+
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.unallocated') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (Unallocated)</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append(
+                                        '<option disabled>No unallocated riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // All Riders
+                $(document).on('change', '.allRiders', function() {
+                    const modal = $(this).closest('.modal');
+                    const select = modal.find('.userId');
+
+                    if ($(this).is(':checked')) {
+                        $.ajax({
+                            url: "{{ route('drivers.all') }}",
+                            method: "GET",
+                            success: function(drivers) {
+                                select.empty().append('<option value="">Select Rider</option>');
+
+                                if (drivers.length > 0) {
+                                    drivers.forEach(driver => {
+                                        select.append(
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations ?? 'Unallocated'})</option>`
+                                        );
+                                    });
+                                } else {
+                                    select.append('<option disabled>No riders found</option>');
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Current Location
+                $(document).on('change', '.currentLocation', function() {
+                    const modal = $(this).closest('.modal');
+                    const location = modal.find('.collectionLocation').val()?.trim();
+
+                    if ($(this).is(':checked')) {
+                        if (location && location.length > 1) {
+                            fetchDriversByLocation(location, modal.find('.userId'));
+                        } else {
+                            alert('Please enter a collection location first.');
+                        }
+                    }
+                });
+
+                // Vehicle mapping on Rider selection
+                $(document).on('change', '.userId', function() {
+                    const modal = $(this).closest('.modal');
+                    const selectedUserId = $(this).val();
+                    const vehicleInput = modal.find('.vehicle');
+                    const vehicleIdInput = modal.find('.vehicleId');
+
+                    const vehicle = vehicleMap[selectedUserId];
+                    if (vehicle) {
+                        vehicleInput.val(`${vehicle.regNo ?? '-'} (${vehicle.status})`);
+                        vehicleIdInput.val(vehicle.id);
+                    } else {
+                        vehicleInput.val('');
+                        vehicleIdInput.val('');
+                    }
+                });
+
+            });
+        </script>
+
+        <script>
             new DataTable('#reports', {
                 initComplete: function() {
                     this.api()

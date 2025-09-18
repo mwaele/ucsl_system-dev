@@ -340,7 +340,7 @@
                                     <td>
                                         <span
                                             class="badge p-2
-                                            @if ($request->status == 'pending collection') bg-secondary
+                                            @if ($request->status === 'pending collection' || $request->status === 'Pending-Collection') bg-secondary
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
                                             @elseif ($request->status == 'verified')
@@ -502,6 +502,34 @@
                                                 data-target="#deleteClientRequest-{{ $request->requestId }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+
+                                            <!-- Delete Modal-->
+                                            <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
+                                                tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete {{ $request->requestId }}?
+                                                            </p>
+                                                        </div>
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between align-items-center">
+                                                            <button type="button" class="btn btn-sm btn-warning"
+                                                                data-dismiss="modal">Cancel X</button>
+                                                            <form
+                                                                action =" {{ route('clientRequests.destroy', $request->requestId) }}"
+                                                                method = "POST">
+                                                                @method('DELETE')
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                                    title="Delete" value="DELETE">YES DELETE <i
+                                                                        class="fas fa-trash"></i> </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         @endif
 
                                         @if ($request->shipmentCollection?->payment_mode === 'Invoice')
@@ -704,42 +732,13 @@
                                                 </div>
                                             </div>
                                         @endif
-
-
-                                        <!-- Delete Modal-->
-                                        <div class="modal fade" id="deleteClientRequest-{{ $request->requestId }}"
-                                            tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-body">
-                                                        <p>Are you sure you want to delete {{ $request->requestId }}?
-                                                        </p>
-                                                    </div>
-                                                    <div
-                                                        class="modal-footer d-flex justify-content-between align-items-center">
-                                                        <button type="button" class="btn btn-sm btn-warning"
-                                                            data-dismiss="modal">Cancel X</button>
-                                                        <form
-                                                            action =" {{ route('clientRequests.destroy', $request->requestId) }}"
-                                                            method = "POST">
-                                                            @method('DELETE')
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                                title="Delete" value="DELETE">YES DELETE <i
-                                                                    class="fas fa-trash"></i> </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
+    
                                         @if ($request->status === 'collected')
                                             {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
-                                            data-toggle="modal" data-rider="{{ $request->user->name }}"
-                                            data-target="#verifyCollectedParcel-{{ $request->requestId }}">
-                                            <i class="fas fa-clipboard-check"></i>
-                                        </button> --}}
+                                                    data-toggle="modal" data-rider="{{ $request->user->name }}"
+                                                    data-target="#verifyCollectedParcel-{{ $request->requestId }}">
+                                                    <i class="fas fa-clipboard-check"></i>
+                                                </button> --}}
                                             <button class="btn btn-info btn-sm verify-btn mr-1"
                                                 data-id="{{ $request->shipmentCollection->id }}"
                                                 data-request-id="{{ $request->requestId }}"
@@ -801,11 +800,93 @@
 
 
                                         {{-- @if ($request->status === 'verified')
-                                        <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
-                                            data-toggle="modal" data-target="">
-                                            <i class="fas fa-truck"></i>
-                                        </button>
-                                    @endif --}}
+                                            <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
+                                                data-toggle="modal" data-target="">
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                        @endif --}}
+
+                                        @if ($request->status === 'Pending-Collection')
+                                            <button class="btn btn-sm btn-primary" title="Delivery" data-toggle="modal"
+                                                data-target="#allocateRider-{{ $request->id }}">
+                                                Allocate Rider <i class="fas fa-van"></i> <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                        @endif
+                                        {{-- Allocate Rider Modal --}}
+
+                                        <div class="modal fade" id="allocateRider-{{ $request->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="allocateRiderLabel-{{ $request->id }}"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-md" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-warning text-white">
+                                                        <h5 class="modal-title">
+                                                            Allocate Rider to collect Parcel(Request
+                                                            ID:
+                                                            {{ $request->requestId }})
+                                                        </h5>
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal">&times;</button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        {{-- Issue Form --}}
+                                                        <form method="POST" id="allocateRider"
+                                                            action="{{ route('client_request.update_rider', $request->id) }}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="row">
+                                                                {{-- Rider Selection --}}
+                                                                <div class="col-md-12">
+                                                                    <label class="text-primary">
+                                                                        <h6>Rider Details</h6>
+                                                                    </label>
+                                                                </div>
+
+                                                                <!-- Radio buttons in one row -->
+                                                                <div class="col-md-12 mb-3">
+                                                                    {{-- <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input currentLocation" type="radio" name="riderOption" value="currentLocation">
+                                                                        <label class="form-check-label" for="currentLocation">Pickup Location</label>
+                                                                    </div>  --}}
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input unallocatedRiders" type="radio" name="riderOption" value="unallocated">
+                                                                        <label class="form-check-label" for="unallocatedRiders">Unallocated Riders</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input allRiders" type="radio" name="riderOption" value="all">
+                                                                        <label class="form-check-label" for="allRiders">All Riders</label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Rider and Vehicle in one row -->
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="userId" class="form-label text-primary">Rider</label>
+                                                                    <select class="form-control userId" name="userId" required>
+                                                                        <option value="">Select Rider</option>
+                                                                    </select>
+                                                                    <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
+                                                                        Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 mb-3">
+                                                                    <label for="vehicle" class="form-label text-primary">Vehicle</label>
+                                                                    <input type="text" class="form-control vehicle" name="vehicle_display"
+                                                                        placeholder="Select rider to populate" readonly>
+                                                                    <input type="hidden" class="vehicleId" name="vehicleId">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
+                                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel X</button>
+                                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

@@ -228,6 +228,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/overnight/on-account', [OvernightController::class, 'on_account'])->name('overnight.on-account');
     Route::get('/walkin_report', [OvernightController::class, 'walkin_report'])->name('walkin_report');
     Route::get('/overnight_account_report', [OvernightController::class, 'overnight_account_report'])->name('overnight_account_report');
+    Route::put('/update_rider/{id}', [OvernightController::class, 'updateRider'])->name('client_request.update_rider');
     Route::get('/sameday_walkin_report', [SameDayController::class, 'sameday_walkin_report'])->name('sameday_walkin_report');
     Route::get('/sameday_account_report', [SameDayController::class, 'sameday_account_report'])->name('sameday_account_report');
 
