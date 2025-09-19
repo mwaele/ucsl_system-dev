@@ -43,7 +43,7 @@ class SendCollectionNotificationsJob implements ShouldQueue
             : '';
 
         // Rider SMS
-        $rider_message = "Dear {$this->rider->name}, Collect Parcel for client ({$this->client->name}) {$this->client->contact} Request ID: $requestId at $location.$deadlineNote";
+        $rider_message = "Dear {$this->rider->name}, Collect Parcel for {$this->client->name} ({$this->client->contact}) Request ID: $requestId at $location.$deadlineNote";
         $smsService->sendSms($this->rider->phone_number, 'Client Collections Alert', $rider_message, true);
 
         SentMessage::create([

@@ -17,6 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
 use App\Services\RequestIdService;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendCollectionNotificationsJob;
 use Carbon\Carbon;
 use Auth;
 
@@ -159,7 +160,7 @@ class OvernightController extends Controller
 
     public function updateRider(Request $request, $id)
     {
-        Log::info('updateRider called.', [
+        Log::info('updateRider called (Collection Flow).', [
             'request_id' => $id,
             'payload' => $request->all(),
             'user_id' => Auth::id()
@@ -170,41 +171,33 @@ class OvernightController extends Controller
             'vehicleId' => 'required',
         ]);
 
-        Log::info('Looking up ClientRequest', ['id' => $id]);
+        // Lookup Client Request
         $clientRequest = ClientRequest::findOrFail($id);
 
         $now = now();
-        $authId = Auth::id();
         $requestId = $clientRequest->requestId;
 
-        Log::info('Looking up ShipmentCollection', ['requestId' => $clientRequest->requestId]);
-        $shipment = ShipmentCollection::with(['track:id,requestId,current_status'])
-            ->where('requestId', $clientRequest->requestId)
-            ->firstOrFail();
-
-        Log::info('Looking up Rider', ['userId' => $request->userId]);
+        // Lookup Rider
         $rider = User::findOrFail($request->userId);
         $vehicleId = $validatedData['vehicleId'];
 
-        Log::info('Preparing to update client request.', [
-            'clientRequest_id' => $clientRequest->id,
-            'rider_id' => $rider->id,
-            'vehicle_id' => $vehicleId,
-            'shipment_id' => $shipment->id
-        ]);
+        // Lookup Client (resolve id → name, contact, email)
+        $client = Client::findOrFail($clientRequest->clientId);
 
         DB::transaction(function () use (
-            $clientRequest, $validatedData, $requestId, $shipment, $now, $rider
+            $clientRequest, $validatedData, $requestId, $now, $rider
         ) {
             // update client_request
             $clientRequest->userId = $validatedData['userId'];
             $clientRequest->vehicleId = $validatedData['vehicleId'];
+            $clientRequest->status = 'pending collection';
             $clientRequest->save();
 
             Log::info('client_request updated.', [
                 'clientRequest_id' => $clientRequest->id,
                 'new_userId' => $clientRequest->userId,
-                'new_vehicleId' => $clientRequest->vehicleId
+                'new_vehicleId' => $clientRequest->vehicleId,
+                'new_status' => $clientRequest->status
             ]);
 
             // update track status
@@ -212,58 +205,42 @@ class OvernightController extends Controller
                 ->where('requestId', $requestId)
                 ->tap(function ($query) use ($now) {
                     $query->update([
-                        'current_status' => 'Delivery Rider Re-Allocated',
+                        'current_status' => 'Collection Rider Allocated',
                         'updated_at' => $now
                     ]);
                 })
                 ->value('id');
 
-            Log::info('Track updated.', [
-                'track_id' => $trackId,
-                'requestId' => $requestId,
-                'status' => 'Delivery Rider Re-Allocated'
-            ]);
-
             // insert tracking info
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackId,
                 'date' => $now,
-                'details' => "Delivery Rider Re-Allocated",
-                'remarks' => "We have re-allocated {$rider->name} (phone: {$rider->phone_number}) to deliver parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
+                'details' => "Collection Rider Allocated",
+                'remarks' => "We have allocated {$rider->name} (phone: {$rider->phone_number}) to collect parcel {$requestId}.",
                 'created_at' => $now,
                 'updated_at' => $now
-            ]);
-
-            Log::info('Tracking info inserted.', [
-                'track_id' => $trackId,
-                'requestId' => $requestId
             ]);
         });
 
         // Dispatch notification job
         try {
-            $client = Client::find($clientRequest->clientId);
-            SendDeliveryNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicleId, $shipment);
+            SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicleId);
 
-            Log::info('Delivery notification job dispatched.', [
+            Log::info('Collection notification job dispatched.', [
                 'clientRequest_id' => $clientRequest->id,
-                'client_id' => optional($client)->id,
+                'client_id' => $client->id,
                 'rider_id' => $rider->id
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to dispatch SendDeliveryNotificationsJob.', [
+            Log::error('Failed to dispatch SendCollectionNotificationsJob.', [
                 'clientRequest_id' => $clientRequest->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
         }
 
-        Log::info('updateRider completed successfully.', [
-            'clientRequest_id' => $clientRequest->id,
-            'status' => 'success'
-        ]);
-
-        return redirect()->back()->with('success', 'Rider updated successfully (notifications queued).');
+        return redirect()->back()->with('success', 'Rider allocated successfully');
     }
+
 
 }
