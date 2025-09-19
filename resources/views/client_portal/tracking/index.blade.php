@@ -29,15 +29,15 @@
                 </div> --}}
 
             <!-- Date -->
-            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+            {{-- <div class="col-12 col-sm-12 col-md-6 col-lg-6"> --}}
 
-                {{-- 
+            {{-- 
                 <button class="btn btn-danger mt-2 logout">Logout:
                     {{ auth('client')->user()->name ?? auth('guest')->user()->name }}</button> --}}
-                {{-- <p class="fw-bold">
+            {{-- <p class="fw-bold">
             Tracking done by: {{ auth('api')->user()->name }}
         </p> --}}
-            </div>
+            {{-- </div> --}}
         </div>
 
 
@@ -45,7 +45,7 @@
             <div class="input-group modern-search shadow-sm" style="max-width: 600px; width: 100%;">
                 <input type="text" id="requestId" class="form-control px-4 py-3" placeholder="Enter Tracking Number">
                 <button id="trackBtn" class="btn btn-primary px-4 d-flex align-items-center justify-content-center">
-                    <i class="bi bi-search fs-5">TRACK</i>
+                    <i class="fas fa-search fs-5 fe-5"> TRACK </i>
                 </button>
             </div>
         </div>

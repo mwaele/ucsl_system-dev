@@ -116,6 +116,29 @@
             background-repeat: no-repeat;
         }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #content {
+            flex: 1;
+        }
+
+
         /* Medium screens (tablets) */
         @media (max-width: 992px) {
             .navbar-bg {
@@ -180,10 +203,7 @@
                 href="{{ route('client_portal') }}">
                 <img src="{{ asset('images/UCSLogo1.png') }}" alt="" height="50" width="auto"
                     class="image-fluid">
-                {{-- <div class="sidebar-brand-icon">
-                    <i class="fas fa-truck"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">UCSL MIS</div> --}}
+
             </a>
 
             <!-- Divider -->
@@ -200,57 +220,9 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <!-- <li
-                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cogs"></i>
-                    <span class="sized">Shipments</span>
-                </a>
-                <div id="collapseTwo" class="collapse {{ request()->routeIs('shipments.*') ? 'show' : '' }}"
-                    aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-
-                        {{-- Default Shipment Links --}}
-                        {{-- <a class="collapse-item" href="{{ route('clientRequests.index') }}">Client Requests</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('frontOffice.index') }}">Walk-in</a> --}}
-
-                        <hr class="sidebar-divide my-0" />
-                        {{-- Collapsible: Overnight --}}
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseOvernight" aria-expanded="false"
-                            aria-controls="collapseOvernight">
-                            Overnight
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
-                            data-parent="#collapseTwo">
-                            <a class="collapse-item" href="{{ route('overnight.walk-in') }}">Walk-in</a>
-                            <a class="collapse-item" href="{{ route('overnight.on-account') }}">On Account</a>
-                        </div>
-                        <hr class="sidebar-divide my-0" />
-                        {{-- Collapsible: Same Day --}}
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseSameDay" aria-expanded="false"
-                            aria-controls="collapseSameDay">
-                            Same Day
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseSameDay" class="collapse ml-3" aria-labelledby="headingSameDay"
-                            data-parent="#collapseTwo">
-                            <a class="collapse-item" href="{{ route('sameday.walk-in') }}">Walk-in</a>
-                            <a class="collapse-item" href="{{ route('sameday.on-account') }}">On Account</a>
-                        </div>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
-                    </div>
-                </div>
-            </li> -->
 
             <!-- Nav Item - Shipments -->
-            <li
-                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('overnight_onaccount', 'sameday_on_account') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
                     aria-expanded="true" aria-controls="collapseShipments">
                     <i class="fas fa-fw fa-cogs"></i>
@@ -288,39 +260,12 @@
                 </a>
             </li>
 
-            <!-- Divider -->
-            {{-- <hr class="sidebar-divider my-0" />
-            <li class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('categories.index') }}">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span class="sized">Categories</span>
+            <li class="nav-item {{ request()->routeIs('tracking.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('tracking.index') }}">
+                    <i class="fas fa-fw fa-clipboard"></i>
+                    <span class="sized">Rate Our Services</span>
                 </a>
             </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-            <li class="nav-item {{ request()->routeIs('sub_categories.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('sub_categories.index') }}">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span class="sized">Sub Categories</span>
-                </a>
-            </li> --}}
-            <!-- Divider -->
-            {{-- <hr class="sidebar-divider my-0" />
-            <li class="nav-item {{ request()->routeIs('transporters.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('transporters.index') }}">
-                    <i class="fas fa-fw fa-truck"></i>
-                    <span class="sized">Transporters</span>
-                </a>
-            </li> --}}
-            <!-- Nav Item - Pages Collapse Menu -->
-
-
-            <!-- Nav Item - Charts -->
-            {{-- <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li> --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
@@ -432,7 +377,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid text-dark ">>
+                <div class="container-fluid text-dark ">
                     <!-- Page Heading -->
                     @yield('content')
                     @stack('scripts')
@@ -558,22 +503,6 @@
         <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
-        {{-- <!-- Moment.js (required for legacy versions) -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
-        <!-- Bootstrap core JavaScript-->
-        <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-        <!-- Core plugin JavaScript-->
-        <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-        <!-- Toast notification -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-        <!-- Custom scripts for all pages-->
-        <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script> --}}
 
         <!-- Flatpickr JS -->
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -581,9 +510,6 @@
         <!-- Bootstrap Select JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
-        {{-- <!-- Page level plugins -->
-        <script src="{{ asset('assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
 
         <!-- Toast JS -->
         <script>
@@ -669,13 +595,6 @@
         </script>
 
         <script>
-            // Initialise the datatable
-            // new DataTable('#example', {
-            //     paging: true,
-            //     scrollCollapse: true,
-            //     scrollY: '50vh'
-            // });
-
             new DataTable('#ucsl-table', {
                 language: {
                     lengthMenu: 'Show _MENU_ Entries Per Page', // Capitalized 'Entries'
@@ -731,29 +650,6 @@
 
                         });
 
-                }
-            });
-
-            new DataTable('#example', {
-                initComplete: function() {
-                    this.api()
-                        .columns()
-                        .every(function() {
-                            let column = this;
-                            let title = column.footer().textContent;
-
-                            // Create input element
-                            let input = document.createElement('input');
-                            input.placeholder = title;
-                            column.footer().replaceChildren(input);
-
-                            // Event listener for user input
-                            input.addEventListener('keyup', () => {
-                                if (column.search() !== this.value) {
-                                    column.search(input.value).draw();
-                                }
-                            });
-                        });
                 }
             });
         </script>

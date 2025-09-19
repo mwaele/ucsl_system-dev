@@ -17,6 +17,7 @@ use App\Models\SentMessage;
 use App\Models\Client;
 use App\Models\User;
 use App\Models\Payment;
+use App\Models\Invoice;
 use App\Helpers\EmailHelper;
 use Carbon\Carbon;
 
@@ -221,7 +222,7 @@ class ShipmentCollectionController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId' => $trackingId,
                 'date' => now(),
-                'details' => 'Parcel collected  ',
+                'details' => 'Parcel collected',
                 'remarks' => ''.auth()->user()->station.' office received '.$itemCount.' '.$text.' with a total weight of '.$totalWeight.''.$text2.' from '.$clientName,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -246,7 +247,8 @@ class ShipmentCollectionController extends Controller
                 'collected_by' => auth()->id(),
                 'consignment_no' => $request->consignment_no,
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
+                'source'=> $request->source,
             ]);
 
             // 7. Save to payments table

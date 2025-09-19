@@ -40,8 +40,8 @@ class DashboardController extends Controller
             };
         }
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May'];
-        $data = [10, 20, 15, 30, 25];
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 'Jul', 'Aug','Sep'];
+        $data = [10, 20, 15, 30, 25, 40, 35, 50,35];
 
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)

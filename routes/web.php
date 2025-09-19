@@ -44,6 +44,8 @@ use App\Http\Controllers\Accounts\Creditors\InvoiceController as CreditorInvoice
 use App\Http\Controllers\Accounts\LedgerController;
 use App\Http\Controllers\ClientPortalController;
 
+use App\Http\Controllers\ServiceRateController;
+
 
 Route::middleware('client.auth')->group(function () {
     // Route::get('/tracking', function () {
@@ -57,15 +59,19 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/parcel/create', [ParcelController::class, 'create'])->name('parcel.create');
     Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store'); 
 
+    Route::resource('service_rates', ServiceRateController::class);
+
     // client portal
     Route::get('/client_portal', [ClientPortalController::class, 'index'])->name('client_portal');
     Route::get('/client_portal/dashboard', [ClientPortalController::class, 'dashboard'])->name('client_portal_dashboard');
-    Route::get('/client_portal/overnight-walkin', [ClientPortalController::class, 'overnight_walkin'])->name('overnight_walkin');
+    // Route::get('/client_portal/overnight-walkin', [ClientPortalController::class, 'overnight_walkin'])->name('overnight_walkin');
     Route::get('/client_portal/overnight-on-account', [ClientPortalController::class, 'overnight_onaccount'])->name('overnight_onaccount');
-    Route::get('/client_portal/sameday-walkin', [ClientPortalController::class, 'sameday_walkin'])->name('sameday_walkin');
+    // Route::get('/client_portal/sameday-walkin', [ClientPortalController::class, 'sameday_walkin'])->name('sameday_walkin');
     Route::get('/client_portal/sameday-on-account', [ClientPortalController::class, 'sameday_on_account'])->name('sameday_on_account');
 
     Route::post('/client_portal_request', [ClientPortalController::class, 'store'])->name('clientPortalRequest.store');
+
+    Route::post('/client_portal_request/on-account', [ClientPortalController::class, 'create'])->name('client_portal_request.create');
 });
 
 // Client auth routes
