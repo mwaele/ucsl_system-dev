@@ -458,7 +458,6 @@ class ShipmentCollectionController extends Controller
                     'total_weight' => $request->total_weight,
                 ]);
         }
-
         
         if($shipment){
             \Log::info('Saving shipment items', [
@@ -676,7 +675,6 @@ class ShipmentCollectionController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -786,7 +784,6 @@ class ShipmentCollectionController extends Controller
 
         return redirect()->back()->with('success', 'Shipment collection verified successfully!');
     }
-
 
     public function update_collections(Request $request, $id, SmsService $smsService)
     {
