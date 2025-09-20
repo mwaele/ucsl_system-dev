@@ -333,7 +333,7 @@
                                                 </select>
                                             </div>
 
-                                            <div class=" col-md-2">
+                                            <div class="col-md-2">
                                                 <h6 for="payment_mode" class="text-primary">Payment Reference</h6>
                                                 <input type="text" id="reference" name="reference"
                                                     class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
@@ -342,7 +342,7 @@
                                                     oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                             </div>
 
-                                            <div class="mt-2 col-md-2">
+                                            <div class="col-md-2">
                                                 <h6 for="priority_level" class="text-primary">Priority Level</h6>
                                                 <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
@@ -350,7 +350,7 @@
                                                 </select>
                                             </div>
 
-                                            <div class="mt-2 col-md-2" id="priority-deadline-group"
+                                            <div class="col-md-2" id="priority-deadline-group"
                                                 style="display:none;">
                                                 <h6 for="deadline_date" class="text-primary">Deadline
                                                 </h6>
@@ -359,7 +359,7 @@
                                             </div>
 
                                             <!-- Inline confirmation (hidden by default) -->
-                                            <div class="mt-2 col-md-2" id="priority-confirm" style="display:none;">
+                                            <div class="col-md-2" id="priority-confirm" style="display:none;">
                                                 <p class="text-white bg-danger p-2">High priority selected. Do extra
                                                     charges
                                                     apply?</p>
@@ -370,7 +370,7 @@
                                             </div>
 
                                             <!-- Extra charge input (hidden by default) -->
-                                            <div class="mt-2 col-md-2" id="priority-extra-charge-group"
+                                            <div class="col-md-2" id="priority-extra-charge-group"
                                                 style="display:none;">
                                                 <h6 for="priority_extra_charge" class="text-primary">Priority Extra Charge
                                                 </h6>
@@ -599,12 +599,12 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td data-date="{{ $request->shipmentCollection->created_at }}">
-                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
+                                <td data-date="{{ $request->shipmentCollection?->created_at }}">
+                                    {{ $request->shipmentCollection?->created_at?->format('M d, Y') }}
                                 </td>
-                                <td> {{ $request->shipmentCollection->office->name }} </td>
-                                <td> {{ $request->shipmentCollection->destination->destination }} </td>
-                                <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
+                                <td> {{ $request->shipmentCollection?->office->name }} </td>
+                                <td> {{ $request->shipmentCollection?->destination->destination }} </td>
+                                <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
                                 <td>
@@ -665,14 +665,14 @@
                                         </div>
                                     @endif
 
-                                    @if ($request->shipmentCollection->payment_mode == 'Invoice')
+                                    @if ($request->shipmentCollection?->payment_mode == 'Invoice')
                                         <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Generate Invoice
                                             </button>
                                         </a>
                                     @endif
-                                    @if ($request->shipmentCollection->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
+                                    @if ($request->shipmentCollection?->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
                                         <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
                                             target="_blank"
                                             download="{{ $request->shipmentCollection->manual_waybill }}">
@@ -683,7 +683,7 @@
                                     @endif
 
 
-                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
+                                    @if ($request->shipmentCollection?->payment_mode == 'M-Pesa')
                                         {{-- <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-warning mr-1">
                                                 Generate Receipt

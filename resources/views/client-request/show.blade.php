@@ -559,7 +559,7 @@
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverContactPerson" required>
+                                                                                name="receiverContactPerson" value="{{ $collection->shipmentCollection?->receiver_name }}" required>
                                                                             <input type="hidden" name='client_id'
                                                                                 value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId"
@@ -574,7 +574,7 @@
                                                                                 Email <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="email" class="form-control"
-                                                                                name="receiverEmail" required>
+                                                                                name="receiverEmail" value="{{ $collection->shipmentCollection?->receiver_email }}" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -584,7 +584,7 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required
+                                                                                name="receiverIdNo" value="{{ $collection->shipmentCollection?->receiver_id_no }}" required
                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
@@ -594,7 +594,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverPhone" required>
+                                                                                name="receiverPhone" value="{{ $collection->shipmentCollection?->receiver_phone }}" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -604,7 +604,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverAddress" required>
+                                                                                name="receiverAddress" value="{{ $collection->shipmentCollection?->receiver_address }}" required>
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
@@ -612,7 +612,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverTown" required>
+                                                                                name="receiverTown" value="{{ $collection->shipmentCollection?->receiver_town }}" required>
                                                                             <input type="hidden"
                                                                                 value="{{ $consignment_no }}"
                                                                                 name="consignment_no">
@@ -663,7 +663,7 @@
                                                                         class="form-label text-primary text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_idxz"
-                                                                        class="form-control origin-dropdownxz" required>
+                                                                        class="form-control origin-dropdownxz" value="{{ $collection->shipmentCollection?->office->name }}" required>
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->office_id }}">
                                                                             {{ $collection->office->name }}</option>
@@ -681,7 +681,7 @@
 
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
-                                                                        class="form-control destination-dropdownxz">
+                                                                        class="form-control destination-dropdownxz" value="{{ $collection->shipmentCollection?->destination->destination }}">
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->rate_id }}">
                                                                             {{ $collection->collectionLocation }}
@@ -700,7 +700,7 @@
                                                                         class="form-label text-primary text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_id"
-                                                                        class="form-control origin-dropdown" required>
+                                                                        class="form-control origin-dropdown" value="{{ $collection->shipmentCollection?->office->name }}" required>
                                                                         <option value="">Select</option>
                                                                         @foreach ($offices as $office)
                                                                             <option value="{{ $office->id }}">
@@ -713,7 +713,7 @@
                                                                         class="form-label text-primary text-primary">Destination
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
-                                                                        class="form-control destination-dropdown">
+                                                                        class="form-control destination-dropdown" value="{{ $collection->shipmentCollection?->destination->destination }}">
                                                                         <option value="">Select</option>
                                                                     </select>
                                                                 </div>
