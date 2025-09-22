@@ -288,30 +288,30 @@
                                             onclick="addItem()">+ Add
                                             Another Item</button><br>
 
-                                        {{-- <label class="form-label text-primary mt-4">Cost Summary</label> --}}
+                                        <label class="form-label text-primary mt-4">Cost Summary</label>
 
                                         <div class="row mb-3">
-                                            {{-- <div class="col-md-2"> --}}
-                                            {{-- <h6 class="text-primary">Total Weight (Kg)</h6> --}}
-                                            <input type="hidden" min="0" class="form-control"
-                                                name="total_weight" readonly>
-                                            {{-- </div> --}}
-                                            {{-- <div class="col-md-2">
-                                                <h6 for="itemCost" class="text-primary">Item Cost (KES)</h6> --}}
-                                            <input type="hidden" min="0" class="form-control" name="cost"
-                                                required readonly>
-                                            {{-- </div> --}}
+                                            <div class="col-md-2">
+                                                <h6 class="text-primary">Total Weight (Kg)</h6>
+                                                <input type="text" min="0" class="form-control"
+                                                    name="total_weight" readonly>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <h6 for="itemCost" class="text-primary">Item Cost (KES)</h6>
+                                                <input type="text" min="0" class="form-control" name="cost"
+                                                    required readonly>
+                                            </div>
                                             <input type="hidden" name="base_cost" value="0">
-                                            {{-- <div class="col-md-2">
-                                                <h6 for="vatAmount" class="text-primary">Tax (16%)</h6> --}}
-                                            <input type="hidden" min="0" class="form-control" name="vat"
-                                                required readonly>
-                                            {{-- </div> --}}
-                                            {{-- <div class="col-md-2">
-                                                <h6 for="totalCost" class="text-primary">Total Cost (KES)</h6> --}}
-                                            <input type="hidden" min="0" class="form-control" name="total_cost"
-                                                required readonly>
-                                            {{-- </div> --}}
+                                            <div class="col-md-2">
+                                                <h6 for="vatAmount" class="text-primary">Tax (16%)</h6>
+                                                <input type="text" min="0" class="form-control" name="vat"
+                                                    required readonly>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <h6 for="totalCost" class="text-primary">Total Cost (KES)</h6>
+                                                <input type="text" min="0" class="form-control"
+                                                    name="total_cost" required readonly>
+                                            </div>
                                             <div class="col-md-2">
                                                 <h6 for="billing_party" class="text-primary">Billing Party</h6>
                                                 <select name="billing_party" class="form-control">
@@ -325,10 +325,10 @@
                                                 <h6 for="payment_mode" class="text-primary">Payment Mode</h6>
                                                 <select name="payment_mode" id="payment_mode" class="form-control">
                                                     <option value="" selected>-- Select --</option>
-                                                    <option value="M-Pesa">M-Pesa</option>
+                                                    {{-- <option value="M-Pesa">M-Pesa</option>
                                                     <option value="COD">COD</option>
                                                     <option value="Cash">Cash</option>
-                                                    <option value="Cheque">Cheque</option>
+                                                    <option value="Cheque">Cheque</option> --}}
                                                     <option value="Invoice">Invoice</option>
                                                 </select>
                                             </div>
@@ -628,7 +628,8 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
-                                    @if ($request->status === 'verified')
+                                    @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
+                                        {{-- Waybill Generation --}}
                                         <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i> Generate Waybill
@@ -648,14 +649,14 @@
                                                     </div>
                                                     <div class="modal-body"
                                                         style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                        <iframe src="{{ route('waybill.preview', $request->requestId) }}"
+                                                        <iframe src="{{ route('waybill-preview', $request->requestId) }}"
                                                             width="100%" height="500" frameborder="0"></iframe>
                                                     </div>
                                                     <div
                                                         class="modal-footer d-flex justify-content-between align-items-center">
                                                         <button type="button" class="btn btn-warning"
                                                             data-dismiss="modal">Close</button>
-                                                        <a href="{{ route('waybill.generate', $request->requestId) }}"
+                                                        <a href="{{ route('generate-waybill', $request->requestId) }}"
                                                             target="_blank" class="btn btn-primary">
                                                             Generate
                                                         </a>
@@ -928,7 +929,7 @@
 
                 if (mode === 'Invoice') {
                     $.ajax({
-                        url: '{{ route('get.latest.invoice.no') }}',
+                        url: '{{ route('get-latest-invoice-no') }}',
                         type: 'GET',
                         success: function(data) {
                             $('#reference').val(data.invoice_no);

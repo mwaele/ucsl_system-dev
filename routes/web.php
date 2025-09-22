@@ -72,6 +72,17 @@ Route::middleware('client.auth')->group(function () {
     Route::post('/client_portal_request', [ClientPortalController::class, 'store'])->name('clientPortalRequest.store');
 
     Route::post('/client_portal_request/on-account', [ClientPortalController::class, 'create'])->name('client_portal_request.create');
+
+    Route::get('client_portal/get-latest-invoice-no', [InvoiceController::class, 'getLatestInvoiceNo'])->name('get-latest-invoice-no');
+
+    Route::get('/generate-waybill/{requestId}', [ClientPortalController::class, 'generateWaybill'])->name('generate-waybill');
+
+    Route::get('/waybill-preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill-preview');
+
+    Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinations']);
+
+    Route::get('/getCost/{originId}/{destinationId}', [RateController::class, 'getCost']);
+
 });
 
 // Client auth routes

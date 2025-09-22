@@ -58,89 +58,14 @@ class ClientPortalController extends Controller
     }
     public function overnight_onaccount(Request $request)  
     {
-        // $timeFilter = $request->query('time', 'all'); // default to all
-        // $startDate = $request->query('start_date');
-        // $endDate = $request->query('end_date');
-
-        // $clients = Client::where('type', 'on_account')->get();
-        // $vehicles = Vehicle::all();
-        // $drivers = User::where('role', 'driver')->get();
-        // $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
-        // $offices = Office::all();
-
-        $categories = ClientCategory::where('client_id', auth('client')->user()->id)
+            $categories = ClientCategory::where('client_id', auth('client')->user()->id)
             ->join('categories', 'client_categories.category_id', '=', 'categories.id')
             ->select('categories.id as category_id', 'categories.category_name')
             ->get();
 
-        // //     //dd($categories);
-
-        // // $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
-
-        // // $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
-        // //     ->whereHas('client', function ($query) {
-        // //         $query->where(['type'=>'on_account','id'=>auth('client')->user()->id]);
-        // //     })
-        // //     ->orderBy('created_at', 'desc')
-        // //     ->with(['client', 'user', 'vehicle'])
-        // //     ->get();
-
-        // $offices = Office::where('id',2)->get();
-        // $loggedInUserId = Auth::user()->id;
-        // $destinations = Rate::where('type', 'normal')->get();
-        // $walkInClients = Client::where('type', 'walkin')->get();
-        // $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
-
-     
-        // $collections = ShipmentCollection::with('client')
-        //     ->whereHas('client', function ($query) {
-        //         $query->where('client_id', auth('client')->user()->id); // Only walk-in clients
-        //     })
-        //     ->orderBy('created_at', 'desc')
-        //     ->get();
-
-        // // Get the latest consignment number
-        // $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-        //     ->orderByDesc('id')
-        //     ->first();
-
-        // if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-        //     $lastNumber = intval($matches[1]);
-        //     $newNumber = $lastNumber + 1;
-        // } else {
-        //     $newNumber = 10000; // Start from CN-10000
-        // }
-
-        // $consignment_no = 'CN-' . $newNumber;
-
-        // $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
-
-        // $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
-        //     ->whereHas('client', function ($query) {
-        //         $query->where('clientId', auth('client')->user()->id);
-        //     })
-        //     ->orderBy('created_at', 'desc')
-        //     ->with(['client', 'user', 'vehicle'])
-        //     ->get();
-
-        // return view('client_portal.shipments.overnight_on_account', compact('clientRequests', 'offices',
-        //     'loggedInUserId',
-        //     'destinations',
-        //     'walkInClients',
-        //     'collections',
-        //     'consignment_no',
-        //     'sub_category','timeFilter',
-        //     'startDate',
-        //     'endDate',
-        //     'clients','drivers','categories','vehicles'
-        // ));
-
-        // return view('client_portal.shipments.overnight_on_account', compact('clients', 'clientRequests', 'vehicles', 'offices', 'drivers','timeFilter',
-        //     'startDate',
-        //     'endDate', 'sub_category', 'categories'));
-
         $offices = Office::all();
-        $loggedInUserId = Auth::user()->id;
+        // $loggedInUserId = Auth::user()->id;
+        $id = auth('client')->user()->id;
         $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
@@ -179,7 +104,7 @@ class ClientPortalController extends Controller
             ->get();
 
         return view('client_portal.shipments.overnight_on_account', compact('clientRequests', 'offices', 'categories',
-            'loggedInUserId',
+            //'loggedInUserId',
             'destinations',
             'walkInClients',
             'collections',
@@ -187,46 +112,75 @@ class ClientPortalController extends Controller
             'sub_category'
         ));
     }  
+    public function generateWaybill($requestId) 
+    {
+        $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
+        $pdf = PDF::loadView('pdf.waybill', [
+            'collection' => $collection,
+            'isPdf' => true
+        ])->setPaper('a5', 'portrait');
+        return $pdf->stream('Waybill_'.$collection->waybill_no.'.pdf');
+    }
     public function sameday_walkin()
     {
         return view('client_portal.shipments.sameday_walkin');
     }
     public function sameday_on_account(Request $request)
     {
-
-
-        $timeFilter = $request->query('time', 'all'); // default to all
-
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
-
-        $clients = Client::where('type', 'on_account')->get();
-        $vehicles = Vehicle::all();
-        $drivers = User::where('role', 'driver')->get();
-        $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
-
-        $locations = [];
-        $offices = Office::all();
-
         $categories = ClientCategory::where('client_id', auth('client')->user()->id)
             ->join('categories', 'client_categories.category_id', '=', 'categories.id')
             ->select('categories.id as category_id', 'categories.category_name')
             ->get();
 
-        $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
+        $offices = Office::all();
+        // $loggedInUserId = Auth::user()->id;
+        $id = auth('client')->user()->id;
+        $destinations = Rate::where('type', 'normal')->get();
+        $walkInClients = Client::where('type', 'walkin')->get();
+        $sub_category = SubCategory::where('sub_category_name', 'Same Day')->firstOrFail();
 
-        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
+        
+        $collections = ShipmentCollection::with('client')
             ->whereHas('client', function ($query) {
-                $query->where(['type'=>'on_account','id'=>auth('client')->user()->id]);
+                $query->where('client_id', auth('client')->user()->id); 
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get the latest consignment number
+        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
+            $lastNumber = intval($matches[1]);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 10000; // Start from CN-10000
+        }
+
+        $consignment_no = 'CN-' . $newNumber;
+
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
+        //dd($overnightSubCategoryIds);
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('clientId', auth('client')->user()->id);
             })
             ->orderBy('created_at', 'desc')
             ->with(['client', 'user', 'vehicle'])
             ->get();
+        //dd($clientRequests);
 
-
-        return view('client_portal.shipments.same_day_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
-            'startDate','categories','offices',
-            'endDate', 'sub_category','locations'));   
+        return view('client_portal.shipments.same_day_on_account', compact('clientRequests', 'offices', 'categories',
+            //'loggedInUserId',
+            'destinations',
+            'walkInClients',
+            'collections',
+            'consignment_no',
+            'sub_category'
+        )); 
     }
     
 
@@ -543,7 +497,9 @@ class ClientPortalController extends Controller
                     'reference_no'           => $request->reference,
                 ]);
             }
-
+            if(auth('client')->user()->id){
+                $invoiced_by = 1;
+            }
             if ($request->payment_mode === 'Invoice') {
                 Invoice::create([
                     'invoice_no'             => $request->reference,
@@ -551,7 +507,7 @@ class ClientPortalController extends Controller
                     'due_date'               => Carbon::now()->addDays(30),
                     'client_id'              => $request->clientId,
                     'shipment_collection_id' => $collection->id,
-                    'invoiced_by'            => auth()->id(),
+                    'invoiced_by'            => $invoiced_by,
                 ]);
             }
 

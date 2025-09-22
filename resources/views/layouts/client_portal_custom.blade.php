@@ -992,7 +992,7 @@
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/get-destinations/' + selectedOfficeId)
+                        $.get('/getDestinations/' + selectedOfficeId)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(
@@ -1158,7 +1158,7 @@
                     const originId = modal.find('.origin-dropdown').val();
 
                     if (originId && destinationId) {
-                        $.get(`/get-cost/${originId}/${destinationId}`)
+                        $.get(`/getCost/${originId}/${destinationId}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);
