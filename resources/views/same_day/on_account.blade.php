@@ -427,7 +427,7 @@
                                 <td>
                                     <span
                                         class="badge p-2
-                                    @if ($request->status == 'pending collection') bg-secondary
+                                    @if ($request->status === 'pending collection' || $request->status === 'Pending-Collection') bg-secondary
                                     @elseif ($request->status == 'collected')
                                         bg-warning
                                     @elseif ($request->status == 'delivered')
@@ -911,6 +911,103 @@
                                             <i class="fas fa-truck"></i>
                                         </button>
                                     @endif
+
+                                    @if ($request->status === 'Pending-Collection')
+                                        <button class="btn btn-sm btn-primary" title="Delivery" data-toggle="modal"
+                                            data-target="#allocateRider-{{ $request->id }}">
+                                            Allocate Rider <i class="fas fa-van"></i> <i class="fas fa-arrow-up"></i>
+                                        </button>
+                                    @endif
+                                    {{-- Allocate Rider Modal --}}
+
+                                    <div class="modal fade" id="allocateRider-{{ $request->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="allocateRiderLabel-{{ $request->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-md" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-warning text-white">
+                                                    <h5 class="modal-title">
+                                                        Allocate Rider to collect Parcel(Request
+                                                        ID:
+                                                        {{ $request->requestId }})
+                                                    </h5>
+                                                    <button type="button" class="close text-white"
+                                                        data-dismiss="modal">&times;</button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    {{-- Issue Form --}}
+                                                    <form method="POST" id="allocateRider" action="{{ route('client_request.update_rider', $request->id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="row">
+                                                            {{-- Rider Selection --}}
+                                                            <div class="col-md-12">
+                                                                <label class="text-primary">
+                                                                    <h6>Rider Details</h6>
+                                                                </label>
+                                                            </div>
+
+                                                            {{-- <div class="col-md-4">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input currentLocation"
+                                                                        type="radio" name="riderOption"
+                                                                        value="currentLocation">
+                                                                    <label class="form-check-label"
+                                                                        for="currentLocation">Pickup Location</label>
+                                                                </div>
+                                                            </div> --}}
+                                                            <div class="col-md-6">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input unallocatedRiders"
+                                                                        type="radio" name="riderOption"
+                                                                        value="unallocated">
+                                                                    <label class="form-check-label"
+                                                                        for="unallocatedRiders">Unallocated Riders</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input allRiders"
+                                                                        type="radio" name="riderOption" value="all">
+                                                                    <label class="form-check-label" for="allRiders">All
+                                                                        Riders</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-12 mb-3 mt-2">
+                                                                <label for="userId"
+                                                                    class="form-label text-primary">Rider</label>
+                                                                <select class="form-control userId" name="userId"
+                                                                    required>
+                                                                    <option value="">Select Rider</option>
+                                                                </select>
+                                                                <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
+                                                                    Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-8 mb-3">
+                                                                <label for="vehicle"
+                                                                    class="form-label text-primary">Vehicle</label>
+                                                                <input type="text" class="form-control vehicle"
+                                                                    name="vehicle_display"
+                                                                    placeholder="Select rider to populate" readonly>
+                                                                <input type="hidden" class="vehicleId" name="vehicleId">
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Cancel X</button>
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

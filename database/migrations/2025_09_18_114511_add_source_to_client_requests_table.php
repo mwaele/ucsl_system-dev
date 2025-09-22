@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('client_requests', function (Blueprint $table) {
-            $table->string('source')->default('ucsl')->after('requestId');    
+            $table->string('source')->nullable()->default('ucsl')->after('requestId');
         });
     }
 

@@ -660,7 +660,7 @@
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label
-                                                                        class="form-label text-primary text-primary">Origin
+                                                                        class="form-label text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_idxz"
                                                                         class="form-control origin-dropdownxz" value="{{ $collection->shipmentCollection?->office->name }}" required>
@@ -672,6 +672,21 @@
                                                                             <option value="{{ $office->id }}">
                                                                                 {{ $office->name }}</option>
                                                                         @endforeach --}}
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Origin <span class="text-danger">*</span></label>
+                                                                    <select name="origin_id" id="origin_idxz"
+                                                                        class="form-control origin-dropdownxz" required>
+                                                                        <option value="">Select</option>
+                                                                        
+                                                                        @foreach ($offices as $office)
+                                                                            <option value="{{ $office->id }}" 
+                                                                                {{ $collection->office_id == $office->id ? 'selected' : '' }}>
+                                                                                {{ $office->name }}
+                                                                            </option>
+                                                                        @endforeach
                                                                     </select>
                                                                 </div>
 
@@ -688,38 +703,55 @@
                                                                         </option>
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name="destination_id"
-                                                                    value="{{ $collection->rate_id }}">
 
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Destination <span class="text-danger">*</span></label>
+                                                                    <select name="destination" class="form-control destination-dropdownxz" required>
+                                                                        <option value="">Select</option>
+
+                                                                        @foreach ($destinations as $dest)
+                                                                            <option value="{{ $dest->id }}" 
+                                                                                {{ $collection->shipmentCollection?->destination_id == $dest->id ? 'selected' : '' }}>
+                                                                                {{ $dest->destination }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+
+                                                                <input type="hidden" name="destination_id" value="{{ $collection->rate_id }}">
                                                             </div>
                                                         @else
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Origin
-                                                                        <span class="text-danger">*</span> </label>
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Origin <span class="text-danger">*</span></label>
                                                                     <select name="origin_id" id="origin_id"
-                                                                        class="form-control origin-dropdown" value="{{ $collection->shipmentCollection?->office->name }}" required>
+                                                                        class="form-control origin-dropdown" required>
                                                                         <option value="">Select</option>
+                                                                        
                                                                         @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
+                                                                            <option value="{{ $office->id }}" 
+                                                                                {{ $collection->office_id == $office->id ? 'selected' : '' }}>
+                                                                                {{ $office->name }}
+                                                                            </option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Destination
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="destination"
-                                                                        class="form-control destination-dropdown" value="{{ $collection->shipmentCollection?->destination->destination }}">
+
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Destination <span class="text-danger">*</span></label>
+                                                                    <select name="destination" class="form-control destination-dropdown" required>
                                                                         <option value="">Select</option>
+
+                                                                        @foreach ($destinations as $dest)
+                                                                            <option value="{{ $dest->id }}" 
+                                                                                {{ $collection->shipmentCollection?->destination_id == $dest->id ? 'selected' : '' }}>
+                                                                                {{ $dest->destination }}
+                                                                            </option>
+                                                                        @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id">
-
+                                                                <input type="hidden" name='destination_id' id="destination_id">
                                                             </div>
                                                         @endif
 
