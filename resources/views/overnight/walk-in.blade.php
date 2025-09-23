@@ -4,12 +4,13 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('overnight.walk-in') }}</div>
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('overnight.walk-in') }}
+            </div>
             <div class="d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">
                     <i class="fas fa-plus fa-sm text-white"></i> Register parcel
                 </button>
-                <h4 class="mb-0 text-warning"><strong>Overnight - Walk-in Parcels</strong> </h4>
+                <h4 class="mb-0 text-warning"><strong>UCSL - Overnight - Walk-in Parcels</strong> </h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">
@@ -111,7 +112,8 @@
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-warning">
-                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register Overnight Walk-in
+                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register UCSL - Overnight
+                                            Walk-in
                                             Parcel</h5>
                                         <button type="button" class="text-white close" data-dismiss="modal"
                                             aria-label="Close">

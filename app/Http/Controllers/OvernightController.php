@@ -58,6 +58,31 @@ class OvernightController extends Controller
             'startDate',
             'endDate', 'sub_category'));
     }
+    public function client_on_account(Request $request )
+    {
+        $timeFilter = $request->query('time', 'all'); // default to all
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $clients = Client::where('type', 'on_account')->get();
+        $vehicles = Vehicle::all();
+        $drivers = User::where('role', 'driver')->get();
+        $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
+
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where(['type'=>'on_account','source'=>'client_portal']);
+            })
+            ->orderBy('created_at', 'desc')
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+
+        return view('overnight.clients.client_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
+            'startDate',
+            'endDate', 'sub_category'));
+    }
 
     public function walk_in()
     {

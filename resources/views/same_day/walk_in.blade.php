@@ -11,7 +11,7 @@
                     <i class="fas fa-plus fa-sm text-white"></i> Register parcel
                 </button>
 
-                <h4 class="mb-0 text-warning"><strong> Same Day - Walk-in Parcels</strong></h4>
+                <h4 class="mb-0 text-warning"><strong> UCSL - Same Day - Walk-in Parcels</strong></h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">
@@ -113,7 +113,8 @@
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-warning">
-                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register Same Day Walk-in
+                                        <h5 class="modal-title text-white" id="exampleModalLabel">Register UCSL - Same Day
+                                            Walk-in
                                             Parcel</h5>
                                         <button type="button" class="text-white close" data-dismiss="modal"
                                             aria-label="Close">
@@ -936,8 +937,10 @@
                                                                     required>
                                                                     <option value="">Select Rider</option>
                                                                 </select>
-                                                                <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
-                                                                    Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                <div id="riderInfo" class="text-muted small mt-1"
+                                                                    style="display:none;">
+                                                                    Please select either <strong>Unallocated Riders</strong>
+                                                                    or <strong>All Riders</strong> first.
                                                                 </div>
                                                             </div>
 

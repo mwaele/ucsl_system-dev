@@ -272,6 +272,25 @@ class ClientPortalController extends Controller
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
+    private function formatPhoneNumber($phone)
+{
+    $phone = preg_replace('/\D/', '', $phone); // remove non-numeric characters
+
+    if (str_starts_with($phone, '0')) {
+        // Replace leading 0 with +254
+        return '+254' . substr($phone, 1);
+    } elseif (str_starts_with($phone, '254')) {
+        // Already has 254, just add +
+        return '+' . $phone;
+    } elseif (str_starts_with($phone, '+254')) {
+        // Already in correct format
+        return $phone;
+    }
+
+    // fallback: return unchanged
+    return $phone;
+}
+
 
     public function create(Request $request, SmsService $smsService)
     {
@@ -459,6 +478,16 @@ class ClientPortalController extends Controller
                 'updated_at' => now()
             ]);
 
+            // 6. Save Tracking Info
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackingId,
+                'date' => now(),
+                'details' => 'Waybill Generated',
+                'remarks' => $clientName. ' Generated Waybill ',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             // 6. Save to client_requests table
             DB::table('client_requests')->insert([
                 'clientId' => $request->clientId,
@@ -530,53 +559,41 @@ class ClientPortalController extends Controller
                 $trackingUrl = "https://www.ufanisicourier.co.ke/tracking";
                 //dd($trackingUrl); 
                 
-                $track = "Tracking link: ".$trackingUrl;
+                //$track = "Tracking link: ".$trackingUrl;
 
-                
-
-                // Send receiver SMS
-                // $waybill = $waybill_no;
-                // $receiverPhone = $request->receiverPhone;
-                // $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId} . {$trackingUrl}";
-
-                // $smsService->sendSms(
-                //     phone: $receiverPhone,
-                //     subject: 'Parcel Booking Confirmation',
-                //     message: $parcelMessage,
-                //     addFooter: true
-                // );
-
-                // SentMessage::create([
-                //     'request_id' => $requestId,
-                //     'client_id' => $request->clientId,
-                //     'recipient_type' => 'receiver',
-                //     'recipient_name' => $request->receiverContactPerson ?? 'Receiver',
-                //     'phone_number' => $receiverPhone,
-                //     'subject' => 'Parcel Booking Confirmation',
-                //     'message' => $parcelMessage,
-                // ]);
                 
                 $track = "<strong>Tracking Link:</strong> <a href=\"{$trackingUrl}\" target=\"_blank\">Click To Track</a>";
                 
                 //message front office
 
                 // get all office_user rows with their user (only email & phone)
-                $officeUsers = OfficeUser::where('office_id', $office_id)
+                $officeUsers = OfficeUser::where('office_id', $request->origin_id)
                 ->with('user:id,email,phone_number,name') // eager load user
                 ->get();
 
                 $users = $officeUsers->pluck('user')->filter(); // collection of User models
 
+                //dd($users);
+                
+
                 foreach ($users as $user) {
                 $recipientName  = $user->name ?? 'User';
-                $recipientPhone = $user->phone_number;
+
+                $recipientPhone = $this->formatPhoneNumber($user->phone_number);
+
+                //dd($recipientPhone);
+
                 $recipientEmail = $user->email;
+
+                //dd($recipientEmail);
 
                 // SMS message
                 $smsMsg = "Hello {$recipientName}, {$clientName} has initiated parcel collection request. Act on it: {$requestId}";
 
                 // Email message (with HTML link)
                 $emailMsg = "Hello {$recipientName}, {$clientName} has initiated parcel collection request. Act on it: {$requestId}";
+
+                //dd($recipientPhone);
 
                 // ✅ Send SMS
                 if ($recipientPhone) {
@@ -588,22 +605,14 @@ class ClientPortalController extends Controller
                     );
                 }
                 // sender email
-                // $senderSubject = 'Parcel Collection Request';
-                // //$clientEmail = $client->email;
-                // $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-                // $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
-                //         <p>Thank you for using Ufanisi Courier Services.</p>";
-                // $fullSenderMessage = $senderEmail . $footer;
+                $senderSubject = 'Parcel Collection Request';
+                //$clientEmail = $client->email;
+                $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+                $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
+                        <p>Thank you for using Ufanisi Courier Services.</p>";
+                $fullSenderMessage = $emailMsg . $footer;
 
-                // $emailResponse = EmailHelper::sendHtmlEmail($recipientEmail, $senderSubject, $fullSenderMessage);
-
-                // ✅ Send Email (Laravel Mail)
-                // if ($recipientEmail) {
-                //     Mail::raw($emailMsg, function ($message) use ($recipientEmail) {
-                //         $message->to($recipientEmail)
-                //                 ->subject('Parcel Booked');
-                //     });
-                // }
+                $emailResponse = EmailHelper::sendHtmlEmail($recipientEmail, $senderSubject, $fullSenderMessage);
             }
 
 
@@ -617,18 +626,18 @@ class ClientPortalController extends Controller
                 //     message: $senderMsg,
                 //     addFooter: true
                 // );
-                //$smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
+                // $smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
 
-                SentMessage::create([
-                    'request_id' => $request->requestId,
-                    'client_id' => $clientId,
-                    //'rider_id' => auth()->id(),
-                    'recipient_type' => 'sender',
-                    'recipient_name' => $senderName,
-                    'phone_number' => $senderPhone,
-                    'subject' => 'Parcel Collection Request',
-                    'message' => $senderMsg,
-                ]);
+                // SentMessage::create([
+                //     'request_id' => $request->requestId,
+                //     'client_id' => $clientId,
+                //     //'rider_id' => auth()->id(),
+                //     'recipient_type' => 'sender',
+                //     'recipient_name' => $senderName,
+                //     'phone_number' => $senderPhone,
+                //     'subject' => 'Parcel Collection Request',
+                //     'message' => $senderMsg,
+                // ]);
 
             
 

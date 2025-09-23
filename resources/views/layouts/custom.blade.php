@@ -294,7 +294,7 @@
                             <a class="collapse-item"
                                 href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight - Walk-in</a>
                             <a class="collapse-item"
-                                href="{{ route('overnight.on-account', ['type' => 'client']) }}">Overnight - On
+                                href="{{ route('client.overnight.on-account', ['type' => 'client']) }}">Overnight - On
                                 Account</a>
                             <a class="collapse-item"
                                 href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a>
@@ -1787,7 +1787,7 @@
         </script>
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function() {
                 const riderSelect = document.querySelector(".userId");
                 const riderRadios = document.querySelectorAll("input[name='riderOption']");
                 const riderInfo = document.getElementById("riderInfo");
@@ -1798,7 +1798,7 @@
 
                 // Add change event to all radio buttons
                 riderRadios.forEach(radio => {
-                    radio.addEventListener("change", function () {
+                    radio.addEventListener("change", function() {
                         const anyChecked = Array.from(riderRadios).some(r => r.checked);
                         riderSelect.disabled = !anyChecked;
 

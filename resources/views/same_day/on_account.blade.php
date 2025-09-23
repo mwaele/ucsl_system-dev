@@ -4,13 +4,14 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('sameday.on-account') }}</div>
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('sameday.on-account') }}
+            </div>
             <div class="d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createParcelModal">
                     + Create Parcel
                 </button>
 
-                <h4 class="mb-0 text-warning"><strong> Same Day - On-Account Parcels</strong></h4>
+                <h4 class="mb-0 text-warning"><strong> UCSL - Same Day - On-Account Parcels</strong></h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">
@@ -112,7 +113,7 @@
                             <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                                 <div class="modal-content">
                                     <div class="modal-header bg-gradient-primary">
-                                        <h3 class="modal-title text-white" id="exampleModalLabel">Create Same Day
+                                        <h3 class="modal-title text-white" id="exampleModalLabel">Create UCSL - Same Day
                                             On-account Request</h3>
                                         <button type="button" class="text-white close" data-dismiss="modal"
                                             aria-label="Close">
@@ -141,7 +142,8 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="collectionLocation" class="form-label text-primary">Pickup Location
+                                                    <label for="collectionLocation" class="form-label text-primary">Pickup
+                                                        Location
                                                     </label>
                                                     <select name="collectionLocation" id="collectionLocation"
                                                         class="form-control selectpicker" data-live-search="true">
@@ -937,7 +939,8 @@
 
                                                 <div class="modal-body">
                                                     {{-- Issue Form --}}
-                                                    <form method="POST" id="allocateRider" action="{{ route('client_request.update_rider', $request->id) }}">
+                                                    <form method="POST" id="allocateRider"
+                                                        action="{{ route('client_request.update_rider', $request->id) }}">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="row">
@@ -982,8 +985,10 @@
                                                                     required>
                                                                     <option value="">Select Rider</option>
                                                                 </select>
-                                                                <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
-                                                                    Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                <div id="riderInfo" class="text-muted small mt-1"
+                                                                    style="display:none;">
+                                                                    Please select either <strong>Unallocated Riders</strong>
+                                                                    or <strong>All Riders</strong> first.
                                                                 </div>
                                                             </div>
 

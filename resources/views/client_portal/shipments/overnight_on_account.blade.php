@@ -350,8 +350,7 @@
                                                 </select>
                                             </div>
 
-                                            <div class="col-md-2" id="priority-deadline-group"
-                                                style="display:none;">
+                                            <div class="col-md-2" id="priority-deadline-group" style="display:none;">
                                                 <h6 for="deadline_date" class="text-primary">Deadline
                                                 </h6>
                                                 <input type="datetime-local" class="form-control" name="deadline_date"
@@ -370,8 +369,7 @@
                                             </div>
 
                                             <!-- Extra charge input (hidden by default) -->
-                                            <div class="col-md-2" id="priority-extra-charge-group"
-                                                style="display:none;">
+                                            <div class="col-md-2" id="priority-extra-charge-group" style="display:none;">
                                                 <h6 for="priority_extra_charge" class="text-primary">Priority Extra Charge
                                                 </h6>
                                                 <input type="number" class="form-control" name="priority_extra_charge"
@@ -666,10 +664,15 @@
                                         </div>
                                     @endif
 
-                                    @if ($request->shipmentCollection?->payment_mode == 'Invoice')
+                                    @if (
+                                        $request->shipmentCollection?->payment_mode == 'Invoice' &&
+                                            $request->status != 'Pending-Collection' &&
+                                            $request->status != 'pending collection' &&
+                                            $request->status != 'verified' &&
+                                            $request->status != 'delivered')
                                         <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
-                                                Generate Invoice
+                                                Generate Invoice {{ $request->status }}
                                             </button>
                                         </a>
                                     @endif
