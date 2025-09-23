@@ -315,10 +315,20 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
 
-            <li class="nav-item {{ request()->routeIs('my_collections.*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('my_collections.show') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_collections.show') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Rider Collections</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item {{ request()->routeIs('my_collections.collect') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('my_collections.collect') }}">
+                    <i class="fas fa-fw fa-clipboard"></i>
+                    <span class="sized">Rider Collections - Client</span>
                 </a>
             </li>
 

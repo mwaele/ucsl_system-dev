@@ -559,7 +559,7 @@
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverContactPerson" required>
+                                                                                name="receiverContactPerson" value="{{ $collection->shipmentCollection?->receiver_name }}" required>
                                                                             <input type="hidden" name='client_id'
                                                                                 value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId"
@@ -574,7 +574,7 @@
                                                                                 Email <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="email" class="form-control"
-                                                                                name="receiverEmail" required>
+                                                                                name="receiverEmail" value="{{ $collection->shipmentCollection?->receiver_email }}" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -584,7 +584,7 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required
+                                                                                name="receiverIdNo" value="{{ $collection->shipmentCollection?->receiver_id_no }}" required
                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
@@ -594,7 +594,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverPhone" required>
+                                                                                name="receiverPhone" value="{{ $collection->shipmentCollection?->receiver_phone }}" required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -604,7 +604,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverAddress" required>
+                                                                                name="receiverAddress" value="{{ $collection->shipmentCollection?->receiver_address }}" required>
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
@@ -612,7 +612,7 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverTown" required>
+                                                                                name="receiverTown" value="{{ $collection->shipmentCollection?->receiver_town }}" required>
                                                                             <input type="hidden"
                                                                                 value="{{ $consignment_no }}"
                                                                                 name="consignment_no">
@@ -660,10 +660,10 @@
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label
-                                                                        class="form-label text-primary text-primary">Origin
+                                                                        class="form-label text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_idxz"
-                                                                        class="form-control origin-dropdownxz" required>
+                                                                        class="form-control origin-dropdownxz" value="{{ $collection->shipmentCollection?->office->name }}" required>
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->office_id }}">
                                                                             {{ $collection->office->name }}</option>
@@ -681,45 +681,48 @@
 
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
-                                                                        class="form-control destination-dropdownxz">
+                                                                        class="form-control destination-dropdownxz" value="{{ $collection->shipmentCollection?->destination->destination }}">
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->rate_id }}">
                                                                             {{ $collection->collectionLocation }}
                                                                         </option>
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name="destination_id"
-                                                                    value="{{ $collection->rate_id }}">
 
+                                                                <input type="hidden" name="destination_id" value="{{ $collection->rate_id }}">
                                                             </div>
                                                         @else
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Origin
-                                                                        <span class="text-danger">*</span> </label>
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Origin <span class="text-danger">*</span></label>
                                                                     <select name="origin_id" id="origin_id"
-                                                                        class="form-control origin-dropdown"required>
+                                                                        class="form-control origin-dropdown" required>
                                                                         <option value="">Select</option>
+                                                                        
                                                                         @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}">
-                                                                                {{ $office->name }}</option>
+                                                                            <option value="{{ $office->id }}" 
+                                                                                {{ $collection->office_id == $office->id ? 'selected' : '' }}>
+                                                                                {{ $office->name }}
+                                                                            </option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary text-primary">Destination
-                                                                        <span class="text-danger">*</span> </label>
-                                                                    <select name="destination"
-                                                                        class="form-control destination-dropdown">
+
+                                                                <div class="form-group col-md-6"> 
+                                                                    <label class="form-label text-primary">Destination <span class="text-danger">*</span></label>
+                                                                    <select name="destination" class="form-control destination-dropdown" required>
                                                                         <option value="">Select</option>
+
+                                                                        @foreach ($destinations as $dest)
+                                                                            <option value="{{ $dest->id }}" 
+                                                                                {{ $collection->shipmentCollection?->destination_id == $dest->id ? 'selected' : '' }}>
+                                                                                {{ $dest->destination }}
+                                                                            </option>
+                                                                        @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id">
-
+                                                                <input type="hidden" name='destination_id' id="destination_id">
                                                             </div>
                                                         @endif
 
@@ -745,39 +748,41 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <tr>
-                                                                        <td><input type="text" class="form-control"
-                                                                                name="item_name[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="packages[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="weight[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="length[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="width[]"></td>
-                                                                        <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="height[]"></td>
-                                                                        <td class="volume-display text-muted"><input
-                                                                                type="number" min="0"
-                                                                                class="form-control" name="volume[]"
-                                                                                readonly></td>
-                                                                        <td><button type="button"
-                                                                                class="btn btn-danger btn-sm remove-row"
-                                                                                title="Delete Row"><i
-                                                                                    class="fas fa-trash"></i></button>
-                                                                        </td>
-                                                                    </tr>
+                                                                    @foreach($collection->shipmentCollection?->items ?? [] as $item)
+                                                                        <tr>
+                                                                            <td><input type="text" class="form-control"
+                                                                                    name="item_name[]" value="{{ $item->item_name }}"></td>
+                                                                            <td><input type="number" min="0"
+                                                                                    max="100" class="form-control"
+                                                                                    name="packages[]" value="{{ $item->packages_no }}"></td>
+                                                                            <td><input type="number" min="0"
+                                                                                    max="100" class="form-control"
+                                                                                    name="weight[]" value="{{ $item->weight }}"></td>
+                                                                            <td><input type="number" min="0"
+                                                                                    max="100" class="form-control"
+                                                                                    name="length[]" value="{{ $item->length }}"></td>
+                                                                            <td><input type="number" min="0"
+                                                                                    max="100" class="form-control"
+                                                                                    name="width[]" value="{{ $item->width }}"></td>
+                                                                            <td><input type="number" min="0"
+                                                                                    max="100" class="form-control"
+                                                                                    name="height[]" value="{{ $item->height }}"></td>
+                                                                            <td class="volume-display text-muted"><input
+                                                                                    type="number" min="0"
+                                                                                    class="form-control" name="volume[]" value="{{ $item->volume }}"
+                                                                                    readonly></td>
+                                                                            <td><button type="button"
+                                                                                    class="btn btn-danger btn-sm remove-row"
+                                                                                    title="Delete Row"><i
+                                                                                        class="fas fa-trash"></i></button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
                                                                 </tbody>
                                                             </table>
                                                         </div>
 
-                                                        <button type="button" class="btn btn-primary mb-3 addRowBtn"
+                                                        <button type="button" class="btn btn-primary mt-3 mb-3 addRowBtn"
                                                             id="addRowBtn">Add
                                                             Row</button>
 
@@ -789,53 +794,52 @@
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-3">
                                                                     <label
-                                                                        class="form-label text-primary text-primary">Total
+                                                                        class="form-label text-primary">Total
                                                                         Weight
                                                                         (Kg)
                                                                         <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="total_weight" required
+                                                                        class="form-control" name="total_weight" value="{{ $collection->shipmentCollection?->total_weight }}" required
                                                                         readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
                                                                     <label
-                                                                        class="form-label text-primary text-primary">Cost
+                                                                        class="form-label text-primary">Cost
                                                                         <span class="text-danger">*</span>
                                                                     </label>
-                                                                    <input type="number" min="0"
-                                                                        class="form-control"
-                                                                        value="{{ $collection->rate }}" name="cost"
+                                                                    <input type="number" min="0" class="form-control" name="cost"
+                                                                        value="{{ $collection->shipmentCollection?->cost ?? $collection->rate }}"
                                                                         required readonly>
                                                                 </div>
                                                                 <input type="hidden" name="base_cost" value="">
 
                                                                 <div class="form-group col-md-3">
-                                                                    <label class="form-label text-primary text-primary">Tax
+                                                                    <label class="form-label text-primary">Tax
                                                                         (16%) <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="vat" required
+                                                                        class="form-control" name="vat" value="{{ $collection->shipmentCollection?->vat }}" required
                                                                         readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
                                                                     <label
-                                                                        class="form-label text-primary text-primary">Total
+                                                                        class="form-label text-primary">Total
                                                                         Cost
                                                                         <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="total_cost" required
+                                                                        class="form-control" name="total_cost" value="{{ $collection->shipmentCollection?->total_cost }}" required
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
-                                                                                                                                                                                                                                                                                                                                                                                                            </label>
-                                                                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
-                                                                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                                                                                                                                                                                                readonly>
-                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                                                                        <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                class="text-danger">*</span>
+                                                                        </label>
+                                                                        <input type="number" min="0"
+                                                                            class="form-control" name="total_cost" required
+                                                                            readonly>
+                                                                    </div> -->
                                                             </div>
 
                                                         </div>

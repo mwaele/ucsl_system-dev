@@ -220,6 +220,7 @@ Route::middleware('auth')->group(function () {
 
     //collections
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
+    Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
     Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
     Route::get('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'showDeclineForm'])->name('agent.decline.form');
