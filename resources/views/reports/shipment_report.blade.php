@@ -109,9 +109,9 @@
 
                         for (let i = 1; i < rows.length; i++) {
                             let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
-                            let clientTypeCell = rows[i].getElementsByTagName("td")[4];
-                            let serviceLevelCell = rows[i].getElementsByTagName("td")[6];
-                            let paymentTypeCell = rows[i].getElementsByTagName("td")[12];
+                            let clientTypeCell = rows[i].getElementsByTagName("td")[5];
+                            let serviceLevelCell = rows[i].getElementsByTagName("td")[7];
+                            let paymentTypeCell = rows[i].getElementsByTagName("td")[13];
 
                             if (!dateCell || !clientTypeCell || !serviceLevelCell || !paymentTypeCell) continue;
 
