@@ -97,9 +97,8 @@ class ShipmentArrivalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   
-
-    public function updateArrivalDetails(Request $request)
+    
+    public function updateArrivalDetails(Request $request) 
     {
         $request->validate([
             'loading_sheet_id' => 'required|exists:loading_sheets,id',
@@ -107,16 +106,33 @@ class ShipmentArrivalController extends Controller
         ]);
 
         try {
-            $sheet = LoadingSheet::with('truck')->findOrFail($request->loading_sheet_id);
+            Log::info('updateArrivalDetails called', [
+                'loading_sheet_id' => $request->loading_sheet_id,
+                'dispatchers' => $request->dispatchers,
+            ]);
+
+            $sheet = LoadingSheet::with('transporter_truck')->findOrFail($request->loading_sheet_id);
+
+            Log::info('Loading sheet retrieved', [
+                'sheet_id' => $sheet->id,
+                'truck_id' => optional($sheet->transporter_truck)->id,
+            ]);
 
             // Update the offloading clerk
             $sheet->update([
                 'offloading_clerk' => $request->dispatchers,
             ]);
+            Log::info('Offloading clerk updated', [
+                'sheet_id' => $sheet->id,
+                'offloading_clerk' => $request->dispatchers,
+            ]);
 
             // Update vehicle status if linked
-            if ($sheet->truck) {
-                $sheet->truck->update(['status' => 'available']);
+            if ($sheet->transporter_truck) {
+                $sheet->transporter_truck->update(['status' => 'available']);
+                Log::info('Truck status updated to available', [
+                    'truck_id' => $sheet->transporter_truck->id,
+                ]);
             }
 
             return response()->json([
@@ -127,6 +143,7 @@ class ShipmentArrivalController extends Controller
             Log::error('Error in updateArrivalDetails', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
+                'input' => $request->all(),
             ]);
 
             return response()->json([
