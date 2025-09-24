@@ -260,12 +260,12 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->routeIs('tracking.*') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ request()->routeIs('tracking.*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('tracking.index') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Rate Our Services</span>
                 </a>
-            </li>
+            </li> --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
