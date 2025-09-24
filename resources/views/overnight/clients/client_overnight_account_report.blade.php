@@ -58,7 +58,7 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <h3><strong>Report for All Overnight On-account Shipments from UCSL</strong></h3>
+                    <h3><strong>Report for All Overnight On-account Shipments from Client Portal</strong></h3>
                     <p class="lead"><strong>Reporting Period:</strong>
                         {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
                 </td>

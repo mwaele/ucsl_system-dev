@@ -4,7 +4,7 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('overnight.on-account') }}
+            <div class="d-flex justify-content-between align-items-center">
             </div>
             <div class="d-flex justify-content-between align-items-center">
 
@@ -103,7 +103,7 @@
                         }
 
                         // Example usage for "Overnight walk-in" page
-                        initDateFilter("dataTable", 4, "/overnight_account_report");
+                        initDateFilter("dataTable", 4, "/client_overnight_account_report");
                     </script>
 
                 </div>

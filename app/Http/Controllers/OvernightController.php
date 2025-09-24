@@ -145,10 +145,33 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+            
+
         return $this->renderPdfWithPageNumbers(
             'overnight.overnight_account_report',
             ['clientRequests' => $clientRequests],
             'overnight_account_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+    public function client_overnight_account_report()
+    {
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where(['type'=>'on_account','source'=>'client_portal']);
+            })
+            ->with(['client', 'user', 'vehicle'])
+            ->get();
+
+            // $title = 'Report for All Overnight On-account Parcels from Client Portal';
+
+        return $this->renderPdfWithPageNumbers(
+            'overnight.clients.client_overnight_account_report',
+            ['clientRequests' => $clientRequests],
+            'client_overnight_account_report.pdf',
             'a4',
             'landscape'
         );

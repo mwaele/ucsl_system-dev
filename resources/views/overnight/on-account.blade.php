@@ -4,7 +4,7 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('overnight.on-account') }}</div>
+            <div class="d-flex justify-content-between align-items-center"> </div>
             <div class="d-flex justify-content-between align-items-center">
 
                 <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#createParcelModal">
@@ -732,7 +732,7 @@
                                                 </div>
                                             </div>
                                         @endif
-    
+
                                         @if ($request->status === 'collected')
                                             {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
                                                     data-toggle="modal" data-rider="{{ $request->user->name }}"
@@ -831,7 +831,8 @@
 
                                                     <div class="modal-body">
                                                         {{-- Issue Form --}}
-                                                        <form method="POST" id="allocateRider" action="{{ route('client_request.update_rider', $request->id) }}">
+                                                        <form method="POST" id="allocateRider"
+                                                            action="{{ route('client_request.update_rider', $request->id) }}">
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="row">
@@ -857,14 +858,17 @@
                                                                             type="radio" name="riderOption"
                                                                             value="unallocated">
                                                                         <label class="form-check-label"
-                                                                            for="unallocatedRiders">Unallocated Riders</label>
+                                                                            for="unallocatedRiders">Unallocated
+                                                                            Riders</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input allRiders"
-                                                                            type="radio" name="riderOption" value="all">
-                                                                        <label class="form-check-label" for="allRiders">All
+                                                                            type="radio" name="riderOption"
+                                                                            value="all">
+                                                                        <label class="form-check-label"
+                                                                            for="allRiders">All
                                                                             Riders</label>
                                                                     </div>
                                                                 </div>
@@ -876,8 +880,11 @@
                                                                         required>
                                                                         <option value="">Select Rider</option>
                                                                     </select>
-                                                                    <div id="riderInfo" class="text-muted small mt-1" style="display:none;">
-                                                                        Please select either <strong>Unallocated Riders</strong> or <strong>All Riders</strong> first.
+                                                                    <div id="riderInfo" class="text-muted small mt-1"
+                                                                        style="display:none;">
+                                                                        Please select either <strong>Unallocated
+                                                                            Riders</strong> or <strong>All Riders</strong>
+                                                                        first.
                                                                     </div>
                                                                 </div>
 
@@ -887,7 +894,8 @@
                                                                     <input type="text" class="form-control vehicle"
                                                                         name="vehicle_display"
                                                                         placeholder="Select rider to populate" readonly>
-                                                                    <input type="hidden" class="vehicleId" name="vehicleId">
+                                                                    <input type="hidden" class="vehicleId"
+                                                                        name="vehicleId">
                                                                 </div>
                                                             </div>
 
@@ -895,7 +903,8 @@
                                                                 class="modal-footer d-flex justify-content-between mt-2 shadow-sm">
                                                                 <button type="button" class="btn btn-danger"
                                                                     data-dismiss="modal">Cancel X</button>
-                                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-primary">Submit</button>
                                                             </div>
                                                         </form>
                                                     </div>

@@ -18,11 +18,11 @@
                             <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-
-                    <button id="generateReport" class="btn btn-danger shadow-sm">
-                        <i class="fas fa-download fa text-white"></i> Generate Report
-                    </button>
-
+                    @if (Auth::user()->role === 'admin')
+                        <button id="generateReport" class="btn btn-danger shadow-sm">
+                            <i class="fas fa-download fa text-white"></i> Generate Report
+                        </button>
+                    @endif
                     <script>
                         /**
                          * Reusable Date Filter + Report Generator

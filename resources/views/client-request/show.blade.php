@@ -18,11 +18,11 @@
                             <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-
-                    <button id="generateReport" class="btn btn-danger shadow-sm">
-                        <i class="fas fa-download fa text-white"></i> Generate Report
-                    </button>
-
+                    @if (Auth::user()->role === 'admin')
+                        <button id="generateReport" class="btn btn-danger shadow-sm">
+                            <i class="fas fa-download fa text-white"></i> Generate Report
+                        </button>
+                    @endif
                     <script>
                         /**
                          * Reusable Date Filter + Report Generator
@@ -374,18 +374,18 @@
                                     @endif
 
                                     <!-- <a href="#">
-                                                    <button class="btn btn-sm btn-warning mr-1" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </a>
-                                                <a href="#">
-                                                    <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                                        <i class="fas fa-file-pdf"></i>
-                                                    </button>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                    data-target="#delete_floor-{{ $collection->id }}"><i
-                                                        class="fas fa-trash"></i></button> -->
+                                                        <button class="btn btn-sm btn-warning mr-1" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </a>
+                                                    <a href="#">
+                                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        </button>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                        data-target="#delete_floor-{{ $collection->id }}"><i
+                                                            class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -800,7 +800,7 @@
                                                         <!-- Service Level -->
                                                         <div class="section-title"></div>
                                                         <div class="form-row">
-                                                            
+
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-3">
                                                                     <label
@@ -844,13 +844,13 @@
                                                                         readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                                                                                                                                                                                                                                                                                                            <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                                                                                                                                                                                                                                                                                                                    class="text-danger">*</span>
-                                                                                                                                                                                                                                                                                                                                                                                                            </label>
-                                                                                                                                                                                                                                                                                                                                                                                                            <input type="number" min="0"
-                                                                                                                                                                                                                                                                                                                                                                                                                class="form-control" name="total_cost" required
-                                                                                                                                                                                                                                                                                                                                                                                                                readonly>
-                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                                                                                                                                                                                                                                                                                        class="text-danger">*</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                </label>
+                                                                                                                                                                                                                                                                                                                                                                                                                <input type="number" min="0"
+                                                                                                                                                                                                                                                                                                                                                                                                                    class="form-control" name="total_cost" required
+                                                                                                                                                                                                                                                                                                                                                                                                                    readonly>
+                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
                                                             </div>
 
                                                         </div>

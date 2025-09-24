@@ -45,6 +45,8 @@ use App\Http\Controllers\Accounts\LedgerController;
 use App\Http\Controllers\ClientPortalController;
 
 use App\Http\Controllers\ServiceRateController;
+use App\Http\Controllers\ParcelController;
+use App\Http\Controllers\HomeController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -103,6 +105,8 @@ Route::get('/client_login', [AuthController::class, 'showSignIn'])->name('client
 Route::post('/signin', [AuthController::class, 'processSignIn'])->name('signin.process');
 
 Route::get('/guest', [AuthController::class, 'showGuest'])->name('guest');
+
+Route::get('/home',[HomeController::class, 'home'])->name('home');
 Route::post('/guest', [AuthController::class, 'processGuest'])->name('guest.process'); 
 
 Route::resource('guests','App\Http\Controllers\GuestController');
@@ -129,9 +133,19 @@ Route::post('/client/logout', [AuthController::class, 'logout'])
 //     return view('index');
 // })->middleware(['auth', 'verified'])->name('index');;
 
+Route::middleware('rider')->group(function(){
+Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
+//collections
+    Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
 
+    Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
 
-Route::middleware('auth')->group(function () {
+    Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
+    Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
+    
+});
+
+Route::middleware(['auth', 'role:admin,super-admin,staff'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -217,16 +231,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
     Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
     Route::post('/client-request/agent-approval', [ShipmentDeliveriesController::class, 'handleAgentApproval'])->name('client-request.agent-approval');
-
-    //collections
-    Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
-    Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
-    Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
-    Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
     Route::get('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'showDeclineForm'])->name('agent.decline.form');
     Route::post('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'submitDecline'])->name('agent.decline.submit');
-
-    Route::post('/my_collections/store', [MyCollectionController::class, 'store'])->name('my_collections.store');
 
     Route::get('/collections_report', [MyCollectionController::class, 'collections_report'])->name('collections_report');
 
@@ -247,12 +253,14 @@ Route::middleware('auth')->group(function () {
     Route::get('client/overnight/on-account', [OvernightController::class, 'client_on_account'])->name('client.overnight.on-account');
     Route::get('/walkin_report', [OvernightController::class, 'walkin_report'])->name('walkin_report');
     Route::get('/overnight_account_report', [OvernightController::class, 'overnight_account_report'])->name('overnight_account_report');
+    Route::get('/client_overnight_account_report', [OvernightController::class, 'client_overnight_account_report'])->name('client_overnight_account_report');
     Route::put('/update_rider/{id}', [OvernightController::class, 'updateRider'])->name('client_request.update_rider');
     Route::get('/sameday_walkin_report', [SameDayController::class, 'sameday_walkin_report'])->name('sameday_walkin_report');
     Route::get('/sameday_account_report', [SameDayController::class, 'sameday_account_report'])->name('sameday_account_report');
 
     Route::get('/sameday/walk-in', [SameDayController::class, 'walk_in'])->name('sameday.walk-in');
     Route::get('/sameday/on-account', [SameDayController::class, 'on_account'])->name('sameday.on-account');
+    Route::get('client/sameday/on-account', [SameDayController::class, 'client_on_account'])->name('client.sameday.on-account');
 
     Route::resource('shipment_arrival', 'App\Http\Controllers\ShipmentArrivalsController');
 

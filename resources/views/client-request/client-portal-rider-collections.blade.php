@@ -18,10 +18,11 @@
                             <i class="fas fa-times"></i> Clear
                         </button>
                     </div>
-
-                    <button id="generateReport" class="btn btn-danger shadow-sm">
-                        <i class="fas fa-download fa text-white"></i> Generate Report
-                    </button>
+                    @if (Auth::user()->role === 'admin')
+                        <button id="generateReport" class="btn btn-danger shadow-sm">
+                            <i class="fas fa-download fa text-white"></i> Generate Report
+                        </button>
+                    @endif
 
                     <script>
                         /**
@@ -359,18 +360,18 @@
                                     @endif
 
                                     <!-- <a href="#">
-                                                    <button class="btn btn-sm btn-warning mr-1" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </a>
-                                                <a href="#">
-                                                    <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                                        <i class="fas fa-file-pdf"></i>
-                                                    </button>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                    data-target="#delete_floor-{{ $collection->id }}"><i
-                                                        class="fas fa-trash"></i></button> -->
+                                                        <button class="btn btn-sm btn-warning mr-1" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </a>
+                                                    <a href="#">
+                                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        </button>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                        data-target="#delete_floor-{{ $collection->id }}"><i
+                                                            class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -559,7 +560,9 @@
                                                                                 Name <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverContactPerson" value="{{ $collection->shipmentCollection?->receiver_name }}" required>
+                                                                                name="receiverContactPerson"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_name }}"
+                                                                                required>
                                                                             <input type="hidden" name='client_id'
                                                                                 value="{{ $collection->client->id }}">
                                                                             <input type="hidden" name="requestId"
@@ -574,7 +577,9 @@
                                                                                 Email <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="email" class="form-control"
-                                                                                name="receiverEmail" value="{{ $collection->shipmentCollection?->receiver_email }}" required>
+                                                                                name="receiverEmail"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_email }}"
+                                                                                required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -584,8 +589,9 @@
                                                                                 Number <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" value="{{ $collection->shipmentCollection?->receiver_id_no }}" required
-                                                                                maxlength="8">
+                                                                                name="receiverIdNo"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_id_no }}"
+                                                                                required maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
@@ -594,7 +600,9 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverPhone" value="{{ $collection->shipmentCollection?->receiver_phone }}" required>
+                                                                                name="receiverPhone"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_phone }}"
+                                                                                required>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -604,7 +612,9 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverAddress" value="{{ $collection->shipmentCollection?->receiver_address }}" required>
+                                                                                name="receiverAddress"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_address }}"
+                                                                                required>
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
@@ -612,7 +622,9 @@
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverTown" value="{{ $collection->shipmentCollection?->receiver_town }}" required>
+                                                                                name="receiverTown"
+                                                                                value="{{ $collection->shipmentCollection?->receiver_town }}"
+                                                                                required>
                                                                             <input type="hidden"
                                                                                 value="{{ $consignment_no }}"
                                                                                 name="consignment_no">
@@ -659,11 +671,12 @@
                                                         @elseif($collection->serviceLevel->sub_category_name == 'Same Day')
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
-                                                                    <label
-                                                                        class="form-label text-primary">Origin
+                                                                    <label class="form-label text-primary">Origin
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="origin_id" id="origin_idxz"
-                                                                        class="form-control origin-dropdownxz" value="{{ $collection->shipmentCollection?->office->name }}" required>
+                                                                        class="form-control origin-dropdownxz"
+                                                                        value="{{ $collection->shipmentCollection?->office->name }}"
+                                                                        required>
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->office_id }}">
                                                                             {{ $collection->office->name }}</option>
@@ -681,7 +694,8 @@
 
                                                                         <span class="text-danger">*</span> </label>
                                                                     <select name="destination"
-                                                                        class="form-control destination-dropdownxz" value="{{ $collection->shipmentCollection?->destination->destination }}">
+                                                                        class="form-control destination-dropdownxz"
+                                                                        value="{{ $collection->shipmentCollection?->destination->destination }}">
                                                                         <option value="">Select</option>
                                                                         <option value="{{ $collection->rate_id }}">
                                                                             {{ $collection->collectionLocation }}
@@ -689,19 +703,21 @@
                                                                     </select>
                                                                 </div>
 
-                                                                <input type="hidden" name="destination_id" value="{{ $collection->rate_id }}">
+                                                                <input type="hidden" name="destination_id"
+                                                                    value="{{ $collection->rate_id }}">
                                                             </div>
                                                         @else
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-6"> 
-                                                                    <label class="form-label text-primary">Origin <span class="text-danger">*</span></label>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-primary">Origin <span
+                                                                            class="text-danger">*</span></label>
                                                                     <select name="origin_id" id="origin_id"
                                                                         class="form-control origin-dropdown" required>
                                                                         <option value="">Select</option>
-                                                                        
+
                                                                         @foreach ($offices as $office)
-                                                                            <option value="{{ $office->id }}" 
+                                                                            <option value="{{ $office->id }}"
                                                                                 {{ $collection->office_id == $office->id ? 'selected' : '' }}>
                                                                                 {{ $office->name }}
                                                                             </option>
@@ -709,20 +725,23 @@
                                                                     </select>
                                                                 </div>
 
-                                                                <div class="form-group col-md-6"> 
-                                                                    <label class="form-label text-primary">Destination <span class="text-danger">*</span></label>
-                                                                    <select name="destination" class="form-control destination-dropdown" required>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="form-label text-primary">Destination
+                                                                        <span class="text-danger">*</span></label>
+                                                                    <select name="destination"
+                                                                        class="form-control destination-dropdown" required>
                                                                         <option value="">Select</option>
 
                                                                         @foreach ($destinations as $dest)
-                                                                            <option value="{{ $dest->id }}" 
+                                                                            <option value="{{ $dest->id }}"
                                                                                 {{ $collection->shipmentCollection?->destination_id == $dest->id ? 'selected' : '' }}>
                                                                                 {{ $dest->destination }}
                                                                             </option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id' id="destination_id">
+                                                                <input type="hidden" name='destination_id'
+                                                                    id="destination_id">
                                                             </div>
                                                         @endif
 
@@ -748,29 +767,36 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach($collection->shipmentCollection?->items ?? [] as $item)
+                                                                    @foreach ($collection->shipmentCollection?->items ?? [] as $item)
                                                                         <tr>
                                                                             <td><input type="text" class="form-control"
-                                                                                    name="item_name[]" value="{{ $item->item_name }}"></td>
+                                                                                    name="item_name[]"
+                                                                                    value="{{ $item->item_name }}"></td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
-                                                                                    name="packages[]" value="{{ $item->packages_no }}"></td>
+                                                                                    name="packages[]"
+                                                                                    value="{{ $item->packages_no }}"></td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
-                                                                                    name="weight[]" value="{{ $item->weight }}"></td>
+                                                                                    name="weight[]"
+                                                                                    value="{{ $item->weight }}"></td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
-                                                                                    name="length[]" value="{{ $item->length }}"></td>
+                                                                                    name="length[]"
+                                                                                    value="{{ $item->length }}"></td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
-                                                                                    name="width[]" value="{{ $item->width }}"></td>
+                                                                                    name="width[]"
+                                                                                    value="{{ $item->width }}"></td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
-                                                                                    name="height[]" value="{{ $item->height }}"></td>
+                                                                                    name="height[]"
+                                                                                    value="{{ $item->height }}"></td>
                                                                             <td class="volume-display text-muted"><input
                                                                                     type="number" min="0"
-                                                                                    class="form-control" name="volume[]" value="{{ $item->volume }}"
-                                                                                    readonly></td>
+                                                                                    class="form-control" name="volume[]"
+                                                                                    value="{{ $item->volume }}" readonly>
+                                                                            </td>
                                                                             <td><button type="button"
                                                                                     class="btn btn-danger btn-sm remove-row"
                                                                                     title="Delete Row"><i
@@ -790,25 +816,25 @@
                                                         <!-- Service Level -->
                                                         <div class="section-title"></div>
                                                         <div class="form-row">
-                                                            
+
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary">Total
+                                                                    <label class="form-label text-primary">Total
                                                                         Weight
                                                                         (Kg)
                                                                         <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="total_weight" value="{{ $collection->shipmentCollection?->total_weight }}" required
-                                                                        readonly>
+                                                                        class="form-control" name="total_weight"
+                                                                        value="{{ $collection->shipmentCollection?->total_weight }}"
+                                                                        required readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary">Cost
+                                                                    <label class="form-label text-primary">Cost
                                                                         <span class="text-danger">*</span>
                                                                     </label>
-                                                                    <input type="number" min="0" class="form-control" name="cost"
+                                                                    <input type="number" min="0"
+                                                                        class="form-control" name="cost"
                                                                         value="{{ $collection->shipmentCollection?->cost ?? $collection->rate }}"
                                                                         required readonly>
                                                                 </div>
@@ -819,27 +845,28 @@
                                                                         (16%) <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="vat" value="{{ $collection->shipmentCollection?->vat }}" required
-                                                                        readonly>
+                                                                        class="form-control" name="vat"
+                                                                        value="{{ $collection->shipmentCollection?->vat }}"
+                                                                        required readonly>
                                                                 </div>
                                                                 <div class="form-group col-md-3">
-                                                                    <label
-                                                                        class="form-label text-primary">Total
+                                                                    <label class="form-label text-primary">Total
                                                                         Cost
                                                                         <span class="text-danger">*</span>
                                                                     </label>
                                                                     <input type="number" min="0"
-                                                                        class="form-control" name="total_cost" value="{{ $collection->shipmentCollection?->total_cost }}" required
-                                                                        readonly>
+                                                                        class="form-control" name="total_cost"
+                                                                        value="{{ $collection->shipmentCollection?->total_cost }}"
+                                                                        required readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                        <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                class="text-danger">*</span>
-                                                                        </label>
-                                                                        <input type="number" min="0"
-                                                                            class="form-control" name="total_cost" required
-                                                                            readonly>
-                                                                    </div> -->
+                                                                            <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                    class="text-danger">*</span>
+                                                                            </label>
+                                                                            <input type="number" min="0"
+                                                                                class="form-control" name="total_cost" required
+                                                                                readonly>
+                                                                        </div> -->
                                                             </div>
 
                                                         </div>

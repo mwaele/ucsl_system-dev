@@ -4,7 +4,7 @@
     <div class="card">
 
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('overnight.walk-in') }}
+            <div class="d-flex justify-content-between align-items-center">
             </div>
             <div class="d-flex justify-content-between align-items-center">
                 <button type="button" class="btn btn btn-primary shadow-sm" data-toggle="modal" data-target="#registerParcel">

@@ -11,7 +11,7 @@
                     + Create Parcel
                 </button>
 
-                <h4 class="mb-0 text-warning"><strong> UCSL - Same Day - On-Account Parcels</strong></h4>
+                <h4 class="mb-0 text-warning"><strong> CLIENT - Same Day - On-Account Parcels</strong></h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">
@@ -25,9 +25,9 @@
                         </button>
                     </div>
 
-                    <button id="generateReport" class="btn btn-danger shadow-sm">
+                    {{-- <button id="generateReport" class="btn btn-danger shadow-sm">
                         <i class="fas fa-download fa text-white"></i> Generate Report
-                    </button>
+                    </button> --}}
 
                     <script>
                         /**

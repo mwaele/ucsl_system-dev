@@ -189,17 +189,19 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('dashboard') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span class="sized" class="sized">Dashboard</span>
-                </a>
-            </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+                <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('dashboard') }}">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span class="sized" class="sized">Dashboard {{ Auth::user()->role }}</span>
+                    </a>
+                </li>
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <!-- <li
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+
+                <!-- Nav Item - Pages Collapse Menu -->
+                <!-- <li
                 class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
@@ -247,90 +249,120 @@
                 </div>
             </li> -->
 
-            <!-- Nav Item - Shipments -->
-            <li
-                class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
-                    aria-expanded="true" aria-controls="collapseShipments">
-                    <i class="fas fa-fw fa-cogs"></i>
-                    <span class="sized">Shipments</span>
-                </a>
+                <!-- Nav Item - Shipments -->
+                <li
+                    class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseShipments" aria-expanded="true" aria-controls="collapseShipments">
+                        <i class="fas fa-fw fa-cogs"></i>
+                        <span class="sized">Shipments</span>
+                    </a>
 
-                <div id="collapseShipments" class="collapse {{ request()->routeIs('shipments.*') ? 'show' : '' }}"
-                    aria-labelledby="headingShipments" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
+                    <div id="collapseShipments"
+                        class="collapse {{ request()->routeIs('shipments.*') ? 'show' : '' }}"
+                        aria-labelledby="headingShipments" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
 
-                        <!-- UCSL Collapsible -->
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseUCSL" aria-expanded="false"
-                            aria-controls="collapseUCSL">
-                            UCSL
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseUCSL" class="collapse ml-3" aria-labelledby="headingUCSL"
-                            data-parent="#collapseShipments">
-                            <a class="collapse-item"
-                                href="{{ route('overnight.walk-in', ['type' => 'ucsl']) }}">Overnight - Walk-in</a>
-                            <a class="collapse-item"
-                                href="{{ route('overnight.on-account', ['type' => 'ucsl']) }}">Overnight - On
-                                Account</a>
-                            <a class="collapse-item"
-                                href="{{ route('sameday.walk-in', ['type' => 'ucsl']) }}">SameDay - Walk-in</a>
-                            <a class="collapse-item"
-                                href="{{ route('sameday.on-account', ['type' => 'ucsl']) }}">SameDay - On Account</a>
+                            <!-- UCSL Collapsible -->
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseUCSL"
+                                aria-expanded="false" aria-controls="collapseUCSL">
+                                UCSL
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseUCSL" class="collapse ml-3" aria-labelledby="headingUCSL"
+                                data-parent="#collapseShipments">
+                                <a class="collapse-item"
+                                    href="{{ route('overnight.walk-in', ['type' => 'ucsl']) }}">Overnight -
+                                    Walk-in</a>
+                                <a class="collapse-item"
+                                    href="{{ route('overnight.on-account', ['type' => 'ucsl']) }}">Overnight - On
+                                    Account</a>
+                                <a class="collapse-item"
+                                    href="{{ route('sameday.walk-in', ['type' => 'ucsl']) }}">SameDay - Walk-in</a>
+                                <a class="collapse-item"
+                                    href="{{ route('sameday.on-account', ['type' => 'ucsl']) }}">SameDay - On
+                                    Account</a>
+                            </div>
+
+                            <hr class="sidebar-divide my-0" />
+
+                            <!-- Client Collapsible -->
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseClient"
+                                aria-expanded="false" aria-controls="collapseClient">
+                                Client
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseClient" class="collapse ml-3" aria-labelledby="headingClient"
+                                data-parent="#collapseShipments">
+                                {{-- <a class="collapse-item"
+                                    href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight -
+                                    Walk-in</a> --}}
+                                <a class="collapse-item"
+                                    href="{{ route('client.overnight.on-account', ['type' => 'client']) }}">Overnight
+                                    - On
+                                    Account</a>
+                                {{-- <a class="collapse-item"
+                                    href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a> --}}
+                                <a class="collapse-item"
+                                    href="{{ route('client.sameday.on-account', ['type' => 'client']) }}">SameDay - On
+                                    Account</a>
+                            </div>
+
+                            <hr class="sidebar-divide my-0" />
+
+                            <!-- Dispatch Process -->
+                            <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
                         </div>
-
-                        <hr class="sidebar-divide my-0" />
-
-                        <!-- Client Collapsible -->
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseClient"
-                            aria-expanded="false" aria-controls="collapseClient">
-                            Client
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseClient" class="collapse ml-3" aria-labelledby="headingClient"
-                            data-parent="#collapseShipments">
-                            <a class="collapse-item"
-                                href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight - Walk-in</a>
-                            <a class="collapse-item"
-                                href="{{ route('client.overnight.on-account', ['type' => 'client']) }}">Overnight - On
-                                Account</a>
-                            <a class="collapse-item"
-                                href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a>
-                            <a class="collapse-item"
-                                href="{{ route('sameday.on-account', ['type' => 'client']) }}">SameDay - On
-                                Account</a>
-                        </div>
-
-                        <hr class="sidebar-divide my-0" />
-
-                        <!-- Dispatch Process -->
-                        <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
                     </div>
-                </div>
-            </li>
+                </li>
 
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+            @endif
+            @if (Auth::user()->role === 'driver')
+                <li
+                    class="nav-item {{ request()->routeIs('my_collections.collect', 'my_collections.show') ? 'active' : '' }} ">
+                    <a class="nav-link collapsed " href="#" data-toggle="collapse"
+                        data-target="#collapseCompanyInfo" aria-expanded="true" aria-controls="collapseCompanyInfo">
+                        <i class="fas fa-fw fa-building"></i>
+                        <span class="sized">Rider Collections</span>
+                    </a>
+                    <div id="collapseCompanyInfo"
+                        class="collapse {{ request()->routeIs('my_collections.show') ? 'active' : '' }}"
+                        aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
+                        <div class=" py-2 collapse-inner rounded">
+                            <a class="nav-link" href="{{ route('my_collections.show') }}">
+                                <i class="fas fa-fw fa-clipboard"></i>
+                                <span class="sized">UCSL Collections</span>
+                            </a>
 
-            <li class="nav-item {{ request()->routeIs('my_collections.show') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('my_collections.collect') }}">
+                                <i class="fas fa-fw fa-clipboard"></i>
+                                <span class="sized">CLIENT Collections </span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            @endif
+            {{-- <li class="nav-item {{ request()->routeIs('my_collections.show') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_collections.show') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Rider Collections</span>
                 </a>
-            </li>
+            </li> --}}
 
             <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+            {{-- <hr class="sidebar-divider my-0" /> --}}
 
-            <li class="nav-item {{ request()->routeIs('my_collections.collect') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ request()->routeIs('my_collections.collect') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('my_collections.collect') }}">
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Rider Collections - Client</span>
                 </a>
-            </li>
+            </li> --}}
 
             <!-- Divider -->
             {{-- <hr class="sidebar-divider my-0" />
@@ -344,37 +376,40 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
-
-            <li class="nav-item {{ request()->routeIs('shipment_arrivals.*', 'parcel_collection') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                    data-target="#collapseshipment_arrivals" aria-expanded="true"
-                    aria-controls="collapseshipment_arrivals">
-                    <i class="fas fa-fw fa-money-bill-alt"></i>
-                    <span class="sized">Shipment Arrivals</span>
-                </a>
-                <div id="collapseshipment_arrivals"
-                    class="collapse {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}"
-                    aria-labelledby="headingshipment_arrivals" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('shipment_arrivals.index') }}">Arrivals
-                            Verification</a>
-                        <a class="collapse-item" href="{{ route('parcel_collection') }}">Parcel Collection
-                        </a>
-                        <a class="collapse-item" href="">Reports
-                        </a>
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+                <li
+                    class="nav-item {{ request()->routeIs('shipment_arrivals.*', 'parcel_collection') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseshipment_arrivals" aria-expanded="true"
+                        aria-controls="collapseshipment_arrivals">
+                        <i class="fas fa-fw fa-money-bill-alt"></i>
+                        <span class="sized">Shipment Arrivals</span>
+                    </a>
+                    <div id="collapseshipment_arrivals"
+                        class="collapse {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}"
+                        aria-labelledby="headingshipment_arrivals" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('shipment_arrivals.index') }}">Arrivals
+                                Verification</a>
+                            <a class="collapse-item" href="{{ route('parcel_collection') }}">Parcel Collection
+                            </a>
+                            <a class="collapse-item" href="">Reports
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </li>
+                </li>
+            @endif
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
-
-            <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('my_deliveries.show') }}">
-                    <i class="fas fa-fw fa-shipping-fast"></i>
-                    <span class="sized">Rider Deliveries</span>
-                </a>
-            </li>
+            @if (Auth::user()->role === 'driver')
+                <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('my_deliveries.show') }}">
+                        <i class="fas fa-fw fa-shipping-fast"></i>
+                        <span class="sized">Rider Deliveries</span>
+                    </a>
+                </li>
+            @endif
 
 
             {{-- <li class="nav-item {{ request()->routeIs('shipment_arrivals.*') ? 'active' : '' }}">
@@ -386,202 +421,203 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('payments.*', 'reports.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsepayments"
-                    aria-expanded="true" aria-controls="collapsepayments">
-                    <i class="fas fa-fw fa-money-bill-alt"></i>
-                    <span class="sized">Reports</span>
-                </a>
-                <div id="collapsepayments" class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
-                    aria-labelledby="headingpayments" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
-                        <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
-                        <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client
-                            performance</a>
-                        <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office
-                            performance</a>
-                        <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch
-                            summaries</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                    data-target="#collapseCompanyInfo" aria-expanded="true" aria-controls="collapseCompanyInfo">
-                    <i class="fas fa-fw fa-building"></i>
-                    <span class="sized">Company Info</span>
-                </a>
-                <div id="collapseCompanyInfo"
-                    class="collapse {{ request()->routeIs('company_infos.*') ? 'active' : '' }}"
-                    aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('company_infos.index') }}">All Company Info</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('company_infos.create') }}">Add Company Info</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li
-                class="nav-item {{ request()->routeIs('clients.*', 'categories.*', 'sub_categories.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseClients"
-                    aria-expanded="true" aria-controls="collapseClients">
-                    <i class="fas fa-fw fa-user"></i>
-                    <span class="sized">Client Registration</span>
-                </a>
-                <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
-                    aria-labelledby="headingClients" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
-                        {{-- <hr class="sidebar-divide my-0" /> --}}
-                        {{-- <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a> --}}
-                        <hr class="sidebar-divide my-0">
-                        <a class="collapse-item" href="{{ route('categories.index') }}">
-                            {{-- <i class="fas fa-fw fa-wrench"></i> --}}
-                            Client Categories
-                        </a>
-                        <hr class="sidebar-divide my-0">
-                        <a class="collapse-item" href="{{ route('sub_categories.index') }}">
-                            {{-- <i class="fas fa-fw fa-wrench"></i> --}}
-                            Client Sub Categories
-                        </a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Account Management Collapse Menu -->
-            <li
-                class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                    data-target="#collapseAccountManagement" aria-expanded="true"
-                    aria-controls="collapseAccountManagement">
-                    <i class="fas fa-fw fa-wallet"></i>
-                    <span class="sized">Accounting</span>
-                </a>
-                <div id="collapseAccountManagement"
-                    class="collapse {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'show' : '' }}"
-                    aria-labelledby="headingAccountManagement" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-
-                        <hr class="sidebar-divide my-0" />
-
-                        {{-- Collapsible: Debtors (AR) --}}
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseDebtors"
-                            aria-expanded="false" aria-controls="collapseDebtors">
-                            Debtors (AR)
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseDebtors" class="collapse ml-3" aria-labelledby="headingDebtors"
-                            data-parent="#collapseAccountManagement">
-                            <a class="collapse-item"
-                                href="{{ route('accounts.debtors.invoices.index') }}">Invoices</a>
-                            <a class="collapse-item" href="">Debit Notes</a>
-                            <a class="collapse-item" href="">Receipts</a>
-                            <a class="collapse-item" href="">Credit Notes</a>
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+                <!-- Nav Item - Clients Collapse Menu -->
+                <li class="nav-item {{ request()->routeIs('payments.*', 'reports.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapsepayments" aria-expanded="true" aria-controls="collapsepayments">
+                        <i class="fas fa-fw fa-money-bill-alt"></i>
+                        <span class="sized">Reports</span>
+                    </a>
+                    <div id="collapsepayments"
+                        class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
+                        aria-labelledby="headingpayments" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
+                            <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
+                            <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client
+                                performance</a>
+                            <a class="collapse-item" href="{{ route('reports.office_performance') }}">Office
+                                performance</a>
+                            <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch
+                                summaries</a>
                         </div>
+                    </div>
+                </li>
 
-                        <hr class="sidebar-divide my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
 
-                        {{-- Collapsible: Creditors (AP) --}}
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseCreditors"
-                            aria-expanded="false" aria-controls="collapseCreditors">
-                            Creditors (AP)
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseCreditors" class="collapse ml-3" aria-labelledby="headingCreditors"
-                            data-parent="#collapseAccountManagement">
-                            <a class="collapse-item" href="">Invoices</a>
-                            <a class="collapse-item" href="">Payments</a>
-                            <a class="collapse-item" href="">Credit Notes</a>
+                <!-- Nav Item - Clients Collapse Menu -->
+                <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseCompanyInfo" aria-expanded="true" aria-controls="collapseCompanyInfo">
+                        <i class="fas fa-fw fa-building"></i>
+                        <span class="sized">Company Info</span>
+                    </a>
+                    <div id="collapseCompanyInfo"
+                        class="collapse {{ request()->routeIs('company_infos.*') ? 'active' : '' }}"
+                        aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('company_infos.index') }}">All Company Info</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('company_infos.create') }}">Add Company Info</a>
                         </div>
+                    </div>
+                </li>
 
-                        <hr class="sidebar-divide my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
 
-                        {{-- Collapsible: General Ledger --}}
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseLedger"
-                            aria-expanded="false" aria-controls="collapseLedger">
-                            General Ledger
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseLedger" class="collapse ml-3" aria-labelledby="headingLedger"
-                            data-parent="#collapseAccountManagement">
-                            <a class="collapse-item" href="">Journals</a>
-                            <a class="collapse-item" href="">Trial Balance</a>
-                            <a class="collapse-item" href="">Reports</a>
+                <!-- Nav Item - Clients Collapse Menu -->
+                <li
+                    class="nav-item {{ request()->routeIs('clients.*', 'categories.*', 'sub_categories.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseClients" aria-expanded="true" aria-controls="collapseClients">
+                        <i class="fas fa-fw fa-user"></i>
+                        <span class="sized">Client Registration</span>
+                    </a>
+                    <div id="collapseClients" class="collapse {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                        aria-labelledby="headingClients" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('clients.index') }}">All Clients</a>
+                            {{-- <hr class="sidebar-divide my-0" /> --}}
+                            {{-- <a class="collapse-item" href="{{ route('clients.create') }}">Add Clients</a> --}}
+                            <hr class="sidebar-divide my-0">
+                            <a class="collapse-item" href="{{ route('categories.index') }}">
+                                {{-- <i class="fas fa-fw fa-wrench"></i> --}}
+                                Client Categories
+                            </a>
+                            <hr class="sidebar-divide my-0">
+                            <a class="collapse-item" href="{{ route('sub_categories.index') }}">
+                                {{-- <i class="fas fa-fw fa-wrench"></i> --}}
+                                Client Sub Categories
+                            </a>
                         </div>
-
                     </div>
-                </div>
-            </li>
+                </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
 
-            <!-- Nav Item - Clients Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('offices.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOffice"
-                    aria-expanded="true" aria-controls="collapseOffice">
-                    <i class="fas fa-fw fa-home"></i>
-                    <span class="sized">Operations Offices</span>
-                </a>
-                <div id="collapseOffice" class="collapse {{ request()->routeIs('offices.*') ? 'active' : '' }}"
-                    aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('offices.index') }}">All Offices</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('offices.create') }}">Add Office</a>
+                <!-- Nav Item - Account Management Collapse Menu -->
+                <li
+                    class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseAccountManagement" aria-expanded="true"
+                        aria-controls="collapseAccountManagement">
+                        <i class="fas fa-fw fa-wallet"></i>
+                        <span class="sized">Accounting</span>
+                    </a>
+                    <div id="collapseAccountManagement"
+                        class="collapse {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'show' : '' }}"
+                        aria-labelledby="headingAccountManagement" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+
+                            <hr class="sidebar-divide my-0" />
+
+                            {{-- Collapsible: Debtors (AR) --}}
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseDebtors"
+                                aria-expanded="false" aria-controls="collapseDebtors">
+                                Debtors (AR)
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseDebtors" class="collapse ml-3" aria-labelledby="headingDebtors"
+                                data-parent="#collapseAccountManagement">
+                                <a class="collapse-item"
+                                    href="{{ route('accounts.debtors.invoices.index') }}">Invoices</a>
+                                <a class="collapse-item" href="">Debit Notes</a>
+                                <a class="collapse-item" href="">Receipts</a>
+                                <a class="collapse-item" href="">Credit Notes</a>
+                            </div>
+
+                            <hr class="sidebar-divide my-0" />
+
+                            {{-- Collapsible: Creditors (AP) --}}
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseCreditors"
+                                aria-expanded="false" aria-controls="collapseCreditors">
+                                Creditors (AP)
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseCreditors" class="collapse ml-3" aria-labelledby="headingCreditors"
+                                data-parent="#collapseAccountManagement">
+                                <a class="collapse-item" href="">Invoices</a>
+                                <a class="collapse-item" href="">Payments</a>
+                                <a class="collapse-item" href="">Credit Notes</a>
+                            </div>
+
+                            <hr class="sidebar-divide my-0" />
+
+                            {{-- Collapsible: General Ledger --}}
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseLedger"
+                                aria-expanded="false" aria-controls="collapseLedger">
+                                General Ledger
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseLedger" class="collapse ml-3" aria-labelledby="headingLedger"
+                                data-parent="#collapseAccountManagement">
+                                <a class="collapse-item" href="">Journals</a>
+                                <a class="collapse-item" href="">Trial Balance</a>
+                                <a class="collapse-item" href="">Reports</a>
+                            </div>
+
+                        </div>
                     </div>
-                </div>
-            </li>
+                </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
 
-            <!-- Nav Item - Vehicles Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVehicles"
-                    aria-expanded="true" aria-controls="collapseVehicles">
-                    <i class="fas fa-fw fa-truck"></i>
-                    <span class="sized">Vehicles Info</span>
-                </a>
-                <div id="collapseVehicles"
-                    class="collapse {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}"
-                    aria-labelledby="headingVehicles" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('vehicles.index') }}">All Vehicles</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('vehicles.create') }}">Add Vehicles</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('vehicles.create') }}"> Vehicle Allocation</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('transporters.index') }}">Transporters</a>
+                <!-- Nav Item - Clients Collapse Menu -->
+                <li class="nav-item {{ request()->routeIs('offices.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseOffice" aria-expanded="true" aria-controls="collapseOffice">
+                        <i class="fas fa-fw fa-home"></i>
+                        <span class="sized">Operations Offices</span>
+                    </a>
+                    <div id="collapseOffice" class="collapse {{ request()->routeIs('offices.*') ? 'active' : '' }}"
+                        aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('offices.index') }}">All Offices</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('offices.create') }}">Add Office</a>
+                        </div>
                     </div>
-                </div>
-            </li>
+                </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
 
-            <!-- Nav Item - Zones Collapse Menu -->
-            {{-- <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
+                <!-- Nav Item - Vehicles Collapse Menu -->
+                <li class="nav-item {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapseVehicles" aria-expanded="true" aria-controls="collapseVehicles">
+                        <i class="fas fa-fw fa-truck"></i>
+                        <span class="sized">Vehicles Info</span>
+                    </a>
+                    <div id="collapseVehicles"
+                        class="collapse {{ request()->routeIs('vehicles.*', 'transporters.*') ? 'active' : '' }}"
+                        aria-labelledby="headingVehicles" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('vehicles.index') }}">All Vehicles</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('vehicles.create') }}">Add Vehicles</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('vehicles.create') }}"> Vehicle Allocation</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('transporters.index') }}">Transporters</a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+
+                <!-- Nav Item - Zones Collapse Menu -->
+                {{-- <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
                 <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
                     data-toggle="collapse" data-target="#collapseZones"
                     aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
@@ -601,88 +637,90 @@
                 </div>
             </li> --}}
 
-            <!-- Nav Item - Rates Collapse Menu -->
-            <li class="nav-item {{ request()->routeIs('rates.*', 'zones.*', 'special_rates.*') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
-                    aria-expanded="true" aria-controls="collapseRates">
-                    <i class="fas fa-fw fa-dollar-sign"></i>
-                    <span class="sized">Rates</span>
-                </a>
+                <!-- Nav Item - Rates Collapse Menu -->
+                <li
+                    class="nav-item {{ request()->routeIs('rates.*', 'zones.*', 'special_rates.*') ? 'active' : '' }}">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRates"
+                        aria-expanded="true" aria-controls="collapseRates">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span class="sized">Rates</span>
+                    </a>
 
-                <div id="collapseRates"
-                    class="collapse  {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}"
-                    aria-labelledby="headingRates" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('zones.index') }}"> Zones</a>
-                        {{-- <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
+                    <div id="collapseRates"
+                        class="collapse  {{ request()->routeIs('rates.*', 'special_rates.*') ? 'active' : '' }}"
+                        aria-labelledby="headingRates" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('zones.index') }}"> Zones</a>
+                            {{-- <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Nairobi Rates</a>
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item" href="{{ route('rates.create') }}">Add Rate</a>
                         <hr class="sidebar-divide my-0" /> --}}
 
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseOvernight"
-                            aria-expanded="false" aria-controls="collapseOvernight">
-                            Nairobi Rates
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
-                            data-parent="#collapseTwo">
-                            <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Overnight</a>
-                            <a class="collapse-item" href="{{ route('rates.nrb_rates_sameday') }}">Same Day</a>
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseOvernight"
+                                aria-expanded="false" aria-controls="collapseOvernight">
+                                Nairobi Rates
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
+                                data-parent="#collapseTwo">
+                                <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Overnight</a>
+                                <a class="collapse-item" href="{{ route('rates.nrb_rates_sameday') }}">Same Day</a>
+                            </div>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
+                                href="#" data-toggle="collapse" data-target="#collapseOvernight"
+                                aria-expanded="false" aria-controls="collapseOvernight">
+                                Mombasa Rates
+                                <i class="fas fa-angle-down"></i>
+                            </a>
+                            <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
+                                data-parent="#collapseTwo">
+                                <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Overnight</a>
+                                <a class="collapse-item" href="{{ route('overnight.on-account') }}">Same Day</a>
+                            </div>
+                            <hr class="sidebar-divide my-0" />
+
+                            <a class="collapse-item" href="{{ route('special_rates.create') }}">Add Special Rate</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('special_rates.index') }}"> Special Rate List</a>
+                            <hr class="sidebar-divide my-0" />
+
+                            {{-- <a class="collapse-item" href="{{ route('rates.index') }}">All Rates</a> --}}
+
+
                         </div>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                            href="#" data-toggle="collapse" data-target="#collapseOvernight"
-                            aria-expanded="false" aria-controls="collapseOvernight">
-                            Mombasa Rates
-                            <i class="fas fa-angle-down"></i>
-                        </a>
-                        <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
-                            data-parent="#collapseTwo">
-                            <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Overnight</a>
-                            <a class="collapse-item" href="{{ route('overnight.on-account') }}">Same Day</a>
+                    </div>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+
+                <!-- Nav Item - Zones Collapse Menu -->
+                <li
+                    class="nav-item {{ request()->routeIs('users.*', 'sales_person.*', 'dispatchers.*') ? 'active' : '' }}">
+                    <a class="nav-link {{ request()->routeIs('users.*') ? '' : 'collapsed' }}" href="#"
+                        data-toggle="collapse" data-target="#collapseUsers"
+                        aria-expanded="{{ request()->routeIs('users.*') ? 'true' : 'false' }}"
+                        aria-controls="collapseUsers">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span class="sized">Admin</span>
+                    </a>
+                    <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"
+                        aria-labelledby="headingUsers" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('users.index') }}">All Users</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('sales_person.index') }}">Sales Person</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('dispatchers.index') }}">Dispatch Clerks</a>
+
                         </div>
-                        <hr class="sidebar-divide my-0" />
-
-                        <a class="collapse-item" href="{{ route('special_rates.create') }}">Add Special Rate</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('special_rates.index') }}"> Special Rate List</a>
-                        <hr class="sidebar-divide my-0" />
-
-                        {{-- <a class="collapse-item" href="{{ route('rates.index') }}">All Rates</a> --}}
-
-
                     </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Zones Collapse Menu -->
-            <li
-                class="nav-item {{ request()->routeIs('users.*', 'sales_person.*', 'dispatchers.*') ? 'active' : '' }}">
-                <a class="nav-link {{ request()->routeIs('users.*') ? '' : 'collapsed' }}" href="#"
-                    data-toggle="collapse" data-target="#collapseUsers"
-                    aria-expanded="{{ request()->routeIs('users.*') ? 'true' : 'false' }}"
-                    aria-controls="collapseUsers">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span class="sized">Admin</span>
-                </a>
-                <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"
-                    aria-labelledby="headingUsers" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('users.index') }}">All Users</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('sales_person.index') }}">Sales Person</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('dispatchers.index') }}">Dispatch Clerks</a>
-
-                    </div>
-                </div>
-            </li>
+                </li>
+            @endif
 
             <!-- Divider -->
             {{-- <hr class="sidebar-divider my-0" />
