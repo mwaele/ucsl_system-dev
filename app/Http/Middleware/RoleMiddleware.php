@@ -18,6 +18,9 @@ class RoleMiddleware
             return $next($request);
         }
 
-        return abort(403, 'Unauthorized');
+        // Redirect if unauthorized
+        return redirect()
+            ->route('home')
+            ->withErrors(['message' => 'Access denied to this page. Contact Admin for more information']);
     }
 }

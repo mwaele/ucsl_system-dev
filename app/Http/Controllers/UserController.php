@@ -132,22 +132,27 @@ class UserController extends Controller
 
     public function getUnallocatedDrivers()
     {
-        $today = Carbon::today();
+         $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
 
-        // Get userIds who have requests today
-        $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
-            ->pluck('userId')
-            ->toArray();
 
-        $drivers = User::where('role', 'driver')
-            ->where('station', Auth::user()->station) // Optional: match current user's station
-            ->whereNotIn('users.id', $allocatedDriverIds)
-            ->join('offices', 'users.station', '=', 'offices.id')
-            ->select('users.id', 'users.name', 'offices.name as station')
-            ->get();
+    // Get user IDs from client_requests table for today
+    $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
+        ->pluck('userId')
+        ->toArray();
 
-        return response()->json($drivers);
-    }
+    // Fetch drivers not in that list
+    $drivers = User::where('users.role', 'driver')
+        ->where('users.station', Auth::user()->station)
+        ->when(!empty($allocatedDriverIds), function ($query) use ($allocatedDriverIds) {
+            $query->whereNotIn('users.id', $allocatedDriverIds);
+        })
+        ->join('offices', 'users.station', '=', 'offices.id')
+        ->select('users.id', 'users.name', 'offices.name as station')
+        ->get();
+
+    return response()->json($drivers);
+
+        }
 
     public function getAllDrivers()
     {

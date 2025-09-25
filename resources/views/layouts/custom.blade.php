@@ -193,7 +193,7 @@
                 <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('dashboard') }}">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
-                        <span class="sized" class="sized">Dashboard {{ Auth::user()->role }}</span>
+                        <span class="sized" class="sized">Dashboard</span>
                     </a>
                 </li>
 

@@ -663,7 +663,7 @@
                                 </td>
                                 <td class="d-flex pl-2">
                                     @if ($request->shipmentCollection->payment_mode == 'Invoice')
-                                        <a href="{{ route('generate-invoice', $request->id) }}">
+                                        <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Preview Invoice
                                             </button>
