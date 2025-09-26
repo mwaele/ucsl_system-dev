@@ -15,14 +15,14 @@
                 <label for="status" class="form-label text-primary mb-0"><strong>Status:</strong></label>
                 <select id="status" class="form-control">
                     <option value="">All</option>
-                    <option value="pending_collection">Pending collection</option>
+                    <option value="pending collection">Pending collection</option>
                     <option value="collected">Collected by rider</option>
                     <option value="verified">Verified by front office</option>
                     <option value="dispatched_from_front_office">Dispatched from front office</option>
                     <option value="received_at_destination">Received at destination</option>
                     <option value="verified_at_destination">Verified at destination</option>
                     <option value="collected_by_recipient">Collected by recipient</option>
-                    <option value="delivered_to_recipient">Delivered to recipient</option>
+                    <option value="delivered">Delivered to recipient</option>
                     <option value="on_hold">Disputed</option>
                 </select>
             </div>
@@ -94,6 +94,7 @@
                     const clientTypeFilter = document.getElementById("clientType");
                     const serviceLevelFilter = document.getElementById("serviceLevel");
                     const paymentTypeFilter = document.getElementById("paymentType");
+                    const statusFilter = document.getElementById("status");
 
                     function filterTable() {
                         let startDate = startInput.value;
@@ -101,6 +102,7 @@
                         let clientType = clientTypeFilter.value.toLowerCase();
                         let serviceLevel = serviceLevelFilter.value.toLowerCase();
                         let paymentType = paymentTypeFilter.value.toLowerCase();
+                        let status = statusFilter.value.toLowerCase();
 
                         let table = document.getElementById(tableId);
                         if (!table) return;
@@ -112,8 +114,9 @@
                             let clientTypeCell = rows[i].getElementsByTagName("td")[5];
                             let serviceLevelCell = rows[i].getElementsByTagName("td")[7];
                             let paymentTypeCell = rows[i].getElementsByTagName("td")[13];
+                            let statusCell = rows[i].getElementsByTagName("td")[14];
 
-                            if (!dateCell || !clientTypeCell || !serviceLevelCell || !paymentTypeCell) continue;
+                            if (!dateCell || !clientTypeCell || !serviceLevelCell || !paymentTypeCell || !statusCell) continue;
 
                             let rowDateStr = dateCell.getAttribute("data-date");
                             let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
@@ -145,6 +148,10 @@
                                 showRow = false;
                             }
 
+                            if (status && statusCell.innerText.toLowerCase() !== status) {
+                                showRow = false;
+                            }
+
                             rows[i].style.display = showRow ? "" : "none";
                         }
                     }
@@ -154,7 +161,8 @@
                         endInput.value = "";
                         clientTypeFilter.value = "";
                         serviceLevelFilter.value = "";
-                        paymentTypeFilter.value = ""; // ✅ reset payment filter
+                        paymentTypeFilter.value = "";
+                        statusFilter.value = "";
 
                         let table = document.getElementById(tableId);
                         if (!table) return;
@@ -169,7 +177,8 @@
                     endInput.addEventListener("change", filterTable);
                     clientTypeFilter.addEventListener("change", filterTable);
                     serviceLevelFilter.addEventListener("change", filterTable);
-                    paymentTypeFilter.addEventListener("change", filterTable); // ✅ new listener
+                    paymentTypeFilter.addEventListener("change", filterTable);
+                    statusFilter.addEventListener("change", filterTable);
                     clearBtn.addEventListener("click", clearFilter);
 
                     reportBtn.addEventListener("click", function () {
@@ -177,10 +186,11 @@
                         let endDate = endInput.value;
                         let clientType = clientTypeFilter.value;
                         let serviceLevel = serviceLevelFilter.value;
-                        let paymentType = paymentTypeFilter.value; // ✅ include in report
+                        let paymentType = paymentTypeFilter.value;
+                        let status = statusFilter.value;
 
                         // Include filters in report URL
-                        window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}&clientType=${clientType}&serviceLevel=${serviceLevel}&paymentType=${paymentType}`;
+                        window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}&clientType=${clientType}&serviceLevel=${serviceLevel}&paymentType=${paymentType}&status=${status}`;
                     });
                 }
 

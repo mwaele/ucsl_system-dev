@@ -201,6 +201,7 @@ class ReportController extends Controller
         $clientType = $request->input('clientType');
         $serviceLevel = $request->input('serviceLevel');
         $paymentType = $request->input('paymentType');
+        $status = $request->input('status');
 
         $query = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy']);
 
@@ -230,14 +231,22 @@ class ReportController extends Controller
             });
         }
 
+        if ($status) {
+            $query->where('status', $status);
+        };
+
         $clientRequests = $query->orderBy('dateRequested', 'desc')->get();
 
         // Dynamically build the report title
         $reportTitle = 'Shipment Report';
 
-        if ($paymentType || $clientType || $serviceLevel || $startDate || $endDate) {
+        if ($status ||$paymentType || $clientType || $serviceLevel || $startDate || $endDate) {
             $filters = [];
 
+            if ($status) {
+                $filters[] = "$status shipments";
+            }
+            
             if ($paymentType) {
                 $filters[] = "$paymentType Payments";
             }
