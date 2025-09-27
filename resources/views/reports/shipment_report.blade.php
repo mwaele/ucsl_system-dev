@@ -61,13 +61,17 @@
             </div>
 
             <!-- Date Range Filter -->
-            <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
-                <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
-                <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
-                <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
-                <button id="clearFilter" class="btn btn-secondary mr-2">
-                    <i class="fas fa-times"></i> Clear
-                </button>
+            <div class="form-group mx-3">
+                <label for="startDate" class="form-label text-primary mb-1"><strong>Filter by date:</strong></label>
+                <div class="d-flex align-items-center">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" id="startDate" class="form-control me-2 mr-1" style="width: 150px;" placeholder="Start Date">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" id="endDate" class="form-control me-2 mr-1" style="width: 150px;" placeholder="End Date">
+                    <button id="clearFilter" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
             </div>
 
             <button id="generateReport" class="btn btn-danger shadow-sm">
@@ -253,7 +257,7 @@
                             <td>{{ $collection->shipmentCollection->sender_contact ?? '' }}</td>
                             <td>{{ $collection->client->type ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
-                            <td>{{ $collection->serviceLevel->sub_category_name }}</td>
+                            <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name) }}</td>
                             <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->packages_no ?? '' }}</td>
                             <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>

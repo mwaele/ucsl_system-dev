@@ -144,7 +144,7 @@
 
                                 <td>
                                     <span
-                                        class="badge p-2 fs-5 text-primary
+                                        class="badge p-2 fs-5 text-white
                                         {{ $collection->status == 'pending collection'
                                             ? 'bg-secondary'
                                             : ($collection->status == 'collected'
