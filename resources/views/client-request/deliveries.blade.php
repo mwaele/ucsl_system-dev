@@ -829,6 +829,21 @@
                                                                 <p>No shipment items found.</p>
                                                             @endif
 
+                                                            {{-- Priority & Fragile Check --}}
+                                                            @if ($collection->shipmentCollection->priority_level === 'high' && $request->shipmentCollection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority & Fragile Parcel ***
+                                                                </div>
+                                                            @elseif ($collection->shipmentCollection->priority_level === 'high')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority ***
+                                                                </div>
+                                                            @elseif ($collection->shipmentCollection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** Fragile Parcel ***
+                                                                </div>
+                                                            @endif
+
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
                                                                 <div
@@ -1626,6 +1641,28 @@
                                                                     <strong>Vehicle Registration:</strong>
                                                                     <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                                                 </div>
+                                                                <hr style="margin: 6px 0;">
+
+                                                                <div style="margin-top: 6px; font-size: 12px; line-height: 1.5;">
+                                                                    <table style="width: 100%; border-collapse: collapse;">
+                                                                        <tr>
+                                                                            <td style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver Name:</strong> __________________
+                                                                            </td>
+                                                                            <td style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver ID No:</strong> ______________
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td style="padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver Signature:</strong> _______________
+                                                                            <td style="padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver Stamp:</strong>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+
                                                                 <hr style="margin: 6px 0;">
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and

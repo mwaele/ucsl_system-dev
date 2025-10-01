@@ -666,6 +666,28 @@
                                                             @endif
 
                                                             <hr style="margin: 6px 0;">
+
+                                                            <div style="margin-top: 6px; font-size: 12px; line-height: 1.5;">
+                                                                <table style="width: 100%; border-collapse: collapse;">
+                                                                    <tr>
+                                                                        <td style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                            <strong>Receiver Name:</strong> __________________
+                                                                        </td>
+                                                                        <td style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                            <strong>Receiver ID No:</strong> ______________
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding: 5px; vertical-align: top;">
+                                                                            <strong>Receiver Signature:</strong> _______________
+                                                                        <td style="padding: 5px; vertical-align: top;">
+                                                                            <strong>Receiver Stamp:</strong>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+
+                                                            <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
                                                                 <strong>TERMS & CONDITIONS</strong><br>
                                                                 Carriage of this shipment is subject to the terms and

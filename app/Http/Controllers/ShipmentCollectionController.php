@@ -121,9 +121,10 @@ class ShipmentCollectionController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
                 'priority_level' => $request->priority_level,
+                'fragile_item' => $request->fragile,
                 'deadline_date' => $request->deadline_date,
-                'priority_extra_charge' => $request->priority_extra_charge,
-                'fragile_extra_charge' => $request->fragile_extra_charge,
+                'priority_level_amount' => $request->priority_extra_charge,
+                'fragile_item_amount' => $request->fragile_charge,
                 'manual_waybill_status' => $validated['manualWaybillStatus'] === 'yes' ? 1 : 0, // New field
             ]);
             // 1b. Handle manual waybill number + image upload
@@ -244,6 +245,9 @@ class ShipmentCollectionController extends Controller
                 'status' => 'verified',
                 'priority_level' => $request->priority_level,
                 'deadline_date' => $request->deadline_date,
+                'fragile_item' => $request->fragile,
+                'priority_level_amount' => $request->priority_extra_charge,
+                'fragile_item_amount' => $request->fragile_charge,
                 'collected_by' => auth()->id(),
                 'consignment_no' => $request->consignment_no,
                 'created_at' => now(),

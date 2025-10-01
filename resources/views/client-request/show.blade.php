@@ -316,6 +316,21 @@
                                                                 <p>No shipment items found.</p>
                                                             @endif
 
+                                                            {{-- Priority & Fragile Check --}}
+                                                            @if ($collection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority & Fragile Parcel ***
+                                                                </div>
+                                                            @elseif ($collection->priority_level === 'high')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority Parcel***
+                                                                </div>
+                                                            @elseif ($collection->shipmentCollection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** Fragile Parcel ***
+                                                                </div>
+                                                            @endif
+
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
                                                                 <div style="display: flex; justify-content: space-between;">
