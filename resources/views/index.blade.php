@@ -183,6 +183,30 @@
             </a>
         </div>
 
+        <!-- Failed/Undelivered Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivered', 'time' => $timeFilter])) }}"
+                title="View Unverified Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-info bg-danger shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Failed/Undelivered Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $delivered }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
 
     </div>
 

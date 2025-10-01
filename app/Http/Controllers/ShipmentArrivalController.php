@@ -422,88 +422,79 @@ class ShipmentArrivalController extends Controller
         return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no', 'approvalStatuses'));
     } 
 
-    public function update(Request $request, $id, SmsService $smsService)
+    public function update(Request $request, $id, SmsService $smsService) 
     {
         $validatedData = $request->validate([
-            'delivery_rider' => 'required|exists:users,id', //  rider ID comes from users table
+            'delivery_rider' => 'required|exists:users,id',
         ]);
 
         $arrival = ShipmentArrival::findOrFail($id);
-
-        //dd($arrival);
-
         $now = now();
         $authId = Auth::id();
         $requestId = $arrival->requestId;
 
-        // Preload shipment + track in one query
         $shipment = ShipmentCollection::with(['track:id,requestId,current_status'])
             ->where('requestId', $requestId)
             ->firstOrFail();
 
-        DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $arrival) {
+        try {
+            DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $arrival) {
+                $arrival->update([
+                    'delivery_rider' => $validatedData['delivery_rider'],
+                    'delivery_rider_status' => 'Allocated',
+                ]);
 
-        //dd($validatedData['delivery_rider']);
+                $rider = User::findOrFail($validatedData['delivery_rider']);
+                $rider_name = $rider->name;
+                $rider_phone = $rider->phone_number;
 
-        $arrival->delivery_rider = $validatedData['delivery_rider']; 
-        $arrival->delivery_rider_status="Allocated";
-        $arrival->save();
+                // Update shipment, client request, and track
+                DB::table('shipment_collections')
+                    ->where('id', $shipment->id)
+                    ->update(['status' => 'Delivery Rider Allocated', 'updated_at' => $now]);
 
-        $rider = User::findOrFail($validatedData['delivery_rider']);
+                DB::table('client_requests')
+                    ->where('requestId', $requestId)
+                    ->update(['delivery_rider_id' => $validatedData['delivery_rider'], 'status' => 'Delivery Rider Allocated']);
 
-        //dd($rider);
+                $trackId = DB::table('tracks')
+                    ->where('requestId', $requestId)
+                    ->tap(function ($query) use ($now) {
+                        $query->update([
+                            'current_status' => 'Delivery Rider Allocated',
+                            'updated_at' => $now
+                        ]);
+                    })
+                    ->value('id');
 
-        $rider_name = $rider->name;
-
-        $rider_phone = $rider->phone_number;
-
-         // Update shipment status
-        DB::table('shipment_collections')
-            ->where('id', $shipment->id)
-            ->update(['status' => 'Delivery Rider Allocated', 'updated_at' => $now]);
-
-        // Update client requests status
-        DB::table('client_requests')
-            ->where('requestId', $requestId)
-            ->update(['delivery_rider_id' => $validatedData['delivery_rider'],'status'=>'Delivery Rider Allocated']);
-
-        // Update track and get ID in one go
-        $trackId = DB::table('tracks')
-            ->where('requestId', $requestId)
-            ->tap(function ($query) use ($now) {
-                $query->update([
-                    'current_status' => 'Delivery Rider Allocated',
+                DB::table('tracking_infos')->insert([
+                    'trackId'    => $trackId,
+                    'date'       => $now,
+                    'details'    => "Delivery Rider Allocated",
+                    'remarks'    => "We have allocated {$rider_name} ({$rider_phone}) to deliver parcel {$requestId}, Waybill No: {$shipment->waybill_no}.",
+                    'created_at' => $now,
                     'updated_at' => $now
                 ]);
-            })
-            ->value('id');
+            });
 
-        // Insert tracking info
-        DB::table('tracking_infos')->insert([
-                'trackId' => $trackId,
-                'date' => $now,
-                'details' => "Delivery Rider Allocated",
-                'remarks' => "We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}.",
-                'created_at' => $now,
-                'updated_at' => $now
-            ]);
-        });
-        // Send notifications after commit
-        try {
-            $receiverMsg = "Hello {$shipment->receiver_name}, We have allocated {$rider_name} of phone number { $rider_phone } to deliver your parcel {$requestId} Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
+            // Send notifications after commit
+            $user = auth()->user();
+            $officeName = $user->station->name ?? 'our office';
+
+            $receiverMsg = "Hello {$shipment->receiver_name}, your shipment has arrived at {$officeName} office and is in the process of being delivered. Waybill No: {$shipment->waybill_no}. Thank you for choosing UCSL.";
             $smsService->sendSms($shipment->receiver_phone, 'Parcel dispatched for delivery', $receiverMsg, true);
 
             DB::table('sent_messages')->insert([
-                'request_id' => $requestId,
-                'client_id' => $shipment->client_id,
-                'rider_id' => $authId,
-                'recipient_type' => 'receiver',
-                'recipient_name' => $shipment->receiver_name,
-                'phone_number' => $shipment->receiver_phone,
-                'subject' => 'dispatched for delivery',
-                'message' => $receiverMsg,
-                'created_at' => $now,
-                'updated_at' => $now
+                'request_id'      => $requestId,
+                'client_id'       => $shipment->client_id,
+                'rider_id'        => $authId,
+                'recipient_type'  => 'receiver',
+                'recipient_name'  => $shipment->receiver_name,
+                'phone_number'    => $shipment->receiver_phone,
+                'subject'         => 'dispatched for delivery',
+                'message'         => $receiverMsg,
+                'created_at'      => $now,
+                'updated_at'      => $now
             ]);
 
             $terms = env('TERMS_AND_CONDITIONS', '#');
@@ -511,13 +502,29 @@ class ShipmentArrivalController extends Controller
                     <p>Thank you for using Ufanisi Courier Services.</p>";
 
             EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
+
+            // ✅ Only essential log
+            \Log::info('Rider allocated and notifications sent', [
+                'requestId'   => $requestId,
+                'shipment_id' => $shipment->id,
+                'rider_id'    => $validatedData['delivery_rider'],
+                'receiver'    => $shipment->receiver_name,
+                'receiver_tel'=> $shipment->receiver_phone
+            ]);
+
         } catch (\Exception $e) {
-            \Log::error('Notification Error: ' . $e->getMessage());
+            // ❌ Only error log
+            \Log::error('Rider allocation failed', [
+                'requestId' => $requestId,
+                'error'     => $e->getMessage()
+            ]);
+
+            return redirect()->back()->with('error', 'Failed to allocate rider.');
         }
 
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
-
+    
     public function issue(Request $request, $id, SmsService $smsService) 
     {
         Log::info("📦 Entered issue() function", [

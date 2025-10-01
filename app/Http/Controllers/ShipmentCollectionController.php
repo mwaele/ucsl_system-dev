@@ -891,21 +891,21 @@ class ShipmentCollectionController extends Controller
 
             // 7. Save to payments table
             if($request->payment_mode=="M-Pesa" || $request->payment_mode=="Cash" || $request->payment_mode=="Cheque" ){
-            DB::table('payments')->insert([
-                'client_id' => $shipment_collection->client_id,
-                'amount' => $request->total_cost,
-                'date_paid' => now(),
-                'shipment_collection_id' => $id,
-                'type' => $request->payment_mode,
-                'received_by' => auth()->user()->id,
-                'verified_by' => auth()->user()->id,
-                'paid_by' => $shipment_collection->client_id,
-                'status' => 'Pending Verification',
-                'reference_no' => $request->reference,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
+                DB::table('payments')->insert([
+                    'client_id' => $shipment_collection->client_id,
+                    'amount' => $request->total_cost,
+                    'date_paid' => now(),
+                    'shipment_collection_id' => $id,
+                    'type' => $request->payment_mode,
+                    'received_by' => auth()->user()->id,
+                    'verified_by' => auth()->user()->id,
+                    'paid_by' => $shipment_collection->client_id,
+                    'status' => 'Pending Verification',
+                    'reference_no' => $request->reference,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
 
             if($request->payment_mode=="Invoice"){
               DB::table('invoices')->insert([
@@ -962,7 +962,71 @@ class ShipmentCollectionController extends Controller
             } catch (\Exception $e) {
                 \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
             }
-            
+
+            // ----------------------------
+            // ✅ SMS Notifications Logic
+            // ----------------------------
+            try {
+                $senderPhone = $shipment->sender_contact;
+                $senderName = $shipment->sender_name;
+                $receiverPhone = $shipment->receiver_phone;
+                $receiverName = $shipment->receiver_name;
+                $clientId = $shipment->client_id;
+
+                // --- Calculate Differences ---
+                $costDiff = $shipment->actual_total_cost - $shipment->total_cost;
+
+                // Get total actual weight from ShipmentItems
+                $actualTotalWeight = ShipmentItem::where('shipment_id', $shipment->id)->sum('actual_weight');
+                $weightDiff = $actualTotalWeight - $shipment->total_weight;
+
+                // --- Sender Message ---
+                $senderMsg = "Hello {$senderName}, your parcel has been verified. Total cost: KES {$shipment->actual_total_cost}. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
+
+                // If there are differences, append them
+                $extraNotes = [];
+                if ($costDiff != 0) {
+                    $extraNotes[] = "Cost difference: " . ($costDiff > 0 ? "+KES {$costDiff}" : "-KES " . abs($costDiff));
+                }
+                if ($weightDiff != 0) {
+                    $extraNotes[] = "Weight difference: " . ($weightDiff > 0 ? "+{$weightDiff} Kg" : "-".abs($weightDiff)." Kg");
+                }
+                if (!empty($extraNotes)) {
+                    $senderMsg .= " (" . implode(", ", $extraNotes) . ")";
+                }
+
+                // Send to Sender
+                $smsService->sendSms($senderPhone, 'Parcel Verified', $senderMsg, true);
+
+                SentMessage::create([
+                    'request_id' => $request->requestId,
+                    'client_id' => $clientId,
+                    'rider_id' => auth()->id(),
+                    'recipient_type' => 'sender',
+                    'recipient_name' => $senderName,
+                    'phone_number' => $senderPhone,
+                    'subject' => 'Parcel Verified',
+                    'message' => $senderMsg,
+                ]);
+
+                // --- Receiver Message ---
+                $receiverMsg = "Hello {$receiverName}, your parcel has been booked with UCSL. We will notify when the parcel arrives. Waybill No: {$waybill_no}.";
+                $smsService->sendSms($receiverPhone, 'Parcel Booked', $receiverMsg, true);
+
+                SentMessage::create([
+                    'request_id' => $request->requestId,
+                    'client_id' => $clientId,
+                    'rider_id' => auth()->id(),
+                    'recipient_type' => 'receiver',
+                    'recipient_name' => $receiverName,
+                    'phone_number' => $receiverPhone,
+                    'subject' => 'Parcel Booked',
+                    'message' => $receiverMsg,
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
+            }
+          
             return redirect()->back()->with('success', 'Shipment and items updated successfully');
         }
 
