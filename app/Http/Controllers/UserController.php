@@ -106,12 +106,11 @@ class UserController extends Controller
     {
         $location = $request->input('location');
 
-        $today = Carbon::today();
+        $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
 
         $drivers = DB::table('users')
-        ->join('client_requests', function ($join) use ($location, $today) {
+        ->join('client_requests', function ($join) use ($today) {
             $join->on('users.id', '=', 'client_requests.userId')
-                ->where('client_requests.collectionLocation', $location)
                 ->whereIn('client_requests.status', ['pending collection', 'collected'])
                 ->whereDate('client_requests.dateRequested', $today);
         })
@@ -132,7 +131,7 @@ class UserController extends Controller
 
     public function getUnallocatedDrivers()
     {
-         $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
+    $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
 
 
     // Get user IDs from client_requests table for today

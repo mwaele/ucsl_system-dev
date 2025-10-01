@@ -17,20 +17,36 @@ class EmailHelper
             return false;
         }
     }
-    public static function sendHtmlEmail($email, $subject, $fullMessage)
-    {
-        try {
-            Mail::mailer('smtp')->send([], [], function ($mail) use ($email, $subject, $fullMessage) {
-                $mail->to($email)
-                    ->subject($subject)
-                    ->html($fullMessage);
-            });
+    // public static function sendHtmlEmail($email, $subject, $fullMessage)
+    // {
+    //     try {
+    //         Mail::mailer('smtp')->send([], [], function ($mail) use ($email, $subject, $fullMessage) {
+    //             $mail->to($email)
+    //                 ->subject($subject)
+    //                 ->html($fullMessage);
+    //         });
 
-            return response()->json(['success' => true]);
-        } catch (\Throwable $e) {
-            \Log::error('Email Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to send email.'], 500);
-        }
+    //         return response()->json(['success' => true]);
+    //     } catch (\Throwable $e) {
+    //         \Log::error('Email Error: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Failed to send email.'], 500);
+    //     }
+    // }
+    public static function sendHtmlEmail($email, $subject, $fullMessage)
+{
+    try {
+        Mail::mailer('smtp')->send([], [], function ($mail) use ($email, $subject, $fullMessage) {
+            $mail->to((array) $email) // ✅ ensures it's always a flat array
+                 ->subject($subject)
+                 ->html($fullMessage);
+        });
+
+        return response()->json(['success' => true]);
+    } catch (\Throwable $e) {
+        \Log::error('Email Error: ' . $e->getMessage(), ['email' => $email, 'subject' => $subject]);
+        return response()->json(['error' => 'Failed to send email.'], 500);
     }
+}
+
 
 }

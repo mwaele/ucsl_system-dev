@@ -136,7 +136,7 @@
                             <tr>
                                 <td> {{ $loop->iteration }}.</td>
                                 <td> {{ $collection->requestId }} </td>
-                                <td data-date="{{ $collection->created_at }}"> {{ $collection->created_at ?? '' }} </td>
+                                <td data-date="{{ $collection->created_at }}"> {{ $collection->client->name ?? '' }} </td>
                                 <td> {{ $collection->serviceLevel->sub_category_name }} </td>
                                 <td> {{ $collection->client->contactPersonPhone }} </td>
                                 <td> {{ $collection->collectionLocation }} </td>
@@ -205,16 +205,16 @@
                                                                             value="{{ $collection->client->id }}">
                                                                         <input type="hidden" name="rqid"
                                                                             value="{{ $collection->requestId }}">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="sender_type" id="clientRadio"
-                                                                            value="client">
+                                                                        <input class="form-check-input clientRadio"
+                                                                            type="radio" name="sender_type"
+                                                                            id="clientRadio" value="client">
                                                                         <label class="form-check-label"
                                                                             for="clientRadio">Client</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="sender_type" id="agentRadio"
-                                                                            value="agent">
+                                                                        <input class="form-check-input agentRadio"
+                                                                            type="radio" name="sender_type" value="agent"
+                                                                            id='agentRadio'>
                                                                         <label class="form-check-label"
                                                                             for="agentRadio">Agent</label>
                                                                     </div>
@@ -483,8 +483,8 @@
                                                                         <option value="">Select</option>
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id">
+                                                                <input type="hidden" class="destination_id"
+                                                                    name='destination_id' id="destination_id">
 
                                                             </div>
                                                         @endif
@@ -1049,7 +1049,7 @@
                                                                         type="radio" name="delivery_type"
                                                                         id="select_agent" value="agent">
                                                                     <label class="form-check-label"
-                                                                        for="select_agent">Agent</label>
+                                                                        for="select_agent">Failed Delivery</label>
                                                                 </div>
                                                             </div>
 
@@ -1174,21 +1174,34 @@
                                                                     style="display: none;">
                                                                     <div class="card shadow-sm mb-4">
                                                                         <div class="card-header bg-primary text-white">
-                                                                            Front Office Approval Required</div>
+                                                                            Sent Communication to the Front Office</div>
                                                                         <div class="card-body">
-                                                                            <p>Please request approval from the front office
-                                                                                for this agent to collect the delivery.</p>
+                                                                            {{-- <p>Please request approval from the front office
+                                                                                for this agent to collect the delivery.</p> --}}
                                                                             <div class="row g-2 mb-2">
-                                                                                <div class="col-md-4">
+                                                                                <div class="col-md-12">
                                                                                     <label
                                                                                         for="agent_name_{{ $collection->id }}"
-                                                                                        class="form-label">Name</label>
-                                                                                    <input type="text"
+                                                                                        class="form-label">Reason for
+                                                                                        Failure</label>
+                                                                                    <select name="reason"
+                                                                                        class="form-control"
+                                                                                        id="reason_{{ $collection->id }}">
+                                                                                        <option value="">-- Select --
+                                                                                        </option>
+                                                                                        @foreach ($failed_deliveries as $failed_delivery)
+                                                                                            <option
+                                                                                                value="{{ $failed_delivery->id }}">
+                                                                                                {{ $failed_delivery->reason }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                    {{-- <input type="text"
                                                                                         class="form-control"
                                                                                         id="agent_name_{{ $collection->id }}"
-                                                                                        placeholder="Agent name">
+                                                                                        placeholder="Agent name"> --}}
                                                                                 </div>
-                                                                                <div class="col-md-4">
+                                                                                {{-- <div class="col-md-4">
                                                                                     <label
                                                                                         for="agent_id_{{ $collection->id }}"
                                                                                         class="form-label">ID No.</label>
@@ -1196,8 +1209,8 @@
                                                                                         class="form-control"
                                                                                         id="agent_id_{{ $collection->id }}"
                                                                                         placeholder="ID number">
-                                                                                </div>
-                                                                                <div class="col-md-4">
+                                                                                </div> --}}
+                                                                                {{-- <div class="col-md-4">
                                                                                     <label
                                                                                         for="agent_phone_{{ $collection->id }}"
                                                                                         class="form-label">Phone</label>
@@ -1205,14 +1218,14 @@
                                                                                         class="form-control"
                                                                                         id="agent_phone_{{ $collection->id }}"
                                                                                         placeholder="Phone number">
-                                                                                </div>
-                                                                                <div class="col-md-4">
+                                                                                </div> --}}
+                                                                                <div class="col-md-12">
                                                                                     <label
                                                                                         for="agent_reason_{{ $collection->id }}"
-                                                                                        class="form-label">Reason</label>
+                                                                                        class="form-label">Remarks</label>
                                                                                     <input type="text"
                                                                                         class="form-control"
-                                                                                        id="agent_reason_{{ $collection->id }}"
+                                                                                        id="remarks_{{ $collection->id }}"
                                                                                         placeholder="Reason">
                                                                                 </div>
                                                                             </div>
@@ -1312,12 +1325,15 @@
                                                             btn.disabled = true;
                                                             btn.innerText = "Submitting...";
 
-                                                            const agentName = document.getElementById(`agent_name_${collectionId}`).value;
-                                                            const agentId = document.getElementById(`agent_id_${collectionId}`).value;
-                                                            const agentPhone = document.getElementById(`agent_phone_${collectionId}`).value;
-                                                            const agentReason = document.getElementById(`agent_reason_${collectionId}`).value;
+                                                            const reason = document.getElementById(`reason_${collectionId}`).value;
+                                                            const remarks = document.getElementById(`remarks_${collectionId}`).value;
 
-                                                            fetch("{{ route('request.agent.approval') }}", {
+                                                            // const agentName = document.getElementById(`agent_name_${collectionId}`).value;
+                                                            // const agentId = document.getElementById(`agent_id_${collectionId}`).value;
+                                                            // const agentPhone = document.getElementById(`agent_phone_${collectionId}`).value;
+                                                            // const agentReason = document.getElementById(`agent_reason_${collectionId}`).value;
+
+                                                            fetch("{{ route('failed_delivery_alert') }}", {
                                                                     method: "POST",
                                                                     headers: {
                                                                         "Content-Type": "application/json",
@@ -1325,19 +1341,19 @@
                                                                     },
                                                                     body: JSON.stringify({
                                                                         requestId,
-                                                                        agentName,
-                                                                        agentId,
-                                                                        agentPhone,
-                                                                        agentReason
+                                                                        reason,
+                                                                        remarks,
+                                                                        // agentPhone,
+                                                                        // agentReason
                                                                     })
                                                                 })
                                                                 .then(response => {
-                                                                    if (!response.ok) throw new Error("Failed to send approval request");
+                                                                    if (!response.ok) throw new Error("Failed to send alert to the front office");
                                                                     return response.json();
                                                                 })
                                                                 .then(data => {
                                                                     $('#deliverParcel-' + collectionId).modal('hide');
-                                                                    alert("Approval request sent successfully to front office.");
+                                                                    alert("Alert sent successfully to front office.");
                                                                 })
                                                                 .catch(error => {
                                                                     btn.disabled = false;
@@ -1695,18 +1711,117 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
-                    const clientRadio = document.getElementById('clientRadio');
-                    const agentRadio = document.getElementById('agentRadio');
-                    const senderForm = document.getElementById('senderForm');
+                    // const clientRadio = document.getElementById('clientRadio');
+                    // const agentRadio = document.getElementById('agentRadio');
+                    // const senderForm = document.getElementById('senderForm');
 
-                    const cid = document.getElementById('cid').value;
+                    // const cid = document.getElementById('cid').value;
 
-                    const sender_name = document.getElementById('sender_name');
-                    const sender_id_no = document.getElementById('sender_id_no');
-                    const sender_contact = document.getElementById('sender_contact');
-                    const sender_town = document.getElementById('sender_town');
-                    const sender_address = document.getElementById('sender_address');
-                    const senderEmail = document.getElementById('senderEmail');
+                    // const sender_name = document.getElementById('sender_name');
+                    // const sender_id_no = document.getElementById('sender_id_no');
+                    // const sender_contact = document.getElementById('sender_contact');
+                    // const sender_town = document.getElementById('sender_town');
+                    // const sender_address = document.getElementById('sender_address');
+                    // const senderEmail = document.getElementById('senderEmail');
+
+                    // clientRadio.addEventListener('change', () => {
+                    //     if (clientRadio.checked) {
+                    //         senderForm.style.display = 'block';
+                    //         //console.log('cid:', cid);
+
+                    //         fetch('/clientData/' + cid) // Adjust this URL as needed
+                    //             .then(response => {
+                    //                 if (!response.ok) {
+                    //                     throw new Error('Network response was not ok');
+                    //                 }
+                    //                 return response.json();
+                    //             })
+                    //             .then(client => {
+                    //                 if (client && !client.message) { // Ensure it's not a 404 error response
+                    //                     sender_name.value = client.name || '';
+                    //                     sender_id_no.value = client.contact_person_id_no || '';
+                    //                     sender_contact.value = client.contact || '';
+                    //                     sender_town.value = client.city || '';
+                    //                     sender_address.value = client.address || '';
+                    //                     senderEmail.value = client.email || '';
+                    //                 } else {
+                    //                     alert('Client not found.');
+                    //                 }
+                    //             })
+                    //             .catch(error => {
+                    //                 console.error('Error fetching client data:', error);
+                    //                 alert('Failed to fetch client data.');
+                    //             });
+                    //     }
+                    // });
+
+                    document.querySelectorAll('.modal-body').forEach(modalBody => {
+                        const clientRadios = modalBody.querySelectorAll('.clientRadio');
+                        const agentRadios = modalBody.querySelectorAll('.agentRadio');
+                        const senderForm = modalBody.querySelector('#senderForm');
+                        const cidInput = modalBody.querySelector('#cid');
+
+                        // Handle client radios
+                        clientRadios.forEach(radio => {
+                            radio.addEventListener('change', () => {
+                                if (radio.checked) {
+                                    senderForm.style.display = 'block';
+
+                                    const cid = cidInput ? cidInput.value : null;
+                                    if (!cid) return;
+
+                                    fetch('/clientData/' + cid)
+                                        .then(response => {
+                                            if (!response.ok) throw new Error(
+                                                'Network response was not ok');
+                                            return response.json();
+                                        })
+                                        .then(client => {
+                                            if (client && !client.message) {
+                                                senderForm.querySelector('#sender_name').value =
+                                                    client.name || '';
+                                                senderForm.querySelector('#sender_id_no')
+                                                    .value = client.contact_person_id_no || '';
+                                                senderForm.querySelector('#sender_contact')
+                                                    .value = client.contact || '';
+                                                senderForm.querySelector('#sender_town').value =
+                                                    client.city || '';
+                                                senderForm.querySelector('#sender_address')
+                                                    .value = client.address || '';
+                                                senderForm.querySelector('#senderEmail').value =
+                                                    client.email || '';
+                                            } else {
+                                                alert('Client not found.');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching client data:', error);
+                                            alert('Failed to fetch client data.');
+                                        });
+                                }
+                            });
+                        });
+
+                        // Handle agent radios
+                        agentRadios.forEach(radio => {
+                            radio.addEventListener('change', () => {
+                                if (radio.checked) {
+                                    // Hide sender form for agent
+                                    //if (senderForm) senderForm.style.display = 'none';
+
+                                    // Optional: clear sender fields if previously filled
+                                    senderForm.querySelector('#sender_name').value = '';
+                                    senderForm.querySelector('#sender_id_no').value = '';
+                                    senderForm.querySelector('#sender_contact').value = '';
+                                    senderForm.querySelector('#sender_town').value = '';
+                                    senderForm.querySelector('#sender_address').value = '';
+                                    senderForm.querySelector('#senderEmail').value = '';
+                                }
+                            });
+                        });
+                    });
+
+
 
                     function clearForm() {
                         sender_name.value = '';
@@ -1717,43 +1832,14 @@
                         senderEmail.value = '';
                     }
 
-                    clientRadio.addEventListener('change', () => {
-                        if (clientRadio.checked) {
-                            senderForm.style.display = 'block';
-                            //console.log('cid:', cid);
 
-                            fetch('/clientData/' + cid) // Adjust this URL as needed
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                    return response.json();
-                                })
-                                .then(client => {
-                                    if (client && !client.message) { // Ensure it's not a 404 error response
-                                        sender_name.value = client.name || '';
-                                        sender_id_no.value = client.contact_person_id_no || '';
-                                        sender_contact.value = client.contact || '';
-                                        sender_town.value = client.city || '';
-                                        sender_address.value = client.address || '';
-                                        senderEmail.value = client.email || '';
-                                    } else {
-                                        alert('Client not found.');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching client data:', error);
-                                    alert('Failed to fetch client data.');
-                                });
-                        }
-                    });
 
-                    agentRadio.addEventListener('change', () => {
-                        if (agentRadio.checked) {
-                            senderForm.style.display = 'block';
-                            clearForm(); // Allow fresh entry
-                        }
-                    });
+                    // agentRadio.addEventListener('change', () => {
+                    //     if (agentRadio.checked) {
+                    //         senderForm.style.display = 'block';
+                    //         clearForm(); // Allow fresh entry
+                    //     }
+                    // });
 
 
                     // get destinations

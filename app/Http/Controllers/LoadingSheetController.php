@@ -306,6 +306,7 @@ class LoadingSheetController extends Controller
     public function dispatch($id, SmsService $smsService) 
     {
         $sheet = LoadingSheet::findOrFail($id);
+        //return response()->json(['message' => $sheet]);
 
         $shipment_ids = LoadingSheetWaybill::where('loading_sheet_id', $id)
             ->pluck('shipment_id')
@@ -330,7 +331,7 @@ class LoadingSheetController extends Controller
                 DB::table('tracks')
                     ->where('id', $trackingId)
                     ->update([
-                        'current_status' => 'Parcel Dispatched',
+                        'current_status' => 'Parcel Dispatched and in Transit',
                         'updated_at' => now(),
                     ]);
             } else {
@@ -345,14 +346,14 @@ class LoadingSheetController extends Controller
             DB::table('tracking_infos')->insert([
                 'trackId'    => $trackingId,
                 'date'       => now(),
-                'details'    => 'Parcel dispatched',
+                'details'    => 'Parcel dispatched and in transit',
                 'remarks'    => $sheet->dispatcher->name.' dispatched the parcel from '.$client->name.', request ID '.$requestId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
             // ✅ Update client_requests status to dispatched
-            ClientRequest::where('id', $requestId)->update([
+            ClientRequest::where('requestId', $requestId)->update([
                 'status' => 'dispatched',
                 'updated_at' => now(),
             ]);
@@ -383,7 +384,7 @@ class LoadingSheetController extends Controller
             $senderSubject = 'Parcel Dispatch Alert';
             $clientEmail = $client->email;
             $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
             $fullSenderMessage = $parcelSenderMessage . $footer;
             $emailResponse = EmailHelper::sendHtmlEmail($clientEmail, $senderSubject, $fullSenderMessage);

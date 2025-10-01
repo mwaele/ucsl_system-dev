@@ -133,8 +133,11 @@ Route::post('/client/logout', [AuthController::class, 'logout'])
 //     return view('index');
 // })->middleware(['auth', 'verified'])->name('index');;
 
-Route::middleware('rider')->group(function(){
-Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
+// Route::middleware('rider')->group(function(){
+// });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
 //collections
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');
 
@@ -143,9 +146,7 @@ Route::get('/my_collections/client-portal', [MyCollectionController::class, 'col
     Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
     
-});
 
-Route::middleware(['auth', 'role:admin,super-admin,staff'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -162,6 +163,7 @@ Route::middleware(['auth', 'role:admin,super-admin,staff'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
     Route::post('/shipments/{id}/deliver', [ShipmentController::class, 'markAsDelivered'])->name('shipments.deliver');
+    Route::resource('delivery_faileds','App\Http\Controllers\DeliveryFailedController');
     Route::resource('shipments','App\Http\Controllers\ShipmentController');
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');
@@ -229,6 +231,7 @@ Route::middleware(['auth', 'role:admin,super-admin,staff'])->group(function () {
 
 
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
+    Route::post('/failed_delivery_alert', [ShipmentDeliveriesController::class, 'failed_delivery_alert'])->name('failed_delivery_alert');
     Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
     Route::post('/client-request/agent-approval', [ShipmentDeliveriesController::class, 'handleAgentApproval'])->name('client-request.agent-approval');
     Route::get('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'showDeclineForm'])->name('agent.decline.form');

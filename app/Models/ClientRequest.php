@@ -29,6 +29,7 @@ class ClientRequest extends Model
         'priority_level_amount',
         'fragile_item_amount',
         'source', 
+        'pickupLocation',
     ];
 
     public function client()

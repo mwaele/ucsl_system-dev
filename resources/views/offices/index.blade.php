@@ -18,6 +18,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Office Code</th>
 
                             <th>Front Office User</th>
                             <th>City</th>
@@ -29,6 +30,7 @@
                     <tfoot>
                         <tr>
                             <th>Name</th>
+                            <th>Office Code</th>
                             <th>Front Office User</th>
                             <th>City</th>
                             <th>Mpesa Till</th>
@@ -41,6 +43,7 @@
                         @foreach ($offices as $office)
                             <tr>
                                 <td> {{ $office->name }} </td>
+                                <td> {{ $office->office_code }} </td>
                                 <td>
                                     @php
                                         $activeUsers = $office->activeFrontOfficeUsers->pluck('user.name')->toArray();
@@ -57,7 +60,7 @@
                                         </button>
                                     </a> --}}
                                     <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                        data-target="#updateOffice-{{ $office->id }}"><i
+                                        data-target="#updateOffice-{{ $office->id }}" data-id="{{ $office->id }}"><i
                                             class="fas fa-edit">Edit</i></button>
                                     {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $office->id }}"><i
@@ -109,7 +112,7 @@
                                                         <div class="form-group"><label>Front Office User <span
                                                                     class="text-danger">*</span></label>
 
-                                                            <select name="user" class="form-control" required>
+                                                            <select name="user" class="form-control">
                                                                 <option value="">Select User</option>
                                                                 @foreach ($office->users as $user)
                                                                     <option value="{{ $user->id }}"
@@ -134,21 +137,42 @@
 
                                                         </div>
                                                     </div>
+
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group"><label>Mpesa Till <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="text" name="mpesaTill"
+                                                                value="{{ $office->mpesaTill }}" class="form-control"
+                                                                required="">
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group"><label>Office Code <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="text" name="office_code"
+                                                                value="{{ $office->office_code }}" class="form-control"
+                                                                required="">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </form>
                                         </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
+            @endforeach
+            </tbody>
+            </table>
         </div>
+    </div>
     </div>
 @endsection

@@ -19,6 +19,7 @@ class ShipmentDeliveries extends Model
         'delivery_location',
         'delivery_datetime',
         'delivered_by',
-        'remarks'
+        'remarks',
+        'receiverOTP'
     ];
 }

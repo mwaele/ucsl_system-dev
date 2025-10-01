@@ -7,6 +7,7 @@ use App\Models\Rate;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
 use App\Models\ClientRequest;
+use App\Models\DeliveryFailed;
 use Auth;
 
 class MyDeliveryController extends Controller
@@ -17,6 +18,8 @@ class MyDeliveryController extends Controller
         $offices = Office::where('id', Auth::user()->station)->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
+
+        $failed_deliveries = DeliveryFailed::all();
 
         // ✅ Correct way: Get all shipment collections for the logged-in user's station & rider
         // $shipment_collections = ShipmentCollection::where('delivery_rider', Auth::user()->station)
@@ -81,6 +84,7 @@ class MyDeliveryController extends Controller
             'consignment_no',
             'approvalStatuses',
             'grn_no',
+            'failed_deliveries'
         ));
     }
 

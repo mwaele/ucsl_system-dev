@@ -211,6 +211,7 @@ class ShipmentArrivalsController extends Controller
         $now = now();
         $authId = Auth::id();
         $requestId = $validatedData['requestId'];
+        $totalCost = $validatedData['total_cost'];
 
 
         // Preload shipment + track in one query
@@ -218,7 +219,7 @@ class ShipmentArrivalsController extends Controller
             ->where('requestId', $requestId)
             ->firstOrFail();
 
-        DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId) {
+        DB::transaction(function () use ($validatedData, $id, $now, $authId, $shipment, $requestId, $totalCost) {
 
             // Save main shipment arrival
             DB::table('shipment_arrivals')->insert([
@@ -292,7 +293,7 @@ class ShipmentArrivalsController extends Controller
 
         // Send notifications after commit
         try {
-            $receiverMsg = "Hello {$shipment->receiver_name}, your parcel has arrived and is ready for collection. Track No: {$requestId}. Carry your original national ID. Thank you for choosing UCSL.";
+            $receiverMsg = "Hello {$shipment->receiver_name}, your parcel has arrived and is ready for collection. Track No: {$requestId}. Remeber to carry Kes.{$totalCost} and your original national ID. Thank you for choosing UCSL.";
             $smsService->sendSms($shipment->receiver_phone, 'Parcel Arrived', $receiverMsg, true);
 
             DB::table('sent_messages')->insert([
@@ -309,7 +310,7 @@ class ShipmentArrivalsController extends Controller
             ]);
 
             $terms = env('TERMS_AND_CONDITIONS', '#');
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
 
             EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);

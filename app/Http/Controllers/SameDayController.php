@@ -221,7 +221,7 @@ class SameDayController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Entered store() method.', ['request_data' => $request->all()]);
+        //Log::info('Entered store() method.', ['request_data' => $request->all()]);
 
         try {
             // 1. Validate incoming request (requestId removed)
@@ -236,7 +236,8 @@ class SameDayController extends Controller
                 'sub_category_id' => 'required|integer',
                 'priority_level' => 'required|string',
                 'deadline_date' => 'nullable|date',
-                'rate_id' => 'nullable',
+                'rate_id' => 'nullable',      
+                'pickupLocation' => 'required|string',
             ]);
         } catch (\Exception $e) {
             Log::error('Validation failed.', ['message' => $e->getMessage()]);
@@ -253,6 +254,7 @@ class SameDayController extends Controller
             // 3. Save client request
             $clientRequest = new ClientRequest();
             $clientRequest->clientId = $validated['clientId'];
+            $clientRequest->pickupLocation = $validated['pickupLocation'];
             $clientRequest->collectionLocation = $validated['collectionLocation'];
             $clientRequest->parcelDetails = $validated['parcelDetails'];
             $clientRequest->dateRequested = Carbon::parse($validated['dateRequested'])->format('Y-m-d H:i:s');
@@ -304,7 +306,7 @@ class SameDayController extends Controller
             Log::info('Tracking info inserted.');
 
             // 7. Ensure collection location exists in Location table
-            Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
+            Location::firstOrCreate(['location' => $clientRequest->pickupLocation]);
             Log::info('Collection location ensured.');
 
             // Commit transaction
@@ -424,7 +426,7 @@ class SameDayController extends Controller
             ]);
 
             $terms = env('TERMS_AND_CONDITIONS', '#');
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
 
             EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Rider Allocated', $receiverMsg . $footer);

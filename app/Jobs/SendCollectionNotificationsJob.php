@@ -28,7 +28,7 @@ class SendCollectionNotificationsJob implements ShouldQueue
     public function handle(SmsService $smsService)
     {
         $requestId = $this->clientRequest->requestId;
-        $location = $this->clientRequest->collectionLocation;
+        $location = $this->clientRequest->pickupLocation;
         $deadline = $this->clientRequest->deadline_date;
 
         Log::info('SendCollectionNotificationsJob: Deadline Debug', [

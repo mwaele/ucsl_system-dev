@@ -608,7 +608,7 @@ class ClientPortalController extends Controller
                 $senderSubject = 'Parcel Collection Request';
                 //$clientEmail = $client->email;
                 $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-                $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
+                $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
                         <p>Thank you for using Ufanisi Courier Services.</p>";
                 $fullSenderMessage = $emailMsg . $footer;
 

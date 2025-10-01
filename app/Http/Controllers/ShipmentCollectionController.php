@@ -126,6 +126,8 @@ class ShipmentCollectionController extends Controller
                 'priority_level_amount' => $request->priority_extra_charge,
                 'fragile_item_amount' => $request->fragile_charge,
                 'manual_waybill_status' => $validated['manualWaybillStatus'] === 'yes' ? 1 : 0, // New field
+                'total_insurance_amount' => $request->total_insurance,
+                'insurance_charged_amount' => $request->insurance_charged,
             ]);
             // 1b. Handle manual waybill number + image upload
             if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
@@ -353,7 +355,7 @@ class ShipmentCollectionController extends Controller
             $senderSubject = 'Parcel Collected';
             $clientEmail = $client->email;
             $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
             $fullSenderMessage = $senderEmail . $footer;
 
@@ -611,7 +613,7 @@ class ShipmentCollectionController extends Controller
             $office_subject = 'Parcel Collected';
             $office_email = $creator->email;
             $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
             $fullOfficeMessage = $frontMessage . $footer;
 

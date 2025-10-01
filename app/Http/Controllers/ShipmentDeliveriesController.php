@@ -86,6 +86,9 @@ class ShipmentDeliveriesController extends Controller
             ]);
             Log::info("Payment Created", ['paymentId' => $payment->id, 'requestId' => $request->requestId]);
 
+            // Generate and assign OTP
+            $otp = rand(100000, 999999);
+
             // 1. Insert delivery record
             $delivery = ShipmentDeliveries::create([
                 'requestId' => $request->requestId,
@@ -101,8 +104,17 @@ class ShipmentDeliveriesController extends Controller
                 'delivery_datetime' => now(),
                 'remark' => $request->remarks,
                 'delivered_by'=> Auth::user()->id,
+                'receiverOTP' => $otp,
             ]);
             Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
+
+            $message = "Your Shipment Collection OTP is {$otp}.";
+            $smsService->sendSms(
+                phone: $request->receiver_phone,
+                subject:'',
+                message: $message,
+                addFooter: true
+            );
 
             // 2. Create goods received note number
             ShipmentCollection::where('requestId', $request->requestId)
@@ -187,7 +199,7 @@ class ShipmentDeliveriesController extends Controller
             $office_subject = 'Parcel Delivered';
             $office_email = $creator->email;
             $terms = env('TERMS_AND_CONDITIONS', '#');
-            $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
                     <p>Thank you for using Ufanisi Courier Services.</p>";
             $fullOfficeMessage = $frontMessage . $footer;
 
@@ -354,6 +366,91 @@ class ShipmentDeliveriesController extends Controller
         Log::info('requestApproval() completed', ['requestId' => $requestId]);
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
+    }
+    public function failed_delivery_alert(Request $request)  
+    {
+        // Log::info('failed_delivery_alert() called', ['requestId' => $request->input('requestId')]);
+
+        // Extract details
+        $requestId = $request->input('requestId');
+        $reason    = $request->input('reason');
+        $remarks   = $request->input('remarks');
+
+        // Validate inputs
+        if (!$reason || !$remarks) {
+            //Log::warning('Missing details', ['requestId' => $requestId]);
+            return response()->json(['status' => 'error', 'message' => 'All details are required.'], 422);
+        }
+
+        // Lookup shipment collection
+        $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
+        if (!$shipmentCollection) {
+            //Log::error('ShipmentCollection not found', ['requestId' => $requestId]);
+            return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
+        }
+
+        // Lookup client request with relations
+        $clientRequest = ClientRequest::with(['client'])
+            ->where('requestId', $requestId)
+            ->first();
+
+        if (!$clientRequest) {
+            Log::error('ClientRequest not found', [
+                'shipmentCollectionId' => $shipmentCollection->id,
+                'requestId' => $requestId
+            ]);
+            return response()->json(['status' => 'error', 'message' => 'Client Request not found.'], 404);
+        }
+
+        DB::table('shipment_collections')
+                ->where('requestId', $requestId)
+                ->update([
+                    'delivery_failed_id' => $reason,
+                    'delivery_failure_remarks' => $remarks
+                ]);
+
+        try {
+
+            $senderSubject = 'Shipment Delivery Failed';
+            $stationId = Auth::user()->station;
+
+            $emails = DB::table('office_users')
+            ->join('users', 'office_users.user_id', '=', 'users.id')
+            ->where('office_users.office_id', $stationId)
+            ->pluck('users.email')
+            ->toArray(); // ✅ ensure it's a flat array of strings
+                    
+            Log::info('Preparing Alert Email', ['requestId' => $requestId, 'email' => $emails]);
+
+            $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+            $fullSenderMessage = $remarks . $footer;
+
+            $emailResponse = EmailHelper::sendHtmlEmail($emails, $senderSubject, $fullSenderMessage);
+
+            // Mail::to('jeff.letting@ufanisi.co.ke')
+            //     ->cc('mwaele@ufanisi.co.ke')
+            //     ->send(
+            //         new AgentApprovalRequestMail(
+            //             $requestId,
+            //             $agentName,
+            //             $agentId,
+            //             $agentPhone,
+            //             $agentReason,
+            //             $approvalUrl
+            //         )
+            //     );
+            // Log::info('Approval email sent');
+        } catch (\Throwable $e) {
+            Log::error('Failed to send alert email', ['error' => $e->getMessage()]);
+        }
+
+        //Log::info('requestApproval() completed', ['requestId' => $requestId]);
+
+        return response()->json(['status' => 'success', 'message' => 'Alert sent.']);
+
+
     }
 
     public function handleAgentApproval(Request $request)

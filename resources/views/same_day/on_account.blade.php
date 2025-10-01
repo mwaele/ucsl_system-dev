@@ -122,14 +122,15 @@
                                     </div>
                                     <div class="modal-body">
                                         <form>
-                                            <h6 class="text-primary">Fill in the client details.</h6>
+                                            {{-- <h6 class="text-primary">Fill in the client details.</h6> --}}
 
                                             <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <label for="clientId" class="form-label text-primary">Client</label>
-                                                    <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
-                                                        <option value="">Select Client</option>
+                                                <div class="col-md-12">
+                                                    <label for="clientId" class="form-label text-primary ">Client</label>
+                                                    <select
+                                                        class="form-control selectpicker text-primary bg-light border-success"
+                                                        data-live-search="true" id="clientId" name="clientId">
+                                                        <option value="">Select Client </option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->id }}"
                                                                 data-tokens="{{ $client->kraPin }} {{ $client->accountNo }} {{ $client->name }}">
@@ -141,13 +142,24 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
+
                                                 <div class="col-md-6">
-                                                    <label for="collectionLocation" class="form-label text-primary">Pickup
+                                                    <label for="pickupLocation" class="form-label text-primary">Pickup
                                                         Location
                                                     </label>
+                                                    <div class="form-group">
+                                                        <input type="text" name="pickupLocation"
+                                                            class="form-control text-primary bg-light border-success">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="collectionLocation"
+                                                        class="form-label text-primary">Destination
+                                                    </label>
                                                     <select name="collectionLocation" id="collectionLocation"
-                                                        class="form-control selectpicker" data-live-search="true">
-                                                        <option value="">-- Select Location --</option>
+                                                        class="form-control selectpicker text-primary bg-light border-success"
+                                                        data-live-search="true">
+                                                        <option value="">-- Select Delivery Location --</option>
                                                         @foreach ($locations->sortBy('destination') as $location)
                                                             <option value="{{ $location->destination }}"
                                                                 data-id="{{ $location->id }}">
@@ -155,6 +167,7 @@
                                                             </option>
                                                         @endforeach
                                                     </select>
+
 
                                                     <input type="hidden" name='rate_id' id="rate_id" value="">
 
@@ -196,8 +209,8 @@
                                             <div class="mb-3">
                                                 <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
                                                     Details</label>
-                                                <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
-                                                    placeholder="Fill in the description of goods."></textarea>
+                                                <textarea class="form-control text-primary bg-light border-success" id="parcelDetails" name="parcelDetails"
+                                                    rows="3" placeholder="Fill in the description of goods."></textarea>
                                             </div>
 
                                             <h6 class="text-muted text-primary"> Rider Details.</h6>

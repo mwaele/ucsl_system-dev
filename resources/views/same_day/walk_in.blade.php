@@ -636,7 +636,8 @@
                                     {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
-                                <td> {{ $request->shipmentCollection->destination->destination }} </td>
+                                <td>{{ $request->shipmentCollection?->destination?->destination }}</td>
+
                                 <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>

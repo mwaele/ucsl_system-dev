@@ -1638,11 +1638,32 @@
                         cost += extraWeight * 50;
                     }
 
-                    $('input[name="cost"]').val(cost.toFixed(2));
 
-                    const vat = cost * 0.16;
-                    $('input[name="vat"]').val(vat.toFixed(2));
-                    $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+
+                    function extractVAT(costWithVAT) {
+                        // Calculate raw VAT when total already includes VAT
+                        const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                        let integerPart = Math.floor(rawVat);
+                        const decimal = rawVat - integerPart;
+
+                        let roundedVat;
+                        if (decimal < 0.3) {
+                            roundedVat = integerPart;
+                        } else if (decimal <= 0.7) {
+                            roundedVat = integerPart + 0.5;
+                        } else {
+                            roundedVat = integerPart + 1;
+                        }
+
+                        // Always return a formatted string like "69.00" or "69.50"
+                        return roundedVat.toFixed(2);
+                    }
+
+                    const vat = extractVAT(cost);
+                    $('input[name="cost"]').val((cost - vat).toFixed(2));
+                    $('input[name="vat"]').val(vat);
+                    $('input[name="total_cost"]').val((cost).toFixed(2));
                 }
 
 
@@ -1665,6 +1686,7 @@
                     const selectedOption = $(this).find('option:selected');
                     const destination_id = selectedOption.data('id');
                     $("#destination_id").val(destination_id);
+                    $(".destination_id").val(destination_id);
                     const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                     const originId = modal.find('.origin-dropdown').val();
 
@@ -1861,6 +1883,16 @@
                 const fragileExtraGroup = document.getElementById("fragile-charge-group");
                 const fragileExtraInput = document.getElementById("fragile_charge");
 
+
+                const insuranceSelect = document.getElementById("insurance");
+                const insuranceConfirm = document.getElementById("insurance-confirm");
+                const insuranceExtraGroup = document.getElementById("insurance-charge-group");
+                const insuranceExtraGroup2 = document.getElementById("insurance-charge-group2");
+                const insuranceExtraInput = document.getElementById("total_insurance");
+                const insuranceExtraInput2 = document.getElementById("insurance_charged");
+
+
+
                 const baseCostInput = document.querySelector("input[name='base_cost']");
                 const costInput = document.querySelector("input[name='cost']");
                 const vatInput = document.querySelector("input[name='vat']");
@@ -1872,13 +1904,17 @@
                 const fragileYesBtn = document.getElementById("fragileYesBtn");
                 const fragileNoBtn = document.getElementById("fragileNoBtn");
 
+                const insuranceYesBtn = document.getElementById("insuranceYesBtn");
+                const insuranceNoBtn = document.getElementById("insuranceNoBtn");
+
                 // helper function to update totals
                 function updateTotals() {
                     const baseCost = parseFloat(baseCostInput.value) || 0;
                     const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
+                    const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
 
-                    const itemCost = baseCost + priorityExtra + fragileExtra;
+                    const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
                     const vat = itemCost * 0.16;
                     const total = itemCost + vat;
 
@@ -1942,6 +1978,62 @@
                 // watch extra charge inputs
                 priorityExtraInput.addEventListener("input", updateTotals);
                 fragileExtraInput.addEventListener("input", updateTotals);
+
+
+                //insurance logic
+
+                insuranceSelect.addEventListener("change", () => {
+                    if (insuranceSelect.value === "yes") {
+                        insuranceConfirm.style.display = "block";
+                    } else {
+                        insuranceConfirm.style.display = "none";
+                        insuranceExtraGroup.style.display = "none";
+                        insuranceExtraInput.value = "";
+                        insuranceExtraGroup2.style.display = "none";
+                        insuranceExtraInput2.value = "";
+                        updateTotals();
+                    }
+                });
+
+                insuranceYesBtn.addEventListener("click", () => {
+                    insuranceExtraGroup.style.display = "block";
+                    insuranceExtraGroup2.style.display = "block";
+                    insuranceConfirm.style.display = "none";
+                });
+
+                insuranceNoBtn.addEventListener("click", () => {
+                    // Keep YES but with zero charge
+                    insuranceConfirm.style.display = "none";
+                    insuranceExtraGroup.style.display = "none";
+                    insuranceExtraInput.value = "0";
+                    insuranceExtraGroup2.style.display = "none";
+                    insuranceExtraInput2.value = "0";
+                    updateTotals();
+                });
+
+                // watch extra charge inputs
+
+                document.getElementById('total_insurance').addEventListener('input', function() {
+                    let total = parseFloat(this.value) || 0;
+                    let charge = (total * 0.01).toFixed(2);
+
+                    if (total > 0) {
+                        document.getElementById('insurance-charge-group2').style.display = "block";
+                        document.getElementById('insurance_charged').value = charge;
+
+                        // Direct call
+                        updateTotals();
+                    } else {
+                        document.getElementById('insurance-charge-group2').style.display = "none";
+                        document.getElementById('insurance_charged').value = "";
+                        updateTotals();
+                    }
+                });
+
+
+
+
+
 
                 // initial calc
                 updateTotals();

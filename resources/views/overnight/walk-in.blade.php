@@ -415,6 +415,45 @@
 
 
 
+                                            <div class="mt-2 col-md-2">
+                                                <h6 for="insurance" class="text-primary">Insurance Apllies?</h6>
+                                                <select class="form-control" name="insurance" id="insurance">
+                                                    <option value="no" selected>No</option>
+                                                    <option value="yes">Yes</option>
+                                                </select>
+                                            </div>
+
+
+                                            <!-- Inline Confirmation (hidden by default) -->
+                                            <div class="mt-2 col-md-2" id="insurance-confirm" style="display:none;">
+                                                <p class="text-white bg-danger p-2">This item has insurance cover. Do you
+                                                    want to
+                                                    add
+                                                    extra
+                                                    charges?</p>
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    id="insuranceYesBtn">Yes</button>
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                    id="insuranceNoBtn">No</button>
+                                            </div>
+
+                                            <!-- Insurance Charge Input -->
+                                            <div class="mt-2 col-md-2" id="insurance-charge-group" style="display:none;">
+                                                <h6 for="insurance_charge" class="text-primary"> Insurance Amount
+                                                </h6>
+                                                <input type="number" class="form-control" name="total_insurance"
+                                                    id="total_insurance" placeholder="Enter extra amount">
+                                            </div>
+                                            <div class="mt-2 col-md-2" id="insurance-charge-group2"
+                                                style="display:none;">
+                                                <h6 for="insurance_charge" class="text-primary">Charged Amount
+                                                </h6>
+                                                <input type="number" class="form-control" name="insurance_charged"
+                                                    id="insurance_charged" placeholder="Enter extra amount" readonly>
+                                            </div>
+
+
+
                                             <div class="mt-2 col-md-3" id="priority-deadline-group"
                                                 style="display: none;">
                                                 <h6 for="deadline_date" class="text-primary">Deadline (If High Priority)
@@ -613,7 +652,8 @@
                                     {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->office->name }} </td>
-                                <td> {{ $request->shipmentCollection->destination->destination }} </td>
+                                <td>{{ $request->shipmentCollection?->destination?->destination }}</td>
+
                                 <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>

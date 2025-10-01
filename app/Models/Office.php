@@ -27,7 +27,8 @@ class Office extends Model
         'mpesaPaybillC2bValidation',   
         'approvedBy',                  
         'status',
-        'front_office_email'
+        'front_office_email',
+        'office_code',
     ];
 
     /**

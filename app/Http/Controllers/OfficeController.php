@@ -85,11 +85,15 @@ class OfficeController extends Controller
      */
     public function update(Request $request, Office $office)
     {
+        //dd($office->id);
         // Validate request
         $validated = $request->validate([
             'user'   => 'required|exists:users,id',
             'status' => 'required|in:active,inactive',
+            'office_code' => 'nullable|string|max:10',
         ]);
+
+        Office::where('id', $office->id)->update(['office_code' => $validated['office_code'],'status' => $validated['status']]);
 
         // Insert or update office_users
         OfficeUser::updateOrCreate(
@@ -101,6 +105,7 @@ class OfficeController extends Controller
                 'status'    => $validated['status'],
             ]
         );
+        
 
         return redirect()->back()->with('success', 'Office user updated successfully.');
     }
