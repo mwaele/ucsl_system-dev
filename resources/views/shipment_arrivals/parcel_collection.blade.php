@@ -459,8 +459,18 @@
                                                             </div>
                                                         </div>
 
-
-
+                                                        <div class="row mt-3">
+                                                            <div class="col-md-12">
+                                                                <label for="last_mile_delivery_charges" class="text-primary">
+                                                                    <h6>Delivery Charges</h6>
+                                                                </label>
+                                                                <input type="number" step="0.01" min="0" 
+                                                                    id="last_mile_delivery_charges" 
+                                                                    name="last_mile_delivery_charges" 
+                                                                    class="form-control" 
+                                                                    placeholder="Enter delivery charges" required>
+                                                            </div>
+                                                        </div>
 
                                                         {{-- Hidden Fields --}}
                                                         {{-- <input type="hidden" name="requestId"

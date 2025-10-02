@@ -904,8 +904,6 @@
                                         </button>
                                     @endif
 
-
-
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="deliverParcel-{{ $collection->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="deliverParcel-{{ $collection->id }}"
@@ -1697,6 +1695,60 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                    <!-- Handover to Rider Button --> 
+                                    @if ($collection->status === 'collected')
+                                        <button class="btn btn-sm btn-info ml-1 mr-1" title="Handover to Rider"
+                                            data-toggle="modal" data-target="#handoverModal-{{ $collection->id }}">
+                                            Handover <i class="fas fa-exchange-alt"></i>
+                                        </button>
+
+                                        <!-- Handover Modal -->
+                                        <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1" role="dialog" aria-labelledby="handoverModalLabel-{{ $collection->id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-info text-white">
+                                                        <h5 class="modal-title" id="handoverModalLabel-{{ $collection->id }}">
+                                                            Handover Shipment #{{ $collection->requestId }}
+                                                        </h5>
+                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <form action="{{ route('shipments.handover', $collection->requestId) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <p class="mb-3">Please select the rider you want to handover this shipment to:</p>
+
+                                                            <div class="form-group">
+                                                                <label for="rider_id">Select Rider</label>
+                                                                <select name="rider_id" id="rider_id" class="form-control" required>
+                                                                    <option value="">-- Choose Rider --</option>
+                                                                    @foreach($riders as $rider)
+                                                                        <option value="{{ $rider->id }}">
+                                                                            {{ $rider->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="remarks">Remarks (optional)</label>
+                                                                <textarea name="remarks" id="remarks" class="form-control" rows="2"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-info">Confirm Handover</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
 
                                 </td>
                             </tr>

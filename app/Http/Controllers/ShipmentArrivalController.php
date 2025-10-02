@@ -426,6 +426,7 @@ class ShipmentArrivalController extends Controller
     {
         $validatedData = $request->validate([
             'delivery_rider' => 'required|exists:users,id',
+            'last_mile_delivery_charges' => 'required|numeric|min:0',
         ]);
 
         $arrival = ShipmentArrival::findOrFail($id);
@@ -448,14 +449,21 @@ class ShipmentArrivalController extends Controller
                 $rider_name = $rider->name;
                 $rider_phone = $rider->phone_number;
 
-                // Update shipment, client request, and track
+                // ✅ Update shipment with last mile charges
                 DB::table('shipment_collections')
                     ->where('id', $shipment->id)
-                    ->update(['status' => 'Delivery Rider Allocated', 'updated_at' => $now]);
+                    ->update([
+                        'status' => 'Delivery Rider Allocated',
+                        'last_mile_delivery_charges' => $validatedData['last_mile_delivery_charges'],
+                        'updated_at' => $now
+                    ]);
 
                 DB::table('client_requests')
                     ->where('requestId', $requestId)
-                    ->update(['delivery_rider_id' => $validatedData['delivery_rider'], 'status' => 'Delivery Rider Allocated']);
+                    ->update([
+                        'delivery_rider_id' => $validatedData['delivery_rider'],
+                        'status' => 'Delivery Rider Allocated'
+                    ]);
 
                 $trackId = DB::table('tracks')
                     ->where('requestId', $requestId)
@@ -503,17 +511,14 @@ class ShipmentArrivalController extends Controller
 
             EmailHelper::sendHtmlEmail($shipment->receiver_email, 'Parcel Arrived', $receiverMsg . $footer);
 
-            // ✅ Only essential log
-            \Log::info('Rider allocated and notifications sent', [
+            \Log::info('Rider allocated, charges saved & notifications sent', [
                 'requestId'   => $requestId,
                 'shipment_id' => $shipment->id,
                 'rider_id'    => $validatedData['delivery_rider'],
-                'receiver'    => $shipment->receiver_name,
-                'receiver_tel'=> $shipment->receiver_phone
+                'charges'     => $validatedData['last_mile_delivery_charges'],
             ]);
 
         } catch (\Exception $e) {
-            // ❌ Only error log
             \Log::error('Rider allocation failed', [
                 'requestId' => $requestId,
                 'error'     => $e->getMessage()

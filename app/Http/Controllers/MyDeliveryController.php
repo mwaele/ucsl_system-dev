@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Rate;
+use App\Models\User;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
 use App\Models\ClientRequest;
@@ -16,6 +17,7 @@ class MyDeliveryController extends Controller
     public function show()
     {
         $offices = Office::where('id', Auth::user()->station)->get();
+        $riders = User::where('role', 'driver')->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
@@ -83,6 +85,7 @@ class MyDeliveryController extends Controller
             'loggedInUserId',
             'consignment_no',
             'approvalStatuses',
+            'riders',
             'grn_no',
             'failed_deliveries'
         ));

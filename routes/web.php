@@ -419,6 +419,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/office/{office}', [ReportController::class, 'officePerformanceDetail'])->name('reports.office.detail');
     Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
+    Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
+
 });
 
 
