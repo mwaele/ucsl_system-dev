@@ -616,6 +616,7 @@
                                             @if ($status === 'pending collection') bg-secondary
                                             @elseif ($status === 'collected') bg-warning
                                             @elseif ($status === 'verified') bg-primary
+                                            @elseif ($status === 'Collection Cancelled') bg-danger
                                             @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($status) }}
@@ -626,12 +627,67 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
+                                    @if ($request->status === 'Pending-Collection')
+                                        <button class="btn btn-danger" data-toggle="modal"
+                                            data-target="#cancelRequestModal{{ $request->requestId }}">Cancel Request
+                                            X</button>
+                                        <div class="modal fade" id="cancelRequestModal{{ $request->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="CancelRequestLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Cancel Shipment Collection
+                                                            Request</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <form id="clientPortal.cancelRequest" method="post"
+                                                        action="{{ route('clientPortal.cancelRequest', $request->requestId) }}">
+                                                        @csrf
+                                                        <div class="modal-body"
+                                                            style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                            <div class="row">
+                                                                {{-- <div class="col-md-12 mb-3">
+                                                                    <label for="subject"
+                                                                        class="text-primary"><strong>Subject:
+                                                                        </strong></label>
+                                                                    <input type="text" class="form-control"
+                                                                        name="subject">
+                                                                </div> --}}
+                                                                <div class="col-md-12">
+                                                                    <label for="message"
+                                                                        class="text-primary"><strong>Reason for
+                                                                            Cancellation: <span
+                                                                                class="text-danger">*</span>
+                                                                        </strong></label>
+                                                                    <textarea name="message" id="" class="form-control" rows="10" required></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between align-items-center">
+                                                            <button type="button" class="btn btn-warning"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button class="btn btn-danger " type="submit">Cancel Request
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
                                         {{-- Waybill Generation --}}
                                         <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i> Generate Waybill
                                         </button>
+
+
 
                                         <div class="modal fade" id="waybillModal{{ $request->requestId }}"
                                             tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
@@ -664,18 +720,7 @@
                                         </div>
                                     @endif
 
-                                    @if (
-                                        $request->shipmentCollection?->payment_mode == 'Invoice' &&
-                                            $request->status != 'Pending-Collection' &&
-                                            $request->status != 'pending collection' &&
-                                            $request->status != 'verified' &&
-                                            $request->status != 'delivered')
-                                        <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
-                                            <button class="btn btn-sm btn-info mr-1">
-                                                Generate Invoice {{ $request->status }}
-                                            </button>
-                                        </a>
-                                    @endif
+
                                     @if ($request->shipmentCollection?->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
                                         <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
                                             target="_blank"

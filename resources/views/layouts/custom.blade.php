@@ -1909,10 +1909,12 @@
 
                 // helper function to update totals
                 function updateTotals() {
-                    const baseCost = parseFloat(baseCostInput.value) || 0;
+                    const baseCost = parseFloat(costInput.value) || 0;
                     const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
                     const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
+
+                    //recalculateCosts();
 
                     const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
                     const vat = itemCost * 0.16;
@@ -1999,6 +2001,8 @@
                     insuranceExtraGroup.style.display = "block";
                     insuranceExtraGroup2.style.display = "block";
                     insuranceConfirm.style.display = "none";
+                    $('#insurance_status').val('insured');
+
                 });
 
                 insuranceNoBtn.addEventListener("click", () => {
@@ -2009,6 +2013,7 @@
                     insuranceExtraGroup2.style.display = "none";
                     insuranceExtraInput2.value = "0";
                     updateTotals();
+                    $('#insurance_status').val('not_insured');
                 });
 
                 // watch extra charge inputs

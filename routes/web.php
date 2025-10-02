@@ -47,6 +47,7 @@ use App\Http\Controllers\ClientPortalController;
 use App\Http\Controllers\ServiceRateController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ClientCancelledShipmentController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -228,6 +229,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get_cost/{originId}/{destinationId}/{client_id}', [SpecialRateController::class, 'getCost']);
 
     Route::get('/clientData/{cid}', [MainController::class, 'clients']);
+
+    Route::post('/sendEmail/{requestId}', [ShipmentCollectionController::class, 'sendEmail'])->name('sendEmail');
+
+    Route::post('/cancelRequest/{requestId}', [ClientCancelledShipmentController::class, 'cancelRequest'])->name('clientPortal.cancelRequest');
 
 
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');

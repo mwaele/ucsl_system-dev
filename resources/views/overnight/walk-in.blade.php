@@ -435,6 +435,8 @@
                                                     id="insuranceYesBtn">Yes</button>
                                                 <button type="button" class="btn btn-sm btn-success"
                                                     id="insuranceNoBtn">No</button>
+                                                <input type="text" name="insurance_status" id="insurance_status"
+                                                    value="not_insured" hidden>
                                             </div>
 
                                             <!-- Insurance Charge Input -->
@@ -678,6 +680,54 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
+                                    <button class="btn btn-sm btn-danger mr-1" title="Send Email" data-toggle="modal"
+                                        data-target="#sendMail{{ $request->requestId }}">
+                                        <i class="fas fa-paper-plane"></i> Email
+                                    </button>
+                                    <div class="modal fade" id="sendMail{{ $request->requestId }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="EmailLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-primary">Send Email to Client</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form id="sendEmail" method="post"
+                                                    action="{{ route('sendEmail', $request->requestId) }}">
+                                                    @csrf
+                                                    <div class="modal-body"
+                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                        <div class="row">
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="subject"
+                                                                    class="text-primary"><strong>Subject:
+                                                                    </strong></label>
+                                                                <input type="text" class="form-control"
+                                                                    name="subject">
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <label for="message"
+                                                                    class="text-primary"><strong>Message:
+                                                                    </strong></label>
+                                                                <textarea name="message" id="" class="form-control" rows="10"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div
+                                                        class="modal-footer d-flex justify-content-between align-items-center">
+                                                        <button type="button" class="btn btn-warning"
+                                                            data-dismiss="modal">Close</button>
+                                                        <button class="btn btn-primary " type="submit">Send
+                                                            Email</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                     @if ($request->status === 'verified')
                                         <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">

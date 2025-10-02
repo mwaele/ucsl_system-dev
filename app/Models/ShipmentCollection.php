@@ -54,7 +54,8 @@ class ShipmentCollection extends Model
         'manual_waybill',
         'manual_waybillNo',
         'total_insurance_amount',
-        'insurance_charged_amount',   
+        'insurance_charged_amount', 
+        'insurance_status',  
     ];
 
     public function clientRequest()

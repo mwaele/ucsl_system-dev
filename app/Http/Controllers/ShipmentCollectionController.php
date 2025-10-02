@@ -128,6 +128,7 @@ class ShipmentCollectionController extends Controller
                 'manual_waybill_status' => $validated['manualWaybillStatus'] === 'yes' ? 1 : 0, // New field
                 'total_insurance_amount' => $request->total_insurance,
                 'insurance_charged_amount' => $request->insurance_charged,
+                'insurance_status' => $request->insurance_status,
             ]);
             // 1b. Handle manual waybill number + image upload
             if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
@@ -1054,5 +1055,45 @@ class ShipmentCollectionController extends Controller
         $request = ShipmentCollection::with(['clientRequest', 'items'])->findOrFail($id);
 
         return view('receipts.shipment', compact('request'));
+    }
+
+    public function sendEmail(Request $request, $requestId, SmsService $smsService)
+    {
+        $request->validate([
+            'subject' => 'required|string',
+            'message' => 'required|string',
+        ]);
+        $shipment = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
+
+        if (!$shipment) {
+            return redirect()->back()->with('error', 'Shipment not found.');
+        }
+
+        $client = Client::find($shipment->client_id);
+        if (!$client) {
+            return redirect()->back()->with('error', 'Client not found.');
+        }
+
+        $senderName = $shipment->sender_name;
+        $senderEmail = $shipment->sender_email;
+        $waybillNo = $shipment->waybill_no;
+
+        // Prepare email content
+        $subject = $request->subject;
+        $message = $request->message;
+        $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
+            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
+                    <p>Thank you for using Ufanisi Courier Services.</p>";
+
+        $fullMessage = $message . $footer;
+        // Send email
+        try {
+            EmailHelper::sendHtmlEmail($senderEmail, $subject, $fullMessage);
+
+            return redirect()->back()->with('success', 'Waybill details emailed successfully to the sender.');
+        } catch (\Exception $e) {
+            \Log::error('Email Sending Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to send email. Please try again later.');
+        }   
     }
 }

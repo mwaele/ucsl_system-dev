@@ -6,7 +6,7 @@
                 <table>
                     <tr>
                         <td><input type="checkbox" name="insurance_consent" value="Yes"
-                                {{ $collection->insurance_consent === 'Yes' ? 'checked' : '' }} class="me-3"></td>
+                                {{ $collection->insurance_status === 'insured' ? 'checked' : '' }} class="me-3"></td>
                         <td><span>YES</span></td>
                         <td><input type="checkbox" name="insurance_consent" value="No"
                                 {{ $collection->insurance_consent === 'No' ? 'checked' : '' }} class="me-3"></td>
@@ -20,9 +20,9 @@
         </div>
         <div class="row">
             <div class="col"><label>Declared Value:</label> <span
-                    class="value">{{ $collection->declared_value ?? '' }}</span></div>
+                    class="value">{{ $collection->total_insurance_amount ?? '' }}</span></div>
             <div class="col"><label>Insurance Amount:</label> <span
-                    class="value">{{ $collection->insurance_amount ?? '' }}</span></div>
+                    class="value">{{ $collection->insurance_charged_amount ?? '' }}</span></div>
         </div>
     </div>
 </div>
