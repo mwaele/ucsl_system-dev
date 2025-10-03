@@ -406,7 +406,15 @@ class ShipmentDeliveriesController extends Controller
                 ->where('requestId', $requestId)
                 ->update([
                     'delivery_failed_id' => $reason,
-                    'delivery_failure_remarks' => $remarks
+                    'delivery_failure_remarks' => $remarks,
+                    'status' => 'delivery_failed',
+                    'updated_at' => now()
+                ]);
+        DB::table('client_requests')
+                ->where('requestId', $requestId)
+                ->update([
+                    'status' => 'delivery_failed',
+                    'updated_at' => now()
                 ]);
 
         try {
