@@ -445,8 +445,11 @@
                                     @if ($request->status === 'pending collection' || $request->status === 'Pending-Collection') bg-secondary
                                     @elseif ($request->status == 'collected')
                                         bg-warning
+                                    @elseif ($request->status == 'delivery_failed')
+                                        bg-danger
                                     @elseif ($request->status == 'delivered')
-                                        bg-primary @endif
+                                        bg-primary
+                                    @else bg-dark @endif
                                     fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>

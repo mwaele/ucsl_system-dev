@@ -12,44 +12,57 @@
 </style>
 
 @section('content')
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-primary">Dashboard</h1>
-    </div>
 
-    <!-- Time Filter & Date Range Filter -->
-    <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
-        <div class="form-row align-items-end">
-            <div class="col-auto">
-                <label for="time" class="font-weight-bold">Quick Filter:</label>
-                <select name="time" id="time" class="form-control text-primary" onchange="this.form.submit()">
-                    <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
-                    <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
-                    <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
-                    <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days</option>
-                    <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
-                    <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <label for="start_date" class="font-weight-bold">Start Date:</label>
-                <input type="date" name="start_date" id="start_date" class="form-control text-primary"
-                    value="{{ request('start_date') }}">
-            </div>
-            <div class="col-auto">
-                <label for="end_date" class="font-weight-bold">End Date:</label>
-                <input type="date" name="end_date" id="end_date" class="form-control text-primary"
-                    value="{{ request('end_date') }}">
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Apply</button>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('dashboard') }}" class="btn btn-warning">Clear</a>
-            </div>
+    <!-- Page Heading & Filters -->
+    <div class="row mb-4 align-items-center">
+        <!-- Left: Dashboard Title -->
+        <div class="col-md-3 text-left">
+            <h1 class="h3 mb-0 text-primary">Dashboard</h1>
         </div>
-    </form>
 
+        <!-- Middle: Time Filter & Date Range Filter -->
+        <div class="col-md-8 text-center">
+            <form method="GET" action="{{ route('dashboard') }}" class="d-inline-block">
+                <div class="form-row align-items-end justify-content-center">
+                    <div class="col-auto">
+                        <label for="time" class="font-weight-bold">Quick Filter:</label>
+                        <select name="time" id="time" class="form-control text-primary" onchange="this.form.submit()">
+                            <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
+                            <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
+                            <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
+                            <option value="biweekly" {{ $timeFilter == 'biweekly' ? 'selected' : '' }}>Last 14 Days</option>
+                            <option value="monthly" {{ $timeFilter == 'monthly' ? 'selected' : '' }}>This Month</option>
+                            <option value="yearly" {{ $timeFilter == 'yearly' ? 'selected' : '' }}>This Year</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label for="start_date" class="font-weight-bold">Start Date:</label>
+                        <input type="date" name="start_date" id="start_date" class="form-control text-primary"
+                            value="{{ request('start_date') }}">
+                    </div>
+                    <div class="col-auto">
+                        <label for="end_date" class="font-weight-bold">End Date:</label>
+                        <input type="date" name="end_date" id="end_date" class="form-control text-primary"
+                            value="{{ request('end_date') }}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('dashboard') }}" class="btn btn-warning">Clear</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('dashboard') }}" class="btn btn-info">Refresh</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right: Placeholder for future buttons/stats -->
+        <div class="col-md-3 text-right">
+            <!-- Optional space -->
+        </div>
+    </div>
 
     <!-- Content Row -->
     @php
@@ -183,23 +196,32 @@
             </a>
         </div>
 
-        <!-- Failed/Undelivered Requests Card -->
+    </div>
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h3 class="h3 mb-0 text-primary">Delivery Status</h3>
+    </div>
+
+    <div class="row">
+
+        <!-- Undelivered Parcels Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivered', 'time' => $timeFilter])) }}"
-                title="View Unverified Parcels" class="text-decoration-none text-dark">
-                <div class="card border-left-info bg-danger shadow h-100 py-2 hover-card">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}"
+                title="View Undelivered Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
-                                    Failed/Undelivered Requests
+                                    Undelivered Parcels
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-white">
-                                    {{ $delivered }}
+                                    {{ $undeliveredParcels }}
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -207,7 +229,125 @@
             </a>
         </div>
 
+        <!-- Undelivered Parcels Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['undelivered' => 1, 'time' => $timeFilter])) }}"
+                title="View Undelivered Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Undelivered Parcels
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $undeliveredParcels }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <!-- Pending Collections Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
+                title="View Pending Collections" class="text-decoration-none text-dark">
+                <div class="card border-left-warning bg-primary shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    On-transit Parcels
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $onTransitParcels }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Collected Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
+                title="View Collected Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-primary bg-warning shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Delayed Parcels
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $collected }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Failed Deliveries Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}"
+                title="View Failed Deliveries" class="text-decoration-none text-dark">
+                <div class="card border-left-primary bg-danger shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Failed deliveries
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $failedDeliveries }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Delivered Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivered', 'time' => $timeFilter])) }}"
+                title="View Unverified Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-success bg-info shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Successful deliveries
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $successfulDeliveries }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 
     @if ($stationStats)

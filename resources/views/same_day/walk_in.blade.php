@@ -653,6 +653,7 @@
                                             @if ($status === 'pending collection') bg-secondary
                                             @elseif ($status === 'collected') bg-warning
                                             @elseif ($status === 'verified') bg-primary
+                                            @elseif ($status === 'delivery_failed') bg-danger
                                             @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($status) }} -

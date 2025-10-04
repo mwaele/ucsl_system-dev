@@ -71,20 +71,30 @@ class ShipmentDeliveriesController extends Controller
             ]);
             Log::info("Validation Passed", ['requestId' => $request->requestId]);
 
-            // 0. Insert payment record
-            $payment = Payment::create([
-                'type' => $request->payment_mode,
-                'amount' => $request->amount_paid,
-                'reference_no' => $request->reference,
-                'date_paid' => now(),
-                'client_id' => $request->client_id,
-                'shipment_collection_id' => $request->shipment_collection_id,
-                'status' => 'Pending Verification',
-                'paid_by' => auth()->id(),
-                'received_by' => auth()->id(),
-                'verified_by' => auth()->id(),
-            ]);
-            Log::info("Payment Created", ['paymentId' => $payment->id, 'requestId' => $request->requestId]);
+            // 0. Insert payment record only if payment data exists
+            if ($request->filled('payment_mode') && $request->filled('amount_paid')) {
+                $payment = Payment::create([
+                    'type' => $request->payment_mode,
+                    'amount' => $request->amount_paid,
+                    'reference_no' => $request->reference,
+                    'date_paid' => now(),
+                    'client_id' => $request->client_id,
+                    'shipment_collection_id' => $request->shipment_collection_id,
+                    'status' => 'Pending Verification',
+                    'paid_by' => auth()->id(),
+                    'received_by' => auth()->id(),
+                    'verified_by' => auth()->id(),
+                ]);
+
+                Log::info("Payment Created", [
+                    'paymentId' => $payment->id,
+                    'requestId' => $request->requestId
+                ]);
+            } else {
+                Log::info("No Payment Data Provided, skipping payment creation", [
+                    'requestId' => $request->requestId
+                ]);
+            }
 
             // Generate and assign OTP
             $otp = rand(100000, 999999);
@@ -367,6 +377,7 @@ class ShipmentDeliveriesController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Approval request sent.']);
     }
+
     public function failed_delivery_alert(Request $request)  
     {
         // Log::info('failed_delivery_alert() called', ['requestId' => $request->input('requestId')]);

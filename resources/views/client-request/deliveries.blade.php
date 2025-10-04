@@ -151,9 +151,12 @@
                                                 ? 'bg-warning'
                                                 : ($collection->status == 'delivered'
                                                     ? 'bg-success'
-                                                    : '')) }}">
+                                                    : ($collection->status == 'delivery_failed'
+                                                        ? 'bg-danger'
+                                                        : ''))) }}">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </span>
+
 
                                     @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger fs-5 text-white">

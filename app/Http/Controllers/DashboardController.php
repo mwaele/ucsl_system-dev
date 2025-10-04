@@ -53,6 +53,10 @@ class DashboardController extends Controller
             $collected = ClientRequest::where('status', 'collected')->when($dateRange, $queryWithDate)->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
+            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
+            $onTransitParcels = ShipmentCollection::where('status', 'Delivery Rider Allocated')->when($dateRange, $queryWithDate)->count();
+            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->count();
+            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->count();
 
             // Per-station stats based on office_id directly
             $stations = Office::pluck('name', 'id');
@@ -83,6 +87,30 @@ class DashboardController extends Controller
                 ->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
+            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
+                ->whereHas('clientRequestById', function ($q) use ($station) {
+                    $q->where('office_id', $station);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $onTransitParcels = ShipmentCollection::where('status', 'Delivery Rider Allocated')
+                ->whereHas('clientRequestById', function ($q) use ($station) {
+                    $q->where('office_id', $station);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')
+                ->whereHas('clientRequestById', function ($q) use ($station) {
+                    $q->where('office_id', $station);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')
+                ->whereHas('clientRequestById', function ($q) use ($station) {  
+                    $q->where('office_id', $station);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
 
             $stationStats = null;
         }
@@ -103,7 +131,11 @@ class DashboardController extends Controller
             'startDate',
             'endDate',
             'labels',
-            'data'
+            'data',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries'
         ));
     }
 
@@ -128,14 +160,14 @@ class DashboardController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="chart.pdf"');
     }
+
     public function exportPdf(Request $request)
-{
-    $chartImage = $request->input('chartImage'); // Base64 string
-    $pdf = Pdf::loadView('pdf.report', compact('chartImage'));
+    {
+        $chartImage = $request->input('chartImage'); // Base64 string
+        $pdf = Pdf::loadView('pdf.report', compact('chartImage'));
 
-    return $pdf->download('report.pdf'); // triggers download
-}
-
-    
+        return $pdf->download('report.pdf'); // triggers download
+    }
+ 
 }
 
