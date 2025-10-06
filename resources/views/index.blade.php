@@ -207,7 +207,7 @@
 
         <!-- Undelivered Parcels Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['time' => $timeFilter])) }}"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'arrived', 'time' => $timeFilter])) }}"
                 title="View Undelivered Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -229,34 +229,10 @@
             </a>
         </div>
 
-        <!-- Undelivered Parcels Card -->
+        <!-- On-transit Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['undelivered' => 1, 'time' => $timeFilter])) }}"
-                title="View Undelivered Parcels" class="text-decoration-none text-dark">
-                <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
-                                    Undelivered Parcels
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-white">
-                                    {{ $undeliveredParcels }}
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Pending Collections Card -->
-        <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
-                title="View Pending Collections" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'Delivery Rider Allocated', 'time' => $timeFilter])) }}"
+                title="View On-Transit Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-warning bg-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -277,10 +253,10 @@
             </a>
         </div>
 
-        <!-- Collected Requests Card -->
+        <!-- Delayed Parcels Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
-                title="View Collected Parcels" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['delayed' => 1, 'time' => $timeFilter])) }}"
+                title="View Delayed Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-primary bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -289,7 +265,7 @@
                                     Delayed Parcels
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-white">
-                                    {{ $collected }}
+                                    {{ $delayedDeliveries }}
                                 </div>
                             </div>
                             <div class="col-auto">
@@ -303,7 +279,7 @@
 
         <!-- Failed Deliveries Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}"
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivery_failed', 'time' => $timeFilter])) }}"
                 title="View Failed Deliveries" class="text-decoration-none text-dark">
                 <div class="card border-left-primary bg-danger shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -327,8 +303,8 @@
 
         <!-- Delivered Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivered', 'time' => $timeFilter])) }}"
-                title="View Unverified Parcels" class="text-decoration-none text-dark">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'parcel_delivered', 'time' => $timeFilter])) }}"
+                title="View Successful Deliveries" class="text-decoration-none text-dark">
                 <div class="card border-left-success bg-info shadow h-100 py-2 hover-card">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">

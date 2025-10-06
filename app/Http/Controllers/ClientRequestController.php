@@ -59,13 +59,12 @@ class ClientRequestController extends Controller
             'createdBy'
         ]);
 
-        // Apply filters
+        // Filters
         $stationName = $request->query('station');
         $status = $request->query('status');
         $timeFilter = $request->query('time', 'all');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-
         $dateRange = null;
 
         if ($startDate && $endDate) {
@@ -124,7 +123,7 @@ class ClientRequestController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $sub_categories = SubCategory::all();
 
-        // Summary counts
+        // Base query for summaries
         if ($user->role === 'admin') {
             $baseQuery = ClientRequest::query();
             if ($stationName) {
@@ -133,29 +132,41 @@ class ClientRequestController extends Controller
                     $baseQuery->where('office_id', $officeId);
                 }
             }
-
-            if ($dateRange) {
-                $baseQuery->whereBetween('created_at', $dateRange);
-            }
-
-            $totalRequests = (clone $baseQuery)->count();
-            $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
-            $collected = (clone $baseQuery)->where('status', 'collected')->count();
-            $verified = (clone $baseQuery)->where('status', 'verified')->count();
-            $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
         } else {
             $baseQuery = ClientRequest::where('office_id', $user->station);
-            if ($dateRange) {
-                $baseQuery->whereBetween('created_at', $dateRange);
-            }
-
-            $totalRequests = (clone $baseQuery)->count();
-            $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
-            $collected = (clone $baseQuery)->where('status', 'collected')->count();
-            $verified = (clone $baseQuery)->where('status', 'verified')->count();
-            $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
         }
 
+        if ($dateRange) {
+            $baseQuery->whereBetween('created_at', $dateRange);
+        }
+
+        // --- Summary counts ---
+        $totalRequests = (clone $baseQuery)->count();
+        $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
+        $collected = (clone $baseQuery)->where('status', 'collected')->count();
+        $verified = (clone $baseQuery)->where('status', 'verified')->count();
+        $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+
+        // --- Delivery-specific metrics ---
+        $shipmentBase = ShipmentCollection::query()
+            ->when($user->role !== 'admin', fn($q) => $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $user->station)))
+            ->when($stationName && $user->role === 'admin', function ($q) use ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $officeId));
+                }
+            })
+            ->when($dateRange, fn($q) => $q->whereBetween('created_at', $dateRange));
+
+        $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->count();
+        $onTransitParcels = (clone $shipmentBase)->where('status', 'Delivery Rider Allocated')->count();
+        $failedDeliveries = (clone $shipmentBase)->where('status', 'delivery_failed')->count();
+        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->count();
+        $delayedDeliveries = (clone $shipmentBase)
+            ->where('status', 'Delivery Rider Allocated')
+            ->where('updated_at', '<', Carbon::now()->subHour())
+            ->count();
+        dd($onTransitParcels);
         return view('client-request.index', compact(
             'clients',
             'vehicles',
@@ -166,6 +177,11 @@ class ClientRequestController extends Controller
             'collected',
             'verified',
             'pending_collection',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries',
+            'delayedDeliveries',
             'timeFilter',
             'startDate',
             'endDate',

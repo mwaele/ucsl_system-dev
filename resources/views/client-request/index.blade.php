@@ -262,7 +262,7 @@
                                                 bg-primary 
                                             @elseif ($request->status == 'delivered')
                                                 bg-info
-                                            @endif
+                                            @else bg-dark @endif
                                             fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>

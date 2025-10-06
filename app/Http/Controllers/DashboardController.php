@@ -55,6 +55,10 @@ class DashboardController extends Controller
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
             $onTransitParcels = ShipmentCollection::where('status', 'Delivery Rider Allocated')->when($dateRange, $queryWithDate)->count();
+            $delayedDeliveries = ShipmentCollection::where('status', 'Delivery Rider Allocated')->where('updated_at', '<', Carbon::now()->subHour()) 
+                ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+                ->when($dateRange, $queryWithDate)
+                ->count();
             $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->count();
             $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->count();
 
@@ -99,6 +103,14 @@ class DashboardController extends Controller
                 })
                 ->when($dateRange, $queryWithDate)
                 ->count();
+            $delayedDeliveries = ShipmentCollection::where('status', 'Delivery Rider Allocated')
+                ->where('updated_at', '<', Carbon::now()->subHour()) 
+                ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+                ->whereHas('clientRequestById', function ($q) use ($station) {
+                    $q->where('office_id', $station);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
             $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')
                 ->whereHas('clientRequestById', function ($q) use ($station) {
                     $q->where('office_id', $station);
@@ -135,7 +147,8 @@ class DashboardController extends Controller
             'undeliveredParcels',
             'onTransitParcels',
             'failedDeliveries',
-            'successfulDeliveries'
+            'successfulDeliveries',
+            'delayedDeliveries'
         ));
     }
 
