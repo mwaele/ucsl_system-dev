@@ -717,9 +717,9 @@
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('dispatchers.index') }}">Dispatch Clerks</a>
                             <hr class="sidebar-divide my-0" />
-                            <a class="collapse-item" href="{{ route('delivery_faileds') }}">Failed Delivery</a>
+                            <a class="collapse-item" href="">Failed Delivery</a>
                             <hr class="sidebar-divide my-0" />
-                            <a class="collapse-item" href="{{ route('delivery_faileds') }}"> </a>
+                            <a class="collapse-item" href=""> </a>
 
                         </div>
                     </div>

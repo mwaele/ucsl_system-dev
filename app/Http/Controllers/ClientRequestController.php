@@ -164,7 +164,7 @@ class ClientRequestController extends Controller
         $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->get();
         $delayedDeliveries = (clone $shipmentBase)
             ->where('status', 'Delivery Rider Allocated')
-            ->where('updated_at', '<', Carbon::now()->subHour())
+            ->where('updated_at', '<', Carbon::now()->subHour(2))
             ->count();
         return view('client-request.index', compact(
             'clients',
