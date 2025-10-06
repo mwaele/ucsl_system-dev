@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('shipment_collections', function (Blueprint $table) {
-            $table->string('insurance_status')->default('not_insured')->after('fragile_item');
+            $table->string('insurance_status')->nullable()->default('not_insured')->after('fragile_item');
         });
     }
 

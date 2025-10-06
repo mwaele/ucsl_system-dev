@@ -158,15 +158,14 @@ class ClientRequestController extends Controller
             })
             ->when($dateRange, fn($q) => $q->whereBetween('created_at', $dateRange));
 
-        $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->count();
-        $onTransitParcels = (clone $shipmentBase)->where('status', 'Delivery Rider Allocated')->count();
-        $failedDeliveries = (clone $shipmentBase)->where('status', 'delivery_failed')->count();
-        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->count();
+        $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->get();
+        $onTransitParcels = (clone $shipmentBase)->where('status', 'Delivery Rider Allocated')->get();
+        $failedDeliveries = (clone $shipmentBase)->where('status', 'delivery_failed')->get();
+        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->get();
         $delayedDeliveries = (clone $shipmentBase)
             ->where('status', 'Delivery Rider Allocated')
             ->where('updated_at', '<', Carbon::now()->subHour())
             ->count();
-        dd($onTransitParcels);
         return view('client-request.index', compact(
             'clients',
             'vehicles',
