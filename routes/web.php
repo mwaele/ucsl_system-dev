@@ -48,6 +48,7 @@ use App\Http\Controllers\ServiceRateController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ClientCancelledShipmentController;
+use App\Http\Controllers\DeliveryControlController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -146,6 +147,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
+
+
+    Route::get('/delivery-controls', [DeliveryControlController::class, 'index'])->name('delivery_controls.index');
+    Route::post('/delivery-controls', [DeliveryControlController::class, 'store'])->name('delivery_controls.store');
+    Route::put('/delivery-controls/{id}', [DeliveryControlController::class, 'update'])->name('delivery_controls.update');
+    Route::delete('/delivery-controls/{id}', [DeliveryControlController::class, 'destroy'])->name('delivery_controls.destroy');
     
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
