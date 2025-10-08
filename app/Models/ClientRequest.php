@@ -72,4 +72,9 @@ class ClientRequest extends Model
         return $this->hasOne(Agent::class, 'request_id', 'requestId');
     }
 
+    public function getShipmentStatusAttribute()
+    {
+        return $this->shipmentCollection->status ?? $this->status;
+    }
+
 }

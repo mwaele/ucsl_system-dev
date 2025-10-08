@@ -253,18 +253,16 @@
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td>
-                                    <span
-                                        class="badge p-2
-                                            @if ($request->status == 'pending collection') bg-secondary
-                                            @elseif ($request->status == 'collected')
-                                                bg-warning
-                                            @elseif ($request->status == 'verified')
-                                                bg-primary 
-                                            @elseif ($request->status == 'delivered')
-                                                bg-info
-                                            @else bg-dark @endif
-                                            fs-5 text-white">
-                                        {{ \Illuminate\Support\Str::title($request->status) }}
+                                    <span class="badge p-2
+                                        @if ($request->shipment_status == 'pending collection') bg-secondary
+                                        @elseif ($request->shipment_status == 'collected') bg-warning
+                                        @elseif ($request->shipment_status == 'verified') bg-primary
+                                        @elseif ($request->shipment_status == 'delivered') bg-info
+                                        @elseif ($request->shipment_status == 'parcel_delivered') bg-success
+                                        @elseif ($request->shipment_status == 'delivery_failed') bg-danger
+                                        @else bg-dark @endif
+                                        fs-5 text-white">
+                                        {{ \Illuminate\Support\Str::title($request->shipment_status) }}
                                     </span>
                                 </td>
                                 <td class="d-flex pl-2">

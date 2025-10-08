@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Models\ClientRequest; 
 use App\Models\ShipmentCollection;
+use App\Models\DeliveryControl;
 use App\Models\User;
 use App\Models\Office;
 use Carbon\Carbon;
@@ -48,19 +49,29 @@ class DashboardController extends Controller
             : $q;
 
         if ($user->role === 'admin') {
+
+            $ctrTime = DB::table('delivery_controls')
+                ->where('control_id', 'CTRL-0001')
+                ->value('ctr_time');
+
+            $timeLimit = Carbon::now()->subHours((int) $ctrTime);
             $totalRequests = ClientRequest::when($dateRange, $queryWithDate)->count();
             $delivered = ClientRequest::where('status', 'delivered')->when($dateRange, $queryWithDate)->count();
             $collected = ClientRequest::where('status', 'collected')->when($dateRange, $queryWithDate)->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
-            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
-            $onTransitParcels = ShipmentCollection::where('status', 'Delivery Rider Allocated')->when($dateRange, $queryWithDate)->count();
-            $delayedDeliveries = ShipmentCollection::where('status', 'Delivery Rider Allocated')->where('updated_at', '<', Carbon::now()->subHour()) 
+            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->get();
+            $onTransitParcels = ShipmentCollection::whereIn('status', 'Delivery Rider Allocated')->when($dateRange, $queryWithDate)->get();
+            $delayedDeliveries = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])
+                ->where('updated_at', '<', $timeLimit)
                 ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
                 ->when($dateRange, $queryWithDate)
-                ->count();
-            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->count();
-            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->count();
+                ->get();
+            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->get();
+            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->get();
 
             // Per-station stats based on office_id directly
             $stations = Office::pluck('name', 'id');
@@ -81,6 +92,8 @@ class DashboardController extends Controller
                 ];
             }
         } else {
+            $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
+            $timeLimit = Carbon::now()->subHours((int) $ctrTime);
             $totalRequests = ClientRequest::where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
             $delivered = ClientRequest::where('status', 'delivered')->where('office_id', $station)
@@ -97,18 +110,21 @@ class DashboardController extends Controller
                 })
                 ->when($dateRange, $queryWithDate)
                 ->count();
-            $onTransitParcels = ShipmentCollection::where('status', 'Delivery Rider Allocated')
+            $onTransitParcels = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])
                 ->whereHas('clientRequestById', function ($q) use ($station) {
                     $q->where('office_id', $station);
                 })
                 ->when($dateRange, $queryWithDate)
                 ->count();
-            $delayedDeliveries = ShipmentCollection::where('status', 'Delivery Rider Allocated')
-                ->where('updated_at', '<', Carbon::now()->subHour()) 
+            $delayedDeliveries = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])
+                ->where('updated_at', '<', $timeLimit)
                 ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
-                ->whereHas('clientRequestById', function ($q) use ($station) {
-                    $q->where('office_id', $station);
-                })
                 ->when($dateRange, $queryWithDate)
                 ->count();
             $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')

@@ -14,6 +14,7 @@ use App\Models\Office;
 use App\Models\Vehicle;
 use App\Models\SentMessage;
 use App\Models\ShipmentCollection;
+use App\Models\DeliveryControl;
 use App\Models\User;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
@@ -55,6 +56,7 @@ class ClientRequestController extends Controller
             'client',
             'vehicle',
             'user',
+            'shipmentCollection',
             'shipmentCollection.items.subItems',
             'createdBy'
         ]);
@@ -148,8 +150,14 @@ class ClientRequestController extends Controller
         $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
 
         // --- Delivery-specific metrics ---
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')
+            ->value('ctr_time');
+
+        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
         $shipmentBase = ShipmentCollection::query()
-            ->when($user->role !== 'admin', fn($q) => $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $user->station)))
+            ->when($user->role !== 'admin', fn($q) =>
+                $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $user->station))
+            )
             ->when($stationName && $user->role === 'admin', function ($q) use ($stationName) {
                 $officeId = Office::where('name', $stationName)->value('id');
                 if ($officeId) {
@@ -159,13 +167,23 @@ class ClientRequestController extends Controller
             ->when($dateRange, fn($q) => $q->whereBetween('created_at', $dateRange));
 
         $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->get();
-        $onTransitParcels = (clone $shipmentBase)->where('status', 'Delivery Rider Allocated')->get();
-        $failedDeliveries = (clone $shipmentBase)->where('status', 'delivery_failed')->get();
-        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->get();
-        $delayedDeliveries = (clone $shipmentBase)
-            ->where('status', 'Delivery Rider Allocated')
-            ->where('updated_at', '<', Carbon::now()->subHour(2))
-            ->count();
+        $onTransitParcels = (clone $shipmentBase)->whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->get();
+        $delayedDeliveries = (clone $shipmentBase)->whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->where('updated_at', '<', $timeLimit)
+            ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+            ->get();
+        $failedDeliveries = (clone $shipmentBase)->where('status', 'del
+        ivery_failed')
+            ->get();
+        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')
+            ->get();
         return view('client-request.index', compact(
             'clients',
             'vehicles',

@@ -427,7 +427,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
-
+    Route::get('/deliveries/metrics', [ShipmentCollectionController::class, 'deliveryMetrics'])->name('deliveries.metrics');
 });
 
 

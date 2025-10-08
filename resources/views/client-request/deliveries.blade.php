@@ -833,7 +833,7 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
-                                                            @if ($collection->shipmentCollection->priority_level === 'high' && $request->shipmentCollection->fragile_item === 'yes')
+                                                            @if ($collection->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
                                                                 <div style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>
@@ -1737,7 +1737,7 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <label for="remarks">Remarks (optional)</label>
+                                                                <label for="remarks">Remarks</label>
                                                                 <textarea name="remarks" id="remarks" class="form-control" rows="2"></textarea>
                                                             </div>
                                                         </div>
