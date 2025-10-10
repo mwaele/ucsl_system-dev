@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\ClientRequest; 
 use App\Models\ShipmentCollection;
 use App\Models\DeliveryControl;
@@ -61,7 +62,10 @@ class DashboardController extends Controller
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->get();
-            $onTransitParcels = ShipmentCollection::whereIn('status', 'Delivery Rider Allocated')->when($dateRange, $queryWithDate)->get();
+            $onTransitParcels = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])->when($dateRange, $queryWithDate)->get();
             $delayedDeliveries = ShipmentCollection::whereIn('status', [
                     'Delivery Rider Allocated',
                     'delivery_rider_allocated'

@@ -74,6 +74,11 @@
         }
     @endphp
 
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h3 class="h3 mb-0 text-primary">Parcel Requests & Collection Status</h3>
+    </div>
+
     <div class="row">
 
         <!-- Total Requests Card -->
@@ -207,7 +212,7 @@
 
         <!-- Undelivered Parcels Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'arrived', 'time' => $timeFilter])) }}"
+            <a href="{{ route('deliveries.metrics', array_merge($queryParams, ['status' => 'arrived', 'time' => $timeFilter])) }}"
                 title="View Undelivered Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -231,7 +236,7 @@
 
         <!-- On-transit Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'Delivery Rider Allocated', 'time' => $timeFilter])) }}"
+            <a href="{{ route('deliveries.metrics', array_merge($queryParams, ['status' => 'Delivery Rider Allocated', 'time' => $timeFilter])) }}"
                 title="View On-Transit Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-warning bg-primary shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -255,7 +260,7 @@
 
         <!-- Delayed Parcels Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['delayed' => 1, 'time' => $timeFilter])) }}"
+            <a href="{{ route('deliveries.metrics', array_merge($queryParams, ['delayed' => 1, 'time' => $timeFilter])) }}"
                 title="View Delayed Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-primary bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -279,7 +284,7 @@
 
         <!-- Failed Deliveries Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'delivery_failed', 'time' => $timeFilter])) }}"
+            <a href="{{ route('deliveries.metrics', array_merge($queryParams, ['status' => 'delivery_failed', 'time' => $timeFilter])) }}"
                 title="View Failed Deliveries" class="text-decoration-none text-dark">
                 <div class="card border-left-primary bg-danger shadow h-100 py-2 hover-card">
                     <div class="card-body">
@@ -303,7 +308,7 @@
 
         <!-- Delivered Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'parcel_delivered', 'time' => $timeFilter])) }}"
+            <a href="{{ route('deliveries.metrics', array_merge($queryParams, ['status' => 'parcel_delivered', 'time' => $timeFilter])) }}"
                 title="View Successful Deliveries" class="text-decoration-none text-dark">
                 <div class="card border-left-success bg-info shadow h-100 py-2 hover-card">
                     <div class="card-body">

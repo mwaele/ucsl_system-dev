@@ -9,6 +9,7 @@ use App\Models\ClientRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
 use App\Services\RequestIdService;
@@ -18,6 +19,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\Invoice;
+use App\Models\DeliveryControl;
 use App\Helpers\EmailHelper;
 use Carbon\Carbon;
 
@@ -1212,5 +1214,167 @@ class ShipmentCollectionController extends Controller
         return redirect()->back()->with('success', 'Shipment successfully handed over to new rider.');
     }
 
+    public function deliveryMetrics(Request $request)
+    {
+        $user = Auth::user();
+        $user = Auth::user();
+        $station = $user->station;
+        $timeFilter = $request->query('time', 'all'); // default to all
+
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 'Jul', 'Aug','Sep'];
+        $data = [10, 20, 15, 30, 25, 40, 35, 50,35];
+
+        $queryWithDate = fn($q) => $dateRange
+            ? $q->whereBetween('created_at', $dateRange)
+            : $q;
+
+        // Base ShipmentCollection query
+        $query = ShipmentCollection::with([
+            'clientRequest.office',
+            'destination',
+            'collectedBy',
+            'verifiedBy',
+        ]);
+
+        // Filters
+        $stationName = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        // Role-based filtering
+        if ($user->role === 'admin') {
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $query->whereHas('clientRequest', function ($q) use ($officeId) {
+                        $q->where('office_id', $officeId);
+                    });
+                }
+            }
+        } else {
+            // Limit to user's station
+            $query->whereHas('clientRequest', function ($q) use ($user) {
+                $q->where('office_id', $user->station);
+            });
+        }
+
+        // Status filter
+        if ($status) {
+            $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
+        }
+
+        // Date filter
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        // Prepare query params for URLs
+        $queryParams = [
+            'station' => $stationName,
+            'status' => $status,
+            'time' => $timeFilter,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ];
+
+        // Export link (can be updated later)
+        $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
+
+        // Fetch the filtered shipments
+        $shipments = $query->orderBy('created_at', 'desc')->get();
+
+        // --- Compute summary metrics ---
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
+        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
+        $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
+            ->whereHas('clientRequestById', function ($q) use ($station) {
+                $q->where('office_id', $station);
+            })
+            ->when($dateRange, $queryWithDate)
+            ->get();
+        $onTransitParcels = ShipmentCollection::whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->whereHas('clientRequestById', function ($q) use ($station) {
+                $q->where('office_id', $station);
+            })
+            ->when($dateRange, $queryWithDate)
+            ->get();
+        $delayedDeliveries = ShipmentCollection::whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->whereHas('clientRequestById', function ($q) use ($station) {
+                $q->where('office_id', $station);
+            })
+            ->where('updated_at', '<', $timeLimit)
+            ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+            ->when($dateRange, $queryWithDate)
+            ->get();
+        $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')
+            ->whereHas('clientRequestById', function ($q) use ($station) {
+                $q->where('office_id', $station);
+            })
+            ->when($dateRange, $queryWithDate)
+            ->get();
+        $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')
+            ->whereHas('clientRequestById', function ($q) use ($station) {  
+                $q->where('office_id', $station);
+            })
+            ->when($dateRange, $queryWithDate)
+            ->get();
+        dd( $successfulDeliveries);
+
+        $stationStats = null;
+        
+
+        return view('client-request.delivery-metrics', compact(
+            'shipments',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries',
+            'delayedDeliveries',
+            'exportPdfUrl',
+        ));
+    }
 
 }
