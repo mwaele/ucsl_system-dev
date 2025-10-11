@@ -82,6 +82,7 @@ class ShipmentCollection extends Model
     {
         return $this->belongsTo(Rate::class, 'destination_id');
     }
+    
     public function special_destination()
     {
         return $this->belongsTo(SpecialRate::class, 'destination_id');
@@ -96,7 +97,6 @@ class ShipmentCollection extends Model
     {
         return $this->hasOne(Track::class, 'requestId', 'requestId');
     }
-
 
     public function collectedBy()
     {
@@ -131,6 +131,11 @@ class ShipmentCollection extends Model
     public function agent()
     {
         return $this->hasOne(Agent::class, 'request_id', 'requestId');
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
 }

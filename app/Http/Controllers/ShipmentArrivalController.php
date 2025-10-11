@@ -483,6 +483,28 @@ class ShipmentArrivalController extends Controller
                     'created_at' => $now,
                     'updated_at' => $now
                 ]);
+
+                if ($request->payment_mode === 'Invoice') {
+                    $existingInvoice = Invoice::where('shipment_collection_id', $shipment->id)->first();
+
+                    if ($existingInvoice) {
+                        // Update existing invoice amount (add last mile charge)
+                        $existingInvoice->update([
+                            'amount' => $existingInvoice->amount + $validatedData['last_mile_delivery_charges'],
+                            'updated_at' => $now,
+                        ]);
+                    } else {
+                        // Create new invoice if it doesn’t exist
+                        Invoice::create([
+                            'invoice_no'             => $request->reference ?? 'INV-' . strtoupper(uniqid()),
+                            'amount'                 => $validatedData['last_mile_delivery_charges'],
+                            'due_date'               => Carbon::now()->addDays(30),
+                            'client_id'              => $shipment->client_id,
+                            'shipment_collection_id' => $shipment->id,
+                            'invoiced_by'            => $authId,
+                        ]);
+                    }
+                }
             });
 
             // Send notifications after commit

@@ -24,6 +24,12 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
+                @if($status)
+                    <h5 class="mb-3 text-info">
+                        Showing results for: 
+                        <strong>{{ \Illuminate\Support\Str::title(str_replace('_', ' ', $status)) }}</strong>
+                    </h5>
+                @endif
                 <table class="table text-primary table-bordered table-striped table-hover" id="dataTable" width="100%"
                     cellspacing="0" style="font-size: 14px;">
                     <thead>
@@ -58,17 +64,17 @@
                         @foreach ($shipments as $shipment)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $shipment->id }}</td>
-                                <td>{{ $shipment->clientRequest->client->name ?? 'N/A' }}</td>
-                                <td>{{ $shipment->clientRequest->serviceLevel->sub_category_name ?? 'N/A' }}</td>
-                                <td>{{ \Illuminate\Support\Str::title($shipment->clientRequest->client->type ?? '—') }}</td>
+                                <td>{{ $shipment->requestId }}</td>
+                                <td>{{ $shipment->clientRequestById->client->name ?? 'N/A' }}</td>
+                                <td>{{ $shipment->clientRequestById->serviceLevel->sub_category_name ?? 'N/A' }}</td>
+                                <td>{{ \Illuminate\Support\Str::title($shipment->clientRequestById->client->type ?? '—') }}</td>
                                 <td>
                                     From: {{ $shipment->sender_address ?? '' }}, {{ $shipment->sender_town ?? '' }}<br>
                                     To: {{ $shipment->receiver_address ?? '' }}, {{ $shipment->receiver_town ?? '' }}
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($shipment->created_at)->format('F j, Y') }}</td>
                                 <td>{{ $shipment->collectedBy->name ?? '—' }}</td>
-                                <td>{{ $shipment->clientRequest->vehicle->regNo ?? '—' }}</td>
+                                <td>{{ $shipment->clientRequestById->vehicle->regNo ?? '—' }}</td>
                                 <td>
                                     <span class="badge p-2 
                                         @if ($shipment->status == 'arrived') bg-secondary
