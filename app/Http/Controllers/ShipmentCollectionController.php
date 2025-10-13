@@ -1118,7 +1118,6 @@ class ShipmentCollectionController extends Controller
             return redirect()->back()->with('error', 'Failed to send email. Please try again later.');
         }   
     }
-
     
     public function handover(Request $request, $requestId, SmsService $smsService) 
     {

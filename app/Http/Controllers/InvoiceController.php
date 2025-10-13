@@ -35,7 +35,8 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function generateInvoice($id){
+    public function generateInvoice($id)
+    {
         $invoice = DB::table('invoices')
             ->join('shipment_collections', 'invoices.shipment_collection_id', '=', 'shipment_collections.id')
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
@@ -64,23 +65,9 @@ class InvoiceController extends Controller
 
     }
 
-//    public function generateInvoice()
-//     {
-//         $pdf = Pdf::loadView('same_day.invoice', ['data' => 'test']);
-
-//         // Add page script
-//     $pdf->getDomPDF()->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
-//         $font = $fontMetrics->getFont('Helvetica', 'normal');
-//         $text = "Page $pageNumber of $pageCount";
-//         $canvas->text(500, 820, $text, $font, 10);
-//     });
-
-//     return $pdf->stream('invoice.pdf');
-//     }
-
     public function index()
     {
-        //
+        
     }
 
     /**
