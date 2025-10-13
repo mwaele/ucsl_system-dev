@@ -65,11 +65,11 @@ class DashboardController extends Controller
                 ->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
-            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->get();
+            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
             $onTransitParcels = ShipmentCollection::whereIn('status', [
                     'Delivery Rider Allocated',
                     'delivery_rider_allocated'
-                ])->when($dateRange, $queryWithDate)->get();
+                ])->when($dateRange, $queryWithDate)->count();
             $delayedDeliveries = ShipmentCollection::whereIn('status', [
                     'Delivery Rider Allocated',
                     'delivery_rider_allocated'
@@ -77,9 +77,9 @@ class DashboardController extends Controller
                 ->where('updated_at', '<', $timeLimit)
                 ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
                 ->when($dateRange, $queryWithDate)
-                ->get();
-            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->get();
-            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->get();
+                ->count();
+            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->count();
+            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->count();
 
             // Per-station stats based on office_id directly
             $stations = Office::pluck('name', 'id');
