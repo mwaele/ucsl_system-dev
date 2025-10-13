@@ -1223,6 +1223,7 @@ class ShipmentCollectionController extends Controller
         $timeFilter = $request->query('time', 'all');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
+        $delayed = $request->query('delayed');
 
         $dateRange = null;
 
@@ -1243,6 +1244,9 @@ class ShipmentCollectionController extends Controller
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)
             : $q;
+
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
+        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
 
         // 🔹 Base query
         $query = ShipmentCollection::with([
@@ -1271,23 +1275,28 @@ class ShipmentCollectionController extends Controller
 
         // Role-based filtering
         if ($user->role === 'admin') {
-            if ($stationName) {
-                $officeId = Office::where('name', $stationName)->value('id');
+            if ($request->query('station')) {
+                $officeId = Office::where('name', $request->query('station'))->value('id');
                 if ($officeId) {
-                    $query->whereHas('clientRequestById', function ($q) use ($officeId) {
-                        $q->where('office_id', $officeId);
-                    });
+                    $query->whereHas('clientRequestById', fn($q) => $q->where('office_id', $officeId));
                 }
             }
         } else {
-            $query->whereHas('clientRequestById', function ($q) use ($user) {
-                $q->where('office_id', $user->station);
-            });
+            $query->whereHas('clientRequestById', fn($q) => $q->where('office_id', $user->station));
         }
 
-        // 🔹 Normalize and apply status filter
-        if ($status) {
-            switch ($status) {
+        // 🔹 Handle delayed filter first
+        if ($delayed) {
+            $query->whereIn('status', ['Delivery Rider Allocated', 'delivery_rider_allocated'])
+                ->where('updated_at', '<', $timeLimit)
+                ->whereNotIn('status', ['delivery_failed', 'parcel_delivered']);
+        }
+
+        // 🔹 Handle status filter next (only if not delayed)
+        elseif ($status = $request->query('status')) {
+            $normalizedStatus = strtolower(str_replace(' ', '_', $status));
+
+            switch ($normalizedStatus) {
                 case 'delivery_failed':
                     $query->whereIn('status', ['delivery_failed', 'Delivery Failed']);
                     break;
@@ -1305,13 +1314,8 @@ class ShipmentCollectionController extends Controller
                 case 'undelivered':
                     $query->whereIn('status', ['arrived', 'Arrived']);
                     break;
-
-                default:
-                    $query->whereRaw('LOWER(REPLACE(status, " ", "_")) = ?', [strtolower($status)]);
-                    break;
             }
         }
-
 
         // 🔹 Date range
         if ($dateRange) {
@@ -1320,10 +1324,6 @@ class ShipmentCollectionController extends Controller
 
         // 🔹 Apply ordering
         $shipments = $query->orderBy('created_at', 'desc')->get();
-
-        // --- Compute summary metrics ---
-        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
-        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
 
         $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
             ->whereHas('clientRequestById', fn($q) => $q->where('office_id', $station))
@@ -1358,6 +1358,7 @@ class ShipmentCollectionController extends Controller
             ->when($dateRange, $queryWithDate)
             ->get();
 
+
         $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
         return view('client-request.delivery-metrics', compact(
             'shipments',
@@ -1370,6 +1371,4 @@ class ShipmentCollectionController extends Controller
             'status'
         ));
     }
-
-
 }

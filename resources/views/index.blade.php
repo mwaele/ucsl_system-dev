@@ -243,7 +243,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
-                                    On-transit Parcels
+                                    On-transit Deliveries
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $onTransitParcels }}
@@ -267,7 +267,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
-                                    Delayed Parcels
+                                    Delayed Deliveries
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-white">
                                     {{ $delayedDeliveries }}
