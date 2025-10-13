@@ -1092,6 +1092,26 @@ class ShipmentCollectionController extends Controller
         try {
             EmailHelper::sendHtmlEmail($senderEmail, $subject, $fullMessage);
 
+                DB::table('tracks')
+                ->where('requestId', $requestId)
+                ->update([
+                    'current_status' => $subject,
+                    'updated_at' => now(),
+                ]);
+
+            $trackId = DB::table('tracks')
+                ->where('requestId', $requestId)
+                ->value('id');
+
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => now(),
+                'details' => $subject,
+                'remarks' => $request->input('message'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             return redirect()->back()->with('success', 'Waybill details emailed successfully to the sender.');
         } catch (\Exception $e) {
             \Log::error('Email Sending Error: ' . $e->getMessage());

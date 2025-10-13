@@ -139,6 +139,9 @@ Route::post('/client/logout', [AuthController::class, 'logout'])
 // });
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/client_requests', [ClientRequestController::class, 'delayed_collection'])->name('client_requests.delayed_collection');
+
     Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
 //collections
     Route::get('/my_collections', [MyCollectionController::class, 'show'])->name('my_collections.show');

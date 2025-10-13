@@ -433,7 +433,7 @@
                         class="collapse {{ request()->routeIs('payments.*') ? 'active' : '' }}"
                         aria-labelledby="headingpayments" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <!-- <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a> -->
+                            <a class="collapse-item" href="{{ route('payments.index') }}"> Payments Reports</a>
                             <a class="collapse-item" href="{{ route('reports.shipment') }}">Shipment Reports</a>
                             <a class="collapse-item" href="{{ route('reports.client_performance') }}">Client
                                 performance</a>
@@ -441,6 +441,7 @@
                                 performance</a>
                             <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch
                                 summaries</a>
+
                         </div>
                     </div>
                 </li>
@@ -1655,7 +1656,7 @@
                         let roundedVat;
                         if (decimal < 0.3) {
                             roundedVat = integerPart;
-                        } else if (decimal <= 0.7) {
+                        } else if (decimal >= 0.7) {
                             roundedVat = integerPart + 0.5;
                         } else {
                             roundedVat = integerPart + 1;
@@ -1915,19 +1916,20 @@
                 // helper function to update totals
                 function updateTotals() {
                     const baseCost = parseFloat(costInput.value) || 0;
+                    const totalCost = parseFloat(totalInput.value) || 0;
                     const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
                     const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
 
                     //recalculateCosts();
 
-                    const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
-                    const vat = itemCost * 0.16;
-                    const total = itemCost + vat;
 
-                    costInput.value = itemCost.toFixed(2);
-                    vatInput.value = vat.toFixed(2);
-                    totalInput.value = total.toFixed(2);
+                    const itemCost = totalCost + priorityExtra + fragileExtra + insuranceExtra;
+                    const total = itemCost;
+
+                    totalInput.value = itemCost;
+                    //vatInput.value = vat.toFixed(2);
+                    // totalInput.value = total.toFixed(2);
                 }
 
                 // priority selection logic

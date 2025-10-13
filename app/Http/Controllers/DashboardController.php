@@ -59,6 +59,10 @@ class DashboardController extends Controller
             $totalRequests = ClientRequest::when($dateRange, $queryWithDate)->count();
             $delivered = ClientRequest::where('status', 'delivered')->when($dateRange, $queryWithDate)->count();
             $collected = ClientRequest::where('status', 'collected')->when($dateRange, $queryWithDate)->count();
+            $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', Carbon::now()->subHour()) 
+                ->whereNotIn('status', ['verified'])
+                ->when($dateRange, $queryWithDate)
+                ->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->get();
@@ -108,6 +112,10 @@ class DashboardController extends Controller
                 ->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
+                $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', Carbon::now()->subHour()) 
+                ->whereNotIn('status', ['verified'])
+                ->when($dateRange, $queryWithDate)
+                ->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
                 ->whereHas('clientRequestById', function ($q) use ($station) {
                     $q->where('office_id', $station);
@@ -168,7 +176,8 @@ class DashboardController extends Controller
             'onTransitParcels',
             'failedDeliveries',
             'successfulDeliveries',
-            'delayedDeliveries'
+            'delayedDeliveries',
+            'delayedCollections'
         ));
     }
 

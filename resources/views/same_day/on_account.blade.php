@@ -144,13 +144,21 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label for="pickupLocation" class="form-label text-primary">Pickup
+                                                    {{-- <label for="pickupLocation" class="form-label text-primary">Pickup
                                                         Location
                                                     </label>
                                                     <div class="form-group">
-                                                        <input type="text" name="pickupLocation"
-                                                            class="form-control text-primary bg-light border-success">
-                                                    </div>
+
+                                                        <input type="text" id="" name="pickupLocation"
+                                                            class="form-control ajax-select text-primary bg-light border-success">
+                                                    </div> --}}
+                                                    <label for="collectionLocation" class="form-label text-primary">Pickup
+                                                        Location</label>
+                                                    <input type="text" class="form-control" name="pickupLocation"
+                                                        id="collectionLocation" autocomplete="off">
+                                                    <div id="locationSuggestions"
+                                                        class="list-group bg-white position-absolute w-80"
+                                                        style="background-color: white;z-index: 1000;"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="collectionLocation"
@@ -207,7 +215,8 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
+                                                <label for="parcelDetails"
+                                                    class="form-label fw-medium text-primary">Parcel
                                                     Details</label>
                                                 <textarea class="form-control text-primary bg-light border-success" id="parcelDetails" name="parcelDetails"
                                                     rows="3" placeholder="Fill in the description of goods."></textarea>

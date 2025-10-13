@@ -26,7 +26,8 @@
                 <div class="form-row align-items-end justify-content-center">
                     <div class="col-auto">
                         <label for="time" class="font-weight-bold">Quick Filter:</label>
-                        <select name="time" id="time" class="form-control text-primary" onchange="this.form.submit()">
+                        <select name="time" id="time" class="form-control text-primary"
+                            onchange="this.form.submit()">
                             <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>All</option>
                             <option value="daily" {{ $timeFilter == 'daily' ? 'selected' : '' }}>Today</option>
                             <option value="weekly" {{ $timeFilter == 'weekly' ? 'selected' : '' }}>This Week</option>
@@ -146,6 +147,30 @@
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Delayed Rider Collection Requests Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client_requests.delayed_collection', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
+                title="View Delayed Rider Collection Parcels" class="text-decoration-none text-dark">
+                <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Delayed Rider Collection Requests
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $delayedCollections }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>

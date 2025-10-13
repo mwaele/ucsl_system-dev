@@ -838,11 +838,13 @@
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>
                                                             @elseif ($collection->shipmentCollection->priority_level === 'high')
-                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority ***
                                                                 </div>
                                                             @elseif ($collection->shipmentCollection->fragile_item === 'yes')
-                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** Fragile Parcel ***
                                                                 </div>
                                                             @endif
@@ -1184,10 +1186,12 @@
                                                                                     <label
                                                                                         for="agent_name_{{ $collection->id }}"
                                                                                         class="form-label">Reason for
-                                                                                        Failure</label>
+                                                                                        Failure <span
+                                                                                            class="text-danger">*</span></label>
                                                                                     <select name="reason"
                                                                                         class="form-control"
-                                                                                        id="reason_{{ $collection->id }}">
+                                                                                        id="reason_{{ $collection->id }}"
+                                                                                        required>
                                                                                         <option value="">-- Select --
                                                                                         </option>
                                                                                         @foreach ($failed_deliveries as $failed_delivery)
@@ -1223,11 +1227,12 @@
                                                                                 <div class="col-md-12">
                                                                                     <label
                                                                                         for="agent_reason_{{ $collection->id }}"
-                                                                                        class="form-label">Remarks</label>
+                                                                                        class="form-label">Remarks <span
+                                                                                            class="text-danger">*</span></label>
                                                                                     <input type="text"
                                                                                         class="form-control"
                                                                                         id="remarks_{{ $collection->id }}"
-                                                                                        placeholder="Reason">
+                                                                                        placeholder="Reason" required>
                                                                                 </div>
                                                                             </div>
                                                                             <button type="button"
@@ -1323,16 +1328,17 @@
 
                                                     <script>
                                                         function submitApprovalRequest(requestId, collectionId, btn) {
+                                                            const reason = document.getElementById(`reason_${collectionId}`).value.trim();
+                                                            const remarks = document.getElementById(`remarks_${collectionId}`).value.trim();
+
+                                                            // Validate input fields
+                                                            if (!reason || !remarks) {
+                                                                alert("Please fill in both Reason and Remarks before submitting.");
+                                                                return;
+                                                            }
+
                                                             btn.disabled = true;
                                                             btn.innerText = "Submitting...";
-
-                                                            const reason = document.getElementById(`reason_${collectionId}`).value;
-                                                            const remarks = document.getElementById(`remarks_${collectionId}`).value;
-
-                                                            // const agentName = document.getElementById(`agent_name_${collectionId}`).value;
-                                                            // const agentId = document.getElementById(`agent_id_${collectionId}`).value;
-                                                            // const agentPhone = document.getElementById(`agent_phone_${collectionId}`).value;
-                                                            // const agentReason = document.getElementById(`agent_reason_${collectionId}`).value;
 
                                                             fetch("{{ route('failed_delivery_alert') }}", {
                                                                     method: "POST",
@@ -1344,8 +1350,6 @@
                                                                         requestId,
                                                                         reason,
                                                                         remarks,
-                                                                        // agentPhone,
-                                                                        // agentReason
                                                                     })
                                                                 })
                                                                 .then(response => {
@@ -1363,6 +1367,7 @@
                                                                 });
                                                         }
                                                     </script>
+
 
                                                     <script>
                                                         document.addEventListener('DOMContentLoaded', function() {
@@ -1660,19 +1665,25 @@
                                                                 </div>
                                                                 <hr style="margin: 6px 0;">
 
-                                                                <div style="margin-top: 6px; font-size: 12px; line-height: 1.5;">
+                                                                <div
+                                                                    style="margin-top: 6px; font-size: 12px; line-height: 1.5;">
                                                                     <table style="width: 100%; border-collapse: collapse;">
                                                                         <tr>
-                                                                            <td style="width: 50%; padding: 5px; vertical-align: top;">
-                                                                                <strong>Receiver Name:</strong> __________________
+                                                                            <td
+                                                                                style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver Name:</strong>
+                                                                                __________________
                                                                             </td>
-                                                                            <td style="width: 50%; padding: 5px; vertical-align: top;">
-                                                                                <strong>Receiver ID No:</strong> ______________
+                                                                            <td
+                                                                                style="width: 50%; padding: 5px; vertical-align: top;">
+                                                                                <strong>Receiver ID No:</strong>
+                                                                                ______________
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td style="padding: 5px; vertical-align: top;">
-                                                                                <strong>Receiver Signature:</strong> _______________
+                                                                                <strong>Receiver Signature:</strong>
+                                                                                _______________
                                                                             <td style="padding: 5px; vertical-align: top;">
                                                                                 <strong>Receiver Stamp:</strong>
                                                                             </td>
@@ -1699,7 +1710,7 @@
                                         </div>
                                     @endif
 
-                                    <!-- Handover to Rider Button --> 
+                                    <!-- Handover to Rider Button -->
                                     @if ($collection->status === 'collected')
                                         <button class="btn btn-sm btn-info ml-1 mr-1" title="Handover to Rider"
                                             data-toggle="modal" data-target="#handoverModal-{{ $collection->id }}">
@@ -1707,28 +1718,36 @@
                                         </button>
 
                                         <!-- Handover Modal -->
-                                        <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1" role="dialog" aria-labelledby="handoverModalLabel-{{ $collection->id }}" aria-hidden="true">
+                                        <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="handoverModalLabel-{{ $collection->id }}"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-info text-white">
-                                                        <h5 class="modal-title" id="handoverModalLabel-{{ $collection->id }}">
+                                                        <h5 class="modal-title"
+                                                            id="handoverModalLabel-{{ $collection->id }}">
                                                             Handover Shipment #{{ $collection->requestId }}
                                                         </h5>
-                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
 
-                                                    <form action="{{ route('shipments.handover', $collection->requestId) }}" method="POST">
+                                                    <form
+                                                        action="{{ route('shipments.handover', $collection->requestId) }}"
+                                                        method="POST">
                                                         @csrf
                                                         <div class="modal-body">
-                                                            <p class="mb-3">Please select the rider you want to handover this shipment to:</p>
+                                                            <p class="mb-3">Please select the rider you want to handover
+                                                                this shipment to:</p>
 
                                                             <div class="form-group">
                                                                 <label for="rider_id">Select Rider</label>
-                                                                <select name="rider_id" id="rider_id" class="form-control" required>
+                                                                <select name="rider_id" id="rider_id"
+                                                                    class="form-control" required>
                                                                     <option value="">-- Choose Rider --</option>
-                                                                    @foreach($riders as $rider)
+                                                                    @foreach ($riders as $rider)
                                                                         <option value="{{ $rider->id }}">
                                                                             {{ $rider->name }}
                                                                         </option>
@@ -1743,8 +1762,10 @@
                                                         </div>
 
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                                                            <button type="submit" class="btn btn-info">Confirm Handover</button>
+                                                            <button type="button" class="btn btn-light"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-info">Confirm
+                                                                Handover</button>
                                                         </div>
                                                     </form>
                                                 </div>

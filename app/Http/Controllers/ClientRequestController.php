@@ -550,4 +550,147 @@ class ClientRequestController extends Controller
 
         return back()->with('success', 'Client request deleted successfully.');
     }
+
+    public function delayed_collection(Request $request)
+     {
+        $user = Auth::user();
+
+        // Prepare query
+        $query = ClientRequest::with([
+            'client',
+            'vehicle',
+            'user',
+            'shipmentCollection.items.subItems',
+            'createdBy'
+        ]);
+
+        // Filters
+        $stationName = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        if ($user->role === 'admin') {
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $query->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $query->where('office_id', $user->station);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        $queryParams = [
+            'station' => $stationName,
+            'status' => $status,
+            'time' => $timeFilter,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ];
+
+        $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
+
+        $query->whereIn('clientId', function ($q) {
+            $q->select('id')->from('clients');
+        });
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
+
+        $clients = Client::where('type', 'on_account')->get();
+        $vehicles = Vehicle::all();
+        $drivers = User::where('role', 'driver')->get();
+        $sub_categories = SubCategory::all();
+
+        // Base query for summaries
+        if ($user->role === 'admin') {
+            $baseQuery = ClientRequest::query();
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $baseQuery->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $baseQuery = ClientRequest::where('office_id', $user->station);
+        }
+
+        if ($dateRange) {
+            $baseQuery->whereBetween('created_at', $dateRange);
+        }
+
+        // --- Summary counts ---
+        $totalRequests = (clone $baseQuery)->count();
+        $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
+        $collected = (clone $baseQuery)->where('status', 'collected')->count();
+        $verified = (clone $baseQuery)->where('status', 'verified')->count();
+        $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+
+        // --- Delivery-specific metrics ---
+        $shipmentBase = ShipmentCollection::query()
+            ->when($user->role !== 'admin', fn($q) => $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $user->station)))
+            ->when($stationName && $user->role === 'admin', function ($q) use ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $officeId));
+                }
+            })
+            ->when($dateRange, fn($q) => $q->whereBetween('created_at', $dateRange));
+
+        $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->get();
+        $onTransitParcels = (clone $shipmentBase)->where('status', 'Delivery Rider Allocated')->get();
+        $failedDeliveries = (clone $shipmentBase)->where('status', 'delivery_failed')->get();
+        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')->get();
+        $delayedDeliveries = (clone $shipmentBase)
+            ->where('status', 'Delivery Rider Allocated')
+            ->where('updated_at', '<', Carbon::now()->subHour(2))
+            ->count();
+        return view('client-request.index', compact(
+            'clients',
+            'vehicles',
+            'drivers',
+            'client_requests',
+            'totalRequests',
+            'delivered',
+            'collected',
+            'verified',
+            'pending_collection',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries',
+            'delayedDeliveries',
+            'timeFilter',
+            'startDate',
+            'endDate',
+            'exportPdfUrl',
+            'sub_categories'
+        ));
+    }
 }

@@ -118,7 +118,7 @@ class ShipmentDeliveriesController extends Controller
             ]);
             Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
 
-            $message = "Your Shipment Collection OTP is {$otp}.";
+            $message = "Your Shipment Collection OTP is {$otp} confirming acceptance of delivery of parcel in good order and condition.";
             $smsService->sendSms(
                 phone: $request->receiver_phone,
                 subject:'',
