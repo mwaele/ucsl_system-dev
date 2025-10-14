@@ -155,7 +155,7 @@
                                                     <label for="collectionLocation" class="form-label text-primary">Pickup
                                                         Location</label>
                                                     <input type="text" class="form-control" name="pickupLocation"
-                                                        id="collectionLocation" autocomplete="off">
+                                                        id="collectionLocationx" autocomplete="off">
                                                     <div id="locationSuggestions"
                                                         class="list-group bg-white position-absolute w-80"
                                                         style="background-color: white;z-index: 1000;"></div>
@@ -171,7 +171,7 @@
                                                         @foreach ($locations->sortBy('destination') as $location)
                                                             <option value="{{ $location->destination }}"
                                                                 data-id="{{ $location->id }}">
-                                                                {{ $location->destination }}
+                                                                {{ $location->destination }} {{ $location->destination }}
                                                             </option>
                                                         @endforeach
                                                     </select>

@@ -417,6 +417,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/client-performance-report', [ReportController::class, 'clientPerformanceReport'])->name('reports.client_performance');
         Route::get('/office-performance-report', [ReportController::class, 'officePerformanceReport'])->name('reports.office_performance');
         Route::get('/dispatch-summary-report', [ReportController::class, 'dispatchSummaryReport'])->name('reports.dispatch_summary');
+        Route::get('/rider-performance', [ReportController::class, 'riderPerformanceReport'])->name('reports.rider-performance');
+        Route::get('/shipment-report/pdf', [ReportController::class, 'exportPdf'])->name('shipment.report.pdf');
+        Route::get('/rider-performance-export-excel', [ReportController::class, 'exportExcel'])->name('reports.rider-performance-export-excel');
+
     });
 
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');

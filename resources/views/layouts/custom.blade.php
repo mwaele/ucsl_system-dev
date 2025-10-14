@@ -441,6 +441,8 @@
                                 performance</a>
                             <a class="collapse-item" href="{{ route('reports.dispatch_summary') }}">Dispatch
                                 summaries</a>
+                            <a class="collapse-item" href="{{ route('reports.rider-performance') }}">Rider
+                                Performance</a>
 
                         </div>
                     </div>
@@ -1284,7 +1286,7 @@
                 });
 
                 // Listen for change
-                $('#collectionLocation').on('changed.bs.select', function() {
+                $('#collectionLocationx').on('changed.bs.select', function() {
                     const location = $(this).val();
                     //alert('Selected: ' + location);
                     fetchDriversByLocation(location);
@@ -1329,28 +1331,28 @@
                 $(document).on('click', '#locationSuggestions a', function(e) {
                     e.preventDefault();
                     const selected = $(this).text();
-                    $('#collectionLocation').val(selected);
+                    $('#collectionLocationx').val(selected);
                     $('#locationSuggestions').hide();
 
                     fetchDriversByLocation(selected); // ✅ fetch drivers on selection
                 });
 
                 // ⬅ Handle focusout on input
-                $('#collectionLocation').on('focusout', function() {
+                $('#collectionLocationx').on('focusout', function() {
                     $('#locationSuggestions').hide();
                 });
 
                 $(document).on('mousedown', '#locationSuggestions a', function(e) {
                     e.preventDefault();
                     const selected = $(this).text();
-                    $('#collectionLocation').val(selected);
+                    $('#collectionLocationx').val(selected);
                     $('#locationSuggestions').hide();
                     fetchDriversByLocation(selected);
                 });
 
 
 
-                $('#collectionLocation').on('focusout', function() {
+                $('#collectionLocationx').on('focusout', function() {
                     const location = $(this).val().trim();
                     //alert(location);
 
@@ -1463,7 +1465,7 @@
 
                 $('#currentLocation').on('change', function() {
                     if ($(this).is(':checked')) {
-                        const location = $('#collectionLocation').val().trim();
+                        const location = $('#collectionLocationx').val().trim();
 
                         if (location.length > 1) {
                             fetchDriversByLocation(location);
@@ -1646,25 +1648,53 @@
 
 
 
+                    // function extractVAT(costWithVAT) {
+                    //     // Calculate raw VAT when total already includes VAT
+                    //     const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                    //     let integerPart = Math.floor(rawVat);
+                    //     const decimal = rawVat - integerPart;
+
+                    //     let roundedVat;
+                    //     if (decimal < 0.3) {
+                    //         roundedVat = integerPart;
+                    //     } else if (decimal >= 0.7) {
+                    //         roundedVat = integerPart + 0.5;
+                    //     } else {
+                    //         roundedVat = integerPart + 1;
+                    //     }
+
+                    //     // Always return a formatted string like "69.00" or "69.50"
+                    //     return roundedVat.toFixed(2);
+                    // }
                     function extractVAT(costWithVAT) {
                         // Calculate raw VAT when total already includes VAT
                         const rawVat = (costWithVAT * 0.16) / 1.16;
 
-                        let integerPart = Math.floor(rawVat);
-                        const decimal = rawVat - integerPart;
+                        const integerPart = Math.floor(rawVat);
+                        const decimalPart = rawVat - integerPart;
+                        let roundedDecimal = 0;
 
-                        let roundedVat;
-                        if (decimal < 0.3) {
-                            roundedVat = integerPart;
-                        } else if (decimal >= 0.7) {
-                            roundedVat = integerPart + 0.5;
+                        // Apply the same custom rounding rules
+                        if (decimalPart <= 0.03) {
+                            roundedDecimal = 0.00;
+                        } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                            roundedDecimal = 0.05;
                         } else {
-                            roundedVat = integerPart + 1;
+                            roundedDecimal = 0.10;
                         }
 
-                        // Always return a formatted string like "69.00" or "69.50"
-                        return roundedVat.toFixed(2);
+                        let result = integerPart + roundedDecimal;
+
+                        // Handle carry-over if rounding pushes to next integer
+                        if (result >= integerPart + 1) {
+                            result = integerPart + 1.00;
+                        }
+
+                        // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                        return result.toFixed(2);
                     }
+
 
                     const vat = extractVAT(cost);
                     $('input[name="cost"]').val((cost - vat).toFixed(2));
@@ -2235,7 +2265,7 @@
                 // Current Location
                 $(document).on('change', '.currentLocation', function() {
                     const modal = $(this).closest('.modal');
-                    const location = modal.find('.collectionLocation').val()?.trim();
+                    const location = modal.find('.collectionLocationx').val()?.trim();
 
                     if ($(this).is(':checked')) {
                         if (location && location.length > 1) {

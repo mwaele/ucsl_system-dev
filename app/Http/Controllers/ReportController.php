@@ -12,6 +12,10 @@ use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Office;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ShipmentsExport;
 
 class ReportController extends Controller
 {
@@ -479,6 +483,85 @@ class ReportController extends Controller
             ->get();
 
         return view('reports.office_performance_detail', compact('office', 'shipments'));
+    }
+    public function riderPerformanceReport(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $userName  = $request->input('user_name');
+
+        $query = DB::table('client_requests')
+            ->join('users', 'client_requests.userId', '=', 'users.id')
+            ->join('shipment_collections', 'client_requests.requestId', '=', 'shipment_collections.requestId')
+            ->select(
+                'users.id',
+                'users.name',
+                DB::raw('COUNT(shipment_collections.id) as total_shipments'),
+                DB::raw('SUM(shipment_collections.actual_total_cost) as total_amount'),
+                DB::raw('SUM(shipment_collections.total_weight) as total_volume')
+            )
+            ->groupBy('users.id', 'users.name');
+
+        // Filters
+        if ($startDate && $endDate) {
+            $query->whereBetween('shipment_collections.created_at', [$startDate, $endDate]);
+        }
+
+        if ($userName) {
+            $query->where('users.name', 'like', "%{$userName}%");
+        }
+
+        $report = $query->get();
+
+        // If AJAX request → return JSON data
+        if ($request->ajax()) {
+            return response()->json($report);
+        }
+
+        // Otherwise load view normally
+        return view('reports.rider_performance_report', compact('report', 'startDate', 'endDate', 'userName'));
+    }
+     public function exportPdf(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+        $userName  = $request->input('user_name');
+
+        $query = DB::table('client_requests')
+            ->join('users', 'client_requests.userId', '=', 'users.id')
+            ->join('shipment_collections', 'client_requests.requestId', '=', 'shipment_collections.requestId')
+            ->select(
+                'users.id',
+                'users.name',
+                DB::raw('COUNT(shipment_collections.id) as total_shipments'),
+                DB::raw('SUM(shipment_collections.actual_total_cost) as total_amount'),
+                DB::raw('SUM(shipment_collections.total_weight) as total_volume')
+            )
+            ->groupBy('users.id', 'users.name');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('shipment_collections.created_at', [$startDate, $endDate]);
+        }
+
+        if ($userName) {
+            $query->where('users.name', 'like', "%{$userName}%");
+        }
+
+        $report = $query->get();
+
+        $pdf = Pdf::loadView('reports.rider_performance_pdf', compact('report', 'startDate', 'endDate', 'userName'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('rider_performance_shipment_report.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $userName = $request->get('user_name');
+
+        return Excel::download(new ShipmentsExport($startDate, $endDate, $userName), 'reports.rider_performance_excel.xlsx');
     }
 
     public function clientDetail($id)
