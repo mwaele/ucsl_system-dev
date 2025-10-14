@@ -1398,25 +1398,18 @@ class ShipmentCollectionController extends Controller
     public function exportdeliveryMetricsPdf(Request $request)
     {
         $user = Auth::user();
-        $stationParam = $request->query('station');
-        $status = $request->query('status');
+        $station = $user->station;
+
+        // 🔹 Time filters
         $timeFilter = $request->query('time', 'all');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
+        $delayed = $request->query('delayed');
 
-        // Determine station
-        if ($user->role === 'admin') {
-            $station = $stationParam ?: 'All';
-        } else {
-            $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
-        }
+        $dateRange = null;
 
-        // Handle date range filters
         if ($startDate && $endDate) {
-            $dateRange = [
-                Carbon::parse($startDate)->startOfDay(),
-                Carbon::parse($endDate)->endOfDay(),
-            ];
+            $dateRange = [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()];
         } else {
             $dateRange = match ($timeFilter) {
                 'daily' => [now()->startOfDay(), now()->endOfDay()],
@@ -1428,49 +1421,96 @@ class ShipmentCollectionController extends Controller
             };
         }
 
-        // Query for Shipments
+        // 🔹 Helper for conditional date query
+        $queryWithDate = fn($q) => $dateRange
+            ? $q->whereBetween('created_at', $dateRange)
+            : $q;
+
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
+        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
+
+        // 🔹 Base query
         $query = ShipmentCollection::with([
-            'clientRequest.client',
-            'clientRequest.vehicle',
-            'clientRequest.user',
-            'clientRequest.office',
-            'items.subItems',
+            'clientRequestById.client',
+            'clientRequestById.serviceLevel',
+            'clientRequestById.vehicle',
+            'destination',
+            'collectedBy',
+            'verifiedBy',
         ]);
 
-        // Filter by station
+        // 🔹 Filters
+        $stationName = $request->query('station');
+        $status = $request->query('status');
+
+        // 🔹 Role-based filtering
         if ($user->role === 'admin') {
-            if ($station && strtolower($station) !== 'all') {
-                $officeId = Office::where('name', $station)->value('id');
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
                 if ($officeId) {
-                    $query->whereHas('clientRequest', function ($q) use ($officeId) {
-                        $q->where('office_id', $officeId);
-                    });
+                    $query->whereHas('clientRequestById', fn($q) => $q->where('office_id', $officeId));
                 }
             }
         } else {
-            $query->whereHas('clientRequest', function ($q) use ($user) {
-                $q->where('office_id', $user->station);
-            });
+            $query->whereHas('clientRequestById', fn($q) => $q->where('office_id', $user->station));
         }
 
-        // Filter by status
-        if ($status) {
-            $query->where('status', $status);
+        // 🔹 Handle delayed filter first
+        if ($delayed) {
+            $query->whereIn('status', ['Delivery Rider Allocated', 'delivery_rider_allocated'])
+                ->where('updated_at', '<', $timeLimit)
+                ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+                ->whereHas('clientRequestById', function ($q) use ($user, $stationName) {
+                    if ($user->role === 'admin' && $stationName) {
+                        $officeId = Office::where('name', $stationName)->value('id');
+                        if ($officeId) {
+                            $q->where('office_id', $officeId);
+                        }
+                    } else {
+                        $q->where('office_id', $user->station);
+                    }
+                });
         }
 
-        // Filter by date range
+        // 🔹 Handle status filter next (only if not delayed)
+        elseif ($status) {
+            $normalizedStatus = strtolower(str_replace(' ', '_', $status));
+
+            switch ($normalizedStatus) {
+                case 'delivery_failed':
+                    $query->whereIn('status', ['delivery_failed', 'Delivery Failed']);
+                    break;
+
+                case 'parcel_delivered':
+                    $query->whereIn('status', ['parcel_delivered', 'Parcel Delivered']);
+                    break;
+
+                case 'delivery_rider_allocated':
+                case 'on_transit':
+                    $query->whereIn('status', ['Delivery Rider Allocated', 'delivery_rider_allocated']);
+                    break;
+
+                case 'arrived':
+                case 'undelivered':
+                    $query->whereIn('status', ['arrived', 'Arrived']);
+                    break;
+            }
+        }
+
+        // 🔹 Date range filter
         if ($dateRange) {
             $query->whereBetween('created_at', $dateRange);
         }
 
+        // 🔹 Fetch results
         $shipments = $query->orderBy('created_at', 'desc')->get();
 
-        // Generate PDF
+        // ✅ Export to PDF
         return $this->renderPdfWithPageNumbers(
             'pdf.delivery-metrics',
             [
                 'shipments' => $shipments,
-                'station' => $station,
+                'station' => $stationName ?? 'All',
                 'status' => $status,
                 'reportingPeriod' => $dateRange,
                 'timeFilter' => $timeFilter,
@@ -1480,5 +1520,6 @@ class ShipmentCollectionController extends Controller
             'landscape'
         );
     }
+
 
 }
