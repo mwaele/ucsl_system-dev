@@ -21,12 +21,15 @@ use App\Models\Payment;
 use App\Models\Invoice;
 use App\Models\DeliveryControl;
 use App\Helpers\EmailHelper;
+use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
 
 class ShipmentCollectionController extends Controller
 {
+    use PdfReportTrait;
+
     protected $requestIdService;
 
     public function __construct(RequestIdService $requestIdService)
@@ -1378,7 +1381,8 @@ class ShipmentCollectionController extends Controller
             ->get();
 
 
-        $exportPdfUrl = URL::route('client-requests.export.pdf', array_filter($queryParams));
+        $exportPdfUrl = URL::route('delivery-metrics.export.pdf', array_filter($queryParams));
+        
         return view('client-request.delivery-metrics', compact(
             'shipments',
             'undeliveredParcels',
@@ -1390,4 +1394,91 @@ class ShipmentCollectionController extends Controller
             'status'
         ));
     }
+
+    public function exportdeliveryMetricsPdf(Request $request)
+    {
+        $user = Auth::user();
+        $stationParam = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Determine station
+        if ($user->role === 'admin') {
+            $station = $stationParam ?: 'All';
+        } else {
+            $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
+        }
+
+        // Handle date range filters
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        // Query for Shipments
+        $query = ShipmentCollection::with([
+            'clientRequest.client',
+            'clientRequest.vehicle',
+            'clientRequest.user',
+            'clientRequest.office',
+            'items.subItems',
+        ]);
+
+        // Filter by station
+        if ($user->role === 'admin') {
+            if ($station && strtolower($station) !== 'all') {
+                $officeId = Office::where('name', $station)->value('id');
+                if ($officeId) {
+                    $query->whereHas('clientRequest', function ($q) use ($officeId) {
+                        $q->where('office_id', $officeId);
+                    });
+                }
+            }
+        } else {
+            $query->whereHas('clientRequest', function ($q) use ($user) {
+                $q->where('office_id', $user->station);
+            });
+        }
+
+        // Filter by status
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        // Filter by date range
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        $shipments = $query->orderBy('created_at', 'desc')->get();
+
+        // Generate PDF
+        return $this->renderPdfWithPageNumbers(
+            'pdf.delivery-metrics',
+            [
+                'shipments' => $shipments,
+                'station' => $station,
+                'status' => $status,
+                'reportingPeriod' => $dateRange,
+                'timeFilter' => $timeFilter,
+            ],
+            'delivery-metrics.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+
 }

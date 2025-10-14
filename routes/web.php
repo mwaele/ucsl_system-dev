@@ -435,6 +435,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
     Route::get('/deliveries/metrics', [ShipmentCollectionController::class, 'deliveryMetrics'])->name('deliveries.metrics');
+    Route::get('/delivery-metrics/pdf', [ShipmentCollectionController::class, 'exportdeliveryMetricsPdf'])->name('delivery-metrics.export.pdf');
 });
 
 

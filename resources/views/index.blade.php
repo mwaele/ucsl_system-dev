@@ -356,6 +356,11 @@
         </div>
     </div>
 
+        <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h3 class="h3 mb-0 text-primary">Office Breakdown for Parcel Requests & Collection Status</h3>
+    </div>
+
     @if ($stationStats)
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
@@ -369,8 +374,8 @@
                                 <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
                                 <p class="mb-1 text-info">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'delivered', 'time' => $timeFilter])) }}"
-                                        class="text-primary text-decoration-none">
-                                        Delivered: <strong>{{ $stats['delivered'] }}</strong>
+                                    class="btn btn-outline-primary btn-sm">
+                                    Delivered: <strong>{{ $stats['delivered'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-info">
