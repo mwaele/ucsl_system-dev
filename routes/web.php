@@ -224,6 +224,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/get-cost-same-day/{originId}/{destinationId}', [RateController::class, 'getCostSameDay']);
     Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
+    Route::get('/client_requests/pdf', [ClientRequestController::class, 'exportPdfDelayed'])->name('client_requests.export.pdf');
     Route::get('/waybill/generate/{requestId}', [ClientRequestController::class, 'generateWaybill'])->name('waybill.generate');
     Route::get('/waybill/preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill.preview');
     Route::get('/get-client-categories/{clientId}', [ClientRequestController::class, 'getClientCategories']);
@@ -439,6 +440,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
     Route::get('/deliveries/metrics', [ShipmentCollectionController::class, 'deliveryMetrics'])->name('deliveries.metrics');
     Route::get('/delivery-metrics/pdf', [ShipmentCollectionController::class, 'exportdeliveryMetricsPdf'])->name('delivery-metrics.export.pdf');
+    Route::get('/delivery_metrics/pdf', [ShipmentCollectionController::class, 'exportdeliveryMetricPdf'])->name('delivery-metrics.export.pdf');
 });
 
 

@@ -6,19 +6,54 @@
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between flex-wrap" style="font-size: 14px;">
                 <!-- Left: Title -->
-                <span class="m-0 font-weight-bold text-success">All Client Requests</span>
+                <span class="m-0 font-weight-bold text-success">
+
+                    @if ($status)
+                        @if ($status === 'pending collection')
+                            <h5><strong>
+                                    Showing results for shipment pending collection:
+                                </strong>
+                            </h5>
+                        @elseif ($status === 'delayed collection')
+                            <h5><strong>
+                                    Showing results for delayed collections (more than 2 hours):
+                                </strong>
+                            </h5>
+                        @elseif ($status === 'collected')
+                            <h5><strong>Showing Results for {{ $status }} Shipments</strong></h5>
+                        @elseif ($status === 'verified')
+                            <h5><strong>Showing Results for {{ $status }} Shipments</strong></h5>
+                        @elseif ($status === 'delivered')
+                            <h5><strong>Showing Results for {{ $status }} Shipments</strong></h5>
+                        @else
+                            <h5><strong>Showing Results for {{ $status }}</strong></h5>
+                        @endif
+                    @endif
+                </span>
 
                 <!-- Right: Button -->
                 <div>
+
+                    @php
+                        $normalizedStatus = \Illuminate\Support\Str::of($status)->lower()->replace('_', ' ')->value();
+
+                        if ($normalizedStatus === 'delayed collection') {
+                            $exportPdfUrl = route('client_requests.export.pdf', request()->query());
+                        } else {
+                            $exportPdfUrl = route('client-requests.export.pdf', request()->query());
+                        }
+                    @endphp
+
                     <a href="{{ $exportPdfUrl }}" class="btn btn-danger mr-1" title="Download PDF">
                         <i class="fas fa-download"></i>
                     </a>
 
+
                     <!-- <button type="button" class="btn btn-sm btn-primary shadow-sm rounded p-2" data-toggle="modal"
-                        data-target="#createClientRequest">
-                        <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
-                            Request</span>
-                    </button> -->
+                                                                                    data-target="#createClientRequest">
+                                                                                    <span class="mt-1 mb-1"><i class="fas fa-plus fa-sm text-white"></i> Create Client
+                                                                                        Request</span>
+                                                                                </button> -->
                 </div>
             </div>
 
@@ -140,7 +175,7 @@
                                                 name="vehicle_display" placeholder="Select rider to populate" readonly>
                                             <input type="hidden" id="vehicleId" name="vehicleId">
                                         </div>
-                                        
+
                                         <script>
                                             const vehicleMap = {
                                                 @foreach ($vehicles as $vehicle)
@@ -205,6 +240,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
+
                 <table class="table text-primary table-bordered table-striped table-hover" id="dataTable" width="100%"
                     cellspacing="0" style="font-size: 14px;">
                     <thead>
@@ -246,14 +282,17 @@
                                 <td> {{ $request->serviceLevel->sub_category_name }} </td>
                                 <td> {{ \Illuminate\Support\Str::title($request->client->type) }} </td>
                                 <td>
-                                    From: {{ $request->shipmentCollection->sender_address ?? '' }}, {{ $request->shipmentCollection->sender_town ?? '' }} <br>
-                                    To: {{ $request->shipmentCollection->receiver_address ?? '' }}, {{ $request->shipmentCollection->receiver_town ?? '' }}
+                                    From: {{ $request->shipmentCollection->sender_address ?? '' }},
+                                    {{ $request->shipmentCollection->sender_town ?? '' }} <br>
+                                    To: {{ $request->shipmentCollection->receiver_address ?? '' }},
+                                    {{ $request->shipmentCollection->receiver_town ?? '' }}
                                 </td>
                                 <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y') }} </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
                                 <td>
-                                    <span class="badge p-2
+                                    <span
+                                        class="badge p-2
                                         @if ($request->shipment_status == 'pending collection') bg-secondary
                                         @elseif ($request->shipment_status == 'collected') bg-warning
                                         @elseif ($request->shipment_status == 'verified') bg-primary
@@ -515,8 +554,8 @@
                                     @endif
 
                                     @if ($request->status === 'delivered')
-                                        <button class="btn btn-sm btn-info mr-1" title="View parcel"
-                                            data-toggle="modal" data-target="">
+                                        <button class="btn btn-sm btn-info mr-1" title="View parcel" data-toggle="modal"
+                                            data-target="">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     @endif

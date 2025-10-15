@@ -156,7 +156,7 @@
 
         <!-- Delayed Rider Collection Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
-            <a href="{{ route('client_requests.delayed_collection', array_merge($queryParams, ['status' => 'pending collection', 'time' => $timeFilter])) }}"
+            <a href="{{ route('client_requests.delayed_collection', array_merge($queryParams, ['status' => 'delayed collection', 'time' => $timeFilter])) }}"
                 title="View Delayed Rider Collection Parcels" class="text-decoration-none text-dark">
                 <div class="card border-left-info bg-warning shadow h-100 py-2 hover-card">
                     <div class="card-body">

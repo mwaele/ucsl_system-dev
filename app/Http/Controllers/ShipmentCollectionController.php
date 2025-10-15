@@ -19,6 +19,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\Invoice;
+use App\Models\Office;
 use App\Models\DeliveryControl;
 use App\Helpers\EmailHelper;
 use App\Traits\PdfReportTrait;
@@ -1313,6 +1314,7 @@ class ShipmentCollectionController extends Controller
                 ->where('updated_at', '<', $timeLimit)
                 ->whereNotIn('status', ['delivery_failed', 'parcel_delivered']);
         }
+
 
         // 🔹 Handle status filter next (only if not delayed)
         elseif ($status = $request->query('status')) {

@@ -207,7 +207,8 @@ class ClientRequestController extends Controller
             'startDate',
             'endDate',
             'exportPdfUrl',
-            'sub_categories'
+            'sub_categories',
+            'status',
         ));
     }
 
@@ -295,6 +296,81 @@ class ClientRequestController extends Controller
             'landscape'
         );
     }
+    
+    public function exportPdfDelayed(Request $request)
+{
+    $user = Auth::user();
+    $stationParam = $request->query('station');
+    $timeFilter = $request->query('time', 'all');
+    $startDate = $request->query('start_date');
+    $endDate = $request->query('end_date');
+
+    // Determine station name
+    if ($user->role === 'admin') {
+        $station = $stationParam ?: 'All';
+    } else {
+        $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
+    }
+
+    // Determine date range
+    if ($startDate && $endDate) {
+        $dateRange = [
+            Carbon::parse($startDate)->startOfDay(),
+            Carbon::parse($endDate)->endOfDay(),
+        ];
+    } else {
+        $dateRange = match ($timeFilter) {
+            'daily' => [now()->startOfDay(), now()->endOfDay()],
+            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+            'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+            'yearly' => [now()->startOfYear(), now()->endOfYear()],
+            default => null,
+        };
+    }
+
+    // Build base query
+    $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office'])
+        ->where('status', 'pending collection')
+        ->where('updated_at', '<', Carbon::now()->subHours(2)); // Delayed by more than 2 hours
+        
+
+    // Filter by station
+    if ($user->role === 'admin') {
+        if ($stationParam && strtolower($stationParam) !== 'all') {
+            $officeId = Office::where('name', $stationParam)->value('id');
+            if ($officeId) {
+                $query->where('office_id', $officeId);
+            }
+        }
+    } else {
+        $query->where('office_id', $user->station);
+    }
+
+    // Apply optional date range
+    if ($dateRange) {
+        $query->whereBetween('created_at', $dateRange);
+    }
+
+    // Fetch delayed pending collection requests
+    $client_requests = $query->orderBy('created_at', 'desc')->get();
+
+    // Generate PDF
+    return $this->renderPdfWithPageNumbers(
+        'pdf.client-requests',
+        [
+            'client_requests' => $client_requests,
+            'station' => $station,
+            'status' => 'Delayed Collection (Pending > 2 Hours)',
+            'reportingPeriod' => $dateRange,
+            'timeFilter' => $timeFilter,
+        ],
+        'delayed_collections.pdf',
+        'a4',
+        'landscape'
+    );
+}
+
 
     public function getClientCategories($clientId)
     {
@@ -563,6 +639,7 @@ class ClientRequestController extends Controller
 
     public function delayed_collection(Request $request)
      {
+
         $user = Auth::user();
 
         // Prepare query
@@ -581,6 +658,9 @@ class ClientRequestController extends Controller
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
         $dateRange = null;
+        $stat= "pending collection";
+
+        //dd($status);
 
         if ($startDate && $endDate) {
             $dateRange = [
@@ -609,9 +689,12 @@ class ClientRequestController extends Controller
             $query->where('office_id', $user->station);
         }
 
-        if ($status) {
-            $query->where('status', $status);
+        if ($stat) {
+            $query->where('status', $stat);
         }
+        // Add this part to specifically get delayed collections (older than 2 hours)
+        $query->where('status', 'pending collection')
+        ->where('updated_at', '<', Carbon::now()->subHours(2));
 
         if ($dateRange) {
             $query->whereBetween('created_at', $dateRange);
@@ -619,7 +702,7 @@ class ClientRequestController extends Controller
 
         $queryParams = [
             'station' => $stationName,
-            'status' => $status,
+            'status' => $stat,
             'time' => $timeFilter,
             'start_date' => $startDate,
             'end_date' => $endDate,
@@ -700,7 +783,8 @@ class ClientRequestController extends Controller
             'startDate',
             'endDate',
             'exportPdfUrl',
-            'sub_categories'
+            'sub_categories',
+            'status'
         ));
     }
 }
