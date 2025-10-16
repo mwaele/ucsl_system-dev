@@ -525,10 +525,15 @@ class ShipmentArrivalController extends Controller
                     $existingInvoice = Invoice::where('shipment_collection_id', $shipment->id)->first();
 
                     if ($existingInvoice) {
-                        $existingInvoice->update([
+                        $updated = $existingInvoice->update([
                             'amount' => $existingInvoice->amount + $validatedData['last_mile_delivery_charges'],
                             'updated_at' => $now,
                         ]);
+
+                        if (! $updated) {
+                            throw new \Exception("Failed to update existing invoice for shipment {$shipment->id}");
+                        }
+
                         \Log::info('💰 Existing invoice updated', [
                             'invoice_id' => $existingInvoice->id,
                             'new_amount' => $existingInvoice->amount,
@@ -542,6 +547,11 @@ class ShipmentArrivalController extends Controller
                             'shipment_collection_id' => $shipment->id,
                             'invoiced_by'            => $authId,
                         ]);
+
+                        if (! $invoice) {
+                            throw new \Exception("Failed to create invoice for shipment {$shipment->id}");
+                        }
+
                         \Log::info('🧾 New invoice created', [
                             'invoice_id' => $invoice->id,
                             'amount' => $invoice->amount,

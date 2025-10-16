@@ -278,21 +278,74 @@
                                             </script>
                                         </div>
 
-                                        <div class="col-md-3 mb-3">
-                                            <label for="priority_level" class="form-label text-primary">Priority
-                                                Level</label>
-                                            <select class="form-control" name="priority_level" id="priority_level">
+                                        <div class="mt-2 col-md-2">
+                                            <h6 for="priority_level" class="text-primary">Priority Level</h6>
+                                            <select class="form-control" name="priority_level"
+                                                id="priority_level">
                                                 <option value="normal" selected>Normal</option>
                                                 <option value="high">High</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 mb-3" id="priority-deadline-group" style="display: none;">
-                                            <label for="deadline_date" class="form-label text-primary">
-                                                Deadline (If High Priority)
-                                            </label>
-                                            <input type="datetime-local" class="form-control" name="deadline_date"
-                                                id="deadline_date">
+
+                                        <div class="mt-2 col-md-2" id="priority-deadline-group"
+                                            style="display:none;">
+                                            <h6 for="deadline_date" class="text-primary">Deadline
+                                            </h6>
+                                            <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
                                         </div>
+
+                                        <!-- Inline confirmation (hidden by default) -->
+                                        <div class="mt-2 col-md-2" id="priority-confirm" style="display:none;">
+                                            <p class="text-white bg-danger p-2">High priority selected. Do extra
+                                                charges
+                                                apply?</p>
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                id="priorityYesBtn">Yes</button>
+                                            <button type="button" class="btn btn-sm btn-success"
+                                                id="priorityNoBtn">No</button>
+                                        </div>
+
+                                        <!-- Extra charge input (hidden by default) -->
+                                        <div class="mt-2 col-md-2" id="priority-extra-charge-group"
+                                            style="display:none;">
+                                            <h6 for="priority_extra_charge" class="text-primary">Priority Extra
+                                                Charge
+                                            </h6>
+                                            <input type="number" class="form-control"
+                                                name="priority_extra_charge" id="priority_extra_charge"
+                                                placeholder="Enter extra amount">
+                                        </div>
+
+                                        <div class="mt-2 col-md-2">
+                                            <h6 for="fragile" class="text-primary">Fragile?</h6>
+                                            <select class="form-control" name="fragile" id="fragile">
+                                                <option value="no" selected>No</option>
+                                                <option value="yes">Yes</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Inline Confirmation (hidden by default) -->
+                                        <div class="mt-2 col-md-2" id="fragile-confirm" style="display:none;">
+                                            <p class="text-white bg-danger p-2">This item is fragile. Do you want
+                                                to
+                                                add
+                                                extra
+                                                charges?</p>
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                id="fragileYesBtn">Yes</button>
+                                            <button type="button" class="btn btn-sm btn-success"
+                                                id="fragileNoBtn">No</button>
+                                        </div>
+
+                                        <!-- Fragile Charge Input -->
+                                        <div class="mt-2 col-md-2" id="fragile-charge-group"
+                                            style="display:none;">
+                                            <h6 for="fragile_charge" class="text-primary">Fragile Extra Charge
+                                            </h6>
+                                            <input type="number" class="form-control" name="fragile_charge"
+                                                id="fragile_charge" placeholder="Enter extra amount">
+                                        </div>
+
                                     </div>
                                 </form>
                             </div>
@@ -706,15 +759,25 @@
                                                                     <p>No shipment items found.</p>
                                                                 @endif
 
+                                                                {{-- Priority & Fragile Check --}}
+                                                                @if ($request->priority_level === 'high' && $request->fragile_item === 'yes')
+                                                                    <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                        *** High Priority & Fragile Parcel ***
+                                                                    </div>
+                                                                @elseif ($request->priority_level === 'high')
+                                                                    <div
+                                                                        style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                        *** High Priority ***
+                                                                    </div>
+                                                                @elseif ($request->fragile_item === 'yes')
+                                                                    <div
+                                                                        style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                        *** Fragile Parcel ***
+                                                                    </div>
+                                                                @endif
+
                                                                 <hr style="margin: 6px 0;">
                                                                 <div style="text-align: left; font-size: 12px;">
-
-
-                                                                    <div
-                                                                        style="display: flex; justify-content: space-between;">
-
-                                                                        <span> {{ $request->vehicle->regNo ?? '' }} </span>
-                                                                    </div><br>
                                                                     Thank you for shipping with us.<br><br>
                                                                     <strong>TERMS & CONDITIONS</strong><br>
                                                                     Carriage of this shipment is subject to the terms and

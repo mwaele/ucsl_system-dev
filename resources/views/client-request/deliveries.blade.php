@@ -833,6 +833,23 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
+                                                            @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority & Fragile Parcel ***
+                                                                </div>
+                                                            @elseif ($collection->priority_level === 'high')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority ***
+                                                                </div>
+                                                            @elseif ($collection->fragile_item === 'yes')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** Fragile Parcel ***
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Priority & Fragile Check --}}
                                                             @if ($collection->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
                                                                 <div style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***

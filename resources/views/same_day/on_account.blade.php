@@ -171,7 +171,7 @@
                                                         @foreach ($locations->sortBy('destination') as $location)
                                                             <option value="{{ $location->destination }}"
                                                                 data-id="{{ $location->id }}">
-                                                                {{ $location->destination }} {{ $location->destination }}
+                                                                {{ $location->destination }} 
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -333,8 +333,7 @@
                                                     style="display:none;">
                                                     <h6 for="deadline_date" class="text-primary">Deadline
                                                     </h6>
-                                                    <input type="datetime-local" class="form-control"
-                                                        name="deadline_date" id="deadline_date">
+                                                    <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
                                                 </div>
 
                                                 <!-- Inline confirmation (hidden by default) -->
@@ -387,17 +386,6 @@
                                                     </h6>
                                                     <input type="number" class="form-control" name="fragile_charge"
                                                         id="fragile_charge" placeholder="Enter extra amount">
-                                                </div>
-
-
-
-                                                <div class="mt-2 col-md-3" id="priority-deadline-group"
-                                                    style="display: none;">
-                                                    <h6 for="deadline_date" class="text-primary">Deadline (If High
-                                                        Priority)
-                                                    </h6>
-                                                    <input type="datetime-local" class="form-control"
-                                                        name="deadline_date" id="deadline_date">
                                                 </div>
 
                                             </div>
@@ -634,6 +622,23 @@
                                                                 </div>
                                                             @else
                                                                 <p>No shipment items found.</p>
+                                                            @endif
+                                                            
+                                                            {{-- Priority & Fragile Check --}}
+                                                            @if ($request->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
+                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority & Fragile Parcel ***
+                                                                </div>
+                                                            @elseif ($request->shipmentCollection->priority_level === 'high')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** High Priority ***
+                                                                </div>
+                                                            @elseif ($request->shipmentCollection->fragile_item === 'yes')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    *** Fragile Parcel ***
+                                                                </div>
                                                             @endif
 
                                                             <hr style="margin: 6px 0;">

@@ -317,7 +317,7 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
-                                                            @if ($collection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
+                                                            @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
                                                                 <div style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>

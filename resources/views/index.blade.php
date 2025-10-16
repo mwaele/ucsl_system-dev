@@ -356,12 +356,12 @@
         </div>
     </div>
 
-        <!-- Page Heading -->
+    @if ($stationStats)
+    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h3 class="h3 mb-0 text-primary">Office Breakdown for Parcel Requests & Collection Status</h3>
     </div>
-
-    @if ($stationStats)
+    
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-2 mb-3">

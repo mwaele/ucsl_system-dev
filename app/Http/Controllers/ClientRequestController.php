@@ -421,6 +421,9 @@ class ClientRequestController extends Controller
             'sub_category_id' => 'required|integer',
             'priority_level' => 'required|string',
             'deadline_date' => 'nullable|date',
+            'priority_extra_charge' => 'nullable|numeric',
+            'fragile' => 'nullable|string',
+            'fragile_charge' => 'nullable|numeric',
             //'rate_id'=>'nullable',
         ]);
 
@@ -442,6 +445,9 @@ class ClientRequestController extends Controller
                 'deadline_date' => $validated['deadline_date'],
                 'created_by' => Auth::id(),
                 'office_id' => Auth::user()->station,
+                'priority_level_amount' => $validated['priority_extra_charge'] ?? 0,
+                'fragile_item' => $validated['fragile'] ?? 'no',
+                'fragile_item_amount' => $validated['fragile_charge'] ?? 0,
             ]);
 
             // 2. Create track

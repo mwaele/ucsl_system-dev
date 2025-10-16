@@ -235,7 +235,10 @@ class SameDayController extends Controller
                 'category_id' => 'required|integer',
                 'sub_category_id' => 'required|integer',
                 'priority_level' => 'required|string',
-                'deadline_date' => 'nullable|date',
+                'deadline_date' => 'nullable|date_format:Y-m-d\TH:i',
+                'priority_extra_charge' => 'nullable|numeric',
+                'fragile' => 'nullable|string',
+                'fragile_charge' => 'nullable|numeric',
                 'rate_id' => 'nullable',      
                 'pickupLocation' => 'required|string',
             ]);
@@ -243,6 +246,8 @@ class SameDayController extends Controller
             Log::error('Validation failed.', ['message' => $e->getMessage()]);
             return back()->withErrors(['error' => 'Validation error: ' . $e->getMessage()]);
         }
+
+
 
         DB::beginTransaction();
 
@@ -264,7 +269,12 @@ class SameDayController extends Controller
             $clientRequest->category_id = $validated['category_id'];
             $clientRequest->sub_category_id = $validated['sub_category_id'];
             $clientRequest->priority_level = $validated['priority_level'];
-            $clientRequest->deadline_date = $validated['deadline_date'];
+            $clientRequest->deadline_date = $validated['deadline_date']
+                ? \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $validated['deadline_date'])->format('Y-m-d H:i:s')
+                : null;
+            $clientRequest->fragile_item = $validated['fragile'] ?? 'no';
+            $clientRequest->priority_level_amount = $validated['priority_extra_charge'] ?? 0;
+            $clientRequest->fragile_item_amount = $validated['fragile_charge'] ??
             $clientRequest->created_by = Auth::id();
             $clientRequest->office_id = Auth::user()->station;
             $clientRequest->rate_id = $validated['rate_id'];
