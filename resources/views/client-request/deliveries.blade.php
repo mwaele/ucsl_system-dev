@@ -833,7 +833,7 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
-                                                            @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
+                                                            @if ($collection->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
                                                                 <div style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>
@@ -850,8 +850,11 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
-                                                            @if ($collection->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
-                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                            @if (
+                                                                $collection->shipmentCollection->priority_level === 'high' &&
+                                                                    $collection->shipmentCollection->fragile_item === 'yes')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>
                                                             @elseif ($collection->shipmentCollection->priority_level === 'high')
@@ -1079,227 +1082,167 @@
                                                                 </div>
                                                             </div>
 
-                                                            @php
-                                                                $isApproved =
-                                                                    $approvalStatuses[$collection->requestId] ?? false;
-                                                            @endphp
+                                                                    <!-- ==========================
+                     1️⃣ RECEIVER FORM WITH PAYMENT
+                     ========================== -->
+                                                                    <form id="receiverForm" class="needs-validation"
+                                                                        novalidate method="POST"
+                                                                        action="{{ route('record.delivery') }}">
+                                                                        @csrf
+                                                                        <input type="hidden" name="collectionId"
+                                                                            value="{{ $collection->collectionId }}">
+                                                                        <input type="hidden" name="requestId"
+                                                                            value="{{ $collection->requestId }}">
 
-                                                            <!-- Receiver Panel -->
-                                                            @if (!$isApproved)
-                                                                <div class="col-md-12 receiver_panel" id="receiver_panel"
-                                                                    style="display: none;">
-                                                                    <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">
-                                                                            Receiver Details</div>
-                                                                        <div class="card-body">
-                                                                            <div class="form-row">
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">
-                                                                                        Receiver Name <span
-                                                                                            class="text-danger">*</span>
-                                                                                    </label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="receiver_name"
-                                                                                        value="{{ $collection->shipmentCollection->receiver_name ?? '' }}">
-                                                                                    <input type="hidden"
-                                                                                        name="receiver_type"
-                                                                                        value="receiver">
-                                                                                </div>
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">
-                                                                                        Phone Number <span
-                                                                                            class="text-danger">*</span>
-                                                                                    </label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="receiver_phone"
-                                                                                        value="{{ $collection->shipmentCollection->receiver_phone ?? '' }}">
-                                                                                </div>
+                                                                        <div class="row g-3">
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label">Receiver
+                                                                                    Name</label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="receiver_name" required>
+                                                                                <div class="invalid-feedback">Please enter
+                                                                                    receiver name.</div>
                                                                             </div>
-                                                                            <div class="form-row">
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">
-                                                                                        ID Number <span
-                                                                                            class="text-danger">*</span>
-                                                                                    </label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="receiver_id_no"
-                                                                                        maxlength="8"
-                                                                                        value="{{ $collection->shipmentCollection->receiver_id_no ?? '' }}">
-                                                                                </div>
+
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label">Receiver
+                                                                                    Phone</label>
+                                                                                <input type="text" class="form-control"
+                                                                                    name="receiver_phone" required>
+                                                                                <div class="invalid-feedback">Please enter
+                                                                                    receiver phone.</div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            @else
-                                                                <div class="alert alert-info mt-3">
-                                                                    Receiver details are disabled because the agent request
-                                                                    has already been approved.
-                                                                </div>
-                                                            @endif
 
-                                                            @if ($isApproved)
-                                                                <!-- Agent pickup is approved -->
-                                                                <div class="col-md-12 agent_panel" id="agent_panel">
-                                                                    <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">
-                                                                            Agent Details</div>
-                                                                        <div class="card-body">
-                                                                            <div class="form-row">
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label
-                                                                                        class="form-label text-primary">Agent
-                                                                                        Name</label>
-                                                                                    <input type="text"
+                                                                        <!-- ======= RECORD PAYMENT SECTION ======= -->
+                                                                        <div class="mt-4 p-3 border rounded bg-light">
+                                                                            <h6 class="fw-bold mb-3 text-primary">💰 Record
+                                                                                Payment</h6>
+                                                                            <div class="row g-3">
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label">Amount
+                                                                                        Received (KES)</label>
+                                                                                    <input type="number" name="amount"
                                                                                         class="form-control"
-                                                                                        name="agent_name"
-                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_name ?? '' }}">
-                                                                                    <input type="hidden"
-                                                                                        name="receiver_type"
-                                                                                        value="agent">
+                                                                                        min="0" required>
+                                                                                    <div class="invalid-feedback">Please
+                                                                                        enter amount received.</div>
                                                                                 </div>
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label
-                                                                                        class="form-label text-primary">Agent
-                                                                                        Phone Number</label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="agent_phone"
-                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_phone_no ?? '' }}">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-row">
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label
-                                                                                        class="form-label text-primary">Agent
-                                                                                        ID Number</label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="agent_id_no" maxlength="8"
-                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_id_no ?? '' }}">
-                                                                                </div>
-                                                                                <div class="form-group col-md-6">
-                                                                                    <label class="form-label text-primary">
-                                                                                        Remarks <span
-                                                                                            class="text-danger">*</span>
-                                                                                    </label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        name="remarks"
-                                                                                        value="{{ $collection->shipmentCollection?->agent->agent_reason ?? '' }}">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @else
-                                                                <!-- Agent Approval Request -->
-                                                                <div class="col-md-12 agent_request" id="agent_request"
-                                                                    style="display: none;">
-                                                                    <div class="card shadow-sm mb-4">
-                                                                        <div class="card-header bg-primary text-white">
-                                                                            Sent Communication to the Front Office</div>
-                                                                        <div class="card-body">
-                                                                            {{-- <p>Please request approval from the front office
-                                                                                for this agent to collect the delivery.</p> --}}
-                                                                            <div class="row g-2 mb-2">
-                                                                                <div class="col-md-12">
-                                                                                    <label
-                                                                                        for="agent_name_{{ $collection->id }}"
-                                                                                        class="form-label">Reason for
-                                                                                        Failure <span
-                                                                                            class="text-danger">*</span></label>
-                                                                                    <select name="reason"
-                                                                                        class="form-control"
-                                                                                        id="reason_{{ $collection->id }}"
-                                                                                        required>
-                                                                                        <option value="">-- Select --
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label">Payment
+                                                                                        Method</label>
+                                                                                    <select name="payment_method"
+                                                                                        class="form-select" required>
+                                                                                        <option value="">Select
+                                                                                            Method</option>
+                                                                                        <option value="cash">Cash
                                                                                         </option>
-                                                                                        @foreach ($failed_deliveries as $failed_delivery)
-                                                                                            <option
-                                                                                                value="{{ $failed_delivery->id }}">
-                                                                                                {{ $failed_delivery->reason }}
-                                                                                            </option>
-                                                                                        @endforeach
+                                                                                        <option value="mpesa">M-Pesa
+                                                                                        </option>
+                                                                                        <option value="bank">Bank
+                                                                                            Transfer</option>
                                                                                     </select>
-                                                                                    {{-- <input type="text"
-                                                                                        class="form-control"
-                                                                                        id="agent_name_{{ $collection->id }}"
-                                                                                        placeholder="Agent name"> --}}
-                                                                                </div>
-                                                                                {{-- <div class="col-md-4">
-                                                                                    <label
-                                                                                        for="agent_id_{{ $collection->id }}"
-                                                                                        class="form-label">ID No.</label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        id="agent_id_{{ $collection->id }}"
-                                                                                        placeholder="ID number">
-                                                                                </div> --}}
-                                                                                {{-- <div class="col-md-4">
-                                                                                    <label
-                                                                                        for="agent_phone_{{ $collection->id }}"
-                                                                                        class="form-label">Phone</label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        id="agent_phone_{{ $collection->id }}"
-                                                                                        placeholder="Phone number">
-                                                                                </div> --}}
-                                                                                <div class="col-md-12">
-                                                                                    <label
-                                                                                        for="agent_reason_{{ $collection->id }}"
-                                                                                        class="form-label">Remarks <span
-                                                                                            class="text-danger">*</span></label>
-                                                                                    <input type="text"
-                                                                                        class="form-control"
-                                                                                        id="remarks_{{ $collection->id }}"
-                                                                                        placeholder="Reason" required>
+                                                                                    <div class="invalid-feedback">Please
+                                                                                        select payment method.</div>
                                                                                 </div>
                                                                             </div>
-                                                                            <button type="button"
-                                                                                id="approvalBtn-{{ $collection->id }}"
-                                                                                class="btn btn-warning"
-                                                                                onclick="submitApprovalRequest('{{ $collection->requestId }}', '{{ $collection->id }}', this)">
-                                                                                Submit
-                                                                            </button>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
 
-                                                            <!-- Form Actions -->
-                                                            <div class="modal-footer d-flex p-0">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                    data-dismiss="modal"
-                                                                    aria-label="Close">Cancel</button>
-                                                                <button type="submit" class="btn btn-success text-white"
-                                                                    disabled>
-                                                                    Submit Collection
-                                                                </button>
+                                                                        <div class="text-end mt-4">
+                                                                            <button type="submit"
+                                                                                class="btn btn-success">Confirm Delivery &
+                                                                                Record Payment</button>
+                                                                        </div>
+                                                                    </form>
+
+                                                                    <!-- ==========================
+                     2️⃣ FAILED DELIVERY FORM (SEPARATE)
+                     ========================== -->
+                                                                    <div id="failedDeliverySection"
+                                                                        style="display: none;">
+                                                                        <form class="needs-validation" novalidate>
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Reason for Failed
+                                                                                    Delivery</label>
+                                                                                <select class="form-select"
+                                                                                    id="reason_{{ $collection->collectionId }}">
+                                                                                    <option value="">Select reason
+                                                                                    </option>
+                                                                                    <option value="customer not available">
+                                                                                        Customer Not Available</option>
+                                                                                    <option value="wrong address">Wrong
+                                                                                        Address</option>
+                                                                                    <option value="other">Other</option>
+                                                                                </select>
+                                                                                <div class="invalid-feedback">Please select
+                                                                                    a reason.</div>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Remarks</label>
+                                                                                <textarea class="form-control" id="remarks_{{ $collection->collectionId }}" rows="3" required></textarea>
+                                                                                <div class="invalid-feedback">Please
+                                                                                    provide remarks.</div>
+                                                                            </div>
+
+                                                                            <div class="text-end">
+                                                                                <button type="button"
+                                                                                    class="btn btn-warning"
+                                                                                    onclick="submitApprovalRequest('{{ $collection->requestId }}', '{{ $collection->collectionId }}', this)">
+                                                                                    Submit Failed Delivery Alert
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
-                                                        </form>
+                                                        </div>
                                                     </div>
 
-                                                    <!-- JavaScript for Dynamic Display -->
-                                                    <script>
-                                                        // Bootstrap validation styling
-                                                        (() => {
-                                                            'use strict';
-                                                            const forms = document.querySelectorAll('.needs-validation');
 
+                                                    <!-- Script to toggle between forms -->
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function() {
+                                                            const receiverRadio = document.getElementById('select_receiver');
+                                                            const failedRadio = document.getElementById('select_agent');
+                                                            const receiverSection = document.getElementById('receiver_panel').closest('form');
+                                                            const failedSection = document.getElementById('failedDeliverySection');
+
+                                                            receiverRadio.addEventListener('change', () => {
+                                                                receiverSection.style.display = 'block';
+                                                                failedSection.style.display = 'none';
+                                                            });
+
+                                                            failedRadio.addEventListener('change', () => {
+                                                                receiverSection.style.display = 'none';
+                                                                failedSection.style.display = 'block';
+                                                            });
+                                                        });
+                                                    </script>
+
+
+                                                    <!-- ==========================
+                     CLEAN & SAFE JAVASCRIPT
+                     ========================== -->
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function() {
+
+                                                            /* -------------------------------
+                                                               1️⃣ Bootstrap Validation Handler
+                                                               ------------------------------- */
+                                                            const forms = document.querySelectorAll('.needs-validation');
                                                             Array.from(forms).forEach(form => {
                                                                 form.addEventListener('submit', event => {
                                                                     const agentIdInput = form.querySelector('[name="agent_id"]');
-                                                                    const idValue = parseInt(agentIdInput.value, 10);
-
-                                                                    // Check numeric range
-                                                                    if (idValue < 8999999 || idValue > 99999999) {
-                                                                        agentIdInput.classList.add('is-invalid');
-                                                                        event.preventDefault();
-                                                                        event.stopPropagation();
-                                                                        return;
+                                                                    if (agentIdInput) {
+                                                                        const idValue = parseInt(agentIdInput.value || 0, 10);
+                                                                        if (idValue < 8999999 || idValue > 99999999) {
+                                                                            agentIdInput.classList.add('is-invalid');
+                                                                            event.preventDefault();
+                                                                            event.stopPropagation();
+                                                                            return;
+                                                                        }
                                                                     }
 
                                                                     if (!form.checkValidity()) {
@@ -1310,166 +1253,87 @@
                                                                     form.classList.add('was-validated');
                                                                 }, false);
                                                             });
-                                                        })();
 
-                                                        function validateAgentId(input) {
-                                                            // Enforce numeric-only and max 8 characters
-                                                            input.value = input.value.replace(/\D/g, '').slice(0, 8);
-                                                        }
-                                                    </script>
+                                                            /* -------------------------------
+                                                               2️⃣ Numeric Enforcement for Agent ID
+                                                               ------------------------------- */
+                                                            window.validateAgentId = function(input) {
+                                                                input.value = input.value.replace(/\D/g, '').slice(0, 8);
+                                                            };
 
-                                                    <script>
-                                                        document.addEventListener('DOMContentLoaded', function() {
-                                                            // Loop through every modal
-                                                            document.querySelectorAll('.modal').forEach(function(modal) {
-                                                                const receiverRadio = modal.querySelector('.select_receiver');
-                                                                const agentRadio = modal.querySelector('.select_agent');
-                                                                const receiverPanel = modal.querySelector('.receiver_panel');
-                                                                const agentRequest = modal.querySelector('.agent_request');
-                                                                const agentPanel = modal.querySelector('.agent_panel');
+                                                            /* -------------------------------
+                                                               3️⃣ Toggle Between Receiver & Failed Delivery Forms
+                                                               ------------------------------- */
+                                                            const receiverRadio = document.getElementById('select_receiver');
+                                                            const failedRadio = document.getElementById('select_agent');
+                                                            const receiverForm = document.getElementById('receiverForm');
+                                                            const failedForm = document.getElementById('failedDeliverySection');
 
-                                                                if (!receiverRadio || !agentRadio) return; // skip if not found
-
-                                                                function togglePanels() {
+                                                            if (receiverRadio && failedRadio) {
+                                                                const toggleForms = () => {
                                                                     if (receiverRadio.checked) {
-                                                                        receiverPanel.style.display = 'block';
-                                                                        if (agentRequest) agentRequest.style.display = 'none';
-                                                                        if (agentPanel) agentPanel.style.display = 'none';
-                                                                    } else if (agentRadio.checked) {
-                                                                        receiverPanel.style.display = 'none';
-                                                                        if (agentRequest) agentRequest.style.display = 'block';
-                                                                        if (agentPanel) agentPanel.style.display = 'block';
+                                                                        receiverForm.style.display = 'block';
+                                                                        failedForm.style.display = 'none';
+                                                                    } else if (failedRadio.checked) {
+                                                                        receiverForm.style.display = 'none';
+                                                                        failedForm.style.display = 'block';
                                                                     }
-                                                                }
+                                                                };
 
-                                                                // Attach listeners for this modal only
-                                                                receiverRadio.addEventListener('change', togglePanels);
-                                                                agentRadio.addEventListener('change', togglePanels);
-                                                            });
-                                                        });
-                                                    </script>
-
-                                                    <script>
-                                                        function submitApprovalRequest(requestId, collectionId, btn) {
-                                                            const reason = document.getElementById(`reason_${collectionId}`).value.trim();
-                                                            const remarks = document.getElementById(`remarks_${collectionId}`).value.trim();
-
-                                                            // Validate input fields
-                                                            if (!reason || !remarks) {
-                                                                alert("Please fill in both Reason and Remarks before submitting.");
-                                                                return;
+                                                                receiverRadio.addEventListener('change', toggleForms);
+                                                                failedRadio.addEventListener('change', toggleForms);
+                                                                toggleForms(); // initial load
                                                             }
 
-                                                            btn.disabled = true;
-                                                            btn.innerText = "Submitting...";
+                                                            /* -------------------------------
+                                                               4️⃣ AJAX: Failed Delivery Approval Alert
+                                                               ------------------------------- */
+                                                            window.submitApprovalRequest = function(requestId, collectionId, btn) {
+                                                                const reasonEl = document.getElementById(`reason_${collectionId}`);
+                                                                const remarksEl = document.getElementById(`remarks_${collectionId}`);
 
-                                                            fetch("{{ route('failed_delivery_alert') }}", {
-                                                                    method: "POST",
-                                                                    headers: {
-                                                                        "Content-Type": "application/json",
-                                                                        "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                                                                    },
-                                                                    body: JSON.stringify({
-                                                                        requestId,
-                                                                        reason,
-                                                                        remarks,
+                                                                const reason = reasonEl ? reasonEl.value.trim() : '';
+                                                                const remarks = remarksEl ? remarksEl.value.trim() : '';
+
+                                                                if (!reason || !remarks) {
+                                                                    alert("Please fill in both Reason and Remarks before submitting.");
+                                                                    return;
+                                                                }
+
+                                                                btn.disabled = true;
+                                                                btn.innerText = "Submitting...";
+
+                                                                fetch("{{ route('failed_delivery_alert') }}", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Content-Type": "application/json",
+                                                                            "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            requestId,
+                                                                            reason,
+                                                                            remarks
+                                                                        })
                                                                     })
-                                                                })
-                                                                .then(response => {
-                                                                    if (!response.ok) throw new Error("Failed to send alert to the front office");
-                                                                    return response.json();
-                                                                })
-                                                                .then(data => {
-                                                                    $('#deliverParcel-' + collectionId).modal('hide');
-                                                                    alert("Alert sent successfully to front office.");
-                                                                })
-                                                                .catch(error => {
-                                                                    btn.disabled = false;
-                                                                    btn.innerText = "Submit Request";
-                                                                    alert("Error: " + error.message);
-                                                                });
-                                                        }
-                                                    </script>
-
-
-                                                    <script>
-                                                        document.addEventListener('DOMContentLoaded', function() {
-                                                            const isApproved = @json($approvalStatuses[$collection->requestId] ?? false);
-
-                                                            // Inside togglePanels
-                                                            if (agentRadio.checked) {
-                                                                receiverPanel.style.display = 'none';
-                                                                agentRequest.style.display = isApproved ? 'none' : 'block';
-                                                                if (agentPanel) agentPanel.style.display = isApproved ? 'block' : 'none';
-                                                            }
+                                                                    .then(response => {
+                                                                        if (!response.ok) throw new Error("Failed to send alert to front office");
+                                                                        return response.json();
+                                                                    })
+                                                                    .then(() => {
+                                                                        const modalId = 'deliverParcel-' + collectionId;
+                                                                        const modal = document.getElementById(modalId);
+                                                                        if (modal) $(modal).modal('hide');
+                                                                        alert("Alert sent successfully to front office.");
+                                                                    })
+                                                                    .catch(error => {
+                                                                        btn.disabled = false;
+                                                                        btn.innerText = "Submit Request";
+                                                                        alert("Error: " + error.message);
+                                                                    });
+                                                            };
                                                         });
                                                     </script>
 
-                                                    <script>
-                                                        document.addEventListener('DOMContentLoaded', function() {
-                                                            const modal = document.getElementById('deliverParcel-{{ $collection->id }}');
-                                                            if (!modal) return;
-
-                                                            const receiverRadio = modal.querySelector('.select_receiver');
-                                                            const agentRadio = modal.querySelector('.select_agent');
-                                                            const receiverPanel = modal.querySelector('.receiver_panel');
-                                                            const agentPanel = modal.querySelector('.agent_panel');
-                                                            const submitBtn = modal.querySelector('button[type="submit"]');
-
-                                                            const receiverFields = [
-                                                                'input[name="receiver_name"]',
-                                                                'input[name="receiver_phone"]',
-                                                                'input[name="receiver_id_no"]'
-                                                            ];
-
-                                                            const agentFields = [
-                                                                'input[name="agent_name"]',
-                                                                'input[name="agent_phone"]',
-                                                                'input[name="agent_id_no"]',
-                                                                'input[name="remarks"]'
-                                                            ];
-
-                                                            function getValues(selectors) {
-                                                                return selectors.map(selector => {
-                                                                    const el = modal.querySelector(selector);
-                                                                    return el && el.offsetParent !== null ? el.value.trim() : ''; // only if visible
-                                                                });
-                                                            }
-
-                                                            function validateFields() {
-                                                                let isValid = false;
-
-                                                                if (receiverPanel && receiverPanel.style.display !== 'none') {
-                                                                    const values = getValues(receiverFields);
-                                                                    isValid = values.every(v => v !== '');
-                                                                }
-
-                                                                if (agentPanel && agentPanel.style.display !== 'none') {
-                                                                    const values = getValues(agentFields);
-                                                                    isValid = values.every(v => v !== '');
-                                                                }
-
-                                                                if (submitBtn) {
-                                                                    submitBtn.disabled = !isValid;
-                                                                }
-                                                            }
-
-                                                            // Listen to all inputs in both panels
-                                                            [...receiverFields, ...agentFields].forEach(selector => {
-                                                                const input = modal.querySelector(selector);
-                                                                if (input) {
-                                                                    input.addEventListener('input', validateFields);
-                                                                }
-                                                            });
-
-                                                            // Revalidate on delivery type change
-                                                            if (receiverRadio) receiverRadio.addEventListener('change', validateFields);
-                                                            if (agentRadio) agentRadio.addEventListener('change', validateFields);
-
-                                                            // Initial validation
-                                                            validateFields();
-                                                        });
-                                                    </script>
 
                                                 </div>
                                             </div>
@@ -1810,49 +1674,7 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
-                    // const clientRadio = document.getElementById('clientRadio');
-                    // const agentRadio = document.getElementById('agentRadio');
-                    // const senderForm = document.getElementById('senderForm');
 
-                    // const cid = document.getElementById('cid').value;
-
-                    // const sender_name = document.getElementById('sender_name');
-                    // const sender_id_no = document.getElementById('sender_id_no');
-                    // const sender_contact = document.getElementById('sender_contact');
-                    // const sender_town = document.getElementById('sender_town');
-                    // const sender_address = document.getElementById('sender_address');
-                    // const senderEmail = document.getElementById('senderEmail');
-
-                    // clientRadio.addEventListener('change', () => {
-                    //     if (clientRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         //console.log('cid:', cid);
-
-                    //         fetch('/clientData/' + cid) // Adjust this URL as needed
-                    //             .then(response => {
-                    //                 if (!response.ok) {
-                    //                     throw new Error('Network response was not ok');
-                    //                 }
-                    //                 return response.json();
-                    //             })
-                    //             .then(client => {
-                    //                 if (client && !client.message) { // Ensure it's not a 404 error response
-                    //                     sender_name.value = client.name || '';
-                    //                     sender_id_no.value = client.contact_person_id_no || '';
-                    //                     sender_contact.value = client.contact || '';
-                    //                     sender_town.value = client.city || '';
-                    //                     sender_address.value = client.address || '';
-                    //                     senderEmail.value = client.email || '';
-                    //                 } else {
-                    //                     alert('Client not found.');
-                    //                 }
-                    //             })
-                    //             .catch(error => {
-                    //                 console.error('Error fetching client data:', error);
-                    //                 alert('Failed to fetch client data.');
-                    //             });
-                    //     }
-                    // });
 
                     document.querySelectorAll('.modal-body').forEach(modalBody => {
                         const clientRadios = modalBody.querySelectorAll('.clientRadio');
@@ -1931,19 +1753,6 @@
                         senderEmail.value = '';
                     }
 
-
-
-                    // agentRadio.addEventListener('change', () => {
-                    //     if (agentRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         clearForm(); // Allow fresh entry
-                    //     }
-                    // });
-
-
-                    // get destinations
-
-
                     $(document).on('change', '.origin-dropdown-special', function() {
                         const originSelect2 = $(this);
                         const selectedOfficeId2 = originSelect2.val();
@@ -1973,6 +1782,7 @@
                         let totalWeight = 0;
 
                         $('#shipmentTable tbody tr').each(function() {
+                            origin - dropdown - special
                             const row = $(this);
                             const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                             const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;

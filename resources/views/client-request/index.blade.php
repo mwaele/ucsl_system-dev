@@ -346,7 +346,7 @@
                                                                 @foreach ($clients as $client)
                                                                     <option value="{{ $client->id }}"
                                                                         {{ $client->id == $request->clientId ? 'selected' : '' }}>
-                                                                        {{ $client->name }}</option>
+                                                                        {{ $client->name ?? '' }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -389,7 +389,7 @@
                                                                     <option value="{{ $driver->id }}"
                                                                         data-vehicle="{{ $assignedVehicle ? $assignedVehicle->regNo : '' }}"
                                                                         {{ $driver->id == $request->userId ? 'selected' : '' }}>
-                                                                        {{ $driver->name }}
+                                                                        {{ $driver->name ?? '' }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -492,7 +492,7 @@
                                         <button class="btn btn-info btn-sm verify-btn mr-1"
                                             data-id="{{ $request->shipmentCollection->id }}"
                                             data-request-id="{{ $request->requestId }}"
-                                            data-rider="{{ $request->user->name }}"
+                                            data-rider="{{ $request->user->name ?? ''}}"
                                             data-vehicle="{{ $request->vehicle ?? '—' }}"
                                             data-date-requested="{{ \Carbon\Carbon::parse($request->dateRequested)->format('Y-m-d\TH:i') }}"
                                             data-cost="{{ $request->shipmentCollection->cost }}"

@@ -16,4 +16,8 @@ class Transporter extends Model
         'signature',
         'transporter_type'
     ];
+    public function trucks()
+    {
+        return $this->hasMany(TransporterTrucks::class);
+    }
 }

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ShipmentsExport;
+use App\Models\TransporterTruck;
 
 class ReportController extends Controller
 {
@@ -677,6 +678,64 @@ class ReportController extends Controller
             'avgRevenue',
             'paymentCounts'
         ));
+    }
+    public function vehiclePerformanceReport(Request $request)
+    {
+        $startDate = $request->start_date
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : now()->startOfMonth()->startOfDay();
+
+        $endDate = $request->end_date
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : now()->endOfDay();
+
+        $report = DB::table('transporter_trucks')
+            ->leftJoin('transporters', 'transporters.id', '=', 'transporter_trucks.transporter_id')
+            ->select(
+                'transporter_trucks.id',
+                'transporter_trucks.reg_no',
+                'transporters.name as transporter_name'
+            )
+            ->addSelect([
+                'total_trips' => DB::table('loading_sheets')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('loading_sheets.vehicle_reg_no', 'transporter_trucks.reg_no')
+                    ->whereRaw('loading_sheets.dispatch_date BETWEEN ? AND ?', [$startDate, $endDate]),
+            ])
+            ->addSelect([
+                'total_waybills' => DB::table('loading_sheets')
+                    ->join('loading_sheet_waybills', 'loading_sheets.id', '=', 'loading_sheet_waybills.loading_sheet_id')
+                    ->selectRaw('COUNT(loading_sheet_waybills.id)')
+                    ->whereColumn('loading_sheets.vehicle_reg_no', 'transporter_trucks.reg_no')
+                    ->whereRaw('loading_sheets.dispatch_date BETWEEN ? AND ?', [$startDate, $endDate]),
+            ])
+            ->addSelect([
+                'total_quantity' => DB::table('loading_sheets')
+                    ->join('loading_sheet_waybills', 'loading_sheets.id', '=', 'loading_sheet_waybills.loading_sheet_id')
+                    ->join('shipment_items', 'shipment_items.shipment_id', '=', 'loading_sheet_waybills.shipment_id')
+                    ->selectRaw('SUM(shipment_items.actual_quantity)')
+                    ->whereColumn('loading_sheets.vehicle_reg_no', 'transporter_trucks.reg_no')
+                    ->whereRaw('loading_sheets.dispatch_date BETWEEN ? AND ?', [$startDate, $endDate]),
+            ])
+            ->addSelect([
+                'total_weight' => DB::table('loading_sheets')
+                    ->join('loading_sheet_waybills', 'loading_sheets.id', '=', 'loading_sheet_waybills.loading_sheet_id')
+                    ->join('shipment_items', 'shipment_items.shipment_id', '=', 'loading_sheet_waybills.shipment_id')
+                    ->selectRaw('SUM(shipment_items.actual_weight)')
+                    ->whereColumn('loading_sheets.vehicle_reg_no', 'transporter_trucks.reg_no')
+                    ->whereRaw('loading_sheets.dispatch_date BETWEEN ? AND ?', [$startDate, $endDate]),
+            ])
+            ->addSelect([
+                'total_volume' => DB::table('loading_sheets')
+                    ->join('loading_sheet_waybills', 'loading_sheets.id', '=', 'loading_sheet_waybills.loading_sheet_id')
+                    ->join('shipment_items', 'shipment_items.shipment_id', '=', 'loading_sheet_waybills.shipment_id')
+                    ->selectRaw('SUM(shipment_items.actual_volume)')
+                    ->whereColumn('loading_sheets.vehicle_reg_no', 'transporter_trucks.reg_no')
+                    ->whereRaw('loading_sheets.dispatch_date BETWEEN ? AND ?', [$startDate, $endDate]),
+            ])
+            ->get();
+
+        return view('reports.vehicle_performance_report', compact('report', 'startDate', 'endDate'));
     }
 
     public function officePerformanceDetailPdf($officeId)

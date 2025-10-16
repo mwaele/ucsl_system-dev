@@ -423,6 +423,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/shipment-report/pdf', [ReportController::class, 'exportPdf'])->name('shipment.report.pdf');
         Route::get('/rider-performance-export-excel', [ReportController::class, 'exportExcel'])->name('reports.rider-performance-export-excel');
         Route::get('/office-performance/{office}/pdf', [ReportController::class, 'officePerformanceDetailPdf'])->name('reports.office_performance_detail_pdf');
+        Route::get('/vehicle-performance-report', [ReportController::class, 'vehiclePerformanceReport'])->name('reports.vehicle-performance');
 
     });
 

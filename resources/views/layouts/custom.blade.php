@@ -443,6 +443,8 @@
                                 summaries</a>
                             <a class="collapse-item" href="{{ route('reports.rider-performance') }}">Rider
                                 Performance</a>
+                            <a class="collapse-item" href="{{ route('reports.vehicle-performance') }}">Vehicle
+                                Performance</a>
 
                         </div>
                     </div>

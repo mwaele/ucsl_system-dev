@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TransporterTrucks extends Model
+class TransporterTruck extends Model
 {
   protected $fillable = [
     'reg_no',
