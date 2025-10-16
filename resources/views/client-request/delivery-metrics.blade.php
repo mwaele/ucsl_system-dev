@@ -44,6 +44,10 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Status</th>
+                            {{-- Conditionally add Remarks column if status = delivery_failed --}}
+                            @if (isset($status) && strtolower($status) === 'delivery_failed')
+                                <th>Remarks</th>
+                            @endif
                         </tr>
                     </thead>
                     <tfoot>
@@ -58,6 +62,9 @@
                             <th>Rider</th>
                             <th>Vehicle</th>
                             <th>Status</th>
+                            @if (isset($status) && strtolower($status) === 'delivery_failed')
+                                <th>Remarks</th>
+                            @endif
                         </tr>
                     </tfoot>
                     <tbody>
@@ -85,6 +92,11 @@
                                         {{ \Illuminate\Support\Str::title(str_replace('_', ' ', $shipment->status)) }}
                                     </span>
                                 </td>
+
+                                {{-- Only show remarks if viewing delivery_failed shipments --}}
+                                @if (isset($status) && strtolower($status) === 'delivery_failed')
+                                    <td>{{ $shipment->delivery_failure_remarks ?? '—' }}</td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>

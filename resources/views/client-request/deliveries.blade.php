@@ -1256,7 +1256,7 @@
                                                                                 id="approvalBtn-{{ $collection->id }}"
                                                                                 class="btn btn-warning"
                                                                                 onclick="submitApprovalRequest('{{ $collection->requestId }}', '{{ $collection->id }}', this)">
-                                                                                Submit Request
+                                                                                Submit
                                                                             </button>
                                                                         </div>
                                                                     </div>

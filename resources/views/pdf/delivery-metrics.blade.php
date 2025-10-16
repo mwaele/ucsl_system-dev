@@ -86,6 +86,9 @@
                     <th style="width: 15%;">Rider</th>
                     <th style="width: 15%;">Vehicle</th>
                     <th style="width: 20%;">Status</th>
+                    @if (isset($status) && strtolower($status) === 'delivery_failed')
+                        <th style="width: 20%;">Reason</th>
+                    @endif
                     <th style="width: 20%;">Remarks</th>
                 </tr>
             </thead>
@@ -114,6 +117,10 @@
                                 {{ \Illuminate\Support\Str::title(str_replace('_', ' ', $shipment->status)) }}
                             </span>
                         </td>
+                        {{-- Only show remarks if viewing delivery_failed shipments --}}
+                        @if (isset($status) && strtolower($status) === 'delivery_failed')
+                            <td>{{ $shipment->delivery_failure_remarks ?? '—' }}</td>
+                        @endif
                         <td></td>
                     </tr>
                 @empty
@@ -136,6 +143,9 @@
                     <th style="width: 15%;">Rider</th>
                     <th style="width: 15%;">Vehicle</th>
                     <th style="width: 20%;">Status</th>
+                    @if (isset($status) && strtolower($status) === 'delivery_failed')
+                        <th style="width: 20%;">Reason</th>
+                    @endif
                     <th style="width: 20%;">Remarks</th>
                 </tr>
             </tfoot>
