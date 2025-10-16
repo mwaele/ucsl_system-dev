@@ -81,6 +81,18 @@ class DashboardController extends Controller
             $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')->when($dateRange, $queryWithDate)->count();
             $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')->when($dateRange, $queryWithDate)->count();
 
+            // Walk-in revenue
+            $walkinRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'walkin');
+            })->sum('total_cost');
+
+            // Account client revenue
+            $accountRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'on_account');
+            })->sum('total_cost');
+
+            $totalRevenue = $walkinRevenue + $accountRevenue;
+
             // Per-station stats based on office_id directly
             $stations = Office::pluck('name', 'id');
             $stationStats = [];
@@ -152,6 +164,18 @@ class DashboardController extends Controller
                 ->when($dateRange, $queryWithDate)
                 ->count();
 
+            // Walk-in revenue
+            $walkinRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'walkin');
+            })->sum('actual_total_cost');
+
+            // Account client revenue
+            $accountRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'on_account');
+            })->sum('actual_total_cost');
+
+            $totalRevenue = $walkinRevenue + $accountRevenue;
+
             $stationStats = null;
         }
 
@@ -177,7 +201,10 @@ class DashboardController extends Controller
             'failedDeliveries',
             'successfulDeliveries',
             'delayedDeliveries',
-            'delayedCollections'
+            'delayedCollections',
+            'walkinRevenue',
+            'accountRevenue',
+            'totalRevenue'
         ));
     }
 
