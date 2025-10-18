@@ -401,20 +401,39 @@
                         <td> {{ $item->item_name }} </td>
                         <td class="text-center" style="text-align: center"> {{ $item->packages_no }} </td>
                         <td class="text-right"> {{ number_format($item->weight, 2) }} </td>
-                        <td></td>
+                        <td class="text-right"> {{ number_format($invoice->actual_cost, 2) }} </td>
                     </tr>
                 @endforeach
+
+                @php
+                    $itemCount = $shipmentItems->count();
+                @endphp
+
+                @if (!empty($invoice->last_mile_delivery_charges) && $invoice->last_mile_delivery_charges > 0)
+                    <tr>
+                        <td> {{ $itemCount + 1 }}. </td>
+                        <td colspan="3" class="text-left">Last Mile Delivery Charges</td>
+                        <td class="text-right">{{ number_format($invoice->last_mile_delivery_charges, 2) }}</td>
+                    </tr>
+                @endif
+
+                @php
+                    $subTotal = $invoice->actual_cost + ($invoice->last_mile_delivery_charges ?? 0);
+                    $vat = $invoice->actual_vat; 
+                    $grandTotal = $subTotal + $vat;
+                @endphp
+
                 <tr style="margin-top:20px">
                     <td colspan="4" class="text-right"><strong>SUB TOTAL</strong></td>
-                    <td class="text-right">{{ number_format($invoice->actual_cost, 2) }}</td>
+                    <td class="text-right">{{ number_format($subTotal, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan="4" class="text-right"><strong>VAT</strong></td>
-                    <td class="text-right">{{ number_format($invoice->actual_vat, 2) }}</td>
+                    <td class="text-right">{{ number_format($vat, 2) }}</td>
                 </tr>
                 <tr>
                     <td colspan="4" class="text-right"><strong>TOTAL</strong></td>
-                    <td class="text-right">{{ number_format($invoice->actual_total_cost, 2) }}</td>
+                    <td class="text-right">{{ number_format($grandTotal, 2) }}</td>
                 </tr>
             </tbody>
         </table>
