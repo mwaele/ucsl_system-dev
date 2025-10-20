@@ -1,7 +1,7 @@
 @extends('layouts.custom')
 
 @section('content')
-    <div class="container">
+    <div class="card p-4 mt-5">
         <h3 class="mb-4">Vehicle Performance Report</h3>
 
         <form method="GET" class="mb-3">
@@ -19,10 +19,21 @@
                 <div class="col-md-2 align-self-end">
                     <button type="submit" class="btn btn-primary w-100">Filter</button>
                 </div>
+                <div class="col-md-4 align-self-end pull-right ">
+                    <!-- ✅ Add these export buttons -->
+                    <a href="{{ route('reports.vehiclePerformanceReport.excel', request()->all()) }}"
+                        class="btn btn-success">
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </a>
+
+                    <a href="{{ route('reports.vehiclePerformanceReport.pdf', request()->all()) }}" class="btn btn-danger">
+                        <i class="fa fa-file-pdf"></i> Export PDF
+                    </a>
+                </div>
             </div>
         </form>
 
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered  text-primary" id="DataTable">
             <thead class="table-light">
                 <tr>
                     <th>Transporter</th>
@@ -32,18 +43,20 @@
                     <th>Total Quantity</th>
                     <th>Total Weight</th>
                     <th>Total Volume</th>
+                    <th class="text-center">Total Amount (KES)</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($report as $vehicle)
                     <tr>
-                        <td>{{ $vehicle->transporter->name ?? 'N/A' }}</td>
+                        <td>{{ $vehicle->transporter_name ?? 'N/A' }}</td>
                         <td>{{ $vehicle->reg_no }}</td>
                         <td>{{ $vehicle->total_trips ?? 0 }}</td>
                         <td>{{ $vehicle->total_waybills ?? 0 }}</td>
-                        <td>{{ number_format($vehicle->total_quantity ?? 0, 2) }}</td>
-                        <td>{{ number_format($vehicle->total_weight ?? 0, 2) }}</td>
-                        <td>{{ number_format($vehicle->total_volume ?? 0, 2) }}</td>
+                        <td>{{ number_format($vehicle->total_quantity ?? 0) }}</td>
+                        <td>{{ number_format($vehicle->total_weight ?? 0) }}</td>
+                        <td>{{ number_format($vehicle->total_volume ?? 0) }}</td>
+                        <td class="text-center">{{ number_format($vehicle->total_amount ?? 0, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

@@ -131,6 +131,10 @@
                 /* force-fit on very small screens */
             }
         }
+
+        .text-right {
+            text-align: right;
+        }
     </style>
 
     <!-- Datatable JS -->
@@ -445,6 +449,9 @@
                                 Performance</a>
                             <a class="collapse-item" href="{{ route('reports.vehicle-performance') }}">Vehicle
                                 Performance</a>
+                            <a class="collapse-item" href="{{ route('reports.route.performance') }}">Route
+                                Performance</a>
+
 
                         </div>
                     </div>

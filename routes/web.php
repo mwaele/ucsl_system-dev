@@ -425,6 +425,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/office-performance/{office}/pdf', [ReportController::class, 'officePerformanceDetailPdf'])->name('reports.office_performance_detail_pdf');
         Route::get('/vehicle-performance-report', [ReportController::class, 'vehiclePerformanceReport'])->name('reports.vehicle-performance');
 
+        Route::get('/vehicle-performance', [ReportController::class, 'vehiclePerformanceReport'])
+        ->name('reports.vehiclePerformanceReport');
+
+        Route::get('/vehicle-performance/excel', [ReportController::class, 'exportVehiclePerformanceExcel'])
+            ->name('reports.vehiclePerformanceReport.excel');
+
+        Route::get('/vehicle-performance/pdf', [ReportController::class, 'exportVehiclePerformancePdf'])
+            ->name('reports.vehiclePerformanceReport.pdf');
+
+        Route::get('/route-performance', [ReportController::class, 'routePerformanceReport'])->name('reports.route.performance');
+        Route::get('/routes/export/pdf', [ReportController::class, 'exportRoutePerformancePDF'])->name('reports.routes.export.pdf');
+        Route::get('/routes/export/excel', [ReportController::class, 'exportRoutePerformanceExcel'])->name('reports.routes.export.excel');
+
+
+
     });
 
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
