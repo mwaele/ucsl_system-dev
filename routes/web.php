@@ -431,6 +431,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dispatch_summary_report/generate', [ReportController::class, 'dispatchSummaryReportGenerate'])->name('dispatch_summary_report.generate');
 
     Route::get('/reports/office/{office}', [ReportController::class, 'officePerformanceDetail'])->name('reports.office.detail');
+    Route::get('/reports/dispatch-summary/{office}', [ReportController::class, 'dispatchSummaryDetail'])->name('reports.dispatch-summary.detail');
     Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');

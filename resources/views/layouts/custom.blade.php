@@ -1084,12 +1084,11 @@
         </script>
 
         <script>
-            // Initialise the datatable
-            // new DataTable('#example', {
-            //     paging: true,
-            //     scrollCollapse: true,
-            //     scrollY: '50vh'
-            // });
+            new DataTable('#vertical-scroll', {
+                paging: false,
+                scrollCollapse: true,
+                scrollY: '50vh'
+            });
 
             new DataTable('#ucsl-table', {
                 language: {
@@ -1171,6 +1170,7 @@
                         });
                 }
             });
+
         </script>
 
         <script>

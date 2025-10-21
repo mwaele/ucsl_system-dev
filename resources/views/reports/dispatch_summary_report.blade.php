@@ -20,28 +20,30 @@
                     <tr>
                         <th>#</th>
                         <th>Office</th>
-                        <th>Total Dispatches</th>
-                        <th>Total Shipments</th>
-                        <th>Total Weight (kg)</th>
-                        <th>Total Revenue</th>
-                        <th>Avg Revenue/Shipment</th>
-                        <th>Payment Mix</th>
-                        <th>Premium Services</th>
-                        <th>Destination Breakdown</th>
+                        <th style="text-align: center;">Total Dispatches</th>
+                        <th style="text-align: right;">Total Shipments</th>
+                        <th style="text-align: right;">Total Weight (kg)</th>
+                        <th style="text-align: right;">Total Revenue (Ksh)</th>
+                        <th style="text-align: center;">Avg Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment Mix</th> -->
+                        <th style="text-align: right;">Premium Services</th>
+                        <!-- <th>Destination Breakdown</th> -->
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tfoot class="text-success">
                     <tr>
                         <th>#</th>
                         <th>Office</th>
-                        <th>Total Dispatches</th>
-                        <th>Total Shipments</th>
-                        <th>Total Weight (kg)</th>
-                        <th>Total Revenue</th>
-                        <th>Avg Revenue/Shipment</th>
-                        <th>Payment Mix</th>
-                        <th>Premium Services</th>
-                        <th>Destination Breakdown</th>
+                        <th style="text-align: center;">Total Dispatches</th>
+                        <th style="text-align: right;">Total Shipments</th>
+                        <th style="text-align: right;">Total Weight (kg)</th>
+                        <th style="text-align: right;">Total Revenue (Ksh)</th>
+                        <th style="text-align: center;">Avg Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment Mix</th> -->
+                        <th style="text-align: right;">Premium Services</th>
+                        <!-- <th>Destination Breakdown</th> -->
+                         <th>Action</th>
                     </tr>
                 </tfoot>
                 <tbody class="text-primary">
@@ -49,29 +51,29 @@
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $office->name }}</td>
-                            <td>{{ $office->total_dispatches }}</td>
-                            <td>{{ $office->total_shipments }}</td>
-                            <td>{{ number_format($office->total_weight, 2) }}</td>
-                            <td>{{ number_format($office->total_revenue, 2) }}</td>
-                            <td>{{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
-
-                            <!-- Payment Mix -->
-                            <td>
+                            <td style="text-align: center;">{{ $office->total_dispatches }}</td>
+                            <td style="text-align: right;">{{ $office->total_shipments }}</td>
+                            <td style="text-align: right;">{{ number_format($office->total_weight, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($office->total_revenue, 2) }}</td>
+                            <td style="text-align: center;">{{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
+                            <!-- <td>
                                 @foreach($office->payment_mix as $mode => $percentage)
                                     {{ $mode ?? 'N/A' }}: {{ $percentage }}% <br>
                                 @endforeach
-                            </td>
-
-                            <!-- Premium Services -->
-                            <td>{{ $office->premium_services }}</td>
-
-                            <!-- Destination Breakdown -->
-                            <td>
+                            </td> -->
+                            <td style="text-align: right;">{{ $office->premium_services }}</td>
+                            <!-- <td>
                                 <ul class="mb-0">
                                     @foreach($office->destination_breakdown as $dest)
                                         <li>{{ $dest['office'] }}: {{ $dest['shipments'] }} (KES {{ number_format($dest['revenue'], 2) }})</li>
                                     @endforeach
                                 </ul>
+                            </td> -->
+                            <td>
+                                <a href="{{ route('reports.dispatch-summary.detail', $office->id) }}" 
+                                class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
                             </td>
                         </tr>
                     @empty

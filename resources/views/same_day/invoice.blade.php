@@ -442,14 +442,24 @@
         <table style="width: 100%; border-collapse: collapse; ">
 
             <tr>
-                <td style=" padding:10px">
+                <td style="">
                     <p>Prepared By: {{ Auth::user()->name }} </p>
                 </td>
-                <td style=" padding:10px">
+                <td style="">
                     <p>Checked By:________________ </p>
                 </td>
-                <td style=" padding:10px">
+                <td style="">
                     <p>Approved By:_______________ </p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1" style=" padding:2px">
+                </td>
+                <td style=" padding:2px">
+                    <p>Date:__________________ </p>
+                </td>
+                <td style=" padding:2px">
+                    <p>Date:__________________ </p>
                 </td>
             </tr>
         </table>
