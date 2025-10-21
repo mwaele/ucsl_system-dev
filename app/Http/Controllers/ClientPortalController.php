@@ -30,7 +30,7 @@ use App\Services\RequestIdService;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 use App\Models\Rate;
-use App\Jobs\SendCollectionNotificationsJob;
+use App\Jobs\ClientPortalJob;
 use App\Models\OfficeUser;
 use App\Models\Invoice;
 
@@ -258,7 +258,13 @@ class ClientPortalController extends Controller
             // 4. Ensure collection location exists
             Location::firstOrCreate(['location' => $clientRequest->collectionLocation]);
 
+            // 5. Dispatch background job to send notifications
+        $client = Client::find($clientRequest->clientId);
+        dd($client);
+        ClientPortalJob::dispatch($clientRequest, $client);
+
             DB::commit();
+            
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -266,9 +272,7 @@ class ClientPortalController extends Controller
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
 
-        // 5. Dispatch background job to send notifications
-        $client = Client::find($clientRequest->clientId);
-        SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicle);
+        
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
@@ -540,110 +544,11 @@ class ClientPortalController extends Controller
                 ]);
             }
 
-            DB::commit();
+           /// dd($client);
+            $client = Client::find($collection->clientId);
+            ClientPortalJob::dispatch($collection, $client);
 
-            // ----------------------------
-            // ✅ SMS Notifications Logic
-            // ----------------------------
-            try {
-
-                $client = Client::find($request->clientId);
-                $clientName = $client ? $client->name : 'Unknown Client';
-
-                $senderPhone = $client->contact;
-                $senderName = $client->name;
-                $receiverPhone = $request->receiver_phone;
-                $receiverName = $request->receiver_name;
-                $clientId = $request->client_id;
-                
-                $trackingUrl = "https://www.ufanisicourier.co.ke/tracking";
-                //dd($trackingUrl); 
-                
-                //$track = "Tracking link: ".$trackingUrl;
-
-                
-                $track = "<strong>Tracking Link:</strong> <a href=\"{$trackingUrl}\" target=\"_blank\">Click To Track</a>";
-                
-                //message front office
-
-                // get all office_user rows with their user (only email & phone)
-                $officeUsers = OfficeUser::where('office_id', $request->origin_id)
-                ->with('user:id,email,phone_number,name') // eager load user
-                ->get();
-
-                $users = $officeUsers->pluck('user')->filter(); // collection of User models
-
-                //dd($users);
-                
-
-                foreach ($users as $user) {
-                $recipientName  = $user->name ?? 'User';
-
-                $recipientPhone = $this->formatPhoneNumber($user->phone_number);
-
-                //dd($recipientPhone);
-
-                $recipientEmail = $user->email;
-
-                //dd($recipientEmail);
-
-                // SMS message
-                $smsMsg = "Hello {$recipientName}, {$clientName} has initiated parcel collection request. Act on it: {$requestId}";
-
-                // Email message (with HTML link)
-                $emailMsg = "Hello {$recipientName}, {$clientName} has initiated parcel collection request. Act on it: {$requestId}";
-
-                //dd($recipientPhone);
-
-                // ✅ Send SMS
-                if ($recipientPhone) {
-                    $smsService->sendSms(
-                        phone: $recipientPhone,
-                        subject: 'Parcel Collection Request',
-                        message: $smsMsg,
-                        addFooter: true
-                    );
-                }
-                // sender email
-                $senderSubject = 'Parcel Collection Request';
-                //$clientEmail = $client->email;
-                $terms = env('TERMS_AND_CONDITIONS', '#'); // fallback if not set
-                $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"https://www.ufanisicourier.co.ke/terms\" target=\"_blank\">Click here</a></p>
-                        <p>Thank you for using Ufanisi Courier Services.</p>";
-                $fullSenderMessage = $emailMsg . $footer;
-
-                $emailResponse = EmailHelper::sendHtmlEmail($recipientEmail, $senderSubject, $fullSenderMessage);
-            }
-
-
-            // Notify Sender
-                // $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} . {$trackingUrl}";
-                
-                // $senderEmail = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} ".$track;
-                // $smsService->sendSms(
-                //     phone: $senderPhone,
-                //     subject: 'Parcel Booked',
-                //     message: $senderMsg,
-                //     addFooter: true
-                // );
-                // $smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
-
-                // SentMessage::create([
-                //     'request_id' => $request->requestId,
-                //     'client_id' => $clientId,
-                //     //'rider_id' => auth()->id(),
-                //     'recipient_type' => 'sender',
-                //     'recipient_name' => $senderName,
-                //     'phone_number' => $senderPhone,
-                //     'subject' => 'Parcel Collection Request',
-                //     'message' => $senderMsg,
-                // ]);
-
-            
-
-            } catch (\Exception $e) {
-                \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
-            }
+            DB::commit();                 
 
 
             return redirect()->back()->with('success', 'Shipment collection created and receiver notified successfully.');

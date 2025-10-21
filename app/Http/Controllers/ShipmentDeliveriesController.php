@@ -23,6 +23,7 @@ use App\Models\SentMessage;
 use Illuminate\Support\Str;
 use App\Helpers\EmailHelper;
 use App\Models\Agent;
+use App\Jobs\RiderDeliveriesJob;
 
 class ShipmentDeliveriesController extends Controller
 {
@@ -116,15 +117,7 @@ class ShipmentDeliveriesController extends Controller
                 'delivered_by'=> Auth::user()->id,
                 'receiverOTP' => $otp,
             ]);
-            Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
-
-            $message = "Your Shipment Collection OTP is {$otp} confirming acceptance of delivery of parcel in good order and condition.";
-            $smsService->sendSms(
-                phone: $request->receiver_phone,
-                subject:'',
-                message: $message,
-                addFooter: true
-            );
+            // Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
 
             // 2. Create goods received note number
             ShipmentCollection::where('requestId', $request->requestId)
@@ -182,18 +175,25 @@ class ShipmentDeliveriesController extends Controller
             $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
             $frontOfficeNumber = $creator?->phone_number ?? '+254725525484';
             $creatorName = $creator?->name ?? 'Staff';
+            $creatorEmail = $creator?->email ?? '';
+
+                      
 
             $frontMessage = "Parcel has been Delivered by {$riderName} at client premises. Details: Request ID: {$request->requestId};";
+            $clientId = $request->client_id;    
+            $requestId = $request->requestId;
+            $receiverPhone = $request->receiver_phone;  
+            
+            RiderDeliveriesJob::dispatch(otp: $otp,frontOfficeNumber: $frontOfficeNumber,
+            frontMessage: $frontMessage,
+            creatorName: $creatorName,
+            riderName: $riderName,
+            creatorEmail: $creatorEmail,
+            requestId: $request->requestId,
+            clientId: $request->client_id,
+            receiverPhone: $request->receiver_phone);
 
-            Log::info("Preparing Front Office SMS", ['requestId' => $request->requestId]);
-            $smsService->sendSms(
-                phone: $frontOfficeNumber,
-                subject: 'Parcel Delivered',
-                message: $frontMessage,
-                addFooter: true
-            );
-            Log::info("Front Office SMS Sent", ['requestId' => $request->requestId]);
-
+            
             SentMessage::create([
                 'request_id' => $request->requestId,
                 'client_id' => $request->client_id,
@@ -205,39 +205,6 @@ class ShipmentDeliveriesController extends Controller
                 'message' => $frontMessage,
             ]);
             Log::info("Front Office Message Record Saved", ['requestId' => $request->requestId]);
-
-            $office_subject = 'Parcel Delivered';
-            $office_email = $creator->email;
-            $terms = env('TERMS_AND_CONDITIONS', '#');
-            $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p>
-                    <p>Thank you for using Ufanisi Courier Services.</p>";
-            $fullOfficeMessage = $frontMessage . $footer;
-
-            Log::info("Preparing Front Office Email", ['requestId' => $request->requestId]);
-            $emailResponse = EmailHelper::sendHtmlEmail($office_email, $office_subject, $fullOfficeMessage);
-            Log::info("Front Office Email Sent", ['emailResponse' => $emailResponse, 'requestId' => $request->requestId]);
-
-            $senderName = 'Valued Client';
-
-            $senderMessage = "Dear {$senderName}, Your Parcel has been delivered by {$riderName}. Details:  Request ID: {$request->requestId}; ";
-            $sender_subject = 'Parcel Delivered';
-            $client = Client::find($request->client_id);
-
-            if ($client) {
-                $sender_email = $client->email;
-            } else {
-                $sender_email = null;
-                Log::warning("Client Not Found for Sender Email", ['requestId' => $request->requestId, 'clientId' => $request->client_id]);
-            }
-            $fullOfficeMessage = $senderMessage . $footer;
-
-            ClientRequest::where('requestId', $request->requestId)
-                ->update(['status' => 'delivered']);
-            Log::info("ClientRequest Updated to Delivered", ['requestId' => $request->requestId]);
-
-            Log::info("Preparing Client Email", ['requestId' => $request->requestId]);
-            $emailResponse = EmailHelper::sendHtmlEmail($sender_email, $sender_subject, $fullOfficeMessage);
-            Log::info("Client Email Sent", ['emailResponse' => $emailResponse, 'requestId' => $request->requestId]);
 
             DB::commit();
             Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);

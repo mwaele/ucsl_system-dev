@@ -50,7 +50,7 @@ class SendDeliveryNotificationsJob implements ShouldQueue
 
         // Email
         $terms = env('TERMS_AND_CONDITIONS', '#');
-        $footer = "<br><p><strong>Terms & Conditions:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p><p>Thank you for using Ufanisi Courier Services.</p>";
+        $footer = "<br><p><strong>Terms & Conditions Applies:</strong> <a href=\"{$terms}\" target=\"_blank\">Click here</a></p><p>Thank you for using Ufanisi Courier Services.</p>";
         EmailHelper::sendHtmlEmail($this->shipment->receiver_email, 'Rider Re-Allocated', $receiverMsg . $footer);
     }
 }

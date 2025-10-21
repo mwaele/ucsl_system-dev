@@ -949,8 +949,9 @@
                                                             @endif
 
                                                             {{-- Priority & Fragile Check --}}
-                                                            @if ($request->shipmentCollection->priority_level === 'high' && $collection->shipmentCollection->fragile_item === 'yes')
-                                                                <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                            @if ($request->shipmentCollection->priority_level === 'high' && $request->shipmentCollection->fragile_item === 'yes')
+                                                                <div
+                                                                    style="margin-top: 8px; color: red; font-weight: bold;">
                                                                     *** High Priority & Fragile Parcel ***
                                                                 </div>
                                                             @elseif ($request->shipmentCollection->priority_level === 'high')
