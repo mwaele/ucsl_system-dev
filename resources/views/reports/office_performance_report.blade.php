@@ -20,11 +20,11 @@
                     <tr>
                         <th>#</th>
                         <th>Office Name</th>
-                        <th>Total Shipments</th>
-                        <th>Total Weight (Kg)</th>
-                        <th>Total Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
+                        <th style="text-align: center;">Total Shipments</th>
+                        <th style="text-align: center;">Total Weight (Kg)</th>
+                        <th style="text-align: right;">Total Revenue (Ksh)</th>
+                        <th style="text-align: right;">Avg. Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment mix</th> -->
                         <th>Premium parcels (Fragile/Priority)</th>
                         <th>Action</th>
                     </tr>
@@ -33,11 +33,11 @@
                     <tr>
                         <th>#</th>
                         <th>Office Name</th>
-                        <th>Total Shipments</th>
-                        <th>Total Weight (Kg)</th>
-                        <th>Total Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
+                        <th style="text-align: center;">Total Shipments</th>
+                        <th style="text-align: center;">Total Weight (Kg)</th>
+                        <th style="text-align: right;">Total Revenue (Ksh)</th>
+                        <th style="text-align: right;">Avg. Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment mix</th> -->
                         <th>Premium parcels (Fragile/Priority)</th>
                         <th>Action</th>
                     </tr>
@@ -47,15 +47,15 @@
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $office->name }}</td>
-                            <td>{{ $office->total_shipments }}</td>
-                            <td>{{ $office->total_weight }}</td>
-                            <td>Ksh {{ number_format($office->total_revenue, 2) }}</td>
-                            <td>Ksh {{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
-                            <td>
+                            <td style="text-align: center;">{{ $office->total_shipments }}</td>
+                            <td style="text-align: center;">{{ $office->total_weight }}</td>
+                            <td style="text-align: right;">{{ number_format($office->total_revenue, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($office->avg_revenue_per_shipment, 2) }}</td>
+                            <!-- <td>
                                 @foreach ($office->payment_mix as $mode => $percent)
                                     {{ $mode }}: {{ $percent }}%<br>
                                 @endforeach
-                            </td>
+                            </td> -->
                             <td>{{ $office->premium_services }}</td>
                             <td>
                                 <a href="{{ route('reports.office.detail', $office->id) }}" 

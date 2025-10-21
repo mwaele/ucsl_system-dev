@@ -112,10 +112,10 @@
                             <th>Client</th>
                             <th>Request Id</th>
                             <th>Waybill No</th>
-                            <th>Amount To Pay</th>
-                            <th>Amount Paid</th>
+                            <th>Amount To Pay (Ksh)</th>
+                            <th>Amount Paid (Ksh)</th>
                             <th>Ref. No</th>
-                            <th>Balance</th>
+                            <th>Balance (Ksh)</th>
                             <th>Date Paid</th>
                             <th>Received By</th>
                             <th>Action</th>
@@ -127,10 +127,10 @@
                             <th>Client</th>
                             <th>Request Id</th>
                             <th>Waybill No</th>
-                            <th>Amount To Pay</th>
-                            <th>Amount Paid</th>
+                            <th>Amount To Pay  (Ksh)</th>
+                            <th>Amount Paid  (Ksh)</th>
                             <th>Ref. No</th>
-                            <th>Balance</th>
+                            <th>Balance (Ksh)</th>
                             <th>Date Paid</th>
                             <th>Received By</th>
                             <th>Action</th>
@@ -144,10 +144,10 @@
                                 <td> {{ $payment->client->name }} </td>
                                 <td> {{ $payment->shipment_collection->requestId }} </td>
                                 <td> {{ $payment->shipment_collection->waybill_no }} </td>
-                                <td> Ksh {{ number_format($payment->shipment_collection->total_cost, 2) }} </td>
-                                <td> Ksh {{ number_format($payment->amount, 2) }} </td>
+                                <td style="text-align: right;">{{ number_format($payment->shipment_collection->total_cost, 2) }}</td>
+                                <td style="text-align: right;"> {{ number_format($payment->amount, 2) }} </td>
                                 <td> {{ $payment->reference_no }} </td>
-                                <td> Ksh {{ number_format($payment->shipment_collection->total_cost - $payment->amount, 2) }} </td>
+                                <td style="text-align: right;"> {{ number_format($payment->shipment_collection->total_cost - $payment->amount, 2) }} </td>
                                 <td data-date="{{ $payment->date_paid }}"> {{ \Carbon\Carbon::parse($payment->date_paid)->format('d M, Y') }} </td>
                                 <td> {{ $payment->user->name }} </td>
                                 <td class="row pl-4">

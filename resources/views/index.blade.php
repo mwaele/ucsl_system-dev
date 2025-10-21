@@ -230,7 +230,7 @@
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h3 class="h3 mb-0 text-primary">Delivery Status</h3>
+        <h3 class="h3 mb-0 text-primary">Parcels Delivery Status</h3>
     </div>
 
     <div class="row">
@@ -425,7 +425,7 @@
     @if ($stationStats)
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h3 class="h3 mb-0 text-primary">Office Breakdown for Parcel Requests & Collection Status</h3>
+        <h3 class="h3 mb-0 text-primary">Parcel Requests & Collection Status by offices</h3>
     </div>
     
         <div class="row mt-4">

@@ -260,7 +260,7 @@
                             <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name) }}</td>
                             <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->packages_no ?? '' }}</td>
-                            <td>{{ $collection->user->name ?? '—' }} | {{ $collection->vehicle->regNo ?? '—' }}</td>
+                            <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
                             <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->payment_mode ?? '' }}</td>

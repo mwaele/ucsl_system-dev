@@ -46,7 +46,7 @@
                             <th>Status</th>
                             {{-- Conditionally add Remarks column if status = delivery_failed --}}
                             @if (isset($status) && strtolower($status) === 'delivery_failed')
-                                <th>Remarks</th>
+                                <th>Reason</th>
                             @endif
                         </tr>
                     </thead>
@@ -63,7 +63,7 @@
                             <th>Vehicle</th>
                             <th>Status</th>
                             @if (isset($status) && strtolower($status) === 'delivery_failed')
-                                <th>Remarks</th>
+                                <th>Reason</th>
                             @endif
                         </tr>
                     </tfoot>

@@ -67,10 +67,10 @@
                     <th>Client</th>
                     <th>Request Id</th>
                     <th>Waybill No</th>
-                    <th>Amount To Pay</th>
-                    <th>Amount Paid</th>
+                    <th>Amount To Pay (Ksh)</th>
+                    <th>Amount Paid (Ksh)</th>
                     <th>Ref. No</th>
-                    <th>Balance</th>
+                    <th>Balance (Ksh)</th>
                     <th>Date Paid</th>
                     <th>Received By</th>
                 </tr>
@@ -83,11 +83,11 @@
                         <td> {{ $payment->shipment_collection->requestId }} </td>
 
                         <td> {{ $payment->shipment_collection->waybill_no }} </td>
-                        <td> {{ $payment->shipment_collection->total_cost }} </td>
-                        <td> {{ $payment->amount }} </td>
+                        <td style="text-align: right;"> {{ number_format($payment->shipment_collection->total_cost, 2) }} </td>
+                        <td style="text-align: right;"> {{ number_format($payment->amount, 2) }} </td>
                         <td> {{ $payment->reference_no }} </td>
-                        <td> {{ $payment->shipment_collection->total_cost - $payment->amount }} </td>
-                        <td> {{ $payment->date_paid }} </td>
+                        <td style="text-align: right;"> {{ $payment->shipment_collection->total_cost - $payment->amount }} </td>
+                        <td> {{ \Carbon\Carbon::parse($payment->date_paid)->format('M d, Y') ?? null }} </td>
                         <td> {{ $payment->user->name }} </td>
                 @endforeach
             </tbody>

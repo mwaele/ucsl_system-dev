@@ -39,10 +39,10 @@
                 <thead class="text-success">
                     <tr>
                         <th>#</th>
-                        <th>Shipment ID</th>
+                        <th>Request ID</th>
                         <th>Date</th>
                         <th>Items (Qty)</th>
-                        <th>Total Weight</th>
+                        <th>Total Weight (Kg)</th>
                         <th>Revenue</th>
                         <th>Status</th>
                     </tr>
@@ -51,11 +51,11 @@
                     @forelse($client->shipmentCollections as $shipment)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $shipment->id }}</td>
+                            <td>{{ $shipment->requestId }}</td>
                             <td>{{ $shipment->created_at->format('d M Y') }}</td>
                             <td>{{ $shipment->items->count() }}</td>
-                            <td>{{ $shipment->items->sum('weight') }} Kg</td>
-                            <td>Ksh. {{ number_format($shipment->payments->sum('amount'), 2) }}</td>
+                            <td>{{ $shipment->items->sum('weight') }}</td>
+                            <td style="text-align: right;">{{ number_format($shipment->payments->sum('amount'), 2) }}</td>
                             <td>{{ ucfirst($shipment->status) }}</td>
                         </tr>
                     @empty

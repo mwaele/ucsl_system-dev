@@ -295,13 +295,13 @@ class ReportController extends Controller
     {
         $clients = Client::withCount('shipmentItems as items_count')
             ->withSum('shipmentItems as total_weight', 'weight')
-            ->withSum('shipmentCollection as total_revenue', 'actual_total_cost')
-            ->withAvg('shipmentCollection as avg_revenue_per_shipment', 'actual_total_cost')
+            ->withSum('shipmentCollections as total_revenue', 'actual_total_cost')
+            ->withAvg('shipmentCollections as avg_revenue_per_shipment', 'actual_total_cost')
             ->get();
         // Add payment mix and premium services manually
         foreach ($clients as $client) {
             // Payment Mix
-            $paymentMix = $client->shipmentCollection()
+            $paymentMix = $client->shipmentCollections()
                 ->selectRaw('payment_mode, COUNT(*) as count')
                 ->groupBy('payment_mode')
                 ->pluck('count', 'payment_mode')

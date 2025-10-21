@@ -23,9 +23,9 @@
                         <th>Client Name</th>
                         <th>Shipments (#)</th>
                         <th>Total Weight (Kg)</th>
-                        <th>Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
+                        <th>Revenue (Ksh)</th>
+                        <th>Avg. Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment mix</th> -->
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -35,9 +35,9 @@
                         <th>Client Name</th>
                         <th>Shipments (#)</th>
                         <th>Total Weight (Kg)</th>
-                        <th>Revenue</th>
-                        <th>Avg. Revenue/Shipment</th>
-                        <th>Payment mix</th>
+                        <th>Revenue (Ksh)</th>
+                        <th>Avg. Revenue/Shipment (Ksh)</th>
+                        <!-- <th>Payment mix</th> -->
                         <th>Action</th>
                     </tr>
                 </tfoot>
@@ -46,15 +46,15 @@
                         <tr>
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $client->name }}</td>
-                            <td>{{ $client->items_count }}</td>
-                            <td>{{ $client->total_weight ?? 0 }} kg</td>
-                            <td>Ksh. {{ number_format($client->total_revenue ?? 0, 2) }}</td>
-                            <td>Ksh. {{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
-                            <td>
+                            <td style="text-align: center;">{{ $client->items_count }}</td>
+                            <td style="text-align: center;">{{ $client->total_weight ?? 0 }}</td>
+                            <td style="text-align: right;">{{ number_format($client->total_revenue ?? 0, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
+                            <!-- <td>
                                 @foreach($client->payment_mix as $mode => $percentage)
                                     {{ $mode }}: {{ $percentage }} <br>
                                 @endforeach
-                            </td>
+                            </td> -->
                             <td>
                                 <a href="{{ route('reports.client.detail', $client->id) }}" 
                                 class="btn btn-sm btn-primary">

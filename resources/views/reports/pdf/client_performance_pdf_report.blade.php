@@ -74,11 +74,11 @@
                 <tr>
                     <th>#</th>
                     <th>Client Name</th>
-                    <th>Shipments (#)</th>
-                    <th>Total Weight (Kg)</th>
-                    <th>Revenue</th>
-                    <th>Avg. Revenue/Shipment</th>
-                    <th>Payment mix</th>
+                    <th style="text-align: center;">Shipments (#)</th>
+                    <th style="text-align: center;">Total Weight (Kg)</th>
+                    <th style="text-align: right;">Revenue (Ksh)</th>
+                    <th style="text-align: right;">Avg. Revenue/Shipment (Ksh)</th>
+                    <!-- <th>Payment mix</th> -->
                 </tr>
             </thead>
             <tbody class="text-primary">
@@ -86,15 +86,15 @@
                     <tr>
                         <td>{{ $loop->iteration }}.</td>
                         <td>{{ $client->name }}</td>
-                        <td>{{ $client->items_count }}</td>
-                        <td>{{ $client->total_weight ?? 0 }} kg</td>
-                        <td>Ksh. {{ number_format($client->total_revenue ?? 0, 2) }}</td>
-                        <td>Ksh. {{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
-                        <td>
+                        <td style="text-align: center;">{{ $client->items_count }}</td>
+                        <td style="text-align: center;">{{ $client->total_weight ?? 0 }}</td>
+                        <td style="text-align: right;">{{ number_format($client->total_revenue ?? 0, 2) }}</td>
+                        <td style="text-align: right;">{{ number_format($client->avg_revenue_per_shipment ?? 0, 2)}}</td>
+                        <!-- <td>
                             @foreach($client->payment_mix as $mode => $percentage)
                                 {{ $mode }}: {{ $percentage }} <br>
                             @endforeach
-                        </td>
+                        </td> -->
                     </tr>
                 @empty
                     <tr><td colspan="13" class="text-center">No records found</td></tr>
@@ -104,11 +104,11 @@
                 <tr>
                     <th>#</th>
                     <th>Client Name</th>
-                    <th>Shipments (#)</th>
-                    <th>Total Weight (Kg)</th>
-                    <th>Revenue</th>
-                    <th>Avg. Revenue/Shipment</th>
-                    <th>Payment mix</th>
+                    <th style="text-align: center;">Shipments (#)</th>
+                    <th style="text-align: center;">Total Weight (Kg)</th>
+                    <th style="text-align: right;">Revenue (Ksh)</th>
+                    <th style="text-align: right;">Avg. Revenue/Shipment (Ksh)</th>
+                    <!-- <th>Payment mix</th> -->
                 </tr>
             </tfoot>
         </table>

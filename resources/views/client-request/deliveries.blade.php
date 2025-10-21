@@ -974,7 +974,10 @@
                                                                     @if (!$hasPayment)
                                                                         <span class="badge bg-danger text-white">
                                                                             Unpaid – To pay Ksh.
-                                                                            {{ number_format($collection->shipmentCollection->actual_total_cost, 0) }}
+                                                                            {{ 
+                                                                                ($collection->shipmentCollection->actual_total_cost ?? 0) + 
+                                                                                ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) 
+                                                                            }}
                                                                         </span>
                                                                     @else
                                                                         <span class="badge bg-info text-white">
@@ -1045,7 +1048,10 @@
                                                                                     name="amount_paid"
                                                                                     class="form-control"
                                                                                     placeholder="Enter amount paid"
-                                                                                    value="{{ $collection->shipmentCollection->actual_total_cost ?? '' }}"
+                                                                                    value="{{ 
+                                                                                            ($collection->shipmentCollection->actual_total_cost ?? 0) + 
+                                                                                            ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) 
+                                                                                        }}"
                                                                                     required>
                                                                             </div>
                                                                         </div>
