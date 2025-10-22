@@ -86,6 +86,7 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinations']);
 
     Route::get('/getCost/{originId}/{destinationId}', [RateController::class, 'getCost']);
+    Route::get('/client_portal_walkin_report', [OvernightController::class, 'client_portal_walkin_report'])->name('client_portal_walkin_report');
 
 });
 

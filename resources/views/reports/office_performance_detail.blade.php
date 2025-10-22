@@ -50,7 +50,7 @@
                     <tr>
                         <th>#</th>
                         <th>Request ID</th>
-                        <th>Consignment No</th>
+                        <th>Consignment No</th> 6km
                         <th>Waybill No</th>
                         <th>Receiver</th>
                         <th>Weight (Kg)</th>

@@ -206,6 +206,36 @@ class OvernightController extends Controller
         );
     }
 
+    public function client_portal_walkin_report(Request $request)
+    {
+        $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
+
+        $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
+            ->whereHas('client', function ($query) {
+                $query->where('type', 'walkin');
+            })
+            ->where('clientId', auth()->id())
+            ->with(['client', 'user', 'vehicle']);
+
+        // ✅ Apply date range filter if provided
+        if ($request->filled('start') && $request->filled('end')) {
+            $clientRequests->whereBetween('created_at', [
+                $request->start . " 00:00:00",
+                $request->end . " 23:59:59"
+            ]);
+        }
+
+        $clientRequests = $clientRequests->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'overnight.walkin_report',
+            ['clientRequests' => $clientRequests],
+            'walkin_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+
     public function updateRider(Request $request, $id)
     {
         Log::info('updateRider called (Collection Flow).', [
