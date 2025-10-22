@@ -49,6 +49,10 @@
         .lead {
             font-size: 16px;
         }
+
+        .text-right {
+            text-align: right !important;
+        }
     </style>
 </head>
 
@@ -77,7 +81,7 @@
                     <th>Client</th>
                     <th>Date Requested</th>
                     <th>Description</th>
-                    <th>Amount</th>
+                    <th>Amount (KES)</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +93,8 @@
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
                         </td>
                         <td> {{ $request->parcelDetails }} </td>
-                        <td> Ksh. {{ number_format($request->shipmentCollection?->actual_total_cost, 2) }} </td>
+                        <td class="text-right"> {{ number_format($request->shipmentCollection->actual_total_cost, 2) }}
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

@@ -395,15 +395,20 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($shipmentItems as $item)
-                    <tr>
-                        <td> {{ $loop->iteration }}. </td>
-                        <td> {{ $item->item_name }} </td>
-                        <td class="text-center" style="text-align: center"> {{ $item->packages_no }} </td>
-                        <td class="text-right"> {{ number_format($item->weight, 2) }} </td>
-                        <td class="text-right"> {{ number_format($invoice->actual_cost, 2) }} </td>
-                    </tr>
-                @endforeach
+                @php
+                    $subTotal = $invoice->actual_cost + ($invoice->last_mile_delivery_charges ?? 0);
+                    $vat = $invoice->actual_vat;
+                    $grandTotal = $subTotal + $vat;
+                @endphp
+                {{-- @foreach ($shipmentItems as $item) --}}
+                <tr>
+                    <td> {{ '1' }}. </td>
+                    <td>Shipment from {{ $invoice->routeFrom }} </td>
+                    <td class="text-center" style="text-align: center"> {{ $shipmentItems->count() }} </td>
+                    <td class="text-right"> {{ $totalWeight }} </td>
+                    <td class="text-right">{{ number_format($subTotal, 2) }} </td>
+                </tr>
+                {{-- @endforeach --}}
 
                 @php
                     $itemCount = $shipmentItems->count();
@@ -417,11 +422,7 @@
                     </tr>
                 @endif
 
-                @php
-                    $subTotal = $invoice->actual_cost + ($invoice->last_mile_delivery_charges ?? 0);
-                    $vat = $invoice->actual_vat; 
-                    $grandTotal = $subTotal + $vat;
-                @endphp
+
 
                 <tr style="margin-top:20px">
                     <td colspan="4" class="text-right"><strong>SUB TOTAL</strong></td>
@@ -444,16 +445,20 @@
             <tr>
                 <td style="">
                     <p>Prepared By: {{ Auth::user()->name }} </p>
+
                 </td>
                 <td style="">
                     <p>Checked By:________________ </p>
-                </td>
+                    < </td>
                 <td style="">
                     <p>Approved By:_______________ </p>
-                </td>
+                    < </td>
             </tr>
             <tr>
                 <td colspan="1" style=" padding:2px">
+                    <p>Date: {{ now()->format('jS F, Y') }}</p>
+
+
                 </td>
                 <td style=" padding:2px">
                     <p>Date:__________________ </p>

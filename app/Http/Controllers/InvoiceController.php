@@ -40,25 +40,30 @@ class InvoiceController extends Controller
         $invoice = DB::table('invoices')
             ->join('shipment_collections', 'invoices.shipment_collection_id', '=', 'shipment_collections.id')
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-            ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')
+            ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
             ->where('invoices.shipment_collection_id', $id)
-            ->select('invoices.*','invoices.status as invoice_status', 'shipment_collections.*', 'client_requests.*','clients.*')
+            ->select('invoices.*','invoices.status as invoice_status', 'shipment_collections.*', 'client_requests.*','clients.*','rates.routeFrom')
             ->first(); // Use ->first() to get a single invoice
 
         // Step 2: Get shipment items separately
         $shipmentItems = DB::table('shipment_items')
             ->where('shipment_id', $id) // assuming $id is shipment_collection_id
             ->get();
+        $totalWeight = DB::table('shipment_items')
+        ->where('shipment_id', $id)
+        ->sum('weight');
 
         $data = [
             'invoice' => $invoice,
             'shipment_items' => $shipmentItems,
+            'totalWeight' => $totalWeight,
             'onlyOnePage' => true,
         ];
         //dd($data);
         $pdf = Pdf::loadView('same_day.invoice' , [
             'invoice' => $invoice,
             'shipmentItems' => $shipmentItems,
+            'totalWeight' => $totalWeight,
             'onlyOnePage' => true,
         ])->setPaper('a4', 'portrait'); 
         return $pdf->download("invoice.pdf");

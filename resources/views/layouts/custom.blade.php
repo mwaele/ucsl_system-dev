@@ -70,6 +70,10 @@
             color: black;
         }
 
+        .text-right {
+            text-align: right !important;
+        }
+
         .table .text-primary {
             color: #14489f !important;
         }
@@ -1179,7 +1183,6 @@
                         });
                 }
             });
-
         </script>
 
         <script>
