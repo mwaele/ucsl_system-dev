@@ -97,7 +97,11 @@ class ClientRequestController extends Controller
         }
 
         if ($status) {
-            $query->where('status', $status);
+            if (is_array($status)) {
+                $query->whereIn('status', $status);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         if ($dateRange) {

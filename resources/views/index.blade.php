@@ -437,29 +437,41 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }}
                                 </h6>
-                                <p class="mb-1">Total: <strong>{{ $stats['total'] }}</strong></p>
+                                <p class="mb-1 btn btn-outline-success btn-sm">Total: <strong>{{ $stats['total'] }}</strong></p>
                                 <p class="mb-1 text-info">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'delivered', 'time' => $timeFilter])) }}"
-                                    class="btn btn-outline-primary btn-sm">
-                                    Delivered: <strong>{{ $stats['delivered'] }}</strong>
+                                        class="btn btn-outline-primary btn-sm" title="View Delivered Parcels">
+                                        Delivered: <strong>{{ $stats['delivered'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-info">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'verified', 'time' => $timeFilter])) }}"
-                                        class="text-info text-decoration-none">
+                                        class="btn btn-outline-info btn-sm" title="View Verified Parcels">
                                         Verified: <strong>{{ $stats['verified'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-success">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'collected', 'time' => $timeFilter])) }}"
-                                        class="text-success text-decoration-none">
+                                        class="btn btn-outline-success btn-sm" title="View Collected Parcels">
                                         Collected: <strong>{{ $stats['collected'] }}</strong>
                                     </a>
                                 </p>
                                 <p class="mb-1 text-warning">
-                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'pending collection', 'time' => $timeFilter])) }}"
-                                        class="text-warning text-decoration-none">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => ['pending collection', 'Pending-Collection'], 'time' => $timeFilter])) }}"
+                                        class="btn btn-outline-info btn-sm" title="View Pending Collection Parcels">
                                         Pending Collection: <strong>{{ $stats['pending'] }}</strong>
+                                    </a>
+                                </p>
+                                <p class="mb-1 text-warning">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'Delivery Rider Allocated', 'time' => $timeFilter])) }}"
+                                        class="btn btn-outline-primary btn-sm" title="View On-Transit Parcels">
+                                        On-transit: <strong>{{ $stats['on-transit'] }}</strong>
+                                    </a>
+                                </p>
+                                <p class="mb-1 text-warning">
+                                    <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'delivery_failed', 'time' => $timeFilter])) }}"
+                                        class="btn btn-outline-danger btn-sm" title="View Failed Delivery Parcels">
+                                        Failed: <strong>{{ $stats['failed'] }}</strong>
                                     </a>
                                 </p>
                             </div>

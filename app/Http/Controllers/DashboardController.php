@@ -107,7 +107,11 @@ class DashboardController extends Controller
                     ->when($dateRange, $queryWithDate)->count(),
                 'verified' => ClientRequest::where('status', 'verified')->where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
-                'pending' => ClientRequest::where('status', 'pending collection')->where('office_id', $id)
+                'pending' => ClientRequest::whereIn('status', ['pending collection', 'Pending-Collection'])->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
+                'on-transit' => ClientRequest::where('status', 'Delivery Rider Allocated')->where('office_id', $id)
+                    ->when($dateRange, $queryWithDate)->count(),
+                'failed' => ClientRequest::where('status', 'delivery_failed')->where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
                 ];
             }
