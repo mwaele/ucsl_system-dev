@@ -606,7 +606,8 @@ class ReportController extends Controller
         // Otherwise load view normally
         return view('reports.rider_performance_report', compact('report', 'startDate', 'endDate', 'userName'));
     }
-     public function exportPdf(Request $request)
+
+    public function exportPdf(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate   = $request->input('end_date');
@@ -678,5 +679,35 @@ class ReportController extends Controller
         ));
     }
 
+    public function officePerformanceDetailPdf($officeId)
+    {
+        $office = Office::findOrFail($officeId);
+
+        $shipments = \DB::table('shipment_collections as sc')
+            ->join('client_requests as cr', 'cr.requestId', '=', 'sc.requestId')
+            ->where('cr.office_id', $officeId)
+            ->select(
+                'sc.requestId',
+                'sc.consignment_no',
+                'sc.waybill_no',
+                'sc.receiver_name',
+                'sc.receiver_phone',
+                'sc.total_weight',
+                'sc.actual_total_cost',
+                'sc.payment_mode',
+                'sc.status',
+                'sc.created_at'
+            )
+            ->orderBy('sc.created_at', 'desc')
+            ->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'reports.pdf.office_performance_detail_pdf',
+            compact('office', 'shipments'),
+            'office_performance_detail_' . $office->name . '.pdf',
+            'a4',
+            'landscape'
+        );
+    }
 
 }

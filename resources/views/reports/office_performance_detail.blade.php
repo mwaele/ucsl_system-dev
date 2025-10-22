@@ -5,25 +5,31 @@
     <div class="card-header py-3">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Office Performance Detail – {{ $office->name }}</h5>
-            <a href="{{ route('reports.client_performance') }}" 
-                class="btn btn-sm btn-secondary shadow-sm">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
+
+            <div class="d-flex align-items-center">
+                <div class="mb-3 mr-3">
+                    <label class="form-label text-primary">Filter by Payment Mode</label>
+                    <select id="paymentFilter" class="form-control" style="width: 200px;">
+                        <option value="">All</option>
+                        <option value="Invoice">Invoice</option>
+                        <option value="M-Pesa">M-Pesa</option>
+                        <option value="Cash">Cash</option>
+                    </select>
+                </div>
+                
+                <a href="{{ route('reports.office_performance_detail_pdf', $office->id) }}" 
+                    class="btn btn-sm btn-danger shadow-sm mr-3">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </a>
+                <a href="{{ route('reports.client_performance') }}" 
+                    class="btn btn-sm btn-secondary shadow-sm mr-3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="card-body">
-        <!-- <div class="d-flex align-items-center ms-auto mb-3">
-            <a href="" 
-               class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
-                <i class="fas fa-download fa text-white"></i> Export Report
-            </a>
-            <a href="" 
-               class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-                <i class="fas fa-arrow-left fa text-white"></i> Back to Summary
-            </a>
-        </div> -->
-
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover" id="dataTable">
                 <thead class="text-success">

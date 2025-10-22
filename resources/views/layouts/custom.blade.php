@@ -1174,6 +1174,22 @@
         </script>
 
         <script>
+            document.getElementById('paymentFilter').addEventListener('change', function() {
+                const filterValue = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#dataTable tbody tr');
+
+                rows.forEach(row => {
+                    const paymentMode = row.cells[7].textContent.toLowerCase(); // 8th column (0-indexed)
+                    if (!filterValue || paymentMode === filterValue) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const accountTypeSelect = document.getElementById('type');
 
