@@ -222,7 +222,7 @@
                                             <tr>
                                                 <!-- Amount Received -->
                                                 <td style="border: 1px solid #14489F; padding: 4px; width: 50%;">
-                                                    <span>AMOUNT RECEIVED</span>
+                                                    <span>AMOUNT </span>
                                                     <div
                                                         style="margin-top: 8px; font-weight: bold; font-size: 8px; height: 33px;">
                                                         Kshs. {{ number_format($collection->actual_total_cost, 2) }}

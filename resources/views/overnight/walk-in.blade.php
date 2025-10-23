@@ -308,6 +308,7 @@
                                                     required readonly>
                                             </div>
                                             <input type="hidden" name="base_cost" value="0">
+                                            <input type="hidden" name="base_total_cost" value="0">
                                             <div class="col-md-2">
                                                 <h6 for="vatAmount" class="text-primary">Tax (16%)</h6>
                                                 <input type="number" min="0" class="form-control" name="vat"

@@ -1973,22 +1973,21 @@
 
                 // helper function to update totals
                 function updateTotals() {
-                    const baseCost = parseFloat(costInput.value) || 0;
-                    const totalCost = parseFloat(totalInput.value) || 0;
+                    // Get base cost (the main cost before extras)
+                    const baseCost = parseFloat(baseCostInput.value) || 0;
+
+                    // Extra charges
                     const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
                     const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
 
-                    //recalculateCosts();
+                    // Compute the new total — starting from the base cost
+                    const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
 
-
-                    const itemCost = totalCost + priorityExtra + fragileExtra + insuranceExtra;
-                    const total = itemCost;
-
-                    totalInput.value = itemCost;
-                    //vatInput.value = vat.toFixed(2);
-                    // totalInput.value = total.toFixed(2);
+                    // Update total field with two decimals
+                    totalInput.value = itemCost.toFixed(2);
                 }
+
 
                 // priority selection logic
                 prioritySelect.addEventListener("change", () => {
@@ -2084,21 +2083,34 @@
                 // watch extra charge inputs
 
                 document.getElementById('total_insurance').addEventListener('input', function() {
+                    // Clean input to prevent partial parseFloat issues
+                    let value = this.value.trim();
+
+                    // If user enters non-numeric values, reset to empty
+                    if (!/^\d*\.?\d*$/.test(value)) {
+                        this.value = value.replace(/[^\d.]/g, '');
+                        return;
+                    }
+
+                    // Convert to float safely
                     let total = parseFloat(this.value) || 0;
+
+                    // Always recalculate fresh 1%
                     let charge = (total * 0.01).toFixed(2);
 
+                    // Show/hide based on input
                     if (total > 0) {
                         document.getElementById('insurance-charge-group2').style.display = "block";
                         document.getElementById('insurance_charged').value = charge;
-
-                        // Direct call
-                        updateTotals();
                     } else {
                         document.getElementById('insurance-charge-group2').style.display = "none";
                         document.getElementById('insurance_charged').value = "";
-                        updateTotals();
                     }
+
+                    // Update totals every time
+                    updateTotals();
                 });
+
 
 
 

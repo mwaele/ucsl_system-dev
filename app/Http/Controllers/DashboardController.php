@@ -42,8 +42,36 @@ class DashboardController extends Controller
             };
         }
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 'Jul', 'Aug','Sep'];
-        $data = [10, 20, 15, 30, 25, 40, 35, 50,35];
+        // $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 'Jul', 'Aug','Sep'];
+        // $data = [10, 20, 15, 30, 25, 40, 35, 50,35];
+
+        $shipments = DB::table('client_requests')
+        ->select(
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as total')
+        )
+        ->groupBy('month')
+        ->orderBy('month', 'asc')
+        ->get();
+
+    // Define all months
+    $allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Initialize data arrays
+    $labels = [];
+    $data = [];
+
+    foreach ($allMonths as $index => $monthName) {
+        $monthNumber = $index + 1;
+        $record = $shipments->firstWhere('month', $monthNumber);
+        $labels[] = $monthName;
+        $data[] = $record ? $record->total : 0;
+    }
+
+    // return response()->json([
+    //     'labels' => $labels,
+    //     'data' => $data,
+    // ]);
 
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)
