@@ -102,7 +102,7 @@
                         }
 
                         // Example usage for "Overnight walk-in" page
-                        initDateFilter("dataTable", 3, "/walkin_report");
+                        initDateFilter("dataTable", 3, "/client_portal_sameday_report");
                     </script>
 
                     <form action="{{ route('client_portal_request.create') }}" method="POST" enctype="multipart/form-data">
@@ -605,17 +605,17 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td> {{ $request->client->name }} </td>
-                                <td data-date="{{ $request->shipmentCollection->created_at }}">
-                                    {{ \Carbon\Carbon::parse($request->shipmentCollection->created_at)->format('M d, Y') ?? null }}
+                                <td data-date="{{ $request->shipmentCollection?->created_at }}">
+                                    {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y') ?? null }}
                                 </td>
-                                <td> {{ $request->shipmentCollection->office->name }} </td>
-                                <td> {{ $request->shipmentCollection->destination->destination }} </td>
-                                <td> {{ $request->shipmentCollection->clientRequestById->serviceLevel->sub_category_name }}
+                                <td> {{ $request->shipmentCollection?->office->name }} </td>
+                                <td> {{ $request->shipmentCollection?->destination->destination }} </td>
+                                <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
-                                <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
+                                <td> {{ $request->shipmentCollection?->collectedBy->name ?? 'user' }} </td>
                                 <td>
                                     @php
-                                        $status = $request->shipmentCollection->clientRequestById->status ?? null;
+                                        $status = $request->shipmentCollection?->clientRequestById->status ?? null;
                                     @endphp
 
                                     @if ($status)
@@ -672,14 +672,14 @@
                                         </div>
                                     @endif
 
-                                    @if ($request->shipmentCollection->payment_mode == 'Invoice')
+                                    @if ($request->shipmentCollection?->payment_mode == 'Invoice')
                                         <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Generate Invoice
                                             </button>
                                         </a>
                                     @endif
-                                    @if ($request->shipmentCollection->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
+                                    @if ($request->shipmentCollection?->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
                                         <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
                                             target="_blank"
                                             download="{{ $request->shipmentCollection->manual_waybill }}">
@@ -690,7 +690,7 @@
                                     @endif
 
 
-                                    @if ($request->shipmentCollection->payment_mode == 'M-Pesa')
+                                    @if ($request->shipmentCollection?->payment_mode == 'M-Pesa')
                                         {{-- <a href="{{ route('generate-invoice', $request->id) }}">
                                             <button class="btn btn-sm btn-warning mr-1">
                                                 Generate Receipt

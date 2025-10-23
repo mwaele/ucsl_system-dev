@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Overnight Walk-in PDF</title>
+    <title>Same Day Parcels PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
@@ -58,9 +58,9 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <h3><strong>Report for All Overnight Walk-in Parcel</strong></h3>
+                    <h3><strong>Report for All Sameday Parcels</strong></h3>
                     <p class="lead"><strong>Reporting Period:</strong>
-                        {{ \Carbon\Carbon::now()->format('F j, Y \a\t g:i A') }}</p>
+                        {{ \Carbon\Carbon::now()->format('F j, Y') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
                     <img src="{{ public_path('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
@@ -75,9 +75,11 @@
                     <th>#</th>
                     <th>Request ID</th>
                     <th>Client</th>
+                    <th>From</th>
+                    <th>To</th>
                     <th>Date Requested</th>
                     <th>Description</th>
-                    <th>Amount</th>
+                    <th style="text-align: right;">Amount (Ksh)</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,10 +88,12 @@
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $request->requestId }} </td>
                         <td> {{ $request->client->name }} </td>
-                        <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('F j, Y \a\t g:i A') }}
+                        <td> {{ $request->shipmentCollection?->sender_town }} </td>
+                        <td> {{ $request->shipmentCollection?->receiver_town }} </td>
+                        <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('M j, Y') }}
                         </td>
                         <td> {{ $request->parcelDetails }} </td>
-                        <td> Ksh. {{ number_format($request->shipmentCollection?->actual_total_cost, 2) }} </td>
+                        <td style="text-align: right;"> {{ number_format($request->shipmentCollection?->actual_total_cost, 2) }} </td>
                     </tr>
                 @endforeach
             </tbody>

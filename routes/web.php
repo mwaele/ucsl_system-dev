@@ -43,7 +43,6 @@ use App\Http\Controllers\Accounts\Debtors\CreditNoteController;
 use App\Http\Controllers\Accounts\Creditors\InvoiceController as CreditorInvoiceController;
 use App\Http\Controllers\Accounts\LedgerController;
 use App\Http\Controllers\ClientPortalController;
-
 use App\Http\Controllers\ServiceRateController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\HomeController;
@@ -86,7 +85,8 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinations']);
 
     Route::get('/getCost/{originId}/{destinationId}', [RateController::class, 'getCost']);
-    Route::get('/client_portal_walkin_report', [OvernightController::class, 'client_portal_walkin_report'])->name('client_portal_walkin_report');
+    Route::get('/client_portal_overnight_report', [OvernightController::class, 'client_portal_overnight_report'])->name('client_portal_overnight_report');
+    Route::get('/client_portal_sameday_report', [SameDayController::class, 'client_portal_sameday_report'])->name('client_portal_sameday_report');
 
 });
 

@@ -262,7 +262,7 @@
                                         @elseif ($request->shipment_status == 'delivery_failed') bg-danger
                                         @else bg-dark @endif
                                         fs-5 text-white">
-                                        {{ \Illuminate\Support\Str::title($request->shipment_status) }}
+                                        {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>
                                 </td>
                                 <td class="d-flex pl-2">

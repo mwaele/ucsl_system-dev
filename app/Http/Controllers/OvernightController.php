@@ -167,7 +167,6 @@ class OvernightController extends Controller
             ->get();
 
             // $title = 'Report for All Overnight On-account Parcels from Client Portal';
-
         return $this->renderPdfWithPageNumbers(
             'overnight.clients.client_overnight_account_report',
             ['clientRequests' => $clientRequests],
@@ -206,15 +205,14 @@ class OvernightController extends Controller
         );
     }
 
-    public function client_portal_walkin_report(Request $request)
+    public function client_portal_overnight_report(Request $request)
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
-
         $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
             ->whereHas('client', function ($query) {
-                $query->where('type', 'walkin');
+                $query->where('type', 'on_account');
             })
-            ->where('clientId', auth()->id())
+            ->where('clientId', auth('client')->id())
             ->with(['client', 'user', 'vehicle']);
 
         // ✅ Apply date range filter if provided
@@ -228,9 +226,9 @@ class OvernightController extends Controller
         $clientRequests = $clientRequests->get();
 
         return $this->renderPdfWithPageNumbers(
-            'overnight.walkin_report',
+            'overnight.client_portal_overnight_report',
             ['clientRequests' => $clientRequests],
-            'walkin_report.pdf',
+            'overnight_parcels_report.pdf',
             'a4',
             'landscape'
         );

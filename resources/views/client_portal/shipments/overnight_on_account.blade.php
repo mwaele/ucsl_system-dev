@@ -102,7 +102,7 @@
                         }
 
                         // Example usage for "Overnight walk-in" page
-                        initDateFilter("dataTable", 3, "/client_portal_walkin_report");
+                        initDateFilter("dataTable", 3, "/client_portal_overnight_report");
                     </script>
 
                     <form action="{{ route('client_portal_request.create') }}" method="POST" enctype="multipart/form-data">
