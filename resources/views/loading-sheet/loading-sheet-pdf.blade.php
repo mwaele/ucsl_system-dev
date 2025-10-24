@@ -280,6 +280,7 @@
                 <tr>
                     <th>WAYBILL NO.</th>
                     <th>CLIENT</th>
+                    <th>RECEIVER</th>
                     <th>DESCRIPTION</th>
                     <th>DESTINATION</th>
                     <th>QTY</th>
@@ -293,6 +294,7 @@
                     <tr>
                         <td>{{ $item->waybill_no }}</td>
                         <td>{{ $item->client_name }}</td>
+                        <td>{{ $item->receiver_name }}</td>
                         <td>{{ $item->item_names }}</td>
                         <td>{{ $item->destination ?? '' }}</td>
                         <td style="text-align:right">{{ $item->total_quantity }}</td>
@@ -311,10 +313,10 @@
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="4" style="text-align: right;font-weight:bold;">TOTAL</td>
+                    <td colspan="5" style="text-align: right;font-weight:bold;">TOTAL</td>
                     <td style="text-align:right">{{ $totals->total_quantity_sum }}</td>
                     <td style="text-align:right">{{ $totals->total_weight_sum }}</td>
-                    <td style="text-align:right">{{ number_format($totals->total_cost_sum, 2) }}</td>
+                    <td style="text-align:right">{{ number_format($item->total_cost, 2) }}</td>
                     <td></td>
                 </tr>
             </tbody>

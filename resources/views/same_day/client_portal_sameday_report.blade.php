@@ -88,8 +88,8 @@
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $request->requestId }} </td>
                         <td> {{ $request->client->name }} </td>
-                        <td> {{ $request->shipmentCollection?->sender_town }} </td>
-                        <td> {{ $request->shipmentCollection?->receiver_town }} </td>
+                        <td> {{ $request->shipmentCollection?->sender_address }} </td>
+                        <td> {{ $request->shipmentCollection?->receiver_address }} </td>
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('M j, Y') }}
                         </td>
                         <td> {{ $request->parcelDetails }} </td>

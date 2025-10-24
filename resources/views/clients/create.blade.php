@@ -29,16 +29,16 @@
                         <input type="text" name="name" class="form-control" placeholder="Enter Full Name">
                     </div>
                     <div class="form-group col-md-4">
-                        <label>Email Address <span class="text-danger">*</span> </label>
+                        <label>Email Address</label>
                         <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>ID Number <span class="text-danger">*</span> </label>
+                        <label>ID Number</label>
                         <input type="text" name="id_number" id="id_number" class="form-control"
-                            placeholder="Enter ID Number" required>
+                            placeholder="Enter ID Number">
                     </div>
                     <div class="form-group col-md-4">
                         <label>Phone Number <span class="text-danger">*</span> </label>

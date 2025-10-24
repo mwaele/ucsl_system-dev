@@ -185,6 +185,7 @@ class LoadingSheetController extends Controller
                 'sc.total_cost',
                 'sc.payment_mode',
                 'c.name as client_name',
+                'sc.receiver_name',
                 DB::raw('GROUP_CONCAT(si.item_name SEPARATOR ", ") as item_names'),
                 DB::raw('SUM(si.actual_quantity) as total_quantity'),
                 DB::raw('SUM(si.actual_weight) as total_weight')
@@ -197,7 +198,8 @@ class LoadingSheetController extends Controller
                 'sc.total_cost', 
                 'sc.payment_mode', 
                 'r.destination',
-                'lsw.id'
+                'lsw.id',
+                'sc.receiver_name'
             )
             ->orderBy('lsw.id', 'desc')
             ->get();

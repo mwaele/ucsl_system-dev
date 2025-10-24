@@ -636,7 +636,7 @@
                                 <td class="d-flex pl-2">
                                     @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
                                         {{-- Waybill Generation --}}
-                                        <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
+                                        <button class="btn btn-sm btn-primary mr-2" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i> Generate Waybill
                                         </button>

@@ -416,7 +416,7 @@
 
 
                                             <div class="mt-2 col-md-2">
-                                                <h6 for="insurance" class="text-primary">Insurance Apllies?</h6>
+                                                <h6 for="insurance" class="text-primary">Insurance Applies?</h6>
                                                 <select class="form-control" name="insurance" id="insurance">
                                                     <option value="no" selected>No</option>
                                                     <option value="yes">Yes</option>
