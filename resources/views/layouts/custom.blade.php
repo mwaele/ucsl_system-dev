@@ -460,10 +460,10 @@
                         </div>
                     </div>
                 </li>
-
-                <!-- Divider -->
-                <hr class="sidebar-divider my-0" />
-
+            @endif
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
                 <!-- Nav Item - Clients Collapse Menu -->
                 <li class="nav-item {{ request()->routeIs('company_infos.*') ? 'active' : '' }}">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -484,7 +484,8 @@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0" />
-
+            @endif
+            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'staff' || Auth::user()->role === 'super-admin')
                 <!-- Nav Item - Clients Collapse Menu -->
                 <li
                     class="nav-item {{ request()->routeIs('clients.*', 'categories.*', 'sub_categories.*') ? 'active' : '' }}">
@@ -515,7 +516,8 @@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0" />
-
+            @endif
+            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
                 <!-- Nav Item - Account Management Collapse Menu -->
                 <li
                     class="nav-item {{ request()->routeIs('accounts.*', 'debtors.*', 'creditors.*', 'ledger.*') ? 'active' : '' }}">
@@ -631,27 +633,6 @@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0" />
-
-                <!-- Nav Item - Zones Collapse Menu -->
-                {{-- <li class="nav-item {{ request()->routeIs('zones.*') ? 'active' : '' }}">
-                <a class="nav-link {{ request()->routeIs('zones.*') ? '' : 'collapsed' }}" href="#"
-                    data-toggle="collapse" data-target="#collapseZones"
-                    aria-expanded="{{ request()->routeIs('zones.*') ? 'true' : 'false' }}"
-                    aria-controls="collapseZones">
-                    <i class="fas fa-fw fa-map"></i>
-                    <span class="sized">Rates Info</span>
-                </a>
-                <div id="collapseZones" class="collapse {{ request()->routeIs('zones.*') ? 'show' : '' }}"
-                    aria-labelledby="headingZones" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('zones.index') }}">All Zones</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item " href="{{ route('zones.create') }}">Add Station</a>
-                        <hr class="sidebar-divide my-0" />
-
-                    </div>
-                </div>
-            </li> --}}
 
                 <!-- Nav Item - Rates Collapse Menu -->
                 <li

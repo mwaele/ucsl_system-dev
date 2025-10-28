@@ -8,7 +8,8 @@
                 <h5 class="mb-0">User Accounts</h5>
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/client_performance_report/generate" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                    <a href="/client_performance_report/generate"
+                        class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>
 
@@ -142,12 +143,12 @@
                                         data-target="#editUserModal-{{ $user->id }}">
                                         Edit
                                     </button>
-                                    <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
+                                    {{-- <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                         data-toggle="modal" data-target="#deleteUser-{{ $user->id }}">
                                         <i class="fas fa-trash"></i>
-                                    </button>
+                                    </button> --}}
                                     <!-- Delete Modal-->
-                                    <div class="modal fade" id="deleteUser-{{ $user->id }}" tabindex="-1"
+                                    {{-- <div class="modal fade" id="deleteUser-{{ $user->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -169,7 +170,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </td>
                             </tr>
                         @endforeach

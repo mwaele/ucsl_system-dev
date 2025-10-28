@@ -22,7 +22,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $station = $user->station;
-        $timeFilter = $request->query('time', 'all'); // default to all
+        $timeFilter = $request->query('time', 'daily'); // default to all
 
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
@@ -84,13 +84,15 @@ class DashboardController extends Controller
                 ->value('ctr_time');
 
             $timeLimit = Carbon::now()->subHours((int) $ctrTime);
+            
             $totalRequests = ClientRequest::when($dateRange, $queryWithDate)->count();
             $delivered = ClientRequest::where('status', 'delivered')->when($dateRange, $queryWithDate)->count();
             $collected = ClientRequest::where('status', 'collected')->when($dateRange, $queryWithDate)->count();
-            $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', Carbon::now()->subHour()) 
-                ->whereNotIn('status', ['verified'])
-                ->when($dateRange, $queryWithDate)
-                ->count();
+            $delayedCollections = ClientRequest::where('status', 'pending collection')
+            ->where('updated_at', '<', $timeLimit) // older than 2 hours
+            ->whereNotIn('status', ['verified'])
+            ->when($dateRange, $queryWithDate)
+            ->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
@@ -156,7 +158,7 @@ class DashboardController extends Controller
                 ->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
-                $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', Carbon::now()->subHour()) 
+                $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', $timeLimit) 
                 ->whereNotIn('status', ['verified'])
                 ->when($dateRange, $queryWithDate)
                 ->count();

@@ -33,6 +33,11 @@ use App\Models\Rate;
 use App\Jobs\ClientPortalJob;
 use App\Models\OfficeUser;
 use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\DeliveryControl;
+
+
+
 
 class ClientPortalController extends Controller
 {
@@ -44,10 +49,351 @@ class ClientPortalController extends Controller
     {
         $this->requestIdService = $requestIdService;
     }
-    public function index()
+    public function index(Request $request)
     {
-        return view('client_portal.index');
+        // $user = Auth::user();
+        // $station = $clientId;
+        $timeFilter = $request->query('time', 'all'); // default to all
+
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        // $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun', 'Jul', 'Aug','Sep'];
+        // $data = [10, 20, 15, 30, 25, 40, 35, 50,35];
+
+        $shipments = DB::table('client_requests')
+        ->select(
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as total')
+        )
+        ->where('clientId', auth('client')->user()->id)
+        ->groupBy('month')
+        ->orderBy('month', 'asc')
+        ->get();
+        //dd($shipments);
+
+    // Define all months
+    $allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Initialize data arrays
+    $labels = [];
+    $data = [];
+
+    $overnight = DB::table('shipment_collections')
+    ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+    ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
+    ->where('sub_categories.sub_category_name', 'Overnight')
+    ->where('client_requests.source','client_portal')
+    ->count();
+
+     $sameDay = DB::table('shipment_collections')
+    ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+    ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
+    ->where('sub_categories.sub_category_name', 'Same Day')
+    ->where('client_requests.source','client_portal')
+    ->count();
+
+
+    foreach ($allMonths as $index => $monthName) {
+        $monthNumber = $index + 1;
+        $record = $shipments->firstWhere('month', $monthNumber);
+        $labels[] = $monthName;
+        $data[] = $record ? $record->total : 0;
+    }
+
+    // return response()->json([
+    //     'labels' => $labels,
+    //     'data' => $data,
+    // ]);
+
+        $queryWithDate = fn($q) => $dateRange
+            ? $q->whereBetween('created_at', $dateRange)
+            : $q;
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')->value('ctr_time');
+            $timeLimit = Carbon::now()->subHours((int) $ctrTime);
+            $totalRequests = ClientRequest::where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $delivered = ClientRequest::where('status', 'delivered')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $collected = ClientRequest::where('status', 'collected')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $verified = ClientRequest::where('status', 'verified')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $dispatched = ClientRequest::where('status', 'dispatched')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $arrived = ClientRequest::where('status', 'arrived')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+            $pendingCollection = ClientRequest::where('status', 'Pending-Collection')->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal')
+                ->when($dateRange, $queryWithDate)->count();
+                $delayedCollections = ClientRequest::where('status', 'Pending-Collection')->where('updated_at', '<', Carbon::now()->subHour()) 
+                ->whereNotIn('status', ['verified'])
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
+                ->whereHas('clientRequestById', function ($q)  {
+                    $q->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal');
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $onTransitParcels = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])
+                ->whereHas('clientRequestById', function ($q)  {
+                    $q->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal');
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $delayedDeliveries = ShipmentCollection::whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'delivery_rider_allocated'
+                ])
+                ->where('updated_at', '<', $timeLimit)
+                ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $failedDeliveries = ShipmentCollection::where('status', 'delivery_failed')
+                ->whereHas('clientRequestById', function ($q)  {
+                    $q->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal');
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+            $successfulDeliveries = ShipmentCollection::where('status', 'parcel_delivered')
+                ->whereHas('clientRequestById', function ($q)  {  
+                    $q->where('clientId', auth('client')->user()->id);
+                })
+                ->when($dateRange, $queryWithDate)
+                ->count();
+
+            // Walk-in revenue
+            $walkinRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'walkin');
+            })->sum('actual_total_cost');
+
+            // Account client revenue
+            $accountRevenue = ShipmentCollection::whereHas('clientRequestById.client', function ($query) {
+                $query->where('type', 'on_account');
+            })->sum('actual_total_cost');
+
+            $totalRevenue = $walkinRevenue + $accountRevenue;
+
+            $stationStats = null;
+
+        $recentRequests = ClientRequest::latest()->take(5)->get();
+        $userCount = User::count();
+
+        $collections = ShipmentCollection::with('client')
+            ->whereHas('client', function ($query) {
+                $query->where('client_id', auth('client')->user()->id); 
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('client_portal.index', compact(
+            'totalRequests',
+            'delivered',
+            'collected',
+            'collections',
+            'verified',
+            'pendingCollection',
+            'recentRequests',
+            'userCount',
+            'stationStats',
+            'timeFilter',
+            'startDate',
+            'endDate',
+            'labels',
+            'data',
+            'dispatched',
+            'overnight',
+            'sameDay',
+            'arrived',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries',
+            'delayedDeliveries',
+            'delayedCollections',
+            'walkinRevenue',
+            'accountRevenue',
+            'totalRevenue'
+        ));
+        //return view('client_portal.index');
     } 
+    public function client_index(Request $request)
+    {
+        $clientId = auth('client')->user()->id;
+
+        // Prepare query
+        $query = ClientRequest::with([
+            'client',
+            'vehicle',
+            'clientId',
+            'shipmentCollection',
+            'shipmentCollection.items.subItems',
+            'createdBy'
+        ]);
+
+        // Filters
+        $stationName = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $dateRange = null;
+
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        if ($clientId) {
+            $query->where('clientId', $clientId);
+        }
+
+        if ($status) {
+            if (is_array($status)) {
+                $query->whereIn('status', $status);
+            } else {
+                $query->where('status', $status);
+            }
+        }
+
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        $queryParams = [
+            'station' => $stationName,
+            'status' => $status,
+            'time' => $timeFilter,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'source' => 'ucsl_portal',
+            'clientId' => $clientId,
+        ];
+
+        $exportPdfUrl = URL::route('client_requests.export.pdf', array_filter($queryParams));
+
+        $query->whereIn('clientId', function ($q) {
+            $q->select('id')->from('clients');
+        });
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
+
+        $clients = Client::where('type', 'on_account')->get();
+        $vehicles = Vehicle::all();
+        $drivers = User::where('role', 'driver')->get();
+        $sub_categories = SubCategory::all();
+
+        // Base query for summaries
+        if ($user->role === 'admin') {
+            $baseQuery = ClientRequest::query();
+            if ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $baseQuery->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $baseQuery = ClientRequest::where('office_id', $clientId);
+        }
+
+        if ($dateRange) {
+            $baseQuery->whereBetween('created_at', $dateRange);
+        }
+
+        // --- Summary counts ---
+        $totalRequests = (clone $baseQuery)->count();
+        $delivered = (clone $baseQuery)->where('status', 'delivered')->count();
+        $collected = (clone $baseQuery)->where('status', 'collected')->count();
+        $verified = (clone $baseQuery)->where('status', 'verified')->count();
+        $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+
+        // --- Delivery-specific metrics ---
+        $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')
+            ->value('ctr_time');
+
+        $timeLimit = Carbon::now()->subHours((int) $ctrTime);
+        $shipmentBase = ShipmentCollection::query()
+            ->when($user->role !== 'admin', fn($q) =>
+                $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $clientId))
+            )
+            ->when($stationName && $user->role === 'admin', function ($q) use ($stationName) {
+                $officeId = Office::where('name', $stationName)->value('id');
+                if ($officeId) {
+                    $q->whereHas('clientRequest', fn($r) => $r->where('office_id', $officeId));
+                }
+            })
+            ->when($dateRange, fn($q) => $q->whereBetween('created_at', $dateRange));
+
+        $undeliveredParcels = (clone $shipmentBase)->where('status', 'arrived')->get();
+        $onTransitParcels = (clone $shipmentBase)->whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->get();
+        $delayedDeliveries = (clone $shipmentBase)->whereIn('status', [
+                'Delivery Rider Allocated',
+                'delivery_rider_allocated'
+            ])
+            ->where('updated_at', '<', $timeLimit)
+            ->whereNotIn('status', ['delivery_failed', 'parcel_delivered'])
+            ->get();
+        $failedDeliveries = (clone $shipmentBase)->where('status', 'del
+        ivery_failed')
+            ->get();
+        $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')
+            ->get();
+        return view('client-request.index', compact(
+            'clients',
+            'vehicles',
+            'drivers',
+            'client_requests',
+            'totalRequests',
+            'delivered',
+            'collected',
+            'verified',
+            'pending_collection',
+            'undeliveredParcels',
+            'onTransitParcels',
+            'failedDeliveries',
+            'successfulDeliveries',
+            'delayedDeliveries',
+            'timeFilter',
+            'startDate',
+            'endDate',
+            'exportPdfUrl',
+            'sub_categories',
+            'status',
+        ));
+    }
     public function dashboard()
     {
         return view('client_portal.dashboard');
@@ -97,7 +443,7 @@ class ClientPortalController extends Controller
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $overnightSubCategoryIds)
             ->whereHas('client', function ($query) {
-                $query->where('clientId', auth('client')->user()->id);
+                $query->where('clientId', auth('client')->user()->id)->where('client_requests.source','client_portal');
             })
             ->orderBy('created_at', 'desc')
             ->with(['client', 'user', 'vehicle'])

@@ -28,7 +28,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                 Shipments Requests</div>
-                            <div class="h5 mb-0 font-weight-bold text-white">0</div>
+                            <div class="h5 mb-0 font-weight-bold text-white">{{ $totalRequests }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-white"></i>
@@ -46,7 +46,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                 Pending Collection</div>
-                            <div class="h5 mb-0 font-weight-bold text-white">0</div>
+                            <div class="h5 mb-0 font-weight-bold text-white">{{ $pendingCollection }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-white"></i>
@@ -58,6 +58,8 @@
 
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-2 col-md-6 mb-4">
+            {{-- <a href="{{ route('client_index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
+                title="View Collected Parcels" class="text-decoration-none text-dark"> --}}
             <div class="card border-left-warning bg-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -66,14 +68,8 @@
                             </div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-white">10</div>
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-white">{{ $collected }}</div>
                                 </div>
-                                {{-- <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 50%"
-                                            aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                         <div class="col-auto">
@@ -82,6 +78,7 @@
                     </div>
                 </div>
             </div>
+            {{-- </a> --}}
         </div>
 
         <!-- Pending Requests Card Example -->
@@ -108,7 +105,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                 Received at Destination</div>
-                            <div class="h5 mb-0 font-weight-bold text-white">18</div>
+                            <div class="h5 mb-0 font-weight-bold text-white">{{ $arrived }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-file fa-2x text-white"></i>
@@ -127,7 +124,7 @@
                 <h4 class="mb-0 text-warning"> <strong>Shipment Quick Overview and Reports</strong></h4>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
-                <div class="d-flex align-items-center ms-auto">
+                {{-- <div class="d-flex align-items-center ms-auto">
                     <!-- Date Range Filter -->
                     <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
                         <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
@@ -219,7 +216,7 @@
                         initDateFilter("dataTable", 4, "/overnight_account_report");
                     </script>
 
-                </div>
+                </div> --}}
             </div>
         </div>
         <div class="card-body">
@@ -229,29 +226,27 @@
                     <thead>
                         <tr class="text-success">
                             <th>#</th>
-                            <th>Request ID</th>
-                            <th>Client</th>
-                            <th>Pick-up Location</th>
-                            <th>Date Requested</th>
-                            <th>Rider</th>
-                            <th>Vehicle</th>
-                            <th>Desc.</th>
-                            <th>Status</th>
+                            <th>Service Level</th>
+                            <th>Number of Shipments</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td>1</td>
+                            <td>Overnight</td>
+                            <td>{{ $overnight }}</td>
+                            <td><a class="collapse-item"
+                                    href="{{ route('overnight_onaccount', ['type' => 'client_portal']) }}">Overnight - On
+                                    Account</a></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Same Day</td>
+                            <td>{{ $sameDay }}</td>
+                            <td><a class="collapse-item"
+                                    href="{{ route('sameday_on_account', ['type' => 'client_portal']) }}">SameDay - On
+                                    Account</a></td>
                         </tr>
 
                     </tbody>

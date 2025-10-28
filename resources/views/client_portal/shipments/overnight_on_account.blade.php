@@ -600,7 +600,7 @@
                                 <td data-date="{{ $request->shipmentCollection?->created_at }}">
                                     {{ $request->shipmentCollection?->created_at?->format('M d, Y') }}
                                 </td>
-                                <td> {{ $request->shipmentCollection?->office->name }} </td>
+                                <td> {{ $request->shipmentCollection?->office->name ?? '' }} </td>
                                 <td> {{ $request->shipmentCollection?->destination->destination }} </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
@@ -779,7 +779,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ Auth::user()->office->name }}
+                                                                {{ Auth::user()->office->name ?? '' }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>

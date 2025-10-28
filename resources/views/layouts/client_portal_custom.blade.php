@@ -1015,7 +1015,7 @@
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/get-destination/' + selectedOfficeId)
+                        $.get('/getDestinations/' + selectedOfficeId)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(
@@ -1127,11 +1127,60 @@
                         cost += extraWeight * 50;
                     }
 
-                    $('input[name="cost"]').val(cost.toFixed(2));
 
-                    const vat = cost * 0.16;
-                    $('input[name="vat"]').val(vat.toFixed(2));
-                    $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+
+                    // function extractVAT(costWithVAT) {
+                    //     // Calculate raw VAT when total already includes VAT
+                    //     const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                    //     let integerPart = Math.floor(rawVat);
+                    //     const decimal = rawVat - integerPart;
+
+                    //     let roundedVat;
+                    //     if (decimal < 0.3) {
+                    //         roundedVat = integerPart;
+                    //     } else if (decimal >= 0.7) {
+                    //         roundedVat = integerPart + 0.5;
+                    //     } else {
+                    //         roundedVat = integerPart + 1;
+                    //     }
+
+                    //     // Always return a formatted string like "69.00" or "69.50"
+                    //     return roundedVat.toFixed(2);
+                    // }
+                    function extractVAT(costWithVAT) {
+                        // Calculate raw VAT when total already includes VAT
+                        const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                        const integerPart = Math.floor(rawVat);
+                        const decimalPart = rawVat - integerPart;
+                        let roundedDecimal = 0;
+
+                        // Apply the same custom rounding rules
+                        if (decimalPart <= 0.03) {
+                            roundedDecimal = 0.00;
+                        } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                            roundedDecimal = 0.05;
+                        } else {
+                            roundedDecimal = 0.10;
+                        }
+
+                        let result = integerPart + roundedDecimal;
+
+                        // Handle carry-over if rounding pushes to next integer
+                        if (result >= integerPart + 1) {
+                            result = integerPart + 1.00;
+                        }
+
+                        // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                        return result.toFixed(2);
+                    }
+
+
+                    const vat = extractVAT(cost);
+                    $('input[name="cost"]').val((cost - vat).toFixed(2));
+                    $('input[name="vat"]').val(vat);
+                    $('input[name="total_cost"]').val((cost).toFixed(2));
                 }
 
 
@@ -1180,7 +1229,7 @@
                     const originId = modal.find('.origin-dropdownx').val();
 
                     if (originId && destinationId) {
-                        $.get(`/get-cost-same-day/${originId}/${destinationId}`)
+                        $.get(`/getCost/${originId}/${destinationId}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);
@@ -1350,6 +1399,16 @@
                 const fragileExtraGroup = document.getElementById("fragile-charge-group");
                 const fragileExtraInput = document.getElementById("fragile_charge");
 
+
+                const insuranceSelect = document.getElementById("insurance");
+                const insuranceConfirm = document.getElementById("insurance-confirm");
+                const insuranceExtraGroup = document.getElementById("insurance-charge-group");
+                const insuranceExtraGroup2 = document.getElementById("insurance-charge-group2");
+                const insuranceExtraInput = document.getElementById("total_insurance");
+                const insuranceExtraInput2 = document.getElementById("insurance_charged");
+
+
+
                 const baseCostInput = document.querySelector("input[name='base_cost']");
                 const costInput = document.querySelector("input[name='cost']");
                 const vatInput = document.querySelector("input[name='vat']");
@@ -1361,20 +1420,26 @@
                 const fragileYesBtn = document.getElementById("fragileYesBtn");
                 const fragileNoBtn = document.getElementById("fragileNoBtn");
 
+                const insuranceYesBtn = document.getElementById("insuranceYesBtn");
+                const insuranceNoBtn = document.getElementById("insuranceNoBtn");
+
                 // helper function to update totals
                 function updateTotals() {
+                    // Get base cost (the main cost before extras)
                     const baseCost = parseFloat(baseCostInput.value) || 0;
+
+                    // Extra charges
                     const priorityExtra = parseFloat(priorityExtraInput.value) || 0;
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
+                    const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
 
-                    const itemCost = baseCost + priorityExtra + fragileExtra;
-                    const vat = itemCost * 0.16;
-                    const total = itemCost + vat;
+                    // Compute the new total — starting from the base cost
+                    const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
 
-                    costInput.value = itemCost.toFixed(2);
-                    vatInput.value = vat.toFixed(2);
-                    totalInput.value = total.toFixed(2);
+                    // Update total field with two decimals
+                    totalInput.value = itemCost.toFixed(2);
                 }
+
 
                 // priority selection logic
                 prioritySelect.addEventListener("change", () => {
@@ -1431,6 +1496,78 @@
                 // watch extra charge inputs
                 priorityExtraInput.addEventListener("input", updateTotals);
                 fragileExtraInput.addEventListener("input", updateTotals);
+
+
+                //insurance logic
+
+                insuranceSelect.addEventListener("change", () => {
+                    if (insuranceSelect.value === "yes") {
+                        insuranceConfirm.style.display = "block";
+                    } else {
+                        insuranceConfirm.style.display = "none";
+                        insuranceExtraGroup.style.display = "none";
+                        insuranceExtraInput.value = "";
+                        insuranceExtraGroup2.style.display = "none";
+                        insuranceExtraInput2.value = "";
+                        updateTotals();
+                    }
+                });
+
+                insuranceYesBtn.addEventListener("click", () => {
+                    insuranceExtraGroup.style.display = "block";
+                    insuranceExtraGroup2.style.display = "block";
+                    insuranceConfirm.style.display = "none";
+                    $('#insurance_status').val('insured');
+
+                });
+
+                insuranceNoBtn.addEventListener("click", () => {
+                    // Keep YES but with zero charge
+                    insuranceConfirm.style.display = "none";
+                    insuranceExtraGroup.style.display = "none";
+                    insuranceExtraInput.value = "0";
+                    insuranceExtraGroup2.style.display = "none";
+                    insuranceExtraInput2.value = "0";
+                    updateTotals();
+                    $('#insurance_status').val('not_insured');
+                });
+
+                // watch extra charge inputs
+
+                document.getElementById('total_insurance').addEventListener('input', function() {
+                    // Clean input to prevent partial parseFloat issues
+                    let value = this.value.trim();
+
+                    // If user enters non-numeric values, reset to empty
+                    if (!/^\d*\.?\d*$/.test(value)) {
+                        this.value = value.replace(/[^\d.]/g, '');
+                        return;
+                    }
+
+                    // Convert to float safely
+                    let total = parseFloat(this.value) || 0;
+
+                    // Always recalculate fresh 1%
+                    let charge = (total * 0.01).toFixed(2);
+
+                    // Show/hide based on input
+                    if (total > 0) {
+                        document.getElementById('insurance-charge-group2').style.display = "block";
+                        document.getElementById('insurance_charged').value = charge;
+                    } else {
+                        document.getElementById('insurance-charge-group2').style.display = "none";
+                        document.getElementById('insurance_charged').value = "";
+                    }
+
+                    // Update totals every time
+                    updateTotals();
+                });
+
+
+
+
+
+
 
                 // initial calc
                 updateTotals();

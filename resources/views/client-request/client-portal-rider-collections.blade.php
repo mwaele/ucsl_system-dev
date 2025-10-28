@@ -160,8 +160,9 @@
                                     </button>
                                     @if ($collection->status === 'pending collection')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
-                                            title="Collect parcels" data-target="#collect-{{ $collection->id }}"><i
-                                                class="fas fa-box"></i>
+                                            title="Collect parcels" data-destination-id="{{ $collection->destination_id }}"
+                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-box">
+                                                {{ $collection->destination_id }}</i>
                                         </button>
                                     @endif
                                     @if ($collection->status === 'collected')
@@ -319,7 +320,8 @@
 
                                                             <hr style="margin: 6px 0;">
                                                             <div style="text-align: left; font-size: 12px;">
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Collected By:</strong>
                                                                     <span> {{ $collection->user->name }} </span>
                                                                 </div>
@@ -360,18 +362,18 @@
                                     @endif
 
                                     <!-- <a href="#">
-                                                        <button class="btn btn-sm btn-warning mr-1" title="View">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                    </a>
-                                                    <a href="#">
-                                                        <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                                            <i class="fas fa-file-pdf"></i>
-                                                        </button>
-                                                    </a>
-                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                        data-target="#delete_floor-{{ $collection->id }}"><i
-                                                            class="fas fa-trash"></i></button> -->
+                                                                                                <button class="btn btn-sm btn-warning mr-1" title="View">
+                                                                                                    <i class="fas fa-eye"></i>
+                                                                                                </button>
+                                                                                            </a>
+                                                                                            <a href="#">
+                                                                                                <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                                                                                    <i class="fas fa-file-pdf"></i>
+                                                                                                </button>
+                                                                                            </a>
+                                                                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                                                                data-target="#delete_floor-{{ $collection->id }}"><i
+                                                                                                    class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -636,6 +638,8 @@
                                                             </div>
                                                         </div>
 
+
+
                                                         @if ($collection->client->special_rates_status)
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
@@ -726,22 +730,24 @@
                                                                 </div>
 
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="form-label text-primary">Destination
+                                                                    <label class="form-label text-primary">Destinations
                                                                         <span class="text-danger">*</span></label>
                                                                     <select name="destination"
                                                                         class="form-control destination-dropdown" required>
                                                                         <option value="">Select</option>
-
+                                                                        @php $dest='' @endphp
                                                                         @foreach ($destinations as $dest)
                                                                             <option value="{{ $dest->id }}"
                                                                                 {{ $collection->shipmentCollection?->destination_id == $dest->id ? 'selected' : '' }}>
                                                                                 {{ $dest->destination }}
                                                                             </option>
                                                                         @endforeach
+
+                                                                        <input type="text" name='destination_id'
+                                                                            value="{{ $dest->id }}"
+                                                                            id="destination_id">
                                                                     </select>
                                                                 </div>
-                                                                <input type="hidden" name='destination_id'
-                                                                    id="destination_id">
                                                             </div>
                                                         @endif
 
@@ -860,13 +866,13 @@
                                                                         required readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                            <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                    class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input type="number" min="0"
-                                                                                class="form-control" name="total_cost" required
-                                                                                readonly>
-                                                                        </div> -->
+                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                            class="text-danger">*</span>
+                                                                                                                    </label>
+                                                                                                                    <input type="number" min="0"
+                                                                                                                        class="form-control" name="total_cost" required
+                                                                                                                        readonly>
+                                                                                                                </div> -->
                                                             </div>
 
                                                         </div>

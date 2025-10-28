@@ -27,6 +27,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+         if (Auth::user()->role === 'driver') {
+                return redirect('/my_collections');
+            }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

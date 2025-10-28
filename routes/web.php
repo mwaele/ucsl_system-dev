@@ -67,6 +67,10 @@ Route::middleware('client.auth')->group(function () {
     // client portal
     Route::get('/client_portal', [ClientPortalController::class, 'index'])->name('client_portal');
     Route::get('/client_portal/dashboard', [ClientPortalController::class, 'dashboard'])->name('client_portal_dashboard');
+
+    Route::get('/client_index', [ClientPortalController::class, 'client_index'])->name('client_index');
+
+    
     // Route::get('/client_portal/overnight-walkin', [ClientPortalController::class, 'overnight_walkin'])->name('overnight_walkin');
     Route::get('/client_portal/overnight-on-account', [ClientPortalController::class, 'overnight_onaccount'])->name('overnight_onaccount');
     // Route::get('/client_portal/sameday-walkin', [ClientPortalController::class, 'sameday_walkin'])->name('sameday_walkin');
@@ -82,11 +86,13 @@ Route::middleware('client.auth')->group(function () {
 
     Route::get('/waybill-preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill-preview');
 
-    Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinations']);
+    Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinationSameDay']);
 
     Route::get('/getCost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/client_portal_overnight_report', [OvernightController::class, 'client_portal_overnight_report'])->name('client_portal_overnight_report');
     Route::get('/client_portal_sameday_report', [SameDayController::class, 'client_portal_sameday_report'])->name('client_portal_sameday_report');
+
+    Route::post('/cancelRequest/{requestId}', [ClientCancelledShipmentController::class, 'cancelRequest'])->name('clientPortal.cancelRequest');
 
 });
 
@@ -224,6 +230,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-cost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/get-cost-same-day/{originId}/{destinationId}', [RateController::class, 'getCostSameDay']);
     Route::get('/client-requests/pdf', [ClientRequestController::class, 'exportPdf'])->name('client-requests.export.pdf');
+    Route::get('/client_requests/pdf', [ClientRequestController::class, 'exportsPdf'])->name('client_requests.export.pdf');
     Route::get('/client_requests/pdf', [ClientRequestController::class, 'exportPdfDelayed'])->name('client_requests.export.pdf');
     Route::get('/waybill/generate/{requestId}', [ClientRequestController::class, 'generateWaybill'])->name('waybill.generate');
     Route::get('/waybill/preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill.preview');
@@ -244,8 +251,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/sendEmail/{requestId}', [ShipmentCollectionController::class, 'sendEmail'])->name('sendEmail');
 
-    Route::post('/cancelRequest/{requestId}', [ClientCancelledShipmentController::class, 'cancelRequest'])->name('clientPortal.cancelRequest');
-
+    
 
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
     Route::post('/failed_delivery_alert', [ShipmentDeliveriesController::class, 'failed_delivery_alert'])->name('failed_delivery_alert');

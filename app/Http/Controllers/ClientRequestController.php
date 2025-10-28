@@ -296,6 +296,79 @@ class ClientRequestController extends Controller
             'landscape'
         );
     }
+    public function exportsPdf(Request $request)
+    {
+        $user = Auth::user();
+        $stationParam = $request->query('station');
+        $status = $request->query('status');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $source = 'client_portal';
+
+        $clientId = auth('client')->user()->id;
+
+        if ($user->role === 'admin') {
+            $station = $stationParam ?: 'All';
+        } else {
+            $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
+        }
+
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null
+            };
+        }
+
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office']);
+
+        if ($user->role === 'admin') {
+            if ($station && strtolower($station) !== 'all') {
+                $officeId = Office::where('name', $station)->value('id');
+                if ($officeId) {
+                    $query->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $query->where('clientId', $clientId);
+            $query->where('source', $source);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'pdf.client-requests',
+            [
+                'client_requests' => $client_requests,
+                'station' => $station,
+                'status' => $status,
+                'reportingPeriod' => $dateRange,
+                'timeFilter' => $timeFilter,
+            ],
+            'client_requests.pdf',
+            'a4',
+            'landscape'
+        );
+    }
     
     public function exportPdfDelayed(Request $request)
 {

@@ -168,16 +168,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <input type="hidden" name='destination_id' id="destination_id">
 
                                             <div class="col-md-3">
                                                 <h6 for="collectionLocation" class="text-primary">Pickup Location</h6>
                                                 <input type="text" value="{{ auth('client')->user()->address }}"
                                                     class="form-control" name="collectionLocation">
                                             </div>
-                                            <input type="hidden" name='destination_id' id="destination_id">
-                                            <input type="hidden" name="clientId"
-                                                value="{{ auth('client')->user()->id }}">
+                                            <input type="text" name='destination_id' id="destination_id">
+                                            <input type="hidden" name="clientId" value="{{ auth('client')->user()->id }}">
                                         </div>
 
                                         <div class="modal-header bg-primary">
@@ -409,6 +407,45 @@
                                                 <h6 for="fragile_charge" class="text-primary">Fragile Extra Charge</h6>
                                                 <input type="number" class="form-control" name="fragile_charge"
                                                     id="fragile_charge" placeholder="Enter extra amount">
+                                            </div>
+
+                                            <div class="mt-2 col-md-2">
+                                                <h6 for="insurance" class="text-primary">Insurance Apllies?</h6>
+                                                <select class="form-control" name="insurance" id="insurance">
+                                                    <option value="no" selected>No</option>
+                                                    <option value="yes">Yes</option>
+                                                </select>
+                                            </div>
+
+
+                                            <!-- Inline Confirmation (hidden by default) -->
+                                            <div class="mt-2 col-md-2" id="insurance-confirm" style="display:none;">
+                                                <p class="text-white bg-danger p-2">This item has insurance cover. Do you
+                                                    want to
+                                                    add
+                                                    extra
+                                                    charges?</p>
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    id="insuranceYesBtn">Yes</button>
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                    id="insuranceNoBtn">No</button>
+                                                <input type="text" name="insurance_status" id="insurance_status"
+                                                    value="not_insured" hidden>
+                                            </div>
+
+                                            <!-- Insurance Charge Input -->
+                                            <div class="mt-2 col-md-2" id="insurance-charge-group" style="display:none;">
+                                                <h6 for="insurance_charge" class="text-primary"> Insurance Amount
+                                                </h6>
+                                                <input type="number" class="form-control" name="total_insurance"
+                                                    id="total_insurance" placeholder="Enter extra amount">
+                                            </div>
+                                            <div class="mt-2 col-md-2" id="insurance-charge-group2"
+                                                style="display:none;">
+                                                <h6 for="insurance_charge" class="text-primary">Charged Amount
+                                                </h6>
+                                                <input type="number" class="form-control" name="insurance_charged"
+                                                    id="insurance_charged" placeholder="Enter extra amount" readonly>
                                             </div>
 
 
@@ -671,14 +708,67 @@
                                             </div>
                                         </div>
                                     @endif
+                                    @if ($request->status === 'Pending-Collection')
+                                        <button class="btn btn-danger" data-toggle="modal"
+                                            data-target="#cancelRequestModal{{ $request->requestId }}">Cancel Request
+                                            X</button>
+                                        <div class="modal fade" id="cancelRequestModal{{ $request->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="CancelRequestLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-primary">Cancel Shipment Collection
+                                                            Request</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <form id="clientPortal.cancelRequest" method="post"
+                                                        action="{{ route('clientPortal.cancelRequest', $request->requestId) }}">
+                                                        @csrf
+                                                        <div class="modal-body"
+                                                            style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                            <div class="row">
+                                                                {{-- <div class="col-md-12 mb-3">
+                                                                    <label for="subject"
+                                                                        class="text-primary"><strong>Subject:
+                                                                        </strong></label>
+                                                                    <input type="text" class="form-control"
+                                                                        name="subject">
+                                                                </div> --}}
+                                                                <div class="col-md-12">
+                                                                    <label for="message"
+                                                                        class="text-primary"><strong>Reason for
+                                                                            Cancellation: <span
+                                                                                class="text-danger">*</span>
+                                                                        </strong></label>
+                                                                    <textarea name="message" id="" class="form-control" rows="10" required></textarea>
+                                                                </div>
+                                                            </div>
 
-                                    @if ($request->shipmentCollection?->payment_mode == 'Invoice')
+                                                        </div>
+                                                        <div
+                                                            class="modal-footer d-flex justify-content-between align-items-center">
+                                                            <button type="button" class="btn btn-warning"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button class="btn btn-danger " type="submit">Cancel Request
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- @if ($request->shipmentCollection?->payment_mode == 'Invoice')
                                         <a href="{{ route('generate-invoice', $request->shipmentCollection->id) }}">
                                             <button class="btn btn-sm btn-info mr-1">
                                                 Generate Invoice
                                             </button>
                                         </a>
-                                    @endif
+                                    @endif --}}
                                     @if ($request->shipmentCollection?->manual_waybill_status == 1 && $request->shipmentCollection->manual_waybill)
                                         <a href="{{ asset('uploads/' . $request->shipmentCollection->manual_waybill) }}"
                                             target="_blank"

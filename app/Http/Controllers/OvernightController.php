@@ -212,7 +212,7 @@ class OvernightController extends Controller
             ->whereHas('client', function ($query) {
                 $query->where('type', 'on_account');
             })
-            ->where('clientId', auth('client')->id())
+            ->where('clientId', auth('client')->id())->where('source','client_portal')
             ->with(['client', 'user', 'vehicle']);
 
         // ✅ Apply date range filter if provided

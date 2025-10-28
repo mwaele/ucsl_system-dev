@@ -518,20 +518,16 @@
                                                                         <td><input type="text" class="form-control"
                                                                                 name="item_name[]"></td>
                                                                         <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="packages[]"></td>
+                                                                                class="form-control" name="packages[]">
+                                                                        </td>
                                                                         <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="weight[]"></td>
+                                                                                class="form-control" name="weight[]"></td>
                                                                         <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="length[]"></td>
+                                                                                class="form-control" name="length[]"></td>
                                                                         <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="width[]"></td>
+                                                                                class="form-control" name="width[]"></td>
                                                                         <td><input type="number" min="0"
-                                                                                max="100" class="form-control"
-                                                                                name="height[]"></td>
+                                                                                class="form-control" name="height[]"></td>
                                                                         <td class="volume-display text-muted"><input
                                                                                 type="number" min="0"
                                                                                 class="form-control" name="volume[]"
@@ -978,10 +974,8 @@
                                                                     @if (!$hasPayment)
                                                                         <span class="badge bg-danger text-white">
                                                                             Unpaid – To pay Ksh.
-                                                                            {{ 
-                                                                                ($collection->shipmentCollection->actual_total_cost ?? 0) + 
-                                                                                ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) 
-                                                                            }}
+                                                                            {{ ($collection->shipmentCollection->actual_total_cost ?? 0) +
+                                                                                ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) }}
                                                                         </span>
                                                                     @else
                                                                         <span class="badge bg-info text-white">
@@ -990,7 +984,8 @@
                                                                         </span>
                                                                         <span class="badge bg-primary text-white">
                                                                             Ksh.
-                                                                            {{ number_format($collection->payments->amount, 0) }}
+                                                                            {{ number_format(optional($collection->payments)->amount ?? 0, 0) }}
+
                                                                         </span>
                                                                         <span class="badge bg-warning text-white">
                                                                             Balance: Ksh. {{ number_format($balance, 0) }}
@@ -1052,10 +1047,8 @@
                                                                                     name="amount_paid"
                                                                                     class="form-control"
                                                                                     placeholder="Enter amount paid"
-                                                                                    value="{{ 
-                                                                                            ($collection->shipmentCollection->actual_total_cost ?? 0) + 
-                                                                                            ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) 
-                                                                                        }}"
+                                                                                    value="{{ ($collection->shipmentCollection->actual_total_cost ?? 0) +
+                                                                                        ($collection->shipmentCollection->last_mile_delivery_charges ?? 0) }}"
                                                                                     required>
                                                                             </div>
                                                                         </div>

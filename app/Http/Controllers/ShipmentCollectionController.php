@@ -940,7 +940,7 @@ class ShipmentCollectionController extends Controller
                 $clientId = $shipment->client_id;
 
                 // Notify Sender
-                $senderMsg = "Hello {$senderName}, your parcel has been verified. Total cost: KES {$shipment->actual_total_cost}. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
+                $senderMsg = "Hello {$senderName}, your parcel has been verified. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
                 $smsService->sendSms($senderPhone, 'Parcel Verified', $senderMsg, true);
 
                 SentMessage::create([
@@ -990,7 +990,7 @@ class ShipmentCollectionController extends Controller
                 $weightDiff = $actualTotalWeight - $shipment->total_weight;
 
                 // --- Sender Message ---
-                $senderMsg = "Hello {$senderName}, your parcel has been verified. Total cost: KES {$shipment->actual_total_cost}. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
+                $senderMsg = "Hello {$senderName}, your parcel has been verified. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
 
                 // If there are differences, append them
                 $extraNotes = [];
