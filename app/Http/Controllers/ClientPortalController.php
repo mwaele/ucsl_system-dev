@@ -398,10 +398,12 @@ class ClientPortalController extends Controller
     {
         return view('client_portal.dashboard');
     }
+
     public function overnight_walkin()
     {
         return view('client_portal.shipments.overnight_walkin');
     }
+
     public function overnight_onaccount(Request $request)  
     {
             $categories = ClientCategory::where('client_id', auth('client')->user()->id)
@@ -457,7 +459,8 @@ class ClientPortalController extends Controller
             'consignment_no',
             'sub_category'
         ));
-    }  
+    }
+
     public function generateWaybill($requestId) 
     {
         $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();

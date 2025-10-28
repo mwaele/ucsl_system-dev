@@ -779,7 +779,7 @@
                                                             </div>
                                                             <div>
                                                                 <strong>From:</strong>
-                                                                {{ Auth::user()->office->name ?? '' }}
+                                                                {{ auth('client')->user()->office?->name }}
                                                                 <strong style="margin-left: 10px;">To:</strong>
                                                                 {{ $request->shipmentCollection->destination->destination ?? '' }}
                                                             </div>

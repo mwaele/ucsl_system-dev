@@ -144,16 +144,14 @@
 
                                 <td>
                                     <span
-                                        class="badge p-2 fs-5 text-white
-                                        {{ $collection->status == 'pending collection'
-                                            ? 'bg-secondary'
-                                            : ($collection->status == 'collected'
-                                                ? 'bg-warning'
-                                                : ($collection->status == 'delivered'
-                                                    ? 'bg-success'
-                                                    : ($collection->status == 'delivery_failed'
-                                                        ? 'bg-danger'
-                                                        : ''))) }}">
+                                        class="badge p-2
+                                        @if ($collection->status == 'pending collection') bg-secondary
+                                        @elseif ($collection->status == 'collected') bg-warning
+                                        @elseif ($collection->status == 'delivered') bg-success
+                                        @elseif ($collection->status == 'delivery_failed') bg-danger
+                                        @elseif ($collection->status == 'Delivery Rider Allocated') bg-info
+                                        @else bg-dark @endif
+                                        fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
                                     </span>
 
