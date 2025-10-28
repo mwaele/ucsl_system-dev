@@ -385,43 +385,61 @@ class ShipmentCollectionController extends Controller
      * Save on-account parcel details.
      */
     public function store(Request $request, SmsService $smsService)
-    { 
+    {
+        Log::info('Store method called', ['data' => $request->all()]);
 
-        //dd($request);
+        try {
+            Log::info('Starting validation');
 
-        $request->validate([
-            'receiverContactPerson' => 'required|string',
-            'receiverIdNo' => 'required|string',
-            'receiverPhone' => 'required|string',
-            'receiverAddress' => 'required|string',
-            'receiverTown' => 'required|string',
-            'origin_id' => 'required',
-            'destination_id' => 'required',
-            'requestId' => 'required',
-            'client_id' => 'required',
-            'item_name' => 'required|array',
-            'item_name.*' => 'required|string',
-            'packages' => 'required|array',
-            'weight' => 'required|array',
-            'length' => 'required|array',
-            'width' => 'required|array',
-            'height' => 'required|array',
-            'volume' => 'required|array',
-            'cost' => 'required|numeric',
-            'sender_type' => 'required|string',
-            'sender_name' => 'required|string',
-            'sender_contact' => 'required|string',
-            'sender_address' => 'required|string',
-            'sender_town' => 'string',
-            'sender_id_no' => 'required|string',
-            'vat' => 'required|string',
-            'total_cost' => 'required|string',
-            'consignment_no' => 'string',
-            'base_cost' => 'string',
-            'special_rates_state' => 'string',
-            'sender_email' => 'string',
-            'receiver_email' => 'string',
-        ]);
+            $validated = $request->validate([
+                'receiverContactPerson' => 'string',
+                'receiverIdNo' => 'string|nullable',
+                'receiverPhone' => 'string',
+                'receiverAddress' => 'required|string',
+                'receiverTown' => 'required|string',
+                'origin_id' => 'required',
+                'destination_id' => 'required',
+                'requestId' => 'required',
+                'client_id' => 'required',
+                'item_name' => 'required|array',
+                'item_name.*' => 'required|string',
+                'packages' => 'required|array',
+                'weight' => 'required|array',
+                'length' => 'array',
+                'width' => 'array',
+                'height' => 'array',
+                'volume' => 'array',
+                'cost' => 'required|numeric',
+                'sender_type' => 'string',
+                'sender_name' => 'string',
+                'sender_contact' => 'string',
+                'sender_address' => 'string',
+                'sender_town' => 'string',
+                'sender_id_no' => 'string',
+                'vat' => 'required|string',
+                'total_cost' => 'required|string',
+                'consignment_no' => 'string',
+                'base_cost' => 'string',
+                'special_rate_state' => 'string|nullable',
+                'senderEmail' => 'string',
+                'receiverEmail' => 'string|nullable',
+            ]);
+
+            Log::info('Validation passed', ['validated' => $validated]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log detailed validation errors
+            Log::error('Validation failed', [
+                'errors' => $e->errors(),
+                'input' => $request->all(),
+            ]);
+
+            // Re-throw the exception so Laravel still handles it (e.g., redirects with errors)
+            throw $e;
+        }
+
+        Log::info('After validation - proceeding with store logic');
+
         $consignment_no = $request->consignment_no;
         // Save main shipment
         $shipment = ShipmentCollection::create([

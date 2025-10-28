@@ -576,20 +576,17 @@
                                                                             <div class="form-group col-md-6">
                                                                                 <label
                                                                                     class="form-label text-primary text-primary">Sender
-                                                                                    Email <span
-                                                                                        class="text-danger">*</span>
+                                                                                    Email
                                                                                 </label>
                                                                                 <input type="email" class="form-control"
-                                                                                    name="senderEmail" id="senderEmail"
-                                                                                    required>
+                                                                                    name="senderEmail" id="senderEmail">
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
                                                                                 <label
                                                                                     class="form-label text-primary text-primary">ID
-                                                                                    Number <span
-                                                                                        class="text-danger">*</span></label>
+                                                                                    Number</label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="sender_id_no" id="sender_id_no"
                                                                                     maxlength="8">
@@ -597,8 +594,7 @@
                                                                             <div class="form-group col-md-6">
                                                                                 <label
                                                                                     class="form-label text-primary text-primary">Phone
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
+                                                                                    </label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="sender_contact"
                                                                                     id="sender_contact">
@@ -654,30 +650,29 @@
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">Receiver
-                                                                                Email <span class="text-danger">*</span>
+                                                                                Email
                                                                             </label>
                                                                             <input type="email" class="form-control"
-                                                                                name="receiverEmail" required>
+                                                                                name="receiverEmail">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">ID
-                                                                                Number <span class="text-danger">*</span>
+                                                                                Number
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverIdNo" required
+                                                                                name="receiverIdNo"
                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">Phone
                                                                                 Number
-                                                                                <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
-                                                                                name="receiverPhone" required>
+                                                                                name="receiverPhone">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">

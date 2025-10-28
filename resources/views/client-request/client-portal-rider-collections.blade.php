@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
-                <h5 class="m-0 font-weight-bold text-danger">My Collections List</h5>
+                <h5 class="m-0 font-weight-bold text-danger">Client Shipment Collections</h5>
 
                 <!-- Right Side (Date Filter + Generate PDF) -->
                 <div class="d-flex align-items-center ms-auto">
@@ -143,32 +143,28 @@
                                 <td data-date="{{ $collection->created_at }}"> {{ $collection->created_at }} </td>
                                 <td> {{ $collection->client->address }} </td>
                                 <td>
-                                    <p
-                                        class="badge
-                                            @if ($collection->status == 'pending collection') bg-secondary
-                                            @elseif ($collection->status == 'collected')
-                                                bg-warning
-                                            @elseif ($collection->status == 'verified')
-                                                bg-primary @endif
-                                            fs-5 text-white">
+                                    <span
+                                        class="badge p-2
+                                        @if ($collection->status === 'pending collection') bg-secondary
+                                        @elseif ($collection->status === 'collected') bg-warning
+                                        @elseif ($collection->status === 'verified') bg-primary
+                                        @else bg-dark @endif
+                                        fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
-                                    </p>
+                                    </span>
                                 </td>
                                 <td class="d-flex pl-2">
-                                    <button class="btn btn-sm btn-info mr-1" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
                                     @if ($collection->status === 'pending collection')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
                                             title="Collect parcels" data-destination-id="{{ $collection->destination_id }}"
-                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-box">
+                                            data-target="#collect-{{ $collection->id }}"> Collect <i class="fas fa-box">
                                                 {{ $collection->destination_id }}</i>
                                         </button>
                                     @endif
                                     @if ($collection->status === 'collected')
                                         <button class="btn btn-sm btn-primary" title="Print collection" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">
-                                            <i class="fas fa-print"></i>
+                                            Print receipt<i class="fas fa-print"></i>
                                         </button>
                                     @endif
                                     @if ($collection->shipmentCollection)
@@ -356,6 +352,69 @@
                                                         <button type="button" class="btn btn-primary"
                                                             onclick="printModalContent({{ $collection->id }})">Print</button>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Handover to Rider Button -->
+                                    @if ($collection->status === 'collected')
+                                        <button class="btn btn-sm btn-info ml-1 mr-1" title="Handover to Rider"
+                                            data-toggle="modal" data-target="#handoverModal-{{ $collection->id }}">
+                                            Handover <i class="fas fa-exchange-alt"></i>
+                                        </button>
+
+                                        <!-- Handover Modal -->
+                                        <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="handoverModalLabel-{{ $collection->id }}"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-info text-white">
+                                                        <h5 class="modal-title"
+                                                            id="handoverModalLabel-{{ $collection->id }}">
+                                                            Handover Shipment #{{ $collection->requestId }}
+                                                        </h5>
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <form
+                                                        action="{{ route('shipments.handover', $collection->requestId) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <p class="mb-3">Please select the rider you want to handover
+                                                                this shipment to:</p>
+
+                                                            <div class="form-group">
+                                                                <label for="rider_id">Select Rider</label>
+                                                                <select name="rider_id" id="rider_id"
+                                                                    class="form-control" required>
+                                                                    <option value="">-- Choose Rider --</option>
+                                                                    @foreach ($riders as $rider)
+                                                                        <option value="{{ $rider->id }}">
+                                                                            {{ $rider->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="remarks">Remarks</label>
+                                                                <textarea name="remarks" id="remarks" class="form-control" rows="2"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-light"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-info">Confirm
+                                                                Handover</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -576,35 +635,32 @@
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">Receiver
-                                                                                Email <span class="text-danger">*</span>
+                                                                                Email
                                                                             </label>
                                                                             <input type="email" class="form-control"
                                                                                 name="receiverEmail"
-                                                                                value="{{ $collection->shipmentCollection?->receiver_email }}"
-                                                                                required>
+                                                                                value="{{ $collection->shipmentCollection?->receiver_email }}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">ID
-                                                                                Number <span class="text-danger">*</span>
+                                                                                Number
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverIdNo"
                                                                                 value="{{ $collection->shipmentCollection?->receiver_id_no }}"
-                                                                                required maxlength="8">
+                                                                                 maxlength="8">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">Phone
                                                                                 Number
-                                                                                <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverPhone"
-                                                                                value="{{ $collection->shipmentCollection?->receiver_phone }}"
-                                                                                required>
+                                                                                value="{{ $collection->shipmentCollection?->receiver_phone }}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-row">
@@ -615,25 +671,20 @@
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverAddress"
-                                                                                value="{{ $collection->shipmentCollection?->receiver_address }}"
-                                                                                required>
+                                                                                value="{{ $collection->shipmentCollection?->receiver_address }}">
                                                                         </div>
                                                                         <div class="form-group col-md-6">
                                                                             <label
                                                                                 class="form-label text-primary text-primary">Town
-                                                                                <span class="text-danger">*</span>
                                                                             </label>
                                                                             <input type="text" class="form-control"
                                                                                 name="receiverTown"
-                                                                                value="{{ $collection->shipmentCollection?->receiver_town }}"
-                                                                                required>
+                                                                                value="{{ $collection->shipmentCollection?->receiver_town }}">
                                                                             <input type="hidden"
                                                                                 value="{{ $consignment_no }}"
                                                                                 name="consignment_no">
                                                                         </div>
                                                                     </div>
-
-
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -743,7 +794,7 @@
                                                                             </option>
                                                                         @endforeach
 
-                                                                        <input type="text" name='destination_id'
+                                                                        <input type="hidden" type="text" name='destination_id'
                                                                             value="{{ $dest->id }}"
                                                                             id="destination_id">
                                                                     </select>
@@ -844,7 +895,7 @@
                                                                         value="{{ $collection->shipmentCollection?->cost ?? $collection->rate }}"
                                                                         required readonly>
                                                                 </div>
-                                                                <input type="hidden" name="base_cost" value="">
+                                                                <input type="hidden" name="base_cost" value="{{ $collection->shipmentCollection?->base_cost }}">
 
                                                                 <div class="form-group col-md-3">
                                                                     <label class="form-label text-primary">Tax

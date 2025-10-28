@@ -394,10 +394,9 @@
                                         <span
                                             class="badge p-2
                                             @if ($request->status === 'pending collection' || $request->status === 'Pending-Collection') bg-secondary
-                                            @elseif ($request->status == 'collected')
-                                                bg-warning
-                                            @elseif ($request->status == 'verified')
-                                                bg-primary @endif
+                                            @elseif ($request->status === 'collected') bg-warning
+                                            @elseif ($request->status === 'verified') bg-primary
+                                            @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($request->status) }}
                                         </span>

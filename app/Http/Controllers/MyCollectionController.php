@@ -55,6 +55,7 @@ class MyCollectionController extends Controller
     public function collect()
     {
         $offices = Office::where('id', Auth::user()->station)->get();
+        $riders = User::where('role', 'driver')->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
@@ -79,7 +80,7 @@ class MyCollectionController extends Controller
             ->where('source', 'client_portal')
             ->orderBy('created_at','desc')
             ->get();
-        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no]);
+        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders]);
     }
 
     public function store(Request $request)

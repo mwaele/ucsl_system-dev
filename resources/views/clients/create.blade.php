@@ -37,7 +37,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label>ID Number</label>
-                        <input type="text" name="id_number" id="id_number" class="form-control"
+                        <input type="text" name="id_number" class="form-control"
                             placeholder="Enter ID Number">
                     </div>
                     <div class="form-group col-md-4">
