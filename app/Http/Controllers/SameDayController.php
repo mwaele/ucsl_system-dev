@@ -463,6 +463,10 @@ class SameDayController extends Controller
                 $request->start . " 00:00:00",
                 $request->end . " 23:59:59"
             ]);
+        } elseif ($request->filled('start')) {
+            $clientRequests->whereDate('created_at', '>=', $request->start);
+        } elseif ($request->filled('end')) {
+            $clientRequests->whereDate('created_at', '<=', $request->end);
         }
 
         $clientRequests = $clientRequests->get();

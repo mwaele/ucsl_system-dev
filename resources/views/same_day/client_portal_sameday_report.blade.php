@@ -58,8 +58,8 @@
         <table>
             <tr>
                 <td style="text-align: left;">
-                    <h3><strong>Report for All Sameday Parcels</strong></h3>
-                    <p class="lead"><strong>Reporting Period:</strong>
+                    <h3><strong>Report for All Sameday Parcels for {{ auth('client')->user()->name }}</strong></h3>
+                    <p class="lead"><strong>Generated on:</strong>
                         {{ \Carbon\Carbon::now()->format('F j, Y') }}</p>
                 </td>
                 <td style="text-align: right; vertical-align: top;">
@@ -74,7 +74,6 @@
                 <tr>
                     <th>#</th>
                     <th>Request ID</th>
-                    <th>Client</th>
                     <th>From</th>
                     <th>To</th>
                     <th>Date Requested</th>
@@ -87,7 +86,6 @@
                     <tr>
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $request->requestId }} </td>
-                        <td> {{ $request->client->name }} </td>
                         <td> {{ $request->shipmentCollection?->sender_address }} </td>
                         <td> {{ $request->shipmentCollection?->receiver_address }} </td>
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('M j, Y') }}

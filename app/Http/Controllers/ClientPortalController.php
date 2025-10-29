@@ -49,6 +49,7 @@ class ClientPortalController extends Controller
     {
         $this->requestIdService = $requestIdService;
     }
+
     public function index(Request $request)
     {
         // $user = Auth::user();
@@ -87,39 +88,39 @@ class ClientPortalController extends Controller
         ->get();
         //dd($shipments);
 
-    // Define all months
-    $allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        // Define all months
+        $allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // Initialize data arrays
-    $labels = [];
-    $data = [];
+        // Initialize data arrays
+        $labels = [];
+        $data = [];
 
-    $overnight = DB::table('shipment_collections')
-    ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-    ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
-    ->where('sub_categories.sub_category_name', 'Overnight')
-    ->where('client_requests.source','client_portal')
-    ->count();
+        $overnight = DB::table('shipment_collections')
+        ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+        ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
+        ->where('sub_categories.sub_category_name', 'Overnight')
+        ->where('client_requests.source','client_portal')
+        ->count();
 
-     $sameDay = DB::table('shipment_collections')
-    ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-    ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
-    ->where('sub_categories.sub_category_name', 'Same Day')
-    ->where('client_requests.source','client_portal')
-    ->count();
+        $sameDay = DB::table('shipment_collections')
+        ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+        ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
+        ->where('sub_categories.sub_category_name', 'Same Day')
+        ->where('client_requests.source','client_portal')
+        ->count();
 
 
-    foreach ($allMonths as $index => $monthName) {
-        $monthNumber = $index + 1;
-        $record = $shipments->firstWhere('month', $monthNumber);
-        $labels[] = $monthName;
-        $data[] = $record ? $record->total : 0;
-    }
+        foreach ($allMonths as $index => $monthName) {
+            $monthNumber = $index + 1;
+            $record = $shipments->firstWhere('month', $monthNumber);
+            $labels[] = $monthName;
+            $data[] = $record ? $record->total : 0;
+        }
 
-    // return response()->json([
-    //     'labels' => $labels,
-    //     'data' => $data,
-    // ]);
+        // return response()->json([
+        //     'labels' => $labels,
+        //     'data' => $data,
+        // ]);
 
         $queryWithDate = fn($q) => $dateRange
             ? $q->whereBetween('created_at', $dateRange)
@@ -234,7 +235,8 @@ class ClientPortalController extends Controller
             'totalRevenue'
         ));
         //return view('client_portal.index');
-    } 
+    }
+
     public function client_index(Request $request)
     {
         $clientId = auth('client')->user()->id;
@@ -394,6 +396,7 @@ class ClientPortalController extends Controller
             'status',
         ));
     }
+
     public function dashboard()
     {
         return view('client_portal.dashboard');
@@ -470,10 +473,12 @@ class ClientPortalController extends Controller
         ])->setPaper('a5', 'portrait');
         return $pdf->stream('Waybill_'.$collection->waybill_no.'.pdf');
     }
+
     public function sameday_walkin()
     {
         return view('client_portal.shipments.sameday_walkin');
     }
+
     public function sameday_on_account(Request $request)
     {
         $categories = ClientCategory::where('client_id', auth('client')->user()->id)
@@ -531,8 +536,6 @@ class ClientPortalController extends Controller
             'sub_category'
         )); 
     }
-    
-
 
     public function store(Request $request)
     {
@@ -625,25 +628,25 @@ class ClientPortalController extends Controller
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
-    private function formatPhoneNumber($phone)
-{
-    $phone = preg_replace('/\D/', '', $phone); // remove non-numeric characters
 
-    if (str_starts_with($phone, '0')) {
-        // Replace leading 0 with +254
-        return '+254' . substr($phone, 1);
-    } elseif (str_starts_with($phone, '254')) {
-        // Already has 254, just add +
-        return '+' . $phone;
-    } elseif (str_starts_with($phone, '+254')) {
-        // Already in correct format
+    private function formatPhoneNumber($phone)
+    {
+        $phone = preg_replace('/\D/', '', $phone); // remove non-numeric characters
+
+        if (str_starts_with($phone, '0')) {
+            // Replace leading 0 with +254
+            return '+254' . substr($phone, 1);
+        } elseif (str_starts_with($phone, '254')) {
+            // Already has 254, just add +
+            return '+' . $phone;
+        } elseif (str_starts_with($phone, '+254')) {
+            // Already in correct format
+            return $phone;
+        }
+
+        // fallback: return unchanged
         return $phone;
     }
-
-    // fallback: return unchanged
-    return $phone;
-}
-
 
     public function create(Request $request, SmsService $smsService)
     {
