@@ -56,6 +56,8 @@ class ShipmentCollection extends Model
         'total_insurance_amount',
         'insurance_charged_amount', 
         'insurance_status',  
+        'released_at',
+        'released_by',
     ];
 
     public function clientRequest()

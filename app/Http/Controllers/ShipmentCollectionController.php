@@ -1666,5 +1666,31 @@ class ShipmentCollectionController extends Controller
         );
     }
 
+    public function releaseCollections(Request $request, $requestId)
+    {
+        $shipmentCollection = ShipmentCollection::where('requestId', $requestId)->first();
+
+        // Update the status to 'released'
+        $shipmentCollection->status = 'released';
+        $shipmentCollection->released_at = now();
+        $shipmentCollection->released_by = auth()->user()->id;
+        $shipmentCollection->save();
+
+         DB::table('shipment_collections')
+                ->where('requestId', $requestId)
+                ->update([
+                    'status' => 'released',
+                    'updated_at' => now()
+                ]);
+        DB::table('client_requests')
+                ->where('requestId', $requestId)
+                ->update([
+                    'status' => 'released',
+                    'updated_at' => now()
+                ]);
+
+        return redirect()->back()->with('success', 'Shipment collection released successfully.');   
+    }
+
 
 }

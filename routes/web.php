@@ -48,6 +48,7 @@ use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ClientCancelledShipmentController;
 use App\Http\Controllers\DeliveryControlController;
+use App\Http\Controllers\FailedCollectionController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -182,6 +183,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
     Route::post('/shipments/{id}/deliver', [ShipmentController::class, 'markAsDelivered'])->name('shipments.deliver');
     Route::resource('delivery_faileds','App\Http\Controllers\DeliveryFailedController');
+    Route::resource('failed_collection','App\Http\Controllers\FailedCollectionController');
     Route::resource('shipments','App\Http\Controllers\ShipmentController');
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');
@@ -255,6 +257,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/agent/request-approval', [ShipmentDeliveriesController::class, 'requestApproval'])->name('request.agent.approval');
     Route::post('/failed_delivery_alert', [ShipmentDeliveriesController::class, 'failed_delivery_alert'])->name('failed_delivery_alert');
+    Route::post('/failed_collection_alert', [FailedCollectionController::class, 'failed_collection_alert'])->name('failed_collection_alert');
     Route::get('/agent/approve/{requestId}', [ShipmentDeliveriesController::class, 'approveAgent'])->name('agent.approve');
     Route::post('/client-request/agent-approval', [ShipmentDeliveriesController::class, 'handleAgentApproval'])->name('client-request.agent-approval');
     Route::get('/agent/decline/{requestId}', [ShipmentDeliveriesController::class, 'showDeclineForm'])->name('agent.decline.form');
@@ -460,6 +463,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
+    Route::post('/shipments/failedCollections/{requestId}', [FailedCollectionController::class, 'failedCollections'])->name('shipments.failedCollections');
+    Route::post('/shipments/releaseCollections/{requestId}', [ShipmentCollectionController::class, 'releaseCollections'])->name('collection.release');
+    
     Route::get('/deliveries/metrics', [ShipmentCollectionController::class, 'deliveryMetrics'])->name('deliveries.metrics');
     Route::get('/delivery-metrics/pdf', [ShipmentCollectionController::class, 'exportdeliveryMetricsPdf'])->name('delivery-metrics.export.pdf');
     Route::get('/delivery_metrics/pdf', [ShipmentCollectionController::class, 'exportdeliveryMetricPdf'])->name('delivery-metrics.export.pdf');

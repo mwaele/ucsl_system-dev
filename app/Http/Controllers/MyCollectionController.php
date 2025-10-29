@@ -11,6 +11,7 @@ use App\Models\ShipmentCollection;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
+use App\Models\FailedCollection;
 
 use Auth;
 
@@ -39,6 +40,8 @@ class MyCollectionController extends Controller
 
         $consignment_no = 'CN-' . $newNumber;
 
+        $failedCollections = FailedCollection::all();
+
         $collections = ClientRequest::with('shipmentCollection.office',
                                             'shipmentCollection.destination',
                                             'shipmentCollection.items')
@@ -49,7 +52,7 @@ class MyCollectionController extends Controller
             })
             ->orderBy('created_at','desc')
             ->get();
-        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders]);
+        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
     }
 
     public function collect()
@@ -58,6 +61,7 @@ class MyCollectionController extends Controller
         $riders = User::where('role', 'driver')->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
+        $failedCollections = FailedCollection::all();
 
         // Get the latest consignment number
         $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
@@ -80,7 +84,7 @@ class MyCollectionController extends Controller
             ->where('source', 'client_portal')
             ->orderBy('created_at','desc')
             ->get();
-        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders]);
+        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders, 'failedCollections'=>$failedCollections]);
     }
 
     public function store(Request $request)

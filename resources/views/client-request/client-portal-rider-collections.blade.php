@@ -143,22 +143,36 @@
                                 <td data-date="{{ $collection->created_at }}"> {{ $collection->created_at }} </td>
                                 <td> {{ $collection->client->address }} </td>
                                 <td>
-                                    <span
-                                        class="badge p-2
-                                        @if ($collection->status === 'pending collection') bg-secondary
-                                        @elseif ($collection->status === 'collected') bg-warning
-                                        @elseif ($collection->status === 'verified') bg-primary
-                                        @else bg-dark @endif
-                                        fs-5 text-white">
+                                    @php
+                                        $statusColor = match ($collection->status) {
+                                            'pending collection' => 'bg-secondary',
+                                            'collected' => 'bg-warning',
+                                            'verified' => 'bg-info',
+                                            'delivered' => 'bg-success',
+                                            'collection_failed' => 'bg-danger',
+                                            'delivery_failed' => 'bg-danger',
+                                            default => 'bg-dark',
+                                        };
+                                    @endphp
+
+                                    <span class="badge p-2 fs-5 text-white {{ $statusColor }}">
                                         {{ \Illuminate\Support\Str::title($collection->status) }}
+                                    </span>
                                     </span>
                                 </td>
                                 <td class="d-flex pl-2">
-                                    @if ($collection->status === 'pending collection')
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
                                         <button class="btn btn-sm btn-warning mr-1" data-toggle="modal"
                                             title="Collect parcels" data-destination-id="{{ $collection->destination_id }}"
-                                            data-target="#collect-{{ $collection->id }}"> Collect <i class="fas fa-box">
-                                                {{ $collection->destination_id }}</i>
+                                            data-target="#collect-{{ $collection->id }}"><i class="fas fa-box">
+                                                {{ $collection->destination_id }}</i> Collect
+                                        </button>
+                                        <button class="btn btn-sm btn-danger ml-1 mr-1" title="Failed Collection"
+                                            data-toggle="modal" data-target="#failedCollectionModal-{{ $collection->id }}">
+                                            Failed Collection <i class="fas fa-exchange-alt"></i>
                                         </button>
                                     @endif
                                     @if ($collection->status === 'collected')
@@ -166,6 +180,109 @@
                                             data-target="#printModal-{{ $collection->id }}">
                                             Print receipt<i class="fas fa-print"></i>
                                         </button>
+                                        <button class="btn btn-sm btn-danger ml-1 mr-1" title="Release Collection"
+                                            data-toggle="modal"
+                                            data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                            Release <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <div class="modal fade" id="releaseCollectionModal-{{ $collection->id }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="releaseCollectionLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog " role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-primary">
+                                                        <h5 class="modal-title text-white">Release Collection to Front
+                                                            Office - RequestId {{ $collection->requestId }} </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <form
+                                                        action="{{ route('collection.release', $collection->requestId) }}"
+                                                        method="POST">
+                                                        <div class="modal-body">
+                                                            @csrf
+
+                                                            <p>Are you sure you want to release this collection to the front
+                                                                office?</p>
+
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-success">
+                                                                Yes Release
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
+                                        <!-- Failed Collection Modal -->
+                                        <div class="modal fade" id="failedCollectionModal-{{ $collection->id }}"
+                                            tabindex="-1" role="dialog"
+                                            aria-labelledby="failedCollectionModalLabel-{{ $collection->id }}"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title"
+                                                            id="failedCollectionModalLabel-{{ $collection->id }}">
+                                                            Failed Collection for RequestId
+                                                            #{{ $collection->requestId }}
+                                                        </h5>
+                                                        <button type="button" class="close text-white" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <form id="failedCollectionForm-{{ $collection->id }}"
+                                                        action="{{ route('shipments.failedCollections', $collection->requestId) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <p class="mb-3">Please select the reasons
+                                                                for failing to
+                                                                collect:</p>
+
+                                                            <div class="form-group">
+                                                                <label for="failedCollection-{{ $collection->id }}">Select
+                                                                    Reason</label>
+                                                                <select name="reason"
+                                                                    id="failedCollection-{{ $collection->id }}"
+                                                                    class="form-control" required>
+                                                                    <option value="">-- Choose
+                                                                        Reason --</option>
+                                                                    @foreach ($failedCollections as $reason)
+                                                                        <option value="{{ $reason->id }}">
+                                                                            {{ $reason->reason }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="remarks-{{ $collection->id }}">Remarks</label>
+                                                                <textarea name="remarks" id="remarks-{{ $collection->id }}" class="form-control" rows="2"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-info">Submit</button>
+                                                        </div>
+                                                    </form>
+
+                                                    <!-- Success/Error alert -->
+                                                    <div id="failedCollectionAlert-{{ $collection->id }}" class="mt-3">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                     @if ($collection->shipmentCollection)
                                         <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
@@ -173,7 +290,8 @@
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content" id="print-modal-{{ $collection->id }}">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
+                                                        <h5 class="modal-title"
+                                                            id="printModalLabel-{{ $collection->id }}">
                                                             Shipment Receipt</h5>
                                                         <button type="button" class="text-primary close"
                                                             data-dismiss="modal" aria-label="Close">
@@ -192,8 +310,10 @@
                                                                         x="0" y="0" width="194" height="71" />
                                                                 </svg>
                                                             </div>
-                                                            <div style="text-align: center; font-size: 15px;"><strong>Parcel
-                                                                    Consignment Note</strong></div>
+                                                            <div style="text-align: center; font-size: 15px;">
+                                                                <strong>Parcel
+                                                                    Consignment Note</strong>
+                                                            </div>
                                                             <hr style="margin: 4px 0;">
 
                                                             <div style="font-size: 14px;"><strong>Request ID:
@@ -290,22 +410,26 @@
                                                                 </table>
                                                                 <hr style="margin: 4px 0;">
 
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total Weight:</strong>
                                                                     <span>{{ number_format($totalWeight, 2) }}
                                                                         {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Base Cost:</strong>
                                                                     <span>Ksh
                                                                         {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>VAT:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                                                 </div>
-                                                                <div style="display: flex; justify-content: space-between;">
+                                                                <div
+                                                                    style="display: flex; justify-content: space-between;">
                                                                     <strong>Total:</strong>
                                                                     <span> Ksh
                                                                         {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
@@ -421,18 +545,18 @@
                                     @endif
 
                                     <!-- <a href="#">
-                                                                                                <button class="btn btn-sm btn-warning mr-1" title="View">
-                                                                                                    <i class="fas fa-eye"></i>
-                                                                                                </button>
-                                                                                            </a>
-                                                                                            <a href="#">
-                                                                                                <button class="btn btn-sm btn-success mr-1" title="PDF Download">
-                                                                                                    <i class="fas fa-file-pdf"></i>
-                                                                                                </button>
-                                                                                            </a>
-                                                                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                                                                                data-target="#delete_floor-{{ $collection->id }}"><i
-                                                                                                    class="fas fa-trash"></i></button> -->
+                                                                                                                                <button class="btn btn-sm btn-warning mr-1" title="View">
+                                                                                                                                    <i class="fas fa-eye"></i>
+                                                                                                                                </button>
+                                                                                                                            </a>
+                                                                                                                            <a href="#">
+                                                                                                                                <button class="btn btn-sm btn-success mr-1" title="PDF Download">
+                                                                                                                                    <i class="fas fa-file-pdf"></i>
+                                                                                                                                </button>
+                                                                                                                            </a>
+                                                                                                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                                                                                                data-target="#delete_floor-{{ $collection->id }}"><i
+                                                                                                                                    class="fas fa-trash"></i></button> -->
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="delete_floor-{{ $collection->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -691,6 +815,8 @@
 
 
 
+
+
                                                         @if ($collection->client->special_rates_status)
                                                             <!-- Origin & Destination -->
                                                             <div class="form-row">
@@ -832,7 +958,8 @@
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
                                                                                     name="packages[]"
-                                                                                    value="{{ $item->packages_no }}"></td>
+                                                                                    value="{{ $item->packages_no }}">
+                                                                            </td>
                                                                             <td><input type="number" min="0"
                                                                                     max="100" class="form-control"
                                                                                     name="weight[]"
@@ -917,13 +1044,13 @@
                                                                         required readonly>
                                                                 </div>
                                                                 <!-- <div class="form-group col-md-4">
-                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
-                                                                                                                            class="text-danger">*</span>
-                                                                                                                    </label>
-                                                                                                                    <input type="number" min="0"
-                                                                                                                        class="form-control" name="total_cost" required
-                                                                                                                        readonly>
-                                                                                                                </div> -->
+                                                                                                                                                    <label class="form-label text-primary text-primary">Total Cost <span
+                                                                                                                                                            class="text-danger">*</span>
+                                                                                                                                                    </label>
+                                                                                                                                                    <input type="number" min="0"
+                                                                                                                                                        class="form-control" name="total_cost" required
+                                                                                                                                                        readonly>
+                                                                                                                                                </div> -->
                                                             </div>
 
                                                         </div>
@@ -946,6 +1073,56 @@
                     </tbody>
                 </table>
             </div>
+
+            <script>
+                $(document).ready(function() {
+                    $(document).off('submit', 'form[id^="failedCollectionForm-"]').on('submit',
+                        'form[id^="failedCollectionForm-"]',
+                        function(e) {
+                            e.preventDefault();
+
+                            const form = $(this);
+                            const actionUrl = form.attr('action');
+                            const formData = form.serialize();
+                            const formId = form.attr('id').split('-')[1]; // get collection ID suffix
+                            const alertBox = $('#failedCollectionAlert-' + formId);
+
+                            $.ajax({
+                                url: actionUrl,
+                                type: 'POST',
+                                data: formData,
+                                beforeSend: function() {
+                                    alertBox.html(
+                                        '<div class="alert alert-info">Submitting, please wait...</div>'
+                                    );
+                                },
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        alertBox.html('<div class="alert alert-success">' + response
+                                            .message + '</div>');
+                                        form.find('button[type="submit"]').prop('disabled', true);
+                                        setTimeout(() => {
+                                            $('#failedCollectionModal-' + formId).modal('hide');
+                                            location.reload();
+                                        }, 1500);
+                                    } else if (response.status === 'warning') {
+                                        alertBox.html('<div class="alert alert-warning">' + response
+                                            .message + '</div>');
+                                    }
+                                },
+                                error: function(xhr) {
+                                    let message = 'An unexpected error occurred.';
+                                    if (xhr.status === 422) {
+                                        message = 'Please fill in all required fields.';
+                                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        message = xhr.responseJSON.message;
+                                    }
+                                    alertBox.html('<div class="alert alert-danger">' + message + '</div>');
+                                }
+                            });
+                        });
+                });
+            </script>
 
             <!-- JavaScript to toggle and populate form -->
 
