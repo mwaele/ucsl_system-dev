@@ -450,7 +450,7 @@ class SameDayController extends Controller
     public function client_portal_sameday_report(Request $request)
     {
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
-        $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
+        $clientRequests = ClientRequest::where('sub_category_id', $samedaySubCategoryIds)
             ->whereHas('client', function ($query) {
                 $query->where('type', 'on_account');
             })
@@ -459,14 +459,20 @@ class SameDayController extends Controller
 
         // ✅ Apply date range filter if provided
         if ($request->filled('start') && $request->filled('end')) {
-            $clientRequests->whereBetween('created_at', [
-                $request->start . " 00:00:00",
-                $request->end . " 23:59:59"
-            ]);
+            $clientRequests->whereHas('shipmentCollection', function ($query) use ($request) {
+                $query->whereBetween('created_at', [
+                    $request->start . " 00:00:00",
+                    $request->end . " 23:59:59"
+                ]);
+            });
         } elseif ($request->filled('start')) {
-            $clientRequests->whereDate('created_at', '>=', $request->start);
+            $clientRequests->whereHas('shipmentCollection', function ($query) use ($request) {
+                $query->whereDate('created_at', '>=', $request->start);
+            });
         } elseif ($request->filled('end')) {
-            $clientRequests->whereDate('created_at', '<=', $request->end);
+            $clientRequests->whereHas('shipmentCollection', function ($query) use ($request) {
+                $query->whereDate('created_at', '<=', $request->end);
+            });
         }
 
         $clientRequests = $clientRequests->get();

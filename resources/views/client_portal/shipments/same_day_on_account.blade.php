@@ -37,71 +37,56 @@
                          */
                         function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
                             reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
                             const clearBtn = document.getElementById(clearBtnId);
 
-                            function filterTable() {
-                                let startDate = startInput.value;
-                                let endDate = endInput.value;
-
-                                let table = document.getElementById(tableId);
-                                if (!table) return;
-
-                                let rows = table.getElementsByTagName("tr");
-
-                                for (let i = 1; i < rows.length; i++) { // skip header
-                                    let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
-                                    if (dateCell) {
-                                        let rowDateStr = dateCell.getAttribute("data-date");
-                                        let rowDate = rowDateStr ? new Date(rowDateStr) : new Date(dateCell.innerText);
-                                        rowDate.setHours(0, 0, 0, 0);
-
-                                        let showRow = true;
-
-                                        if (startDate) {
-                                            let from = new Date(startDate);
-                                            from.setHours(0, 0, 0, 0);
-                                            if (rowDate < from) showRow = false;
-                                        }
-
-                                        if (endDate) {
-                                            let to = new Date(endDate);
-                                            to.setHours(0, 0, 0, 0);
-                                            if (rowDate > to) showRow = false;
-                                        }
-
-                                        rows[i].style.display = showRow ? "" : "none";
-                                    }
-                                }
-                            }
-
+                            // 🧹 Clear filter
                             function clearFilter() {
                                 startInput.value = "";
                                 endInput.value = "";
-
-                                let table = document.getElementById(tableId);
-                                if (!table) return;
-
-                                let rows = table.getElementsByTagName("tr");
-                                for (let i = 1; i < rows.length; i++) {
-                                    rows[i].style.display = "";
-                                }
+                                const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+                                rows.forEach(row => row.style.display = "");
                             }
 
+                            // 🔎 Filter rows visually
+                            function filterTable() {
+                                const start = startInput.value ? new Date(startInput.value) : null;
+                                const end = endInput.value ? new Date(endInput.value) : null;
+                                const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+
+                                rows.forEach(row => {
+                                    const cell = row.querySelectorAll("td")[dateColIndex];
+                                    if (!cell) return;
+
+                                    const rawDate = cell.getAttribute("data-date") || cell.innerText;
+                                    const rowDate = new Date(rawDate);
+                                    rowDate.setHours(0, 0, 0, 0);
+
+                                    let visible = true;
+                                    if (start && rowDate < start) visible = false;
+                                    if (end && rowDate > end) visible = false;
+
+                                    row.style.display = visible ? "" : "none";
+                                });
+                            }
+
+                            // 🧾 Generate filtered report
+                            reportBtn.addEventListener("click", () => {
+                                const start = startInput.value;
+                                const end = endInput.value;
+                                window.location.href = `${reportUrl}?start=${start}&end=${end}`;
+                            });
+
+                            // Event listeners
                             startInput.addEventListener("change", filterTable);
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
-
-                            reportBtn.addEventListener("click", function() {
-                                let startDate = startInput.value;
-                                let endDate = endInput.value;
-                                window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
-                            });
                         }
 
-                        // Example usage for "Overnight walk-in" page
+                        // Initialize filter for this table
                         initDateFilter("dataTable", 3, "/client_portal_sameday_report");
                     </script>
 
