@@ -406,33 +406,42 @@
                                         <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 mb-1 mr-1"
                                             data-toggle="modal" title="Collect parcels"
                                             data-target="#collect-{{ $collection->id }}">
-                                            <i class="fas fa-box"></i> <span>Collect</span>
+                                            <i class="fas fa-box mr-1"></i>  Collect
                                         </button>
-                                        <button class="btn btn-sm btn-danger" title="Failed Collection"
+                                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 ml-1" title="Failed Collection"
                                             data-toggle="modal" data-target="#failedCollectionModal-{{ $collection->id }}">
-                                            Failed Collection <i class="fas fa-exchange-alt"></i>
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
                                         </button>
                                     @endif
 
                                     {{-- Collected --}}
                                     @if ($collection->status === 'collected')
+                                        <!-- Consignment Button -->
                                         <button class="btn btn-primary btn-sm mr-1 mb-1 d-flex align-items-center gap-1"
                                             title="Print Consignment Note" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">
-                                            <i class="fas fa-file-alt"></i> <span>Consignment</span>
+                                            <i class="fas fa-file-alt mr-1"></i> <span>Consignment</span>
                                         </button>
 
-                                        <button class="btn btn-info btn-sm mr-1 mb-1 d-flex align-items-center gap-1"
+                                        <!-- Handover to rider Button -->
+                                        <button class="btn btn-info btn-sm mr-1 ml-1 mb-1 d-flex align-items-center gap-1"
                                             title="Handover to Rider" data-toggle="modal"
                                             data-target="#handoverModal-{{ $collection->id }}">
-                                            <i class="fas fa-exchange-alt"></i> <span> Handover</span>
+                                            <i class="fas fa-exchange-alt mr-1"></i> <span> Handover</span>
                                         </button>
 
-                                        <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
+                                        <!-- Release Collection Button -->
+                                        <button class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                            data-toggle="modal" title="Release Collection"
+                                            data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                            Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                        </button>
+
+                                        <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
                                             title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
                                             <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                        </button>
+                                        </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -440,7 +449,7 @@
                                         <button class="btn btn-primary btn-sm mr-1 d-flex align-items-center gap-1"
                                             title="Print Receipt"
                                             data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
-                                            <i class="fas fa-print"></i> <span>Receipt</span>
+                                            <i class="fas fa-print mr-1"></i> <span>Receipt</span>
                                         </button>
                                     @endif
                                 </td>
@@ -470,14 +479,27 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h6 class="mb-0 text-primary fw-bold">{{ $loop->iteration }}. Req ID: {{ $collection->requestId }}</h6>
-                                <span class="badge
-                                    @if ($collection->status === 'pending collection') bg-secondary
-                                    @elseif ($collection->status === 'collected') bg-warning
-                                    @elseif ($collection->status === 'verified') bg-primary
-                                    @elseif ($collection->status === 'Collection Cancelled') bg-danger
-                                    @else bg-dark @endif text-white">
+                                @php
+                                    $statusColor = match ($collection->status) {
+                                        'pending collection' => 'bg-secondary',
+                                        'collected' => 'bg-warning',
+                                        'verified' => 'bg-info',
+                                        'delivered' => 'bg-success',
+                                        'collection_failed' => 'bg-danger',
+                                        'delivery_failed' => 'bg-danger',
+                                        default => 'bg-dark',
+                                    };
+                                @endphp
+
+                                <span class="badge p-2 fs-5 text-white {{ $statusColor }}">
                                     {{ \Illuminate\Support\Str::title($collection->status) }}
                                 </span>
+
+                                @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
+                                    <span class="badge p-2 mt-2 bg-danger text-white">
+                                        Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
+                                    </span>
+                                @endif
                             </div>
 
                             <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
@@ -495,42 +517,52 @@
                             <div class="mt-3 d-flex flex-wrap gap-2">
                                 {{-- Mobile Buttons (same logic, just smaller) --}}
                                 @if ($collection->status === 'pending collection')
-                                    <button class="btn btn-warning btn-sm d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
+                                    <button class="btn btn-warning btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         data-toggle="modal" title="Collect parcels"
                                         data-target="#collect-{{ $collection->id }}">
-                                        <i class="fas fa-box"></i> <span>Collect</span>
+                                        <i class="fas fa-box mr-1"></i> <span>Collect</span>
                                     </button>
-                                    <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 w-100 justify-content-center" title="Failed Collection"
-                                        data-toggle="modal" data-target="#failedCollectionModal-{{ $collection->id }}">
-                                        Failed Collection <i class="fas fa-exchange-alt"></i>
+                                    <button class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center" 
+                                        data-toggle="modal" title="Failed Collection"
+                                        data-target="#failedCollectionModal-{{ $collection->id }}">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
                                     </button>
                                 @endif
 
                                 @if ($collection->status === 'collected')
-                                    <button class="btn btn-primary btn-sm mb-1 d-flex align-items-center gap-1 w-100 justify-content-center"
+                                    <!-- Print Consignment Button -->
+                                    <button class="btn btn-primary btn-sm mb-1 mr-1 d-flex align-items-center gap-1 w-100 justify-content-center"
                                         title="Consignment Note" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->id }}">
-                                        <i class="fas fa-file-alt"></i> <span>Consignment</span>
+                                        <i class="fas fa-file-alt mr-1"></i> <span>Consignment Note</span>
                                     </button>
 
-                                    <button class="btn btn-info btn-sm d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
+                                    <!-- Handover Button -->
+                                    <button class="btn btn-info btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         title="Handover to Rider" data-toggle="modal"
                                         data-target="#handoverModal-{{ $collection->id }}">
-                                        <i class="fas fa-exchange-alt"></i> <span>Handover</span>
+                                        <i class="fas fa-exchange-alt mr-1"></i> <span>Handover</span>
                                     </button>
 
-                                    <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
+                                    <!-- Release Collection Button -->
+                                    <button class="btn btn-sm btn-warning ml-1 mr-1 mb-1" title="Release Collection"
+                                        data-toggle="modal"
+                                        data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                        Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                    </button>
+
+                                    <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
                                         title="Waybill" data-toggle="modal"
                                         data-target="#waybillModal{{ $collection->requestId }}">
                                         <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                    </button>
+                                    </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
                                     <button class="btn btn-primary btn-sm d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
                                         title="Receipt" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->id }}">
-                                        <i class="fas fa-print"></i> <span>Receipt</span>
+                                        <i class="fas fa-print mr-1"></i> <span>Receipt</span>
                                     </button>
                                 @endif
                             </div>
@@ -1301,11 +1333,6 @@
                                                 <option value="{{ $reason->id }}">
                                                     {{ $reason->reason }}</option>
                                             @endforeach
-                                            @foreach ($riders as $rider)
-                                                <option value="{{ $rider->id }}">
-                                                    {{ $rider->name }}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </div>
 
@@ -1328,6 +1355,40 @@
                     </div>
                 </div>
                 @endif
+
+                <!-- Release Collection Modal -->
+                <div class="modal fade" id="releaseCollectionModal-{{ $collection->id }}"
+                    tabindex="-1" role="dialog" aria-labelledby="releaseCollectionLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog " role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                <h5 class="modal-title text-white">Release Collection to Front
+                                    Office - RequestId {{ $collection->requestId }} </h5>
+                                <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form
+                                action="{{ route('collection.release', $collection->requestId) }}"
+                                method="POST">
+                                <div class="modal-body">
+                                    @csrf
+
+                                    <p>Are you sure you want to release this collection to the front
+                                        office?</p>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">
+                                        Yes Release
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             @endforeach
 
             <!-- JavaScript to handle AJAX form submission for Failed Collection -->                             
