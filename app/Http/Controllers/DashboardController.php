@@ -95,6 +95,8 @@ class DashboardController extends Controller
             ->count();
             $verified = ClientRequest::where('status', 'verified')->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->when($dateRange, $queryWithDate)->count();
+            $failed_collection = ClientRequest::where('status', 'collection_failed')->when($dateRange, $queryWithDate)->count();
+
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')->when($dateRange, $queryWithDate)->count();
             $onTransitParcels = ShipmentCollection::whereIn('status', [
                     'Delivery Rider Allocated',
@@ -143,6 +145,7 @@ class DashboardController extends Controller
                     ->when($dateRange, $queryWithDate)->count(),
                 'failed' => ClientRequest::where('status', 'delivery_failed')->where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
+                    'failed_collection' => ClientRequest::where('status', 'collection_failed')->when($dateRange, $queryWithDate)->count()
                 ];
             }
         } else {
@@ -222,6 +225,7 @@ class DashboardController extends Controller
             'collected',
             'verified',
             'pendingCollection',
+            'failed_collection',
             'recentRequests',
             'userCount',
             'stationStats',

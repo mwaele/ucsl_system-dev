@@ -152,6 +152,7 @@ class ClientRequestController extends Controller
         $collected = (clone $baseQuery)->where('status', 'collected')->count();
         $verified = (clone $baseQuery)->where('status', 'verified')->count();
         $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+        $failed_collection = (clone $baseQuery)->where('status', 'collection_failed')->count();
 
         // --- Delivery-specific metrics ---
         $ctrTime = DeliveryControl::where('control_id', 'CTRL-0001')
@@ -198,6 +199,7 @@ class ClientRequestController extends Controller
             'collected',
             'verified',
             'pending_collection',
+            'failed_collection',
             'undeliveredParcels',
             'onTransitParcels',
             'failedDeliveries',
@@ -817,6 +819,7 @@ class ClientRequestController extends Controller
         $collected = (clone $baseQuery)->where('status', 'collected')->count();
         $verified = (clone $baseQuery)->where('status', 'verified')->count();
         $pending_collection = (clone $baseQuery)->where('status', 'pending collection')->count();
+        $failed_collection = (clone $baseQuery)->where('status', 'collection_failed')->count();
 
         // --- Delivery-specific metrics ---
         $shipmentBase = ShipmentCollection::query()

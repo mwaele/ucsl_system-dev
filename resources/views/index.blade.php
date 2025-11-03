@@ -130,6 +130,30 @@
             </a>
         </div>
 
+        <!-- Failed Collections Card -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collection_failed', 'time' => $timeFilter])) }}"
+                title="View Failed Collections" class="text-decoration-none text-dark">
+                <div class="card border-left-warning bg-danger shadow h-100 py-2 hover-card">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                                    Failed Collections
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-white">
+                                    {{ $failed_collection }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- Collected Requests Card -->
         <div class="col-xl-2 col-md-6 mb-4">
             <a href="{{ route('client-requests.index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
@@ -323,7 +347,7 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -357,7 +381,7 @@
     </div>
 
     <div class="row">
-    <!-- Total Revenue -->
+        <!-- Total Revenue -->
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
@@ -423,11 +447,11 @@
 
 
     @if ($stationStats)
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h3 class="h3 mb-0 text-primary">Parcel Requests & Collection Status by offices</h3>
-    </div>
-    
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h3 class="h3 mb-0 text-primary">Parcel Requests & Collection Status by offices</h3>
+        </div>
+
         <div class="row mt-4">
             @foreach ($stationStats as $stationName => $stats)
                 <div class="col-md-2 mb-3">
@@ -437,7 +461,9 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary text-uppercase mb-2">{{ $stationName }}
                                 </h6>
-                                <p class="mb-1 btn btn-outline-success btn-sm">Total: <strong>{{ $stats['total'] }}</strong></p>
+                                <p class="mb-1 btn btn-outline-success btn-sm">Total:
+                                    <strong>{{ $stats['total'] }}</strong>
+                                </p>
                                 <p class="mb-1 text-info">
                                     <a href="{{ route('client-requests.index', array_merge($queryParams, ['station' => $stationName, 'status' => 'delivered', 'time' => $timeFilter])) }}"
                                         class="btn btn-outline-primary btn-sm" title="View Delivered Parcels">
