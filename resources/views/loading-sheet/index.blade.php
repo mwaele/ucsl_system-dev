@@ -4,7 +4,8 @@
     <!-- DataTales Example -->
     <div class="card">
         <div class="card-header py-3">
-            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('loading_sheets.index') }}</div>
+            <div class="d-flex justify-content-between align-items-center"> {{ Breadcrumbs::render('loading_sheets.index') }}
+            </div>
             <div class="d-sm-flex align-items-center justify-content-between">
                 <button type="button"class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
                     data-target="#createLoadingSheet"><i class="fas fa-plus fa-sm text-white"></i> Create Loading
@@ -34,7 +35,8 @@
                          * @param {number} dateColIndex - Column index where the date is stored
                          * @param {string} reportUrl - The base URL for report generation
                          */
-                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate", reportBtnId = "generateReport", clearBtnId = "clearFilter") {
+                        function initDateFilter(tableId, dateColIndex, reportUrl, startInputId = "startDate", endInputId = "endDate",
+                            reportBtnId = "generateReport", clearBtnId = "clearFilter") {
                             const startInput = document.getElementById(startInputId);
                             const endInput = document.getElementById(endInputId);
                             const reportBtn = document.getElementById(reportBtnId);
@@ -92,7 +94,7 @@
                             endInput.addEventListener("change", filterTable);
                             clearBtn.addEventListener("click", clearFilter);
 
-                            reportBtn.addEventListener("click", function () {
+                            reportBtn.addEventListener("click", function() {
                                 let startDate = startInput.value;
                                 let endDate = endInput.value;
                                 window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}`;
@@ -107,8 +109,8 @@
 
 
             <!-- Modal -->
-            <div class="modal fade" id="createLoadingSheet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="createLoadingSheet" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for wider layout -->
                     <div class="modal-content">
                         <div class="modal-header bg-success">
@@ -177,7 +179,7 @@
                                     <div class="col-md-6">
                                         <label for="destination" class="form-label">Batch No</label>
                                         <input type="text" value="{{ $batch_no }}" name="batch_no"
-                                            class="form-control">
+                                            class="form-control" readonly>
                                     </div>
                                 </div>
                                 {{-- 

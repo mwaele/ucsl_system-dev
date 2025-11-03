@@ -582,6 +582,10 @@
                                 <a class="collapse-item" href="">Reports</a>
                             </div>
 
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('cod_management.index') }}">COD Management</a>
+                            <hr class="sidebar-divide my-0" />
+
                         </div>
                     </div>
                 </li>
@@ -705,7 +709,8 @@
                         <i class="fas fa-fw fa-users"></i>
                         <span class="sized">Admin</span>
                     </a>
-                    <div id="collapseUsers" class="collapse {{ request()->routeIs('users.*') ? 'show' : '' }}"
+                    <div id="collapseUsers"
+                        class="collapse {{ request()->routeIs('users.*', 'delivery_faileds.*', 'failed_collection.*') ? 'show' : '' }}"
                         aria-labelledby="headingUsers" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item" href="{{ route('users.index') }}">All Users</a>
@@ -717,6 +722,10 @@
                             <a class="collapse-item" href="{{ route('delivery_faileds.index') }}">Failed Delivery</a>
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('delivery_controls.index') }}"> Delivery Controls
+                            </a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('failed_collection.index') }}"> Failed
+                                Collections
                             </a>
 
                         </div>

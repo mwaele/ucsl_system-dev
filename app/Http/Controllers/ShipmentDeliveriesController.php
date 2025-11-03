@@ -23,6 +23,7 @@ use App\Models\SentMessage;
 use Illuminate\Support\Str;
 use App\Helpers\EmailHelper;
 use App\Models\Agent;
+use App\Models\COD;
 use App\Jobs\RiderDeliveriesJob;
 
 class ShipmentDeliveriesController extends Controller
@@ -117,12 +118,45 @@ class ShipmentDeliveriesController extends Controller
                 'delivered_by'=> Auth::user()->id,
                 'receiverOTP' => $otp,
             ]);
+
+            // save to c_o_d_s table 
+
+            $totalCost = ShipmentCollection::where('requestId', $request->requestId)->value('actual_total_cost')+ShipmentCollection::where('requestId', $request->requestId)->value('last_mile_delivery_charges');
+
+            $cod = COD::create([
+                'requestId' => $request->requestId,
+                'collectedBy' => Auth::user()->id,
+                'dateCollected' => now(),
+                'amountCollected' => $request->amount_paid ?? 0,
+                'expectedAmount' => $totalCost,
+                'collectionBalance' => $totalCost - ($request->amount_paid ?? 0),
+                'riderRemarks' => $request->remarks,
+            ]);
+
+
+
+
+
+
             // Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
 
             // 2. Create goods received note number
             ShipmentCollection::where('requestId', $request->requestId)
                 ->update(['status' => 'parcel_delivered', 'grn_no' => $request->grn_no ]);
             Log::info("ShipmentCollection Updated with GRN", ['requestId' => $request->requestId, 'grn_no' => $request->grn_no]);
+
+            DB::table('client_requests')
+                    ->where('requestId', $request->requestId)
+                    ->update([
+                        'status' => 'delivered',
+                        'updated_at' => now(),
+                    ]);
+            DB::table('shipment_collections')
+                    ->where('requestId', $request->requestId)
+                    ->update([
+                        'status' => 'delivered',
+                        'updated_at' => now(),
+                    ]);
 
             // 3. Insert or update tracking record
             $existingTrack = DB::table('tracks')->where('requestId', $request->requestId)->first();
@@ -173,7 +207,7 @@ class ShipmentDeliveriesController extends Controller
 
             // 5. Notifications (SMS + Email)
             $creator = User::find(ClientRequest::where('requestId', $request->requestId)->value('created_by'));
-            $frontOfficeNumber = $creator?->phone_number ?? '+254725525484';
+            $frontOfficeNumber = $creator?->phone_number ?? '+254724911674';
             $creatorName = $creator?->name ?? 'Staff';
             $creatorEmail = $creator?->email ?? '';
 

@@ -49,6 +49,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ClientCancelledShipmentController;
 use App\Http\Controllers\DeliveryControlController;
 use App\Http\Controllers\FailedCollectionController;
+use App\Http\Controllers\CODController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -158,6 +159,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/my_deliveries', [MyDeliveryController::class, 'show'])->name('my_deliveries.show');
     Route::post('/my_deliveries/store', [ShipmentDeliveriesController::class, 'store'])->name('my_deliveries.store');
+
+    Route::resource('cod_management','App\Http\Controllers\CODController');
+
+    Route::get('/cod_management_report', [CODController::class, 'generate'])
+    ->name('cod_management_report');
 
 
     Route::get('/delivery-controls', [DeliveryControlController::class, 'index'])->name('delivery_controls.index');
