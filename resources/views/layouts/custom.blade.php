@@ -185,12 +185,18 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center bg-white shadow" href="/">
-                <img src="{{ asset('images/UCSLogo1.png') }}" alt="" height="50" width="auto"
-                    class="image-fluid">
-                {{-- <div class="sidebar-brand-icon">
-                    <i class="fas fa-truck"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">UCSL MIS</div> --}}
+                <!-- Desktop Logo -->
+                <img src="{{ asset('images/UCSLogo1.png') }}" 
+                    alt="Desktop Logo" 
+                    height="auto"
+                    width="160"
+                    class="img-fluid d-none d-md-block">
+
+                <!-- Mobile Logo -->
+                <img src="{{ asset('images/mobile_logo.png') }}" 
+                    alt="Mobile Logo" 
+                    height="auto" width="50"
+                    class="img-fluid d-block d-md-none">
             </a>
 
             <!-- Divider -->
@@ -331,23 +337,22 @@
                 <hr class="sidebar-divider my-0" />
             @endif
             @if (Auth::user()->role === 'driver')
-                <li
-                    class="nav-item {{ request()->routeIs('my_collections.collect', 'my_collections.show') ? 'active' : '' }} ">
+                <li class="nav-item {{ request()->routeIs('my_collections.collect', 'my_collections.show') ? 'active' : '' }} ">
                     <a class="nav-link collapsed " href="#" data-toggle="collapse"
-                        data-target="#collapseCompanyInfo" aria-expanded="true" aria-controls="collapseCompanyInfo">
+                        data-target="#collapseRiderCollections" aria-expanded="true" aria-controls="collapseRiderCollections">
                         <i class="fas fa-fw fa-building"></i>
                         <span class="sized">Rider Collections</span>
                     </a>
-                    <div id="collapseCompanyInfo"
+                    <div id="collapseRiderCollections"
                         class="collapse {{ request()->routeIs('my_collections.show') ? 'active' : '' }}"
-                        aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
-                        <div class=" py-2 collapse-inner rounded">
-                            <a class="nav-link" href="{{ route('my_collections.show') }}">
+                        aria-labelledby="headingRiderCollections" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ route('my_collections.show') }}">
                                 <i class="fas fa-fw fa-clipboard"></i>
                                 <span class="sized">UCSL Collections</span>
                             </a>
 
-                            <a class="nav-link" href="{{ route('my_collections.collect') }}">
+                            <a class="collapse-item" href="{{ route('my_collections.collect') }}">
                                 <i class="fas fa-fw fa-clipboard"></i>
                                 <span class="sized">CLIENT Collections </span>
                             </a>
@@ -455,8 +460,6 @@
                                 Performance</a>
                             <a class="collapse-item" href="{{ route('reports.route.performance') }}">Route
                                 Performance</a>
-
-
                         </div>
                     </div>
                 </li>
@@ -785,7 +788,7 @@
                 <nav
                     class="navbar navbar-expand navbar-light bg-gradient-primary topbar mb-4 static-top shadow navbar-bg">
                     <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none bg-white rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
 
@@ -957,7 +960,6 @@
                         <button class="btn btn-danger" type="button" data-dismiss="modal">Cancel</button>
 
                         <button class="btn btn-primary" type="submit">Logout</button>
-
                     </div>
                     </form>
                 </div>
