@@ -494,12 +494,6 @@
                                 <span class="badge p-2 fs-5 text-white {{ $statusColor }}">
                                     {{ \Illuminate\Support\Str::title($collection->status) }}
                                 </span>
-
-                                @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
-                                    <span class="badge p-2 mt-2 bg-danger text-white">
-                                        Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
-                                    </span>
-                                @endif
                             </div>
 
                             <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
@@ -525,7 +519,7 @@
                                     <button class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center" 
                                         data-toggle="modal" title="Failed Collection"
                                         data-target="#failedCollectionModal-{{ $collection->id }}">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> <span>Mark as Failed</span>
                                     </button>
                                 @endif
 
@@ -1045,15 +1039,15 @@
                                     <div>
                                         <strong>From:</strong>
                                         {{ $collection->shipmentCollection->office->name }}
-                                        <strong style="margin-left: 10px;">To:</strong>
+                                    </div>
+                                    <div>
+                                        <strong>To:</strong>
                                         {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                     </div>
                                     <div><strong>Total Items:</strong>
                                         {{ $collection->shipmentCollection->items->count() }}</div>
                                     <div>
-                                        <strong>Date:</strong> {{ now()->format('F j, Y') }}
-                                        <strong style="margin-left: 10px;">Time:</strong>
-                                        {{ now()->format('g:i A') }}
+                                        <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
                                     </div>
 
                                     <hr style="margin: 4px 0;">
@@ -1143,7 +1137,7 @@
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
                                             <strong>VAT:</strong>
-                                            <span> Ksh
+                                            <span style="text-decoration: underline;"> Ksh
                                                 {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
@@ -1190,7 +1184,7 @@
                                         </div>
                                         <div
                                             style="display: flex; justify-content: space-between;">
-                                            <strong>Vehicle Registration:</strong>
+                                            <strong>Vehicle REG:</strong>
                                             <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                         </div><br>
                                         These are provisional charges based on details provided by

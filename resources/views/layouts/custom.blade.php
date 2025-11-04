@@ -656,35 +656,37 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item" href="{{ route('zones.index') }}"> Zones</a>
                             {{-- <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Mombasa Rates</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Nairobi Rates</a>
-                        <hr class="sidebar-divide my-0" />
-                        <a class="collapse-item" href="{{ route('rates.create') }}">Add Rate</a>
-                        <hr class="sidebar-divide my-0" /> --}}
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Nairobi Rates</a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('rates.create') }}">Add Rate</a>
+                            <hr class="sidebar-divide my-0" /> --}}
 
                             <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                                href="#" data-toggle="collapse" data-target="#collapseOvernight"
-                                aria-expanded="false" aria-controls="collapseOvernight">
+                                href="#" data-toggle="collapse" data-target="#collapseNairobiRates"
+                                aria-expanded="false" aria-controls="collapseNairobiRates">
                                 Nairobi Rates
                                 <i class="fas fa-angle-down"></i>
                             </a>
-                            <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
-                                data-parent="#collapseTwo">
+                            <div id="collapseNairobiRates" class="collapse ml-3" aria-labelledby="headingNairobiRates"
+                                data-parent="#collapseRates">
                                 <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Overnight</a>
                                 <a class="collapse-item" href="{{ route('rates.nrb_rates_sameday') }}">Same Day</a>
                             </div>
+
                             <hr class="sidebar-divide my-0" />
+
                             <a class="collapse-item collapsed d-flex justify-content-between align-items-center"
-                                href="#" data-toggle="collapse" data-target="#collapseOvernight"
-                                aria-expanded="false" aria-controls="collapseOvernight">
+                                href="#" data-toggle="collapse" data-target="#collapseMombasaRates"
+                                aria-expanded="false" aria-controls="collapseMombasaRates">
                                 Mombasa Rates
                                 <i class="fas fa-angle-down"></i>
                             </a>
-                            <div id="collapseOvernight" class="collapse ml-3" aria-labelledby="headingOvernight"
-                                data-parent="#collapseTwo">
+                            <div id="collapseMombasaRates" class="collapse ml-3" aria-labelledby="headingMombasaRates"
+                                data-parent="#collapseRates">
                                 <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Overnight</a>
-                                <a class="collapse-item" href="{{ route('overnight.on-account') }}">Same Day</a>
                             </div>
+
                             <hr class="sidebar-divide my-0" />
 
                             <a class="collapse-item" href="{{ route('special_rates.create') }}">Add Special Rate</a>

@@ -148,24 +148,24 @@
                                 </td>
                                 <td class="d-flex flex-wrap gap-2">
                                     @if ($collection->status === 'pending collection')
-                                        <button class="btn btn-warning btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <button class="btn btn-warning btn-sm rounded-md flex items-center mr-1 gap-1 shadow-sm"
                                             data-toggle="modal" data-target="#collect-{{ $collection->id }}">
                                             <i class="fas fa-box"></i> Collect
                                         </button>
                                     @endif
 
                                     @if ($collection->status === 'collected')
-                                        <button class="btn btn-primary btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <button class="btn btn-primary btn-sm rounded-md flex items-center gap-1 mb-1 mr-1 shadow-sm"
                                             data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
                                             <i class="fas fa-print"></i> Consignment
                                         </button>
 
-                                        <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <!-- <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 ml-1 mr-1 shadow-sm"
                                             data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
                                             <i class="fas fa-file-invoice"></i> Waybill
-                                        </button>
+                                        </button> -->
 
-                                        <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 mr-1 shadow-sm"
                                             data-toggle="modal" data-target="#handoverModal-{{ $collection->id }}">
                                             <i class="fas fa-exchange-alt"></i> Handover
                                         </button>
@@ -174,14 +174,14 @@
                                     @if ((($collection->status === 'collected' || $collection->status === 'Delivery Rider Allocated') &&
                                         $collection->serviceLevel->sub_category_name === 'Same Day') ||
                                         ($collection->serviceLevel->sub_category_name === 'Overnight' && $collection->status != 'delivered'))
-                                        <button class="btn btn-success btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <button class="btn btn-success btn-sm rounded-md flex items-center gap-1 mb-1 mr-1 shadow-sm"
                                             data-toggle="modal" data-target="#deliverParcel-{{ $collection->id }}">
                                             <i class="fas fa-box"></i> Deliver
                                         </button>
                                     @endif
 
                                     @if ($collection->status === 'delivered')
-                                        <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm"
+                                        <button class="btn btn-info btn-sm rounded-md flex items-center mb-1 mr-1 gap-1 shadow-sm"
                                             data-toggle="modal" data-target="#printGDNModal-{{ $collection->id }}">
                                             <i class="fas fa-print"></i> GRN
                                         </button>
@@ -755,15 +755,15 @@
                                     <div>
                                         <strong>From:</strong>
                                         {{ $collection->shipmentCollection->office->name ?? '' }}
-                                        <strong style="margin-left: 10px;">To:</strong>
+                                    </div>
+                                    <div>
+                                        <strong>To:</strong>
                                         {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                     </div>
                                     <div><strong>Total Items:</strong>
                                         {{ $collection->shipmentCollection->items->count() }}</div>
                                     <div>
-                                        <strong>Date:</strong> {{ now()->format('F j, Y') }}
-                                        <strong style="margin-left: 10px;">Time:</strong>
-                                        {{ now()->format('g:i A') }}
+                                        <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
                                     </div>
 
                                     <hr style="margin: 4px 0;">
@@ -871,7 +871,7 @@
                                         <div
                                             style="display: flex; justify-content: space-between;">
                                             <strong>VAT:</strong>
-                                            <span> Ksh
+                                            <span style="text-decoration: underline;"> Ksh
                                                 {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                         </div>
                                         <div
@@ -948,7 +948,7 @@
                                         </div>
                                         <div
                                             style="display: flex; justify-content: space-between;">
-                                            <strong>Vehicle Registration:</strong>
+                                            <strong>Vehicle REG:</strong>
                                             <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                         </div><br>
                                         <hr style="margin: 6px 0;">
@@ -1559,16 +1559,16 @@
                                         <div>
                                             <strong>From:</strong>
                                             {{ $collection->shipmentCollection->office->name ?? '' }}
-                                            <strong style="margin-left: 10px;">To:</strong>
+                                        </div>
+                                        <div>
+                                            <strong>To:</strong>
                                             {{ $collection->shipmentCollection->destination->destination ?? '' }}
                                         </div>
                                         <div><strong>Total Items:</strong>
                                             {{ $collection->shipmentCollection->items->count() }}
                                         </div>
                                         <div>
-                                            <strong>Date:</strong> {{ now()->format('F j, Y') }}
-                                            <strong style="margin-left: 10px;">Time:</strong>
-                                            {{ now()->format('g:i A') }}
+                                            <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
                                         </div>
 
                                         <hr style="margin: 4px 0;">
@@ -1680,7 +1680,7 @@
                                             <div
                                                 style="display: flex; justify-content: space-between;">
                                                 <strong>VAT:</strong>
-                                                <span> Ksh
+                                                <span style="text-decoration: underline;"> Ksh
                                                     {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
                                             </div>
                                             <div
@@ -1719,7 +1719,7 @@
                                             </div>
                                             <div
                                                 style="display: flex; justify-content: space-between;">
-                                                <strong>Vehicle Registration:</strong>
+                                                <strong>Vehicle REG:</strong>
                                                 <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                             </div>
                                             <hr style="margin: 6px 0;">
@@ -1731,19 +1731,19 @@
                                                         <td
                                                             style="width: 50%; padding: 5px; vertical-align: top;">
                                                             <strong>Receiver Name:</strong>
-                                                            __________________
+                                                            _____________
                                                         </td>
                                                         <td
                                                             style="width: 50%; padding: 5px; vertical-align: top;">
                                                             <strong>Receiver ID No:</strong>
-                                                            ______________
+                                                            _____________
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="padding: 5px; vertical-align: top;">
+                                                        <td style="width: 50%; padding: 5px; vertical-align: top;">
                                                             <strong>Receiver Signature:</strong>
-                                                            _______________
-                                                        <td style="padding: 5px; vertical-align: top;">
+                                                            _____________
+                                                        <td style=" width: 50%; padding: 5px; vertical-align: top;">
                                                             <strong>Receiver Stamp:</strong>
                                                         </td>
                                                     </tr>

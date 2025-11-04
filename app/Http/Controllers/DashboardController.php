@@ -242,7 +242,7 @@ class DashboardController extends Controller
             'delayedCollections',
             'walkinRevenue',
             'accountRevenue',
-            'totalRevenue'
+            'totalRevenue',
         ));
     }
 
