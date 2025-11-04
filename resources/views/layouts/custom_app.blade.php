@@ -19,16 +19,18 @@
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fa;
             background-image: url('{{ asset('images/Sys-0 WallPaper.jpg') }}');
-            background-size: 100% 100%;
-            /* Ensures the image always covers the screen */
-            background-position: center;
-            /* Keeps the focus centered */
+            background-size: cover;
+            /* Makes the image fully responsive while maintaining aspect ratio */
+            background-position: center center;
+            /* Keeps it centered on all devices */
             background-repeat: no-repeat;
             /* Prevents tiling */
+            background-attachment: fixed;
+            /* Keeps the image fixed while scrolling (optional) */
             min-height: 100vh;
-            /* Ensures full screen height */
+            /* Ensures it fills the full screen height */
             margin: 0;
-            /* Removes default body margin */
+            /* Removes default margins */
         }
 
 
@@ -37,6 +39,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 5x;
+            /* Adds spacing on small screens */
+            box-sizing: border-box;
         }
 
         .auth-card {

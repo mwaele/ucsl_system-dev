@@ -186,16 +186,11 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center bg-white shadow" href="/">
                 <!-- Desktop Logo -->
-                <img src="{{ asset('images/UCSLogo1.png') }}" 
-                    alt="Desktop Logo" 
-                    height="auto"
-                    width="160"
+                <img src="{{ asset('images/UCSLogo1.png') }}" alt="Desktop Logo" height="auto" width="160"
                     class="img-fluid d-none d-md-block">
 
                 <!-- Mobile Logo -->
-                <img src="{{ asset('images/mobile_logo.png') }}" 
-                    alt="Mobile Logo" 
-                    height="auto" width="50"
+                <img src="{{ asset('images/mobile_logo.png') }}" alt="Mobile Logo" height="auto" width="50"
                     class="img-fluid d-block d-md-none">
             </a>
 
@@ -337,9 +332,11 @@
                 <hr class="sidebar-divider my-0" />
             @endif
             @if (Auth::user()->role === 'driver')
-                <li class="nav-item {{ request()->routeIs('my_collections.collect', 'my_collections.show') ? 'active' : '' }} ">
+                <li
+                    class="nav-item {{ request()->routeIs('my_collections.collect', 'my_collections.show') ? 'active' : '' }} ">
                     <a class="nav-link collapsed " href="#" data-toggle="collapse"
-                        data-target="#collapseRiderCollections" aria-expanded="true" aria-controls="collapseRiderCollections">
+                        data-target="#collapseRiderCollections" aria-expanded="true"
+                        aria-controls="collapseRiderCollections">
                         <i class="fas fa-fw fa-building"></i>
                         <span class="sized">Rider Collections</span>
                     </a>

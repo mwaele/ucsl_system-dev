@@ -31,6 +31,8 @@ use App\Services\RequestIdService;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 use App\Jobs\SendCollectionNotificationsJob;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ClientRequestController extends Controller
 {
@@ -586,6 +588,17 @@ class ClientRequestController extends Controller
 
         try {
             // 1. Create client request
+
+            $qrImage = QrCode::format('png')
+            ->size(300)
+            ->errorCorrection('H')
+            ->generate($requestId);
+
+            $fileName = 'qrcodes/request_' . $requestId . '.png';
+            Storage::disk('public')->put($fileName, $qrImage);
+
+            // $clientRequest->update(['qr_code_path' => $fileName]);
+
             $clientRequest = ClientRequest::create([
                 'clientId' => $validated['clientId'],
                 'collectionLocation' => $validated['collectionLocation'],
@@ -603,6 +616,7 @@ class ClientRequestController extends Controller
                 'priority_level_amount' => $validated['priority_extra_charge'] ?? 0,
                 'fragile_item' => $validated['fragile'] ?? 'no',
                 'fragile_item_amount' => $validated['fragile_charge'] ?? 0,
+                'qr_code_path' => $fileName,
             ]);
 
             // 2. Create track

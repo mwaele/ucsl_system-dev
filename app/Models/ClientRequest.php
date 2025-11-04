@@ -30,6 +30,7 @@ class ClientRequest extends Model
         'fragile_item_amount',
         'source', 
         'pickupLocation',
+        'qr_code_path',
     ];
 
     public function client()

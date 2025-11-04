@@ -280,18 +280,17 @@
 
                                         <div class="mt-2 col-md-2">
                                             <h6 for="priority_level" class="text-primary">Priority Level</h6>
-                                            <select class="form-control" name="priority_level"
-                                                id="priority_level">
+                                            <select class="form-control" name="priority_level" id="priority_level">
                                                 <option value="normal" selected>Normal</option>
                                                 <option value="high">High</option>
                                             </select>
                                         </div>
 
-                                        <div class="mt-2 col-md-2" id="priority-deadline-group"
-                                            style="display:none;">
+                                        <div class="mt-2 col-md-2" id="priority-deadline-group" style="display:none;">
                                             <h6 for="deadline_date" class="text-primary">Deadline
                                             </h6>
-                                            <input type="datetime-local" class="form-control" name="deadline_date" id="deadline_date">
+                                            <input type="datetime-local" class="form-control" name="deadline_date"
+                                                id="deadline_date">
                                         </div>
 
                                         <!-- Inline confirmation (hidden by default) -->
@@ -311,9 +310,8 @@
                                             <h6 for="priority_extra_charge" class="text-primary">Priority Extra
                                                 Charge
                                             </h6>
-                                            <input type="number" class="form-control"
-                                                name="priority_extra_charge" id="priority_extra_charge"
-                                                placeholder="Enter extra amount">
+                                            <input type="number" class="form-control" name="priority_extra_charge"
+                                                id="priority_extra_charge" placeholder="Enter extra amount">
                                         </div>
 
                                         <div class="mt-2 col-md-2">
@@ -338,8 +336,7 @@
                                         </div>
 
                                         <!-- Fragile Charge Input -->
-                                        <div class="mt-2 col-md-2" id="fragile-charge-group"
-                                            style="display:none;">
+                                        <div class="mt-2 col-md-2" id="fragile-charge-group" style="display:none;">
                                             <h6 for="fragile_charge" class="text-primary">Fragile Extra Charge
                                             </h6>
                                             <input type="number" class="form-control" name="fragile_charge"
@@ -416,7 +413,7 @@
                                             aria-hidden="true">
                                             <div class="modal-dialog modal-lg" role="document">
                                                 <form action="{{ route('clientRequests.update', $request->requestId) }}"
-                                                    method="POST">
+                                                    method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-content">
@@ -760,7 +757,8 @@
 
                                                                 {{-- Priority & Fragile Check --}}
                                                                 @if ($request->priority_level === 'high' && $request->fragile_item === 'yes')
-                                                                    <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                                    <div
+                                                                        style="margin-top: 8px; color: red; font-weight: bold;">
                                                                         *** High Priority & Fragile Parcel ***
                                                                     </div>
                                                                 @elseif ($request->priority_level === 'high')

@@ -12,8 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;    
 use App\Models\FailedShipmentCollection;
 
+use App\Traits\PdfReportTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class FailedCollectionController extends Controller
 {
+    use PdfReportTrait;
+
     public function index()
     {
         $records = FailedCollection::latest()->paginate(10);
@@ -164,5 +169,17 @@ class FailedCollectionController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Alert sent.']);
 
 
+    }
+    public function failed_collection_report()
+    {
+        $failed_collections = FailedCollection::orderBy('created_at', 'desc')->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'failed_collection.failed_collections_report',
+            ['failed_collections' => $failed_collections],
+            'failed_collections_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 }

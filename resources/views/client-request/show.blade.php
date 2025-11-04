@@ -395,7 +395,8 @@
 
                                     @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger text-white">
-                                            Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
+                                            Deliver by
+                                            {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
                                         </span>
                                     @endif
                                 </td>
@@ -406,11 +407,18 @@
                                         <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 mb-1 mr-1"
                                             data-toggle="modal" title="Collect parcels"
                                             data-target="#collect-{{ $collection->id }}">
-                                            <i class="fas fa-box mr-1"></i>  Collect
+                                            <i class="fas fa-box mr-1"></i> Collect
                                         </button>
-                                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 ml-1" title="Failed Collection"
-                                            data-toggle="modal" data-target="#failedCollectionModal-{{ $collection->id }}">
+                                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 ml-1"
+                                            title="Failed Collection" data-toggle="modal"
+                                            data-target="#failedCollectionModal-{{ $collection->id }}">
                                             <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
+                                        </button>
+                                        <!-- Handover to rider Button -->
+                                        <button class="btn btn-info btn-sm mr-1 ml-1 mb-1 d-flex align-items-center gap-1"
+                                            title="Handover to Rider" data-toggle="modal"
+                                            data-target="#handoverModal-{{ $collection->id }}">
+                                            <i class="fas fa-exchange-alt mr-1"></i> <span> Handover</span>
                                         </button>
                                     @endif
 
@@ -423,32 +431,28 @@
                                             <i class="fas fa-file-alt mr-1"></i> <span>Consignment</span>
                                         </button>
 
-                                        <!-- Handover to rider Button -->
-                                        <button class="btn btn-info btn-sm mr-1 ml-1 mb-1 d-flex align-items-center gap-1"
-                                            title="Handover to Rider" data-toggle="modal"
-                                            data-target="#handoverModal-{{ $collection->id }}">
-                                            <i class="fas fa-exchange-alt mr-1"></i> <span> Handover</span>
-                                        </button>
+
 
                                         <!-- Release Collection Button -->
-                                        <button class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                        <button
+                                            class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
                                             data-toggle="modal" title="Release Collection"
                                             data-target="#releaseCollectionModal-{{ $collection->id }}">
                                             Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
                                         </button>
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                            title="Generate Waybill"
-                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                        </button> -->
+                                                title="Generate Waybill"
+                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                            </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
                                     @if (in_array($collection->status, ['verified', 'delivered']))
                                         <button class="btn btn-primary btn-sm mr-1 d-flex align-items-center gap-1"
-                                            title="Print Receipt"
-                                            data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
+                                            title="Print Receipt" data-toggle="modal"
+                                            data-target="#printModal-{{ $collection->id }}">
                                             <i class="fas fa-print mr-1"></i> <span>Receipt</span>
                                         </button>
                                     @endif
@@ -478,7 +482,8 @@
                     <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0 text-primary fw-bold">{{ $loop->iteration }}. Req ID: {{ $collection->requestId }}</h6>
+                                <h6 class="mb-0 text-primary fw-bold">{{ $loop->iteration }}. Req ID:
+                                    {{ $collection->requestId }}</h6>
                                 @php
                                     $statusColor = match ($collection->status) {
                                         'pending collection' => 'bg-secondary',
@@ -499,7 +504,8 @@
                             <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
                             <p class="mb-1"><strong>Phone:</strong> {{ $collection->client->contactPersonPhone }}</p>
                             <p class="mb-1"><strong>Pickup:</strong> {{ $collection->collectionLocation }}</p>
-                            <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}
+                            </p>
                             <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
 
                             @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
@@ -511,12 +517,14 @@
                             <div class="mt-3 d-flex flex-wrap gap-2">
                                 {{-- Mobile Buttons (same logic, just smaller) --}}
                                 @if ($collection->status === 'pending collection')
-                                    <button class="btn btn-warning btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
+                                    <button
+                                        class="btn btn-warning btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         data-toggle="modal" title="Collect parcels"
                                         data-target="#collect-{{ $collection->id }}">
                                         <i class="fas fa-box mr-1"></i> <span>Collect</span>
                                     </button>
-                                    <button class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center" 
+                                    <button
+                                        class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center"
                                         data-toggle="modal" title="Failed Collection"
                                         data-target="#failedCollectionModal-{{ $collection->id }}">
                                         <i class="fas fa-exclamation-triangle mr-1"></i> <span>Mark as Failed</span>
@@ -525,14 +533,16 @@
 
                                 @if ($collection->status === 'collected')
                                     <!-- Print Consignment Button -->
-                                    <button class="btn btn-primary btn-sm mb-1 mr-1 d-flex align-items-center gap-1 w-100 justify-content-center"
+                                    <button
+                                        class="btn btn-primary btn-sm mb-1 mr-1 d-flex align-items-center gap-1 w-100 justify-content-center"
                                         title="Consignment Note" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->id }}">
                                         <i class="fas fa-file-alt mr-1"></i> <span>Consignment Note</span>
                                     </button>
 
                                     <!-- Handover Button -->
-                                    <button class="btn btn-info btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
+                                    <button
+                                        class="btn btn-info btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         title="Handover to Rider" data-toggle="modal"
                                         data-target="#handoverModal-{{ $collection->id }}">
                                         <i class="fas fa-exchange-alt mr-1"></i> <span>Handover</span>
@@ -540,20 +550,20 @@
 
                                     <!-- Release Collection Button -->
                                     <button class="btn btn-sm btn-warning ml-1 mr-1 mb-1" title="Release Collection"
-                                        data-toggle="modal"
-                                        data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                        data-toggle="modal" data-target="#releaseCollectionModal-{{ $collection->id }}">
                                         Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                        title="Waybill" data-toggle="modal"
-                                        data-target="#waybillModal{{ $collection->requestId }}">
-                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                    </button> -->
+                                            title="Waybill" data-toggle="modal"
+                                            data-target="#waybillModal{{ $collection->requestId }}">
+                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                        </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
-                                    <button class="btn btn-primary btn-sm d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
+                                    <button
+                                        class="btn btn-primary btn-sm d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
                                         title="Receipt" data-toggle="modal"
                                         data-target="#printModal-{{ $collection->id }}">
                                         <i class="fas fa-print mr-1"></i> <span>Receipt</span>
@@ -568,8 +578,8 @@
             @foreach ($collections as $collection)
                 <!-- MODALS -->
                 <!-- Collect Parcel Modal -->
-                <div class="modal fade" id="collect-{{ $collection->id }}" tabindex="-1"
-                    role="dialog" aria-labelledby="collectionModalLabel" aria-hidden="true">
+                <div class="modal fade" id="collect-{{ $collection->id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="collectionModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-warning">
@@ -579,14 +589,12 @@
                                     {{ $collection->requestId }}
                                     for
                                     {{ $collection->client->name ?? '' }}</h5>
-                                <button type="button" class="text-white close" data-dismiss="modal"
-                                    aria-label="Close">
+                                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="POST"
-                                    action="{{ route('shipment_collections.store') }}">
+                                <form method="POST" action="{{ route('shipment_collections.store') }}">
                                     @csrf
 
                                     <!-- Radio Buttons -->
@@ -594,8 +602,7 @@
 
                                         <div class="form-row shadow-sm">
                                             <div class="col-md-4">
-                                                <label
-                                                    class="form-label text-primary text-primary">Sender
+                                                <label class="form-label text-primary text-primary">Sender
                                                     Type
                                                 </label><br>
                                                 <div class="form-check form-check-inline">
@@ -603,23 +610,18 @@
                                                         value="{{ $collection->client->id }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
-                                                    <input class="form-check-input clientRadio"
-                                                        type="radio" name="sender_type"
-                                                        id="clientRadio" value="client">
-                                                    <label class="form-check-label"
-                                                        for="clientRadio">Client</label>
+                                                    <input class="form-check-input clientRadio" type="radio"
+                                                        name="sender_type" id="clientRadio" value="client">
+                                                    <label class="form-check-label" for="clientRadio">Client</label>
                                                 </div>
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input agentRadio"
-                                                        type="radio" name="sender_type" value="agent"
-                                                        id='agentRadio'>
-                                                    <label class="form-check-label"
-                                                        for="agentRadio">Agent</label>
+                                                    <input class="form-check-input agentRadio" type="radio"
+                                                        name="sender_type" value="agent" id='agentRadio'>
+                                                    <label class="form-check-label" for="agentRadio">Agent</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label
-                                                    class=" form-label text-primary text-primary pull-right">Service
+                                                <label class=" form-label text-primary text-primary pull-right">Service
                                                     Type:
                                                     <badge class="text-success" id="rates_status">
                                                         {{ $collection->serviceLevel->sub_category_name }}
@@ -627,8 +629,7 @@
                                                 </label>
                                             </div>
                                             <div class="col-md-4">
-                                                <label
-                                                    class=" form-label text-primary text-primary pull-right">Special
+                                                <label class=" form-label text-primary text-primary pull-right">Special
                                                     Rate Status:
                                                     <badge class="text-success" id="rates_status">
                                                         {{ $collection->client->special_rates_status ?? 'off' }}
@@ -640,8 +641,7 @@
 
                                     <!-- Sender Panel -->
                                     <div class="col-md-12">
-                                        <div class="card shadow-sm mb-4" id="senderForm"
-                                            style="display: none;">
+                                        <div class="card shadow-sm mb-4" id="senderForm" style="display: none;">
                                             <div class="card-header bg-primary text-white">Sender
                                                 Details</div>
                                             <!-- SENDER DETAILS -->
@@ -650,57 +650,45 @@
                                                 <div>
                                                     <div class="form-row">
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">Sender
-                                                                Name <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control"
-                                                                name="sender_name" id="sender_name">
+                                                            <label class="form-label text-primary text-primary">Sender
+                                                                Name <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="sender_name"
+                                                                id="sender_name">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">Sender
+                                                            <label class="form-label text-primary text-primary">Sender
                                                                 Email
                                                             </label>
-                                                            <input type="email" class="form-control"
-                                                                name="senderEmail" id="senderEmail">
+                                                            <input type="email" class="form-control" name="senderEmail"
+                                                                id="senderEmail">
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">ID
+                                                            <label class="form-label text-primary text-primary">ID
                                                                 Number</label>
                                                             <input type="text" class="form-control"
-                                                                name="sender_id_no" id="sender_id_no"
-                                                                maxlength="8">
+                                                                name="sender_id_no" id="sender_id_no" maxlength="8">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">Phone
-                                                                </label>
+                                                            <label class="form-label text-primary text-primary">Phone
+                                                            </label>
                                                             <input type="text" class="form-control"
-                                                                name="sender_contact"
-                                                                id="sender_contact">
+                                                                name="sender_contact" id="sender_contact">
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">Town
-                                                                <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control"
-                                                                name="sender_town" id="sender_town">
+                                                            <label class="form-label text-primary text-primary">Town
+                                                                <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="sender_town"
+                                                                id="sender_town">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label
-                                                                class="form-label text-primary text-primary">Address
-                                                                <span
-                                                                    class="text-danger">*</span></label>
+                                                            <label class="form-label text-primary text-primary">Address
+                                                                <span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control"
-                                                                name="sender_address"
-                                                                id="sender_address">
+                                                                name="sender_address" id="sender_address">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -717,8 +705,7 @@
                                             <div class="card-body">
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">Receiver
+                                                        <label class="form-label text-primary text-primary">Receiver
                                                             Name <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" class="form-control"
@@ -732,51 +719,42 @@
                                                     </div>
 
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">Receiver
+                                                        <label class="form-label text-primary text-primary">Receiver
                                                             Email
                                                         </label>
-                                                        <input type="email" class="form-control"
-                                                            name="receiverEmail">
+                                                        <input type="email" class="form-control" name="receiverEmail">
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">ID
+                                                        <label class="form-label text-primary text-primary">ID
                                                             Number
                                                         </label>
-                                                        <input type="text" class="form-control"
-                                                            name="receiverIdNo"
+                                                        <input type="text" class="form-control" name="receiverIdNo"
                                                             maxlength="8">
                                                     </div>
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">Phone
+                                                        <label class="form-label text-primary text-primary">Phone
                                                             Number
                                                         </label>
-                                                        <input type="text" class="form-control"
-                                                            name="receiverPhone">
+                                                        <input type="text" class="form-control" name="receiverPhone">
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">Address
+                                                        <label class="form-label text-primary text-primary">Address
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="text" class="form-control"
-                                                            name="receiverAddress" required>
+                                                        <input type="text" class="form-control" name="receiverAddress"
+                                                            required>
                                                     </div>
                                                     <div class="form-group col-md-6">
-                                                        <label
-                                                            class="form-label text-primary text-primary">Town
+                                                        <label class="form-label text-primary text-primary">Town
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="text" class="form-control"
-                                                            name="receiverTown" required>
-                                                        <input type="hidden"
-                                                            value="{{ $consignment_no }}"
+                                                        <input type="text" class="form-control" name="receiverTown"
+                                                            required>
+                                                        <input type="hidden" value="{{ $consignment_no }}"
                                                             name="consignment_no">
                                                     </div>
                                                 </div>
@@ -788,8 +766,7 @@
                                         <!-- Origin & Destination -->
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Origin
+                                                <label class="form-label text-primary text-primary">Origin
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="origin_id" id="origin_id_special"
                                                     class="form-control origin-dropdown-special">
@@ -801,16 +778,14 @@
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Destination
+                                                <label class="form-label text-primary text-primary">Destination
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="destination"
                                                     class="form-control destination-dropdown-special">
                                                     <option value="">Select</option>
                                                 </select>
                                             </div>
-                                            <input type="hidden" name='destination_id'
-                                                id="destination_id_special">
+                                            <input type="hidden" name='destination_id' id="destination_id_special">
                                         </div>
                                         {{-- <input type="hidden" name='destination' id="destination_id">
 
@@ -818,8 +793,7 @@
                                     @elseif($collection->serviceLevel->sub_category_name == 'Same Day')
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Origin
+                                                <label class="form-label text-primary text-primary">Origin
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="origin_id" id="origin_idxz"
                                                     class="form-control origin-dropdownxz" required>
@@ -835,12 +809,10 @@
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Destination
+                                                <label class="form-label text-primary text-primary">Destination
 
                                                     <span class="text-danger">*</span> </label>
-                                                <select name="destination"
-                                                    class="form-control destination-dropdownxz">
+                                                <select name="destination" class="form-control destination-dropdownxz">
                                                     <option value="">Select</option>
                                                     <option value="{{ $collection->rate_id }}">
                                                         {{ $collection->collectionLocation }}
@@ -855,8 +827,7 @@
                                         <!-- Origin & Destination -->
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Origin
+                                                <label class="form-label text-primary text-primary">Origin
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="origin_id" id="origin_id"
                                                     class="form-control origin-dropdown" required>
@@ -868,29 +839,25 @@
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label
-                                                    class="form-label text-primary text-primary">Destination
+                                                <label class="form-label text-primary text-primary">Destination
                                                     <span class="text-danger">*</span> </label>
-                                                <select name="destination"
-                                                    class="form-control destination-dropdown">
+                                                <select name="destination" class="form-control destination-dropdown">
                                                     <option value="">Select</option>
                                                 </select>
                                             </div>
-                                            <input type="hidden" class="destination_id"
-                                                name='destination_id' id="destination_id">
+                                            <input type="hidden" class="destination_id" name='destination_id'
+                                                id="destination_id">
 
                                         </div>
                                     @endif
 
-                                    <input type="hidden"
-                                        value="{{ $collection->client->special_rates_status }}"
+                                    <input type="hidden" value="{{ $collection->client->special_rates_status }}"
                                         name='special_rate_state' id="special_rate_state">
 
                                     <!-- Shipment Info Table -->
                                     {{-- <div class="section-title"><b class="text-primary">Shipment Information</b></div> --}}
                                     <div class="table-responsive mt-3">
-                                        <table class="table table-bordered shipmentTable"
-                                            id="shipmentTable">
+                                        <table class="table table-bordered shipmentTable" id="shipmentTable">
                                             <thead class="thead-success">
                                                 <tr class="text-primary">
                                                     <th>Item Name</th>
@@ -905,35 +872,31 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td><input type="text" class="form-control"
-                                                            name="item_name[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="packages[]">
+                                                    <td><input type="text" class="form-control" name="item_name[]">
                                                     </td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="weight[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="length[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="width[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="height[]"></td>
-                                                    <td class="volume-display text-muted"><input
-                                                            type="number" min="0"
-                                                            class="form-control" name="volume[]"
-                                                            readonly></td>
-                                                    <td><button type="button"
-                                                            class="btn btn-danger btn-sm remove-row"
-                                                            title="Delete Row"><i
-                                                                class="fas fa-trash"></i></button>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="packages[]">
+                                                    </td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="weight[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="length[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="width[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="height[]"></td>
+                                                    <td class="volume-display text-muted"><input type="number"
+                                                            min="0" class="form-control" name="volume[]" readonly>
+                                                    </td>
+                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row"
+                                                            title="Delete Row"><i class="fas fa-trash"></i></button>
                                                     </td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
 
-                                    <button type="button" class="btn btn-primary mb-3 addRowBtn"
-                                        id="addRowBtn">Add
+                                    <button type="button" class="btn btn-primary mb-3 addRowBtn" id="addRowBtn">Add
                                         Row</button>
 
                                     <!-- Service Level -->
@@ -951,25 +914,20 @@
                                         </div> --}}
                                         <div class="form-row">
                                             <div class="form-group col-md-3">
-                                                <label
-                                                    class="form-label text-primary text-primary">Total
+                                                <label class="form-label text-primary text-primary">Total
                                                     Weight
                                                     (Kg)
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" min="0"
-                                                    class="form-control" name="total_weight" required
-                                                    readonly>
+                                                <input type="number" min="0" class="form-control"
+                                                    name="total_weight" required readonly>
                                             </div>
                                             <div class="form-group col-md-3">
-                                                <label
-                                                    class="form-label text-primary text-primary">Cost
+                                                <label class="form-label text-primary text-primary">Cost
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" min="0"
-                                                    class="form-control"
-                                                    value="{{ $collection->rate }}" name="cost"
-                                                    required readonly>
+                                                <input type="number" min="0" class="form-control"
+                                                    value="{{ $collection->rate }}" name="cost" required readonly>
                                             </div>
                                             <input type="hidden" name="base_cost" value="">
 
@@ -977,27 +935,23 @@
                                                 <label class="form-label text-primary text-primary">Tax
                                                     (16%) <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" min="0"
-                                                    class="form-control" name="vat" required
-                                                    readonly>
+                                                <input type="number" min="0" class="form-control" name="vat"
+                                                    required readonly>
                                             </div>
                                             <div class="form-group col-md-3">
-                                                <label
-                                                    class="form-label text-primary text-primary">Total
+                                                <label class="form-label text-primary text-primary">Total
                                                     Cost
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" min="0"
-                                                    class="form-control" name="total_cost" required
-                                                    readonly>
+                                                <input type="number" min="0" class="form-control"
+                                                    name="total_cost" required readonly>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer d-flex justify-content-between p-0">
-                                        <button type="button" class="btn btn-danger"
-                                            data-dismiss="modal" aria-label="Close">Cancel</button>
-                                        <button type="submit"
-                                            class="btn btn-success text-white">Submit
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                            aria-label="Close">Cancel</button>
+                                        <button type="submit" class="btn btn-success text-white">Submit
                                             Collection</button>
                                     </div>
                                 </form>
@@ -1007,29 +961,30 @@
                 </div>
 
                 @if ($collection->shipmentCollection)
-                <!-- Print Receipt Modal -->
-                <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
-                    aria-labelledby="printModalLabel-{{ $collection->id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-sm">
-                        <div class="modal-content" id="print-modal-{{ $collection->id }}">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
-                                    Shipment Receipt</h5>
-                                <button type="button" class="text-primary close"
-                                    data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body" id="print-content-{{ $collection->id }}">
-                                <div id="receipt-{{ $collection->id }}"
-                                    style="font-family: monospace; font-size: 13px; line-height: 1.2;">
-                                    <div style="text-align: center;">
-                                        <img src="{{ asset('images/UCSLogo1.png') }}" alt="Logo" style="height: 70px;">
-                                    </div>
+                    <!-- Print Receipt Modal -->
+                    <div class="modal fade" id="printModal-{{ $collection->id }}" tabindex="-1"
+                        aria-labelledby="printModalLabel-{{ $collection->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content" id="print-modal-{{ $collection->id }}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="printModalLabel-{{ $collection->id }}">
+                                        Shipment Receipt</h5>
+                                    <button type="button" class="text-primary close" data-dismiss="modal"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" id="print-content-{{ $collection->id }}">
+                                    <div id="receipt-{{ $collection->id }}"
+                                        style="font-family: monospace; font-size: 13px; line-height: 1.2;">
+                                        <div style="text-align: center;">
+                                            <img src="{{ asset('images/UCSLogo1.png') }}" alt="Logo"
+                                                style="height: 70px;">
+                                        </div>
 
-                                    <div style="text-align: center; font-size: 15px;"><strong>Parcel
-                                            Consignment Note</strong></div>
-                                    <hr style="margin: 4px 0;">
+                                        <div style="text-align: center; font-size: 15px;"><strong>Parcel
+                                                Consignment Note</strong></div>
+                                        <hr style="margin: 4px 0;">
 
                                     <div style="font-size: 14px;"><strong>Request ID:
                                             {{ $collection->requestId ?? 'N/A' }}</strong></div>
@@ -1050,80 +1005,77 @@
                                         <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
                                     </div>
 
-                                    <hr style="margin: 4px 0;">
-
-                                    <div style="font-weight: bold;">Sender:</div>
-                                    <div>Name: {{ $collection->client->name }}</div>
-                                    <div>KRA PIN:
-                                        {{ $collection->shipmentCollection->client->kraPin }}
-                                    </div>
-                                    @php
-                                        $phone = $collection->client->contact;
-                                        $maskedPhone =
-                                            substr($phone, 0, 3) .
-                                            str_repeat('*', strlen($phone) - 6) .
-                                            substr($phone, -3);
-                                    @endphp
-
-                                    <div>Phone: {{ $maskedPhone }}</div>
-                                    <div>Location: {{ $collection->client->building }}</div>
-                                    <div>Town: {{ $collection->client->city }}</div>
-                                    <hr style="margin: 4px 0;">
-
-                                    <div style="font-weight: bold;">Receiver:</div>
-                                    <div>Name: {{ $collection->shipmentCollection->receiver_name }}
-                                    </div>
-                                    @php
-                                        $phone =
-                                            $collection->shipmentCollection->receiver_phone;
-                                        $maskedPhone =
-                                            substr($phone, 0, 3) .
-                                            str_repeat('*', strlen($phone) - 6) .
-                                            substr($phone, -3);
-                                    @endphp
-
-                                    <div>Phone: {{ $maskedPhone }}</div>
-
-                                    <div>Address:
-                                        {{ $collection->shipmentCollection->receiver_address }}
-                                    </div>
-                                    <div>Town: {{ $collection->shipmentCollection->receiver_town }}
-                                    </div>
-                                    <hr style="margin: 4px 0;">
-
-                                    <div style="font-weight: bold;">Parcel Details:</div>
-                                    @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
-                                        @php
-                                            $totalWeight = 0;
-                                        @endphp
-                                        <table
-                                            style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
-                                            <thead>
-                                                <tr>
-                                                    <th style="text-align: left;">#</th>
-                                                    <th style="text-align: left;">Desc.</th>
-                                                    <th style="text-align: center;">Qty</th>
-                                                    <th style="text-align: right;">Wt(kg)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($collection->shipmentCollection->items as $item)
-                                                    @php
-                                                        $totalWeight +=
-                                                            $item->packages_no * $item->weight;
-                                                    @endphp
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}.</td>
-                                                        <td>{{ $item->item_name }}</td>
-                                                        <td style="text-align: center;">
-                                                            {{ $item->packages_no }}</td>
-                                                        <td style="text-align: right;">
-                                                            {{ $item->weight }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
                                         <hr style="margin: 4px 0;">
+
+                                        <div style="font-weight: bold;">Sender:</div>
+                                        <div>Name: {{ $collection->client->name }}</div>
+                                        <div>KRA PIN:
+                                            {{ $collection->shipmentCollection->client->kraPin }}
+                                        </div>
+                                        @php
+                                            $phone = $collection->client->contact;
+                                            $maskedPhone =
+                                                substr($phone, 0, 3) .
+                                                str_repeat('*', strlen($phone) - 6) .
+                                                substr($phone, -3);
+                                        @endphp
+
+                                        <div>Phone: {{ $maskedPhone }}</div>
+                                        <div>Location: {{ $collection->client->building }}</div>
+                                        <div>Town: {{ $collection->client->city }}</div>
+                                        <hr style="margin: 4px 0;">
+
+                                        <div style="font-weight: bold;">Receiver:</div>
+                                        <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                        </div>
+                                        @php
+                                            $phone = $collection->shipmentCollection->receiver_phone;
+                                            $maskedPhone =
+                                                substr($phone, 0, 3) .
+                                                str_repeat('*', strlen($phone) - 6) .
+                                                substr($phone, -3);
+                                        @endphp
+
+                                        <div>Phone: {{ $maskedPhone }}</div>
+
+                                        <div>Address:
+                                            {{ $collection->shipmentCollection->receiver_address }}
+                                        </div>
+                                        <div>Town: {{ $collection->shipmentCollection->receiver_town }}
+                                        </div>
+                                        <hr style="margin: 4px 0;">
+
+                                        <div style="font-weight: bold;">Parcel Details:</div>
+                                        @if ($collection->shipmentCollection && $collection->shipmentCollection->items->count())
+                                            @php
+                                                $totalWeight = 0;
+                                            @endphp
+                                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="text-align: left;">#</th>
+                                                        <th style="text-align: left;">Desc.</th>
+                                                        <th style="text-align: center;">Qty</th>
+                                                        <th style="text-align: right;">Wt(kg)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($collection->shipmentCollection->items as $item)
+                                                        @php
+                                                            $totalWeight += $item->packages_no * $item->weight;
+                                                        @endphp
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}.</td>
+                                                            <td>{{ $item->item_name }}</td>
+                                                            <td style="text-align: center;">
+                                                                {{ $item->packages_no }}</td>
+                                                            <td style="text-align: right;">
+                                                                {{ $item->weight }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                            <hr style="margin: 4px 0;">
 
                                         <div style="display: flex; justify-content: space-between;">
                                             <strong>Total Weight:</strong>
@@ -1149,20 +1101,20 @@
                                         <p>No shipment items found.</p>
                                     @endif
 
-                                    {{-- Priority & Fragile Check --}}
-                                    @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
-                                        <div style="margin-top: 8px; color: red; font-weight: bold;">
-                                            *** High Priority & Fragile Parcel ***
-                                        </div>
-                                    @elseif ($collection->priority_level === 'high')
-                                        <div style="margin-top: 8px; color: red; font-weight: bold;">
-                                            *** High Priority Parcel***
-                                        </div>
-                                    @elseif ($collection->shipmentCollection->fragile_item === 'yes')
-                                        <div style="margin-top: 8px; color: red; font-weight: bold;">
-                                            *** Fragile Parcel ***
-                                        </div>
-                                    @endif
+                                        {{-- Priority & Fragile Check --}}
+                                        @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
+                                            <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                *** High Priority & Fragile Parcel ***
+                                            </div>
+                                        @elseif ($collection->priority_level === 'high')
+                                            <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                *** High Priority Parcel***
+                                            </div>
+                                        @elseif ($collection->shipmentCollection->fragile_item === 'yes')
+                                            <div style="margin-top: 8px; color: red; font-weight: bold;">
+                                                *** Fragile Parcel ***
+                                            </div>
+                                        @endif
 
                                     <hr style="margin: 6px 0;">
                                     <div style="text-align: left; font-size: 12px;">
@@ -1207,25 +1159,20 @@
                 @endif
 
                 <!-- Handover Modal -->
-                <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1"
-                    role="dialog" aria-labelledby="handoverModalLabel-{{ $collection->id }}"
-                    aria-hidden="true">
+                <div class="modal fade" id="handoverModal-{{ $collection->id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="handoverModalLabel-{{ $collection->id }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-info text-white">
-                                <h5 class="modal-title"
-                                    id="handoverModalLabel-{{ $collection->id }}">
+                                <h5 class="modal-title" id="handoverModalLabel-{{ $collection->id }}">
                                     Handover Shipment #{{ $collection->requestId }}
                                 </h5>
-                                <button type="button" class="close text-white"
-                                    data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
 
-                            <form
-                                action="{{ route('shipments.handover', $collection->requestId) }}"
-                                method="POST">
+                            <form action="{{ route('shipments.handover', $collection->requestId) }}" method="POST">
                                 @csrf
                                 <div class="modal-body">
                                     <p class="mb-3">Please select the rider you want to handover
@@ -1233,8 +1180,7 @@
 
                                     <div class="form-group">
                                         <label for="rider_id">Select Rider</label>
-                                        <select name="rider_id" id="rider_id"
-                                            class="form-control" required>
+                                        <select name="rider_id" id="rider_id" class="form-control" required>
                                             <option value="">-- Choose Rider --</option>
                                             @foreach ($riders as $rider)
                                                 <option value="{{ $rider->id }}">
@@ -1251,8 +1197,7 @@
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-light"
-                                        data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-info">Confirm
                                         Handover</button>
                                 </div>
@@ -1262,29 +1207,24 @@
                 </div>
 
                 <!-- Waybill Modal -->
-                <div class="modal fade" id="waybillModal{{ $collection->requestId }}"
-                    tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="waybillModal{{ $collection->requestId }}" tabindex="-1" role="dialog"
+                    aria-labelledby="waybillLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title text-primary">Waybill Preview</h5>
-                                <button type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body"
-                                style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                <iframe
-                                    src="{{ route('waybill.preview', $collection->requestId) }}"
-                                    width="100%" height="500" frameborder="0"></iframe>
+                            <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                <iframe src="{{ route('waybill.preview', $collection->requestId) }}" width="100%"
+                                    height="500" frameborder="0"></iframe>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-dismiss="modal">Close</button>
-                                <a href="{{ route('waybill.generate', $collection->requestId) }}"
-                                    target="_blank" class="btn btn-primary">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <a href="{{ route('waybill.generate', $collection->requestId) }}" target="_blank"
+                                    class="btn btn-primary">
                                     Generate
                                 </a>
                             </div>
@@ -1293,80 +1233,76 @@
                 </div>
 
                 @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
-                <!-- Failed Collection Modal -->
-                <div class="modal fade" id="failedCollectionModal-{{ $collection->id }}" tabindex="-1" role="dialog"
-                    aria-labelledby="failedCollectionModalLabel-{{ $collection->id }}"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title"
-                                    id="failedCollectionModalLabel-{{ $collection->id }}">
-                                    Failed Collection for RequestId
-                                    #{{ $collection->requestId }}
-                                </h5>
-                                <button type="button" class="close text-white"
-                                    data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                    <!-- Failed Collection Modal -->
+                    <div class="modal fade" id="failedCollectionModal-{{ $collection->id }}" tabindex="-1"
+                        role="dialog" aria-labelledby="failedCollectionModalLabel-{{ $collection->id }}"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title" id="failedCollectionModalLabel-{{ $collection->id }}">
+                                        Failed Collection for RequestId
+                                        #{{ $collection->requestId }}
+                                    </h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <form id="failedCollectionForm-{{ $collection->id }}"
+                                    action="{{ route('shipments.failedCollections', $collection->requestId) }}"
+                                    method="POST">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <p class="mb-3">Please select the reasons for failing to
+                                            collect:</p>
+
+                                        <div class="form-group">
+                                            <label for="failedCollection-{{ $collection->id }}">Select Reason</label>
+                                            <select name="reason" id="failedCollection-{{ $collection->id }}"
+                                                class="form-control" required>
+                                                <option value="">-- Choose Reason --</option>
+                                                @foreach ($failedCollections as $reason)
+                                                    <option value="{{ $reason->id }}">
+                                                        {{ $reason->reason }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="remarks-{{ $collection->id }}">Remarks</label>
+                                            <textarea name="remarks" id="remarks-{{ $collection->id }}" class="form-control" rows="2"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-info">Submit</button>
+                                    </div>
+                                </form>
+
+                                <!-- Success/Error alert -->
+                                <div id="failedCollectionAlert-{{ $collection->id }}" class="mt-3"></div>
                             </div>
-
-                            <form id="failedCollectionForm-{{ $collection->id }}"
-                                action="{{ route('shipments.failedCollections', $collection->requestId) }}"
-                                method="POST">
-                                @csrf
-                                <div class="modal-body">
-                                    <p class="mb-3">Please select the reasons for failing to
-                                        collect:</p>
-
-                                    <div class="form-group">
-                                        <label for="failedCollection-{{ $collection->id }}">Select Reason</label>
-                                        <select name="reason" id="failedCollection-{{ $collection->id }}" class="form-control" required>
-                                            <option value="">-- Choose Reason --</option>
-                                            @foreach ($failedCollections as $reason)
-                                                <option value="{{ $reason->id }}">
-                                                    {{ $reason->reason }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="remarks-{{ $collection->id }}">Remarks</label>
-                                        <textarea name="remarks" id="remarks-{{ $collection->id }}" class="form-control" rows="2"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger"
-                                        data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-info">Submit</button>
-                                </div>
-                            </form>
-
-                            <!-- Success/Error alert -->
-                            <div id="failedCollectionAlert-{{ $collection->id }}" class="mt-3"></div>
                         </div>
                     </div>
-                </div>
                 @endif
 
                 <!-- Release Collection Modal -->
-                <div class="modal fade" id="releaseCollectionModal-{{ $collection->id }}"
-                    tabindex="-1" role="dialog" aria-labelledby="releaseCollectionLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="releaseCollectionModal-{{ $collection->id }}" tabindex="-1"
+                    role="dialog" aria-labelledby="releaseCollectionLabel" aria-hidden="true">
                     <div class="modal-dialog " role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-primary">
                                 <h5 class="modal-title text-white">Release Collection to Front
                                     Office - RequestId {{ $collection->requestId }} </h5>
-                                <button type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form
-                                action="{{ route('collection.release', $collection->requestId) }}"
-                                method="POST">
+                            <form action="{{ route('collection.release', $collection->requestId) }}" method="POST">
                                 <div class="modal-body">
                                     @csrf
 
@@ -1385,7 +1321,7 @@
                 </div>
             @endforeach
 
-            <!-- JavaScript to handle AJAX form submission for Failed Collection -->                             
+            <!-- JavaScript to handle AJAX form submission for Failed Collection -->
             <script>
                 $(document).ready(function() {
                     $(document).off('submit', 'form[id^="failedCollectionForm-"]').on('submit',

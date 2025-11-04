@@ -190,6 +190,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/shipments/{id}/deliver', [ShipmentController::class, 'markAsDelivered'])->name('shipments.deliver');
     Route::resource('delivery_faileds','App\Http\Controllers\DeliveryFailedController');
     Route::resource('failed_collection','App\Http\Controllers\FailedCollectionController');
+     Route::get('/failed_collection_report', [FailedCollectionController::class, 'failed_collection_report'])->name('failed_collection_report');
     Route::resource('shipments','App\Http\Controllers\ShipmentController');
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');
