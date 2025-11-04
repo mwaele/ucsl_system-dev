@@ -26,7 +26,8 @@ class RateController extends Controller
         return view('rates.index')->with(['rates'=>$rates]);
     }
 
-    public function mombasa_office(){
+    public function mombasa_office()
+    {
         $rates = Rate::where('office_id',1)->get();
         $zones = Zone::all();
 
@@ -35,7 +36,9 @@ class RateController extends Controller
         return view('rates.mombasa_rates')->with(['rates'=>$rates,'zones'=>$zones,'offices'=>$offices]);
 
     }
-    public function nairobi_office(){
+
+    public function nairobi_office()
+    {
         $rates = Rate::where('office_id',2)->get();
         $zones = Zone::all();
 

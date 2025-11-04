@@ -31,6 +31,12 @@ class SpecialRate extends Model
     {
         return $this->belongsTo(Zone::class);
     }
+
+    public function zone_name()
+    {
+        return $this->belongsTo(Zone::class, 'zone_id');
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);

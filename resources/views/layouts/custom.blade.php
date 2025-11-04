@@ -686,10 +686,6 @@
                                 data-parent="#collapseRates">
                                 <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Overnight</a>
                             </div>
-
-                            <hr class="sidebar-divide my-0" />
-
-                            <a class="collapse-item" href="{{ route('special_rates.create') }}">Add Special Rate</a>
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('special_rates.index') }}"> Special Rate List</a>
                             <hr class="sidebar-divide my-0" />

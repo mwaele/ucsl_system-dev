@@ -22,9 +22,10 @@ class SameDayRateController extends Controller
         //
     }
 
-    public function nairobi_rates_sameday(){
+    public function nairobi_rates_sameday()
+    {
         $offices = Office::where('id',2)->get();
-       $rates = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
+        $rates = Rate::where(['office_id'=>2,'type'=>'Same Day'])->get();
  
         return view('rates.nairobi_rates_sameday')->with(['rates'=>$rates,'offices'=>$offices]); 
     }

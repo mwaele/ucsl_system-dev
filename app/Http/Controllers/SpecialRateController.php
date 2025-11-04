@@ -20,19 +20,9 @@ class SpecialRateController extends Controller
         $rates = SpecialRate::all();
         $offices = Office::all();
         $zones = Zone::all();
- 
-        return view('special_rates.index')->with(['rates'=>$rates]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
         $clients = Client::all();
-        $offices = Office::all();
-        $zones = Zone::all();
-        return view('special_rates.create')->with(['offices'=>$offices,'zones'=>$zones, 'clients'=>$clients]);
+ 
+        return view('special_rates.index', compact('rates','offices','zones','clients'));
     }
 
     /**
@@ -67,15 +57,15 @@ class SpecialRateController extends Controller
 
     }
 
-     public function getDestinations($office_id, $client_id)
+    public function getDestinations($office_id, $client_id)
     {
         $today = Carbon::today(); // or use now() if time matters
         $destinations = SpecialRate::where([
-        'office_id' => $office_id,
-        'client_id' => $client_id,
-        'status' => 'active'
-    ])
-    ->whereDate('applicableTo', '>=', $today)->get(['destination', 'id']);
+            'office_id' => $office_id,
+            'client_id' => $client_id,
+            'status' => 'active'
+        ])
+        ->whereDate('applicableTo', '>=', $today)->get(['destination', 'id']);
 
         return response()->json($destinations);
     }
@@ -110,9 +100,24 @@ class SpecialRateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SpecialRate $specialRate)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'office_id' => 'required|integer',
+            'zone_id' => 'required|integer',
+            'destination' => 'nullable|string|max:255',
+            'rate' => 'required|numeric',
+            'applicableFrom' => 'nullable|date',
+            'applicableTo' => 'nullable|date',
+            'approvalStatus' => 'nullable|string',
+            'client_id' => 'nullable|integer',
+            'status' => 'nullable|string',
+        ]);
+
+        $rate = SpecialRate::findOrFail($id);
+        $rate->update($validated);
+
+        return redirect()->route('special_rates.index')->with('success', 'Special Rate updated successfully.');
     }
 
     /**
