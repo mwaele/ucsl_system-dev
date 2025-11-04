@@ -8,75 +8,60 @@ use Illuminate\Http\Request;
 class ZoneController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the zones.
      */
     public function index()
     {
         $zones = Zone::all();
-        return view('zones.index')->with('zones',$zones);
+        return view('zones.index', compact('zones'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('zones.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a newly created zone in storage.
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'zone_name'=>'required',
-            'description' => 'nullable|string',
+        $validated = $request->validate([
+            'zone_name' => 'required|string|max:255',
+            'description' => 'required|string|max:500',
         ]);
 
-        $zone = new Zone($validatedData);
-        $zone->save();
-        
-        return redirect()->route('zones.index')->with('Success', 'Station Saved Successfully');
-        
+        Zone::create($validated);
+
+        return redirect()->route('zones.index')->with('success', 'Zone created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Update the specified zone in storage.
      */
-    public function show(Zone $zone)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'zone_name' => 'required|string|max:255',
+            'description' => 'required|string|max:500',
+        ]);
+
+        $zone = Zone::findOrFail($id);
+        $zone->update($validated);
+
+        return redirect()->route('zones.index')->with('success', 'Zone updated successfully.');
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Zone $zone)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Station $zone)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Remove the specified zone from storage.
      */
     public function destroy($id)
     {
-        $zone = Zone::find($id);
+        $zone = Zone::findOrFail($id);
         $zone->delete();
-        return redirect()->route('zones.index')->with('Success', 'Station info deleted successfully.');
+
+        return redirect()->route('zones.index')->with('success', 'Zone deleted successfully.');
     }
+
     public function checkZone(Request $request)
-{
-    $exists = Zone::where('station_name', $request->station_name)->exists();
-    return response()->json(['exists' => $exists]);
+    {
+        $exists = Zone::where('station_name', $request->station_name)->exists();
+        return response()->json(['exists' => $exists]);
+    }
 }
-}
+
