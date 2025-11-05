@@ -40,7 +40,7 @@
                     <tbody>
                         @foreach ($sub_categories as $sub_category)
                             <tr>
-                                <td>{{ $loop->iteration }}.</td>
+                                <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $sub_category->sub_category_name }} </td>
                                 <td> {{ $sub_category->description }} </td>
                                 <td class="row pl-4">
