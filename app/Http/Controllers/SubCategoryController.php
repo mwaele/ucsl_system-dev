@@ -20,17 +20,6 @@ class SubCategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $categories = Category::all();
-
-        return view('sub_categories.create')->with(['categories'=>$categories]);
-    
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -38,13 +27,12 @@ class SubCategoryController extends Controller
         $validatedData = $request->validate([
             'sub_category_name'=>'required|string',
             'description' => 'nullable|string',
-            'category_id' => 'required',
         ]);
 
         $category = new SubCategory($validatedData);
         $category->save();
         
-        return redirect()->route('sub_categories.index')->with('Success', 'Sub Category Saved Successfully');
+        return redirect()->route('sub_categories.index')->with('success', 'Sub-category saved successfully');
     
     }
 
@@ -67,16 +55,27 @@ class SubCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SubCategory $subCategory)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'sub_category_name' => 'string',
+            'description' => 'string',
+        ]);
+
+        $sub_category = SubCategory::findOrFail($id);
+        $sub_category->update($validated);
+
+        return redirect()->route('sub_categories.index')->with('success', 'Sub-category updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SubCategory $subCategory)
+    public function destroy(Request $request, $id)
     {
-        //
+        $sub_category = SubCategory::findOrFail($id);
+        $sub_category->delete();
+
+        return redirect()->route('sub_categories.index')->with('success', 'Category deleted successfully.');
     }
 }

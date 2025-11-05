@@ -7,7 +7,7 @@
             <div class="d-sm-flex align-items-center justify-content-between">
                 <!-- Create Category Button (opens modal) -->
                 <button class="btn btn-success" data-toggle="modal" data-target="#createCategoryModal">
-                    <i class="fas fa-plus-circle"></i> Category
+                    <i class="fas fa-plus-circle"></i> Add Category
                 </button>
 
                 <h4 class="m-0 font-weight-bold text-success">Categories List</h4>
@@ -23,6 +23,7 @@
                 <table class="table table-bordered text-primary" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Category</th>
                             <th>Description</th>
                             <th>Action</th>
@@ -30,6 +31,7 @@
                     </thead>
                     <tfoot>
                         <tr>
+                            <th>#</th>
                             <th>Category</th>
                             <th>Description</th>
                             <th>Action</th>
@@ -38,19 +40,20 @@
                     <tbody>
                         @foreach ($categories as $category)
                             <tr>
+                                <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $category->category_name }}</td>
                                 <td>{{ $category->description }}</td>
                                 <td class="row pl-4">
                                     <!-- Edit Button -->
                                     <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal"
                                         data-target="#editCategoryModal-{{ $category->id }}">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
 
                                     <!-- Delete Button -->
                                     <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#deleteCategory-{{ $category->id }}">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash"></i> Delete
                                     </button>
 
                                     <!-- Delete Modal -->
@@ -99,8 +102,8 @@
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
-                                                        <div class="row">
-                                                            <div class="col-md-6">
+                                                        <div>
+                                                            <div>
                                                                 <div class="form-group">
                                                                     <label>Category Name <span
                                                                             class="text-danger">*</span></label>
@@ -109,7 +112,7 @@
                                                                         value="{{ $category->category_name }}" required>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div>
                                                                 <div class="form-group">
                                                                     <label>Description</label>
                                                                     <input type="text" name="description"
@@ -119,11 +122,11 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                                data-dismiss="modal">Cancel</button>
                                                             <button type="submit"
                                                                 class="btn btn-info btn-sm"><i class="fas fa-save"></i>
                                                                 Save Changes</button>
-                                                            <button type="button" class="btn btn-secondary btn-sm"
-                                                                data-dismiss="modal">Cancel</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -154,19 +157,17 @@
                 <div class="modal-body">
                     <form action="{{ route('categories.store') }}" method="POST">
                         @csrf
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Category Name <span class="text-danger">*</span></label>
-                                    <input type="text" id="category" name="category_name" class="form-control" required>
-                                    <span id="category_name_feedback"></span>
-                                </div>
+                        <div>
+                            <div class="form-group">
+                                <label>Category Name <span class="text-danger">*</span></label>
+                                <input type="text" id="category" name="category_name" class="form-control" required>
+                                <span id="category_name_feedback"></span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <input type="text" name="description" class="form-control">
-                                </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" name="description" class="form-control">
                             </div>
                         </div>
 
