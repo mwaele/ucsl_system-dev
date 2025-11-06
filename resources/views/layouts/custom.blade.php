@@ -598,19 +598,10 @@
 
                 <!-- Nav Item - Clients Collapse Menu -->
                 <li class="nav-item {{ request()->routeIs('offices.*') ? 'active' : '' }}">
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                        data-target="#collapseOffice" aria-expanded="true" aria-controls="collapseOffice">
+                    <a class="nav-link" href="{{ route('offices.index') }}">
                         <i class="fas fa-fw fa-home"></i>
                         <span class="sized">Operations Offices</span>
                     </a>
-                    <div id="collapseOffice" class="collapse {{ request()->routeIs('offices.*') ? 'active' : '' }}"
-                        aria-labelledby="headingCompanyInfo" data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <a class="collapse-item" href="{{ route('offices.index') }}">All Offices</a>
-                            <hr class="sidebar-divide my-0" />
-                            <a class="collapse-item" href="{{ route('offices.create') }}">Add Office</a>
-                        </div>
-                    </div>
                 </li>
 
                 <!-- Divider -->
@@ -628,10 +619,6 @@
                         aria-labelledby="headingVehicles" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item" href="{{ route('vehicles.index') }}">All Vehicles</a>
-                            <hr class="sidebar-divide my-0" />
-                            <a class="collapse-item" href="{{ route('vehicles.create') }}">Add Vehicles</a>
-                            <hr class="sidebar-divide my-0" />
-                            <a class="collapse-item" href="{{ route('vehicles.create') }}"> Vehicle Allocation</a>
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('transporters.index') }}">Transporters</a>
                         </div>

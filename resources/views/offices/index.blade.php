@@ -225,6 +225,7 @@
                                         <option value="">Select</option>
                                         <option value="staff">Staff</option>
                                         <option value="agent">Agent</option>
+                                        <option value="caravan">Caravan</option>
                                     </select>
                                 </div>
                             </div>
@@ -235,7 +236,7 @@
                                     <select name="status" class="form-control" required>
                                         <option value="">Select</option>
                                         <option value="active" selected>Active</option>
-                                        <option value="inactive">Inactive</option>
+                                        <option value="closed">Closed</option>
                                     </select>
                                 </div>
                             </div>

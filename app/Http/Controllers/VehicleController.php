@@ -18,7 +18,9 @@ class VehicleController extends Controller
         $vehicles = Vehicle::all();
         $shipments = Shipment::all();
         $drivers = User::where('role', 'driver')->get();
-        return view('vehicles.index', compact('vehicles', 'shipments', 'drivers'));
+        $users = User::where('role','driver')->get();
+        $companies = CompanyInfo::all();
+        return view('vehicles.index', compact('vehicles', 'shipments', 'drivers', 'users', 'companies'));
     }
 
     /**
@@ -54,7 +56,7 @@ class VehicleController extends Controller
         $vehicle = new Vehicle($validatedData);
         $vehicle->save();
         
-        return redirect()->route('vehicles.index')->with('Success', 'Vehicle saved successfully');
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle saved successfully');
        
     }
 
@@ -79,7 +81,20 @@ class VehicleController extends Controller
      */
     public function update(Request $request, Vehicle $vehicle)
     {
-        //
+        $validatedData = $request->validate([
+            'regNo'      => 'required',
+            'type'       => 'required',
+            'color'      => 'nullable|string',
+            'tonnage'    => 'required',
+            'status'     => 'required',
+            'description'=> 'required',
+            'user_id'    => 'required',
+            'ownedBy'    => 'required',
+        ]);
+
+        $vehicle->update($validatedData);
+
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully');
     }
 
     /**
@@ -87,7 +102,9 @@ class VehicleController extends Controller
      */
     public function destroy(Vehicle $vehicle)
     {
-        //
+        $vehicle->delete();
+
+        return redirect()->route('vehicles.index')->with('success', 'Vehicle deleted successfully');
     }
 
     /**
