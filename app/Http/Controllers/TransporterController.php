@@ -19,7 +19,8 @@ class TransporterController extends Controller
     public function index()
     {
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
-        return view('transporters.index')->with(['transporters'=>$transporters]);
+        $account_no = rand(100000, 999999);
+        return view('transporters.index', compact('transporters', 'account_no'));
     }
 
     /**
@@ -27,10 +28,10 @@ class TransporterController extends Controller
      */
     public function create()
     {
-         do {
-            $number = 'TRN-' . mt_rand(10000, 99999);
-        } while (Transporter::where('account_No', $number)->exists());
-        return view('transporters.create')->with('account_no',$number);
+        do {
+            $account_no = 'TRN-' . mt_rand(10000, 99999);
+        } while (Transporter::where('account_No', $account_no)->exists());
+        return view('transporters.create')->with('account_no',$account_no);
     }
 
     /**
@@ -57,7 +58,7 @@ class TransporterController extends Controller
         $transporter = new Transporter($validatedData);
         $transporter->save();
         
-        return redirect()->route('transporters.index')->with('Success', 'Transporter Saved Successfully');
+        return redirect()->route('transporters.index')->with('success', 'Transporter Saved Successfully');
     }
 
     public function fetchTrucks($id)
@@ -96,7 +97,7 @@ class TransporterController extends Controller
         //dd($transporter_trucks);
         $pdf = Pdf::loadView('transporter_trucks.trucks_report' , [
             'trucks'=>$transporter_trucks,'name'=>$name
-        ])->setPaper('a4', 'landscape');;
+        ])->setPaper('a4', 'landscape');
         return $pdf->download("transporter_trucks_report.pdf");
     
     }
@@ -120,16 +121,48 @@ class TransporterController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Transporter $transporter)
+    public function update(Request $request, $id)
     {
-        //
+        $transporter = Transporter::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'phone_no' => 'required',
+            'email' => 'required|email|max:255',
+            'reg_details' => 'required|string|max:255',
+            'account_no' => 'required',
+            'cbv_no' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'transporter_type' => 'required'
+        ]);
+
+        // Handle signature upload if a new one is provided
+        if ($request->hasFile('signature')) {
+
+            // Delete old signature if exists
+            if ($transporter->signature && \Storage::disk('public')->exists($transporter->signature)) {
+                \Storage::disk('public')->delete($transporter->signature);
+            }
+
+            // Store new file
+            $path = $request->file('signature')->store('signatures', 'public');
+            $validatedData['signature'] = $path;
+        }
+
+        // Update transporter data
+        $transporter->update($validatedData);
+
+        return redirect()->route('transporters.index')->with('success', 'Transporter Updated Successfully');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Transporter $transporter)
     {
-        //
+        $transporter->delete();
+
+        return redirect()->route('transporters.index')->with('success', 'Transporter deleted successfully');
     }
 }

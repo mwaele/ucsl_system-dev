@@ -62,9 +62,22 @@ class TransporterTrucksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TransporterTrucks $transporterTrucks)
+    public function update(Request $request, $id)
     {
-        //
+        $truck = TransporterTrucks::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'reg_no' => 'required|string|max:255',
+            'driver_name' => 'required|string|max:255',
+            'driver_contact' => 'required|string|max:255',
+            'driver_id_no' => 'nullable|numeric',
+            'truck_type' => 'required|string|max:255',
+            'transporter_id' => 'required|exists:transporters,id',
+        ]);
+
+        $truck->update($validatedData);
+
+        return redirect()->back()->with('success', 'Truck updated successfully!');
     }
 
     /**

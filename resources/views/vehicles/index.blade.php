@@ -6,14 +6,16 @@
         <div class="d-sm-flex align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-danger">Motor Vehicles Lists</h6>
 
-            <!-- Create Vehicle Button -->
-            <button class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#createVehicleModal">
-                <i class="fas fa-plus text-white"></i> Create Vehicle
-            </button>
+            <div>
+                <!-- Create Vehicle Button -->
+                <button class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#createVehicleModal">
+                    <i class="fas fa-plus text-white"></i> Create Vehicle
+                </button>
 
-            <a href="/vehicles_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-                <i class="fas fa-download fa-sm text-white"></i> Generate Report
-            </a>
+                <a href="/vehicles_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+                    <i class="fas fa-download fa-sm text-white"></i> Generate Report
+                </a>
+            </div>
         </div>
     </div>
 
