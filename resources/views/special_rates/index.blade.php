@@ -189,7 +189,7 @@
                                     <!-- Edit Button -->
                                     <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal"
                                         data-target="#editRateModal-{{ $rate->id }}">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
 
                                     <!-- Delete Button -->

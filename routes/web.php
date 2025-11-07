@@ -91,6 +91,8 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/waybill-preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill-preview');
 
     Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinationSameDay']);
+    Route::put('/rates/{rate}', [RateController::class, 'edit'])->name('rates.edit');
+
 
     Route::get('/getCost/{originId}/{destinationId}', [RateController::class, 'getCost']);
     Route::get('/client_portal_overnight_report', [OvernightController::class, 'client_portal_overnight_report'])->name('client_portal_overnight_report');

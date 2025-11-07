@@ -168,7 +168,7 @@
                                         class="badge badge-{{ strtolower($arrival->status) === 'delivered' ? 'success' : 'warning' }}">
                                         {{ ucfirst($arrival->status) }}
                                     </span> --}}
-                                    {{ $arrival->shipmentCollection->status }}
+                                    {{ $arrival->shipmentCollection->status }} | {{ $arrival->clientRequest?->status }}
                                 </td>
                                 <td>
                                     <!-- Issue Button -->

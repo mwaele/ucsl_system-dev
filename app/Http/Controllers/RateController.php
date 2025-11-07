@@ -205,11 +205,33 @@ class RateController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Handle the editing submission for the specified Mombasa rate.
      */
-    public function edit(Rate $rate)
+    public function edit(Request $request, Rate $rate)
     {
-        //
+        // Validate input fields
+        $validatedData = $request->validate([
+            'office_id'       => 'required|exists:offices,id',
+            'zone_id'         => 'required|exists:zones,id',
+            'destination'     => 'nullable|string|max:255',
+            'rate'            => 'required|numeric|min:0',
+            'applicableFrom'  => 'nullable|date',
+            'applicableTo'    => 'nullable|date|after_or_equal:applicableFrom',
+            'approvalStatus'  => 'nullable|in:pending,approved',
+            'status'          => 'nullable|in:active,closed',
+            'type'            => 'nullable|in:normal,pharmaceutical',
+        ]);
+
+        try {
+            // Update the rate record
+            $rate->update($validatedData);
+
+            // Redirect back with success message
+            return redirect()->back()->with('success', 'Mombasa rate updated successfully!');
+        } catch (\Exception $e) {
+            // Handle unexpected errors gracefully
+            return redirect()->back()->with('error', 'An error occurred while updating the rate: ' . $e->getMessage());
+        }
     }
 
     /**

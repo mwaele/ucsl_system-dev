@@ -50,6 +50,7 @@ class ShipmentArrivalController extends Controller
 
         $sheets = LoadingSheet::with('rate')
             ->withCount('waybills') // adds waybills_count
+            ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
         //dd($sheets);
@@ -121,6 +122,7 @@ class ShipmentArrivalController extends Controller
             // Update the offloading clerk
             $sheet->update([
                 'offloading_clerk' => $request->dispatchers,
+                'status' => 'verified_at_destination',
             ]);
             Log::info('Offloading clerk updated', [
                 'sheet_id' => $sheet->id,

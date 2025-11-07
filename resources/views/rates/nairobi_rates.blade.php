@@ -65,10 +65,10 @@
                                     </button>
 
                                     <!-- Delete Button -->
-                                    <button type="button" class="btn btn-sm btn-danger" title="Delete" data-toggle="modal"
+                                    <!-- <button type="button" class="btn btn-sm btn-danger" title="Delete" data-toggle="modal"
                                         data-target="#delete_rate-{{ $rate->id }}"><i
                                             class="fas fa-trash"></i> Delete
-                                    </button>
+                                    </button> -->
 
                                     <!-- Delete Modal -->
                                     <div class="modal fade" id="delete_rate-{{ $rate->id }}" tabindex="-1"
