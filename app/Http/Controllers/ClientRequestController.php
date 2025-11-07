@@ -31,8 +31,14 @@ use App\Services\RequestIdService;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
 use App\Jobs\SendCollectionNotificationsJob;
-use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\Color\RgbColor;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\Color\Rgb;
+
 
 class ClientRequestController extends Controller
 {
@@ -589,17 +595,38 @@ class ClientRequestController extends Controller
         try {
             // 1. Create client request
 
-            // $qrImage = QrCode::format('png')
-            // ->size(300)
-            // ->errorCorrection('H')
-            // ->generate($requestId);
+              // Define the renderer
+    $renderer = new ImageRenderer(
+        new RendererStyle(
+            300, // size in px
+            1,   // margin
+            null,
+            null,
+            Fill::uniformColor(
+                new Rgb(255, 255, 255), // background color
+                new Rgb(0, 0, 0)        // foreground color
+            )
+        ),
+        new SvgImageBackEnd() // or use GD if available
+    );
 
-            $path = 'qrcodes/'.$requestId.time().'.png';
-            $qrImage = QrCode::size(300)->generate($requestId, $path);
+    // Create the QR code writer
+    $writer = new Writer($renderer);
 
-            //$fileName = 'qrcodes/request_' . $requestId . '.png';
-            Storage::disk('public')->put($path, $qrImage);
+    // Encode the requestId into the QR code
+    $qrContent = $writer->writeString($requestId);
 
+    // Define save path (in /public/qrcodes)
+    $qrCodeName = 'qr_' . $requestId . '.svg';
+    $qrCodePath = public_path('qrcodes/' . $qrCodeName);
+
+    // Ensure directory exists
+    if (!file_exists(public_path('qrcodes'))) {
+        mkdir(public_path('qrcodes'), 0777, true);
+    }
+
+    // Save QR Code
+    file_put_contents($qrCodePath, $qrContent);
             // $clientRequest->update(['qr_code_path' => $fileName]);
 
             $clientRequest = ClientRequest::create([
@@ -619,7 +646,7 @@ class ClientRequestController extends Controller
                 'priority_level_amount' => $validated['priority_extra_charge'] ?? 0,
                 'fragile_item' => $validated['fragile'] ?? 'no',
                 'fragile_item_amount' => $validated['fragile_charge'] ?? 0,
-                'qr_code_path' => $path,
+                'qr_code_path' => $qrCodePath,
             ]);
 
             // 2. Create track
