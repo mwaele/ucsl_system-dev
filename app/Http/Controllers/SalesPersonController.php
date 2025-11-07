@@ -12,9 +12,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Traits\PdfReportTrait;
 
 class SalesPersonController extends Controller
 {
+    use PdfReportTrait;
     public function index()
     {
         $sales_person = SalesPerson::all();
@@ -73,26 +75,40 @@ class SalesPersonController extends Controller
     {
         $user = SalesPerson::findOrFail($id);
 
-        $user->name = $request->name;
+        //$user->name = $request->name;
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
-        $user->station = $request->station;
-        $user->role = $request->role;
-        $user->status = $request->status;
+        $user->office_id = $request->office_id;
+        $user->id_no = $request->id_no;
+        $user->type = $request->type;
+        $user->remarks = $request->remarks;
 
         $user->save();   
 
         return redirect()->back()->with('success', 'User updated successfully.');
     }
 
-    public function sales_person_report(){
+    // public function sales_person_report(){
 
-        $sales_person = SalesPerson::orderBy('created_at', 'desc')->get();
-        $pdf = Pdf::loadView('sales_person.user_report' , [
-            'sales_person'=>$sales_person
-        ])->setPaper('a4', 'landscape');;
-        return $pdf->download("sales_person_report.pdf");
+    //     $sales_person = SalesPerson::orderBy('created_at', 'desc')->get();
+    //     $pdf = Pdf::loadView('sales_person.user_report' , [
+    //         'sales_person'=>$sales_person
+    //     ])->setPaper('a4', 'landscape');;
+    //     return $pdf->download("sales_person_report.pdf");
        
+    // }
+
+    public function sales_person_report()
+    {
+        $sales_person = SalesPerson::orderBy('created_at', 'desc')->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'sales_person.sales_person_report',
+            ['sales_person' => $sales_person],
+            'sales_person_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     public function destroy($id)

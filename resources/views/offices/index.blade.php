@@ -59,13 +59,13 @@
                                     <button type="button" class="btn btn-sm btn-info mr-1" data-toggle="modal"
                                         data-target="#updateOffice-{{ $office->id }}" data-id="{{ $office->id }}"><i
                                             class="fas fa-edit"></i> Edit</button>
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $office->id }}"><i
-                                            class="fas fa-trash"></i> Delete </button>
+                                            class="fas fa-trash"></i> Delete </button> --}}
 
                                     <!-- Edit Modal-->
-                                    <div class="modal fade" id="updateOffice-{{ $office->id }}" tabindex="-1" role="dialog" 
-                                        aria-labelledby="UpdateOfficeModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="updateOffice-{{ $office->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="UpdateOfficeModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <form action="  {{ route('offices.update', ['office' => $office->id]) }} "
                                                 method="post">
@@ -73,8 +73,10 @@
                                                 @csrf
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title" id="UpdateOfficeModalLabel">Update Office</h5>
-                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <h5 class="modal-title" id="UpdateOfficeModalLabel">Update Office
+                                                        </h5>
+                                                        <button class="close" type="button" data-dismiss="modal"
+                                                            aria-label="Close">
                                                             <span aria-hidden="true">×</span>
                                                         </button>
                                                     </div>
@@ -82,25 +84,35 @@
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label>Office Name <span class="text-danger">*</span></label>
-                                                                    <input type="text" value="{{ $office->name }}" name="office_name" class="form-control" required>
+                                                                    <label>Office Name <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input type="text" value="{{ $office->name }}"
+                                                                        name="office_name" class="form-control" required>
                                                                 </div>
                                                             </div>
 
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label>Office Code <span class="text-danger">*</span></label>
-                                                                    <input type="text" value="{{ $office->shortName }}" name="office_code" class="form-control" required maxlength="10">
+                                                                    <label>Office Code <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input type="text" value="{{ $office->shortName }}"
+                                                                        name="office_code" class="form-control" required
+                                                                        maxlength="10">
                                                                 </div>
                                                             </div>
 
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label>Office type <span class="text-danger">*</span></label>
+                                                                    <label>Office type <span
+                                                                            class="text-danger">*</span></label>
                                                                     <select name="type" class="form-control" required>
                                                                         <option value="">Select</option>
-                                                                        <option value="staff" {{ $office->type == 'staff' ? 'selected' : '' }}>Staff</option>
-                                                                        <option value="agent" {{ $office->type == 'agent' ? 'selected' : '' }}>Agent</option>
+                                                                        <option value="staff"
+                                                                            {{ $office->type == 'staff' ? 'selected' : '' }}>
+                                                                            Staff</option>
+                                                                        <option value="agent"
+                                                                            {{ $office->type == 'agent' ? 'selected' : '' }}>
+                                                                            Agent</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -110,8 +122,12 @@
                                                                     <label>Status <span class="text-danger">*</span></label>
                                                                     <select name="status" class="form-control" required>
                                                                         <option value="">Select</option>
-                                                                        <option value="active"   {{ $office->status == 'active' ? 'selected' : '' }}>Active</option>
-                                                                        <option value="inactive" {{ $office->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                                        <option value="active"
+                                                                            {{ $office->status == 'active' ? 'selected' : '' }}>
+                                                                            Active</option>
+                                                                        <option value="inactive"
+                                                                            {{ $office->status == 'inactive' ? 'selected' : '' }}>
+                                                                            Inactive</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -122,10 +138,12 @@
                                                                     <select name="city" class="form-control" required>
                                                                         <option value="">Select</option>
 
-                                                                        <option value="Nairobi" {{ $office->city == 'Nairobi' ? 'selected' : '' }}>Nairobi</option>
+                                                                        <option value="Nairobi"
+                                                                            {{ $office->city == 'Nairobi' ? 'selected' : '' }}>
+                                                                            Nairobi</option>
 
                                                                         @foreach ($rates as $rate)
-                                                                            <option value="{{ $rate->destination }}" 
+                                                                            <option value="{{ $rate->destination }}"
                                                                                 {{ $office->city == $rate->destination ? 'selected' : '' }}>
                                                                                 {{ $rate->destination }}
                                                                             </option>
@@ -136,10 +154,13 @@
 
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label>Country <span class="text-danger">*</span></label>
+                                                                    <label>Country <span
+                                                                            class="text-danger">*</span></label>
                                                                     <select name="country" class="form-control" required>
                                                                         <option value="">Select</option>
-                                                                        <option value="Kenya" {{ $office->country == 'Kenya' ? 'selected' : '' }}>Kenya</option>
+                                                                        <option value="Kenya"
+                                                                            {{ $office->country == 'Kenya' ? 'selected' : '' }}>
+                                                                            Kenya</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -157,12 +178,13 @@
                                     </div>
 
                                     <!-- Delete Modal-->
-                                    <div class="modal fade" id="delete_floor-{{ $office->id }}" tabindex="-1"
+                                    {{-- <div class="modal fade" id="delete_floor-{{ $office->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to delete <strong>{{ $office->name }}</strong>?.
+                                                    <p>Are you sure you want to delete
+                                                        <strong>{{ $office->name }}</strong>?.
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
@@ -171,27 +193,28 @@
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
                                                     </form>
                                                     <button type="button" class="btn btn-secondary"
                                                         data-dismiss="modal">Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </td>
                             </tr>
-                        </div>
-                    @endforeach
-                </tbody>
+            </div>
+            @endforeach
+            </tbody>
             </table>
         </div>
     </div>
 
     <!-- Create Modal-->
-    <div class="modal fade" id="createOffice" tabindex="-1" role="dialog" 
-        aria-labelledby="CreateOfficeModalLabel" aria-hidden="true">
+    <div class="modal fade" id="createOffice" tabindex="-1" role="dialog" aria-labelledby="CreateOfficeModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <form action="{{ route('offices.store') }}" method="post">
                 @csrf
@@ -214,7 +237,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Office Code <span class="text-danger">*</span></label>
-                                    <input type="text" name="office_code" class="form-control" required maxlength="10">
+                                    <input type="text" name="office_code" class="form-control" required
+                                        maxlength="10">
                                 </div>
                             </div>
 
@@ -273,5 +297,4 @@
             </form>
         </div>
     </div>
-
 @endsection

@@ -11,11 +11,12 @@
                     Rate <i class="fas fa-plus"></i></button>
                 <h4 class="m-0 font-weight-bold text-warning">Special Rates Lists</h4>
                 <a href="/rates_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
-                    class="fas fa-download fa-sm text-white"></i> Generate Report
+                        class="fas fa-download fa-sm text-white"></i> Generate Report
                 </a>
 
                 <!-- Add Rate Modal -->
-                <div class="modal fade" id="addRateModal" tabindex="-1" role="dialog" aria-labelledby="addRateModalLabel" aria-hidden="true">
+                <div class="modal fade" id="addRateModal" tabindex="-1" role="dialog" aria-labelledby="addRateModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document"><!-- modal-lg gives more width -->
                         <div class="modal-content">
                             <div class="modal-header">
@@ -32,7 +33,8 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label class="text-primary">Route From <span class="text-danger">*</span></label>
+                                                <label class="text-primary">Route From <span
+                                                        class="text-danger">*</span></label>
                                                 <select name="office_id" class="form-control" required>
                                                     <option value="">Select</option>
                                                     @foreach ($offices as $office)
@@ -126,7 +128,8 @@
                                         <button type="submit" class="btn btn-primary btn-sm">
                                             <i class="fas fa-save text-white"></i> Save
                                         </button>
-                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            data-dismiss="modal">Cancel</button>
                                     </div>
                                 </form>
                             </div>
@@ -184,39 +187,43 @@
                                 <td> {{ \Illuminate\Support\Str::title($rate->status) }}</td>
                                 <td class="row pl-4">
                                     <!-- Edit Button -->
-                                    <button class="btn btn-sm btn-info mr-1" title="Edit"
-                                        data-toggle="modal" data-target="#editRateModal-{{ $rate->id }}">
+                                    <button class="btn btn-sm btn-info mr-1" title="Edit" data-toggle="modal"
+                                        data-target="#editRateModal-{{ $rate->id }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
 
                                     <!-- Delete Button -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $rate->id }}"><i
                                             class="fas fa-trash"></i>
-                                    </button>
+                                    </button> --}}
 
                                     <!-- Edit Rate Modal -->
-                                    <div class="modal fade" id="editRateModal-{{ $rate->id }}" tabindex="-1" role="dialog"
-                                        aria-labelledby="editRateModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="editRateModal-{{ $rate->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="editRateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title text-info">Edit Special Rate</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
 
                                                 <div class="modal-body">
-                                                    <form action="{{ route('special_rates.update', $rate->id) }}" method="POST">
+                                                    <form action="{{ route('special_rates.update', $rate->id) }}"
+                                                        method="POST">
                                                         @csrf
                                                         @method('PUT')
 
                                                         <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
-                                                                    <label class="text-primary">Route From <span class="text-danger">*</span></label>
-                                                                    <select name="office_id" class="form-control" required>
+                                                                    <label class="text-primary">Route From <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select name="office_id" class="form-control"
+                                                                        required>
                                                                         <option value="">Select</option>
                                                                         @foreach ($offices as $office)
                                                                             <option value="{{ $office->id }}"
@@ -246,7 +253,8 @@
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Destination</label>
-                                                                    <input type="text" name="destination" class="form-control"
+                                                                    <input type="text" name="destination"
+                                                                        class="form-control"
                                                                         value="{{ $rate->destination }}">
                                                                 </div>
                                                             </div>
@@ -255,8 +263,10 @@
                                                         <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
-                                                                    <label class="text-primary">Rate <span class="text-danger">*</span></label>
-                                                                    <input type="text" name="rate" class="form-control" required
+                                                                    <label class="text-primary">Rate <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input type="text" name="rate"
+                                                                        class="form-control" required
                                                                         value="{{ $rate->rate }}">
                                                                 </div>
                                                             </div>
@@ -264,7 +274,8 @@
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Applicable From</label>
-                                                                    <input type="date" name="applicableFrom" class="form-control"
+                                                                    <input type="date" name="applicableFrom"
+                                                                        class="form-control"
                                                                         value="{{ $rate->applicableFrom }}">
                                                                 </div>
                                                             </div>
@@ -272,7 +283,8 @@
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Applicable To</label>
-                                                                    <input type="date" name="applicableTo" class="form-control"
+                                                                    <input type="date" name="applicableTo"
+                                                                        class="form-control"
                                                                         value="{{ $rate->applicableTo }}">
                                                                 </div>
                                                             </div>
@@ -284,9 +296,11 @@
                                                                     <label class="text-primary">Approval Status</label>
                                                                     <select name="approvalStatus" class="form-control">
                                                                         <option value="">Select Status</option>
-                                                                        <option value="pending" {{ $rate->approvalStatus == 'pending' ? 'selected' : '' }}>
+                                                                        <option value="pending"
+                                                                            {{ $rate->approvalStatus == 'pending' ? 'selected' : '' }}>
                                                                             Pending</option>
-                                                                        <option value="approved" {{ $rate->approvalStatus == 'approved' ? 'selected' : '' }}>
+                                                                        <option value="approved"
+                                                                            {{ $rate->approvalStatus == 'approved' ? 'selected' : '' }}>
                                                                             Approved</option>
                                                                     </select>
                                                                 </div>
@@ -312,8 +326,12 @@
                                                                     <label class="text-primary">Status</label>
                                                                     <select name="status" class="form-control">
                                                                         <option value="">Select Status</option>
-                                                                        <option value="active" {{ $rate->status == 'active' ? 'selected' : '' }}>Active</option>
-                                                                        <option value="closed" {{ $rate->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                                                                        <option value="active"
+                                                                            {{ $rate->status == 'active' ? 'selected' : '' }}>
+                                                                            Active</option>
+                                                                        <option value="closed"
+                                                                            {{ $rate->status == 'closed' ? 'selected' : '' }}>
+                                                                            Closed</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -323,7 +341,8 @@
                                                             <button type="submit" class="btn btn-info btn-sm">
                                                                 <i class="fas fa-save text-white"></i> Save Changes
                                                             </button>
-                                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                                data-dismiss="modal">Cancel</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -345,8 +364,9 @@
                                                         method = "POST">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                            title="Delete" value="DELETE">YES DELETE <i
+                                                                class="fas fa-trash"></i> </button>
                                                     </form>
                                                     <button type="button" class="btn btn-secondary"
                                                         data-dismiss="modal">Cancel</button>

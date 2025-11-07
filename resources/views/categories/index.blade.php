@@ -51,37 +51,13 @@
                                     </button>
 
                                     <!-- Delete Button -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#deleteCategory-{{ $category->id }}">
                                         <i class="fas fa-trash"></i> Delete
-                                    </button>
+                                    </button> --}}
 
                                     <!-- Delete Modal -->
-                                    <div class="modal fade" id="deleteCategory-{{ $category->id }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="deleteCategoryLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete
-                                                        <strong>{{ $category->category_name }}</strong>?
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form
-                                                        action="{{ route('categories.destroy', ['category' => $category->id]) }}"
-                                                        method="POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">
-                                                            YES DELETE <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-secondary btn-sm"
-                                                        data-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+
 
                                     <!-- Edit Modal -->
                                     <div class="modal fade" id="editCategoryModal-{{ $category->id }}" tabindex="-1"
@@ -124,8 +100,8 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary btn-sm"
                                                                 data-dismiss="modal">Cancel</button>
-                                                            <button type="submit"
-                                                                class="btn btn-info btn-sm"><i class="fas fa-save"></i>
+                                                            <button type="submit" class="btn btn-info btn-sm"><i
+                                                                    class="fas fa-save"></i>
                                                                 Save Changes</button>
                                                         </div>
                                                     </form>
@@ -182,5 +158,4 @@
             </div>
         </div>
     </div>
-
 @endsection

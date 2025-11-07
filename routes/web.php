@@ -50,6 +50,8 @@ use App\Http\Controllers\ClientCancelledShipmentController;
 use App\Http\Controllers\DeliveryControlController;
 use App\Http\Controllers\FailedCollectionController;
 use App\Http\Controllers\CODController;
+use App\Http\Controllers\DispatcherController;
+use App\Http\Controllers\DeliveryFailedController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -189,8 +191,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/vehicles/{vehicle}/allocate', [VehicleController::class, 'allocate'])->name('vehicles.allocate');
     Route::post('/shipments/{id}/deliver', [ShipmentController::class, 'markAsDelivered'])->name('shipments.deliver');
     Route::resource('delivery_faileds','App\Http\Controllers\DeliveryFailedController');
+
+        Route::get('/delivery_failed_report', [DeliveryFailedController::class, 'delivery_failed_report'])->name('delivery_failed_report');
+
     Route::resource('failed_collection','App\Http\Controllers\FailedCollectionController');
      Route::get('/failed_collection_report', [FailedCollectionController::class, 'failed_collection_report'])->name('failed_collection_report');
+
     Route::resource('shipments','App\Http\Controllers\ShipmentController');
     Route::resource('clients','App\Http\Controllers\ClientController');
     Route::resource('services','App\Http\Controllers\ServiceController');
@@ -224,7 +230,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/get-sales-person/{id}', [SalesPersonController::class, 'getSalesPerson']);
 
+    
+     Route::get('/sales_person_report', [SalesPersonController::class, 'sales_person_report'])->name('sales_person_report.report');
+
+
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
+
     Route::resource('sales_person','App\Http\Controllers\SalesPersonController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');
@@ -342,8 +353,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('shipment_arrivals','App\Http\Controllers\ShipmentArrivalController');
 
+    
     Route::get('/shipment_arrivals_report', [ShipmentArrivalController::class, 'generate'])
     ->name('shipment_arrivals_report');
+
+    Route::get('/dispatch_clerks_report', [DispatcherController::class, 'generate'])
+    ->name('dispatch_clerks_report');
 
     Route::get('/shipment_arrivals_report_detail', [ShipmentArrivalController::class, 'generateParcels'])
     ->name('shipment_arrivals_report_detail');

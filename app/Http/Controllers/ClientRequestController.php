@@ -589,13 +589,16 @@ class ClientRequestController extends Controller
         try {
             // 1. Create client request
 
-            $qrImage = QrCode::format('png')
-            ->size(300)
-            ->errorCorrection('H')
-            ->generate($requestId);
+            // $qrImage = QrCode::format('png')
+            // ->size(300)
+            // ->errorCorrection('H')
+            // ->generate($requestId);
 
-            $fileName = 'qrcodes/request_' . $requestId . '.png';
-            Storage::disk('public')->put($fileName, $qrImage);
+            $path = 'qrcodes/'.$requestId.time().'.png';
+            $qrImage = QrCode::size(300)->generate($requestId, $path);
+
+            //$fileName = 'qrcodes/request_' . $requestId . '.png';
+            Storage::disk('public')->put($path, $qrImage);
 
             // $clientRequest->update(['qr_code_path' => $fileName]);
 
@@ -616,7 +619,7 @@ class ClientRequestController extends Controller
                 'priority_level_amount' => $validated['priority_extra_charge'] ?? 0,
                 'fragile_item' => $validated['fragile'] ?? 'no',
                 'fragile_item_amount' => $validated['fragile_charge'] ?? 0,
-                'qr_code_path' => $fileName,
+                'qr_code_path' => $path,
             ]);
 
             // 2. Create track

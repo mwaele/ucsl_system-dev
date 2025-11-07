@@ -51,35 +51,12 @@
                                     </button>
 
                                     <!-- Delete Button -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#deleteSubCategory-{{ $sub_category->id }}">
                                         <i class="fas fa-trash"></i> Delete
-                                    </button>
+                                    </button> --}}
 
                                     <!-- Delete Modal -->
-                                    <div class="modal fade" id="deleteSubCategory-{{ $sub_category->id }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="deleteSubCategoryLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete <strong>{{ $sub_category->sub_category_name }}</strong>?
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form
-                                                        action =" {{ route('sub_categories.destroy', ['sub_category' => $sub_category->id]) }}"
-                                                        method = "POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <!-- Edit Modal -->
                                     <div class="modal fade" id="editSubCategoryModal-{{ $sub_category->id }}" tabindex="-1"
@@ -107,7 +84,8 @@
                                                                             class="text-danger">*</span></label>
                                                                     <input type="text" name="sub_category_name"
                                                                         class="form-control"
-                                                                        value="{{ $sub_category->sub_category_name }}" required>
+                                                                        value="{{ $sub_category->sub_category_name }}"
+                                                                        required>
                                                                 </div>
                                                             </div>
                                                             <div>
@@ -122,8 +100,8 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary btn-sm"
                                                                 data-dismiss="modal">Cancel</button>
-                                                            <button type="submit"
-                                                                class="btn btn-info btn-sm"><i class="fas fa-save"></i>
+                                                            <button type="submit" class="btn btn-info btn-sm"><i
+                                                                    class="fas fa-save"></i>
                                                                 Save Changes</button>
                                                         </div>
                                                     </form>

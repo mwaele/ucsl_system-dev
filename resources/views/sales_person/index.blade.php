@@ -12,7 +12,8 @@
                 <h4 class="m-0 font-weight-bold text-success">Sales and Marketing Lists</h4>
 
 
-                <a href="/sales_person_report" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                <a href="{{ route('sales_person_report.report') }}"
+                    class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                         class="fas fa-download fa-sm text-white"></i> Generate Report</a>
             </div>
         </div>
@@ -56,7 +57,8 @@
                                         data-target="#editModal" data-id="{{ $sales_person->id }}"
                                         data-name="{{ $sales_person->name }}" data-id-no="{{ $sales_person->id_no }}"
                                         data-phone-number="{{ $sales_person->phone_number }}"
-                                        data-phone-number="{{ $sales_person->phone_number }}">
+                                        data-email="{{ $sales_person->email }}" data-type="{{ $sales_person->type }}"
+                                        data-remarks="{{ $sales_person->remarks }}">
                                         Edit
                                     </button>
                                     {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
@@ -209,8 +211,10 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('sales_person.store') }} " method="post">
+                                <form id="editForm" method="POST">
                                     @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="id" id="edit_id">
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="name" class="form-label">Name <span
@@ -303,19 +307,28 @@
 
                             // Extract values from button data attributes
                             var id = button.data('id');
-                            var reason = button.data('reason');
-                            var code = button.data('code');
-                            var description = button.data('description');
+
+                            //alert('ID: ' + id);
+                            var name = button.data('name');
+                            var idNo = button.data('id-no');
+                            var phoneNumber = button.data('phone-number');
+                            var email = button.data('email');
+                            var type = button.data('type');
+                            var remarks = button.data('remarks');
+                            var office_id = button.data('office_id');
 
                             // Fill the modal fields with these values
                             var modal = $(this);
                             modal.find('#edit_id').val(id);
-                            modal.find('#edit_reason').val(reason);
-                            modal.find('#edit_code').val(code);
-                            modal.find('#edit_description').val(description);
-
+                            modal.find('#name').val(name);
+                            modal.find('#idNo').val(idNo);
+                            modal.find('#phoneNumber').val(phoneNumber);
+                            modal.find('#email').val(email);
+                            modal.find('#type').val(type);
+                            modal.find('#office_id').val(office_id);
+                            modal.find('#remarks').val(remarks);
                             // Update form action dynamically
-                            modal.find('#editForm').attr('action', '/failed_collection/' + id);
+                            modal.find('#editForm').attr('action', '/sales_person/' + id);
                         });
                     });
                 </script>

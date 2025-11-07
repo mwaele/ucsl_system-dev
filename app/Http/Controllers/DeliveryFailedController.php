@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\DeliveryFailed;
 use Illuminate\Http\Request;
+use App\Traits\PdfReportTrait;
 
 class DeliveryFailedController extends Controller
 {
+    use PdfReportTrait;
     public function index()
     {
         $records = DeliveryFailed::latest()->paginate(10);
@@ -62,5 +64,19 @@ class DeliveryFailedController extends Controller
 
         return redirect()->route('delivery_faileds.index')
             ->with('success', 'Record deleted successfully.');
+    }
+    
+
+    public function delivery_failed_report()
+    {
+        $delivery_faileds = DeliveryFailed::orderBy('created_at', 'desc')->get();
+
+        return $this->renderPdfWithPageNumbers(
+            'delivery_faileds.delivery_faileds_report',
+            ['delivery_faileds' => $delivery_faileds],
+            'delivery_faileds_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 }

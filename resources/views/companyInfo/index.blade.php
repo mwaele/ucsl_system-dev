@@ -47,33 +47,11 @@
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $company_info->id }}"><i
-                                            class="fas fa-trash"></i></button>
+                                            class="fas fa-trash"></i></button> --}}
                                     <!-- Logout Modal-->
-                                    <div class="modal fade" id="delete_floor-{{ $company_info->id }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $company_info->company_name }}.
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form
-                                                        action =" {{ route('company_infos.destroy', ['company_info' => $company_info->id]) }}"
-                                                        method = "POST">
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                                                            value="DELETE">YES DELETE <i class="fas fa-trash"></i> </button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {{--  --}}
 
                                 </td>
                             </tr>
