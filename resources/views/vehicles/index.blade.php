@@ -63,10 +63,10 @@
                                 </button>
 
                                 <!-- Delete Button -->
-                                <button class="btn btn-sm btn-danger" data-toggle="modal"
+                                <!-- <button class="btn btn-sm btn-danger" data-toggle="modal"
                                     data-target="#deleteVehicleModal-{{ $vehicle->id }}">
                                     <i class="fas fa-trash"></i> Delete
-                                </button>
+                                </button> -->
 
                             </td>
                         </tr>

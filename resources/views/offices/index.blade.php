@@ -56,12 +56,15 @@
                                 <td> {{ $office->city }} </td>
                                 <td> {{ \Illuminate\Support\Str::title($office->status) }} </td>
                                 <td class="row pl-4">
+                                    <!-- Edit Button -->
                                     <button type="button" class="btn btn-sm btn-info mr-1" data-toggle="modal"
                                         data-target="#updateOffice-{{ $office->id }}" data-id="{{ $office->id }}"><i
                                             class="fas fa-edit"></i> Edit</button>
-                                    {{-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+
+                                    <!-- Delete Button -->
+                                    <!-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#delete_floor-{{ $office->id }}"><i
-                                            class="fas fa-trash"></i> Delete </button> --}}
+                                            class="fas fa-trash"></i> Delete </button> -->
 
                                     <!-- Edit Modal-->
                                     <div class="modal fade" id="updateOffice-{{ $office->id }}" tabindex="-1"

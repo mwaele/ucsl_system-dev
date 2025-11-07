@@ -217,7 +217,24 @@ class RateController extends Controller
      */
     public function update(Request $request, Rate $rate)
     {
-        //
+        // Validate incoming data
+        $validatedData = $request->validate([
+            'office_id'        => 'required|exists:offices,id',
+            'zone_id'          => 'required|exists:zones,id',
+            'destination'      => 'nullable|string|max:255',
+            'rate'             => 'required|numeric|min:0',
+            'applicableFrom'   => 'nullable|date',
+            'applicableTo'     => 'nullable|date|after_or_equal:applicableFrom',
+            'approvalStatus'   => 'nullable|in:pending,approved',
+            'status'           => 'nullable|in:active,closed',
+            'type'             => 'nullable|in:normal,pharmaceutical',
+        ]);
+
+        // Update the Rate model with validated data
+        $rate->update($validatedData);
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Rate updated successfully!');
     }
 
     /**

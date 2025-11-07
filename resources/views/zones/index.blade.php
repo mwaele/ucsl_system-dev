@@ -47,14 +47,14 @@
                                     <!-- Edit Button (opens modal) -->
                                     <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
                                         data-target="#editZoneModal-{{ $zone->id }}" title="Edit">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
 
                                     <!-- Delete Button -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    <!-- <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#deleteZoneModal-{{ $zone->id }}">
                                         <i class="fas fa-trash"></i>
-                                    </button>
+                                    </button> -->
 
                                     <!-- Edit Modal -->
                                     <div class="modal fade" id="editZoneModal-{{ $zone->id }}" tabindex="-1" role="dialog"
