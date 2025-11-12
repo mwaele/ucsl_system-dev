@@ -614,10 +614,11 @@ class ClientRequestController extends Controller
     $writer = new Writer($renderer);
 
     // Encode the requestId into the QR code
-    $qrContent = $writer->writeString($requestId);
+    $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
+    $qrContent = $writer->writeString($qrCoLink);
 
     // Define save path (in /public/qrcodes)
-    $qrCodeName = 'qr_' . $requestId . '.svg';
+    $qrCodeName =  $requestId . '.svg';
     $qrCodePath = public_path('qrcodes/' . $qrCodeName);
 
     // Ensure directory exists

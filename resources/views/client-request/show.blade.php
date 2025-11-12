@@ -442,10 +442,10 @@
                                         </button> -->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                title="Generate Waybill"
-                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                            </button> -->
+                                                                                                                title="Generate Waybill"
+                                                                                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                            </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -555,10 +555,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                            title="Waybill" data-toggle="modal"
-                                            data-target="#waybillModal{{ $collection->requestId }}">
-                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                        </button> -->
+                                                                                                            title="Waybill" data-toggle="modal"
+                                                                                                            data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                        </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -990,24 +990,24 @@
                                                 Consignment Note</strong></div>
                                         <hr style="margin: 4px 0;">
 
-                                    <div style="font-size: 14px;"><strong>Request ID:
-                                            {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                    <div style="font-size: 14px;"><strong>Consignment Number:
-                                            {{ $collection->consignment_no ?? 'N/A' }}</strong>
-                                    </div>
-                                    <div>
-                                        <strong>From:</strong>
-                                        {{ $collection->shipmentCollection->office->name }}
-                                    </div>
-                                    <div>
-                                        <strong>To:</strong>
-                                        {{ $collection->shipmentCollection->destination->destination ?? '' }}
-                                    </div>
-                                    <div><strong>Total Items:</strong>
-                                        {{ $collection->shipmentCollection->items->count() }}</div>
-                                    <div>
-                                        <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
-                                    </div>
+                                        <div style="font-size: 14px;"><strong>Request ID:
+                                                {{ $collection->requestId ?? 'N/A' }}</strong></div>
+                                        <div style="font-size: 14px;"><strong>Consignment Number:
+                                                {{ $collection->consignment_no ?? 'N/A' }}</strong>
+                                        </div>
+                                        <div>
+                                            <strong>From:</strong>
+                                            {{ $collection->shipmentCollection->office->name }}
+                                        </div>
+                                        <div>
+                                            <strong>To:</strong>
+                                            {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                        </div>
+                                        <div><strong>Total Items:</strong>
+                                            {{ $collection->shipmentCollection->items->count() }}</div>
+                                        <div>
+                                            <strong>Date:</strong> {{ now()->format('M d, Y \a\t h:i A') }}
+                                        </div>
 
                                         <hr style="margin: 4px 0;">
 
@@ -1081,29 +1081,29 @@
                                             </table>
                                             <hr style="margin: 4px 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>Total Weight:</strong>
-                                            <span>{{ number_format($totalWeight, 2) }}
-                                                {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>Base Cost:</strong>
-                                            <span>Ksh
-                                                {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>VAT:</strong>
-                                            <span style="text-decoration: underline;"> Ksh
-                                                {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>Total:</strong>
-                                            <span> Ksh
-                                                {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
-                                        </div>
-                                    @else
-                                        <p>No shipment items found.</p>
-                                    @endif
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Total Weight:</strong>
+                                                <span>{{ number_format($totalWeight, 2) }}
+                                                    {{ $totalWeight > 1 ? 'Kgs' : 'Kg' }}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Base Cost:</strong>
+                                                <span>Ksh
+                                                    {{ number_format($collection->shipmentCollection->cost, 2) }}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>VAT:</strong>
+                                                <span style="text-decoration: underline;"> Ksh
+                                                    {{ number_format($collection->shipmentCollection->vat, 2) }}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Total:</strong>
+                                                <span> Ksh
+                                                    {{ number_format($collection->shipmentCollection->total_cost, 2) }}</span>
+                                            </div>
+                                        @else
+                                            <p>No shipment items found.</p>
+                                        @endif
 
                                         {{-- Priority & Fragile Check --}}
                                         @if ($collection->priority_level === 'high' && $collection->fragile_item === 'yes')
@@ -1120,46 +1120,51 @@
                                             </div>
                                         @endif
 
-                                    <hr style="margin: 6px 0;">
-                                    <div style="text-align: left; font-size: 12px;">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>Collected By:</strong>
-                                            <span> {{ $collection->user->name }} </span>
+                                        <hr style="margin: 6px 0;">
+                                        <div style="text-align: left; font-size: 12px;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Collected By:</strong>
+                                                <span> {{ $collection->user->name }} </span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Contact:</strong>
+                                                @php
+                                                    $phone = $collection->user->phone_number;
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', strlen($phone) - 6) .
+                                                        substr($phone, -3);
+                                                @endphp
+                                                <span> {{ $maskedPhone }} </span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong>Vehicle REG:</strong>
+                                                <span> {{ $collection->vehicle->regNo ?? '' }} </span>
+                                            </div>
+
+                                            These are provisional charges based on details provided by
+                                            sender.<br>
+                                            <div class=" mt-0 pt-0 " style="text-align: center">
+                                                <img src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
+                                                    alt="Authorized QR Code"
+                                                    style="width: 120px; height: auto; margin-top: 10px;">
+                                            </div>
+                                            <br>
+                                            <strong>TERMS & CONDITIONS</strong><br>
+                                            Carriage of this shipment is subject to the terms and
+                                            conditions. Visit www.ufanisicourier.co.ke/terms
                                         </div>
-                                        <div
-                                            style="display: flex; justify-content: space-between;">
-                                            <strong>Contact:</strong>
-                                            @php
-                                                $phone = $collection->user->phone_number;
-                                                $maskedPhone =
-                                                    substr($phone, 0, 3) .
-                                                    str_repeat('*', strlen($phone) - 6) .
-                                                    substr($phone, -3);
-                                            @endphp
-                                            <span> {{ $maskedPhone }} </span>
-                                        </div>
-                                        <div
-                                            style="display: flex; justify-content: space-between;">
-                                            <strong>Vehicle REG:</strong>
-                                            <span> {{ $collection->vehicle->regNo ?? '' }} </span>
-                                        </div><br>
-                                        These are provisional charges based on details provided by
-                                        sender.<br><br>
-                                        <strong>TERMS & CONDITIONS</strong><br>
-                                        Carriage of this shipment is subject to the terms and
-                                        conditions. Visit www.ufanisicourier.co.ke/terms
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-dismiss="modal" aria-label="Close">Close</button>
-                                <button type="button" class="btn btn-primary"
-                                    onclick="printModalContent({{ $collection->id }})">Print</button>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                        aria-label="Close">Close</button>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="printModalContent({{ $collection->id }})">Print</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 @endif
 
                 <!-- Handover Modal -->

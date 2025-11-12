@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Ufanisi Courier Services Limited Management Information System" />
+    <meta name="description" content="Ufanisi Courier Services Limited Parcel Management System" />
     <meta name="author" content="ICT" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 

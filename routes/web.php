@@ -52,6 +52,7 @@ use App\Http\Controllers\FailedCollectionController;
 use App\Http\Controllers\CODController;
 use App\Http\Controllers\DispatcherController;
 use App\Http\Controllers\DeliveryFailedController;
+use App\Http\Controllers\ShipmentDetailController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -101,6 +102,8 @@ Route::middleware('client.auth')->group(function () {
     Route::post('/cancelRequest/{requestId}', [ClientCancelledShipmentController::class, 'cancelRequest'])->name('clientPortal.cancelRequest');
 
 });
+
+Route::get('/shipmentDetails/{requestId}', [ShipmentDetailController::class, 'shipmentDetails'])->name('shipmentDetails');
 
 // Client auth routes
 Route::get('/client/login', [ClientAuthController::class, 'showLoginForm'])->name('client.login');
