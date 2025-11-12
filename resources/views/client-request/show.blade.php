@@ -404,12 +404,12 @@
                                 <td class="d-flex flex-wrap gap-2">
                                     {{-- Pending Collection --}}
                                     @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
-                                        <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 mb-1 mr-1"
+                                        <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 ml-1 mb-1 mr-1"
                                             data-toggle="modal" title="Collect parcels"
                                             data-target="#collect-{{ $collection->id }}">
                                             <i class="fas fa-box mr-1"></i> Collect
                                         </button>
-                                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 ml-1"
+                                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 ml-1 mb-1 mr-1"
                                             title="Failed Collection" data-toggle="modal"
                                             data-target="#failedCollectionModal-{{ $collection->id }}">
                                             <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
@@ -425,7 +425,7 @@
                                     {{-- Collected --}}
                                     @if ($collection->status === 'collected')
                                         <!-- Consignment Button -->
-                                        <button class="btn btn-primary btn-sm mr-1 mb-1 d-flex align-items-center gap-1"
+                                        <button class="btn btn-primary btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
                                             title="Print Consignment Note" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">
                                             <i class="fas fa-file-alt mr-1"></i> <span>Consignment</span>
@@ -450,7 +450,7 @@
 
                                     {{-- Verified / Delivered --}}
                                     @if (in_array($collection->status, ['verified', 'delivered']))
-                                        <button class="btn btn-primary btn-sm mr-1 d-flex align-items-center gap-1"
+                                        <button class="btn btn-primary btn-sm ml-1 mr-1 d-flex align-items-center gap-1"
                                             title="Print Receipt" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">
                                             <i class="fas fa-print mr-1"></i> <span>Receipt</span>

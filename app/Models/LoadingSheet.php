@@ -23,11 +23,12 @@ class LoadingSheet extends Model
         'receiver_id_no',
         'received_date',
         'receiver_signature   ',
-        'date_closed  ',
-        'remarks    ',
+        'date_closed',
+        'remarks',
         'description',
         'destination_id', 
-        'offloading_clerk'
+        'offloading_clerk',
+        'status',
     ];
     
     public function office()

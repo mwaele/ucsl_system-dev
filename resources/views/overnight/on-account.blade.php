@@ -403,7 +403,7 @@
                                             <button class="btn btn-sm btn-primary mr-1" title="Edit Client Request"
                                                 data-toggle="modal"
                                                 data-target="#editClientRequest-{{ $request->requestId }}">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="fas fa-edit"></i> Edit
                                             </button>
                                         @endif
                                         <!-- Edit Client Request Modal -->
@@ -549,7 +549,7 @@
                                             <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                                 data-toggle="modal"
                                                 data-target="#deleteClientRequest-{{ $request->requestId }}">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash"></i> Delete
                                             </button>
 
                                             <!-- Delete Modal-->
@@ -793,7 +793,7 @@
                                             </div>
                                         @endif
 
-                                        @if ($request->status === 'collected')
+                                        @if ($request->status === 'received_at_front_office')
                                             {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
                                                     data-toggle="modal" data-rider="{{ $request->user->name }}"
                                                     data-target="#verifyCollectedParcel-{{ $request->requestId }}">
@@ -814,10 +814,46 @@
                                         @endif
 
                                         @if ($request->status === 'collected')
-                                            <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
-                                                <i class="fas fa-eye"></i>
+                                            <!-- Receive Collection Button -->
+                                            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#receiveCollectionModal-{{ $request->id }}">
+                                                <i class="fas fa-hand-holding-usd"></i> Receive Collection
                                             </button>
+
+                                            <!-- Receive CollectionModal -->
+                                            <div class="modal fade" id="receiveCollectionModal-{{ $request->id }}" tabindex="-1" role="dialog"
+                                                aria-labelledby="receiveCollectionLabel-{{ $request->id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        
+                                                        <div class="modal-header bg-success text-white">
+                                                            <h5 class="modal-title" id="receiveCollectionLabel-{{ $request->id }}">
+                                                                Receive Rider Collection #{{ $request->requestId }}
+                                                            </h5>
+                                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <form action="{{ route('requests.receiveCollection', $request->id) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-body">
+                                                                <div class="form-group">
+                                                                    <label for="remarks-{{ $request->id }}">Remarks</label>
+                                                                    <textarea name="remarks" id="remarks-{{ $request->id }}" class="form-control"
+                                                                            rows="3" placeholder="Enter remarks..."></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-success">Confirm Receipt</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         @endif
+
 
                                         @if ($request->status === 'verified')
                                             <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
@@ -1016,28 +1052,28 @@
                                     method: 'GET',
                                     success: function(response) {
                                         let headerInfo = `
-                                    <form id="shipmentForm">
-                                                @csrf
-                                                @method('PUT')
-                                    <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Request ID</label>
-                                            <input type="text" name="requestId" class="form-control" id="requestId" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Rider</label>
-                                            <input type="text" name="userId" id="riderName" class="form-control"  readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Vehicle</label>
-                                            <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="text-primary">Date Requested</label>
-                                            <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
-                                        </div>
-                                    </div>
-                                `;
+                                            <form id="shipmentForm">
+                                                        @csrf
+                                                        @method('PUT')
+                                            <div class="row">
+                                                <div class="form-group col-md-3">
+                                                    <label class="text-primary">Request ID</label>
+                                                    <input type="text" name="requestId" class="form-control" id="requestId" readonly>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label class="text-primary">Rider</label>
+                                                    <input type="text" name="userId" id="riderName" class="form-control"  readonly>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label class="text-primary">Vehicle</label>
+                                                    <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label class="text-primary">Date Requested</label>
+                                                    <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
+                                                </div>
+                                            </div>
+                                        `;
 
                                         let itemsHtml =
                                             '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
@@ -1124,7 +1160,11 @@
 
                                         <div class="form-group col-md-2">
                                             <label class="text-primary"><small>Reference</small></label>
-                                            <input type="text" name="reference" id="reference" class="form-control reference" placeholder="e.g. MPESA123XYZ">
+                                            <input type="text" id="reference" name="reference"
+                                                class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
+                                                maxlength="10" pattern="[A-Z0-9]{10}"
+                                                title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                         </div>
                                     </div>
 
@@ -1274,8 +1314,6 @@
                                     $('.reference').val(''); // clear for other modes
                                 }
                             });
-
-
                         });
                     </script>
 

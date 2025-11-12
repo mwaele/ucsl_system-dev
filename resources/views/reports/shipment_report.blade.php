@@ -17,6 +17,8 @@
                     <option value="">All</option>
                     <option value="pending collection">Pending collection</option>
                     <option value="collected">Collected by rider</option>
+                    <option value="received_at_front_office">Received at front office from Rider</option>
+                    <option value="collection_failed">Failed rider collection</option>
                     <option value="verified">Verified by front office</option>
                     <option value="dispatched_from_front_office">Dispatched from front office</option>
                     <option value="received_at_destination">Received at destination</option>

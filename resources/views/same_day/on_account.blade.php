@@ -462,7 +462,7 @@
                                         <button class="btn btn-sm btn-primary mr-1" title="Edit Client Request"
                                             data-toggle="modal"
                                             data-target="#editClientRequest-{{ $request->requestId }}">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit"></i> Edit
                                         </button>
                                     @endif
 
@@ -809,7 +809,7 @@
                                         <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
                                             data-toggle="modal"
                                             data-target="#deleteClientRequest-{{ $request->requestId }}">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash"></i> Delete
                                         </button>
                                     @endif
 

@@ -145,7 +145,7 @@ class DashboardController extends Controller
                     ->when($dateRange, $queryWithDate)->count(),
                 'failed' => ClientRequest::where('status', 'delivery_failed')->where('office_id', $id)
                     ->when($dateRange, $queryWithDate)->count(),
-                    'failed_collection' => ClientRequest::where('status', 'collection_failed')->when($dateRange, $queryWithDate)->count()
+                'failed_collection' => ClientRequest::where('status', 'collection_failed')->where('office_id', $id)->when($dateRange, $queryWithDate)->count()
                 ];
             }
         } else {
@@ -161,10 +161,12 @@ class DashboardController extends Controller
                 ->when($dateRange, $queryWithDate)->count();
             $pendingCollection = ClientRequest::where('status', 'pending collection')->where('office_id', $station)
                 ->when($dateRange, $queryWithDate)->count();
-                $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', $timeLimit) 
+            $delayedCollections = ClientRequest::where('status', 'pending collection')->where('updated_at', '<', $timeLimit) 
                 ->whereNotIn('status', ['verified'])
                 ->when($dateRange, $queryWithDate)
                 ->count();
+            $failed_collection = ClientRequest::where('status', 'collection_failed')->where('office_id', $station)
+                ->when($dateRange, $queryWithDate)->count();
             $undeliveredParcels = ShipmentCollection::where('status', 'arrived')
                 ->whereHas('clientRequestById', function ($q) use ($station) {
                     $q->where('office_id', $station);

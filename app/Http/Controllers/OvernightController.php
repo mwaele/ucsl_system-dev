@@ -58,6 +58,7 @@ class OvernightController extends Controller
             'startDate',
             'endDate', 'sub_category'));
     }
+
     public function client_on_account(Request $request )
     {
         $timeFilter = $request->query('time', 'all'); // default to all
@@ -155,6 +156,7 @@ class OvernightController extends Controller
             'landscape'
         );
     }
+
     public function client_overnight_account_report()
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
@@ -328,5 +330,15 @@ class OvernightController extends Controller
         return redirect()->back()->with('success', 'Rider allocated successfully');
     }
 
+    public function receiveCollection(Request $request, $id)
+    {
+        $req = ClientRequest::findOrFail($id);
+        $req->remarks = $request->input('remarks');
+        $req->status = 'received_at_front_office';
+        $req->received_at = now();
+        $req->save();
+
+        return redirect()->back()->with('success', 'Collection received successfully.');
+    }
 
 }
