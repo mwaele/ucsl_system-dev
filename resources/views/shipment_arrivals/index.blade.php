@@ -448,7 +448,6 @@
         });
     </script>
 
-
     <script>
         $('#transporter_id').on('change', function() {
 

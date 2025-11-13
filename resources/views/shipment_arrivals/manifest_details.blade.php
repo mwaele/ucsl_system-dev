@@ -397,7 +397,9 @@
                                         formHtml += `
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
-                                                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Verification</button>
+                                                <button type="submit" id="submitBtn" class="btn btn-primary">
+                                                    <span id="btnText">Submit Verification</span>
+                                                </button>
                                             </div>
                                             </form> <!-- ✅ Closing the form -->
                                         `;
@@ -445,8 +447,6 @@
                                 // });
                             });
                         </script>
-
-
                     </tbody>
                 </table>
                 <hr>
@@ -738,38 +738,43 @@
         });
     </script>
     <script>
-        // Handle form submission
-        $(document).on('submit', '#shipmentReceiptForm', function(e) {
-            e.preventDefault();
+    $(document).on('submit', '#shipmentReceiptForm', function(e) {
+        e.preventDefault(); // Prevent default form submission
 
-            $('#submitBtn').prop('disabled', true);
-            $('#spinnerOverlay').show();
-            $('#itemsModal').modal('hide');
-            const form = $(this);
-            const shipmentId = $('.verify-btn').data('id');
-            const formData = form.serialize();
+        const submitBtn = $('#submitBtn');
+        const btnText = $('#btnText');
 
-            $.ajax({
-                url: `/shipment_arrival/${shipmentId}`,
-                type: 'POST', // must match your Laravel route
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
-                },
-                success: function(response) {
-                    $('#itemsModal').modal('hide');
-                    // Optionally reload table or update without full reload
-                    alert(response.message);
-                    location.reload();
-                },
-                error: function(xhr) {
-                    alert('Error verifying shipment');
-                    console.error(xhr.responseText);
-                },
-                complete: function() {
-                    $("#loadingSpinner").hide(); // Hide spinner when done
-                }
-            });
+        // Disable button and show spinner
+        submitBtn.prop('disabled', true);
+        btnText.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...');
+
+        const form = $(this);
+        const shipmentId = $('.verify-btn').data('id'); // Make sure this is correct
+        const formData = form.serialize();
+
+        $.ajax({
+            url: `/shipment_arrival/${shipmentId}`,
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function(response) {
+                // Hide modal only after successful submission
+                $('#itemsModal').modal('hide');
+                alert(response.message);
+                location.reload();
+            },
+            error: function(xhr) {
+                alert('Error verifying shipment');
+                console.error(xhr.responseText);
+            },
+            complete: function() {
+                // Re-enable button and restore text
+                submitBtn.prop('disabled', false);
+                btnText.html('Submit Verification');
+            }
         });
+    });
     </script>
 @endsection

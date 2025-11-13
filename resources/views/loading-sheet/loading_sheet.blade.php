@@ -182,38 +182,56 @@
                 <div class="row justify-content-center">
                     <div class="col-auto">
                         <button class="btn btn-primary btn-lg px-5 py-3" id="dispatch_loading_sheet">
-                            DISPATCH NOW
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span class="btn-text">DISPATCH NOW</span>
                         </button>
                     </div>
                 </div>
             @endif
         </div>
     </div>
-    <script>
-        document.getElementById('dispatch_loading_sheet').addEventListener('click', function() {
-            const urlSegments = window.location.pathname.split('/');
-            const loadingSheetId = urlSegments[urlSegments.length - 1]; // gets the last segment    
 
-            fetch(`/loading-sheets/${loadingSheetId}/dispatch`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok.');
-                    return response.json();
-                })
-                .then(data => {
-                    alert('Dispatch updated successfully!');
-                    window.location.href = data.redirect; // <-- fixed here
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to dispatch.');
-                });
+    <script>
+    document.getElementById('dispatch_loading_sheet').addEventListener('click', function() {
+        const btn = this;
+        const spinner = btn.querySelector('.spinner-border');
+        const btnText = btn.querySelector('.btn-text');
+
+        // Show spinner + disable button
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        btnText.textContent = 'Dispatching...';
+
+        const urlSegments = window.location.pathname.split('/');
+        const loadingSheetId = urlSegments[urlSegments.length - 1]; // Get last segment    
+
+        fetch(`/loading-sheets/${loadingSheetId}/dispatch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok.');
+            return response.json();
+        })
+        .then(data => {
+            alert('Dispatch updated successfully!');
+            window.location.href = data.redirect; // Redirect after success
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to dispatch.');
+        })
+        .finally(() => {
+            // Always restore button state
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+            btnText.textContent = 'DISPATCH NOW';
         });
+    });
     </script>
+
 @endsection

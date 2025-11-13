@@ -147,16 +147,14 @@ class LoadingSheetController extends Controller
 
             //dd($loadingSheets);
 
-    return view('loading-sheet.loading_waybills')->with([
-        'shipment_collections' => $shipment_collections,
-        'ls_id' => $id,
-        'loadingSheet' => $loadingSheets,
-        'loading_sheet' => $loadingSheet,
-        'destination' => $destination,
-    ]);
-}
-
-
+        return view('loading-sheet.loading_waybills')->with([
+            'shipment_collections' => $shipment_collections,
+            'ls_id' => $id,
+            'loadingSheet' => $loadingSheets,
+            'loading_sheet' => $loadingSheet,
+            'destination' => $destination,
+        ]);
+    }
 
     public function generate_loading_sheet($id)
     {
