@@ -169,9 +169,9 @@
                                         </button>
 
                                         <!-- <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 ml-1 mr-1 shadow-sm"
-                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                    <i class="fas fa-file-invoice"></i> Waybill
-                                                </button> -->
+                                                        data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                        <i class="fas fa-file-invoice"></i> Waybill
+                                                    </button> -->
 
                                         <button
                                             class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 mr-1 shadow-sm"
@@ -254,9 +254,9 @@
                                 </button>
 
                                 <!-- <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
-                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                            <i class="fas fa-file-invoice"></i> Waybill
-                                        </button> -->
+                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                <i class="fas fa-file-invoice"></i> Waybill
+                                            </button> -->
 
                                 <button
                                     class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
@@ -1624,16 +1624,16 @@
                                                             _____________
                                                         </td>
                                                         <td style="width: 50%; padding: 5px; vertical-align: top;">
-                                                            <strong>Receiver ID No:</strong>
+                                                            <strong>Receiver ID #:</strong>
                                                             _____________
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td style="width: 50%; padding: 5px; vertical-align: top;">
-                                                            <strong>Receiver Signature:</strong>
+                                                            <strong>Signature:</strong>
                                                             _____________
                                                         <td style=" width: 50%; padding: 5px; vertical-align: top;">
-                                                            <strong>Receiver Stamp:</strong>
+                                                            <strong>Stamp:</strong>
                                                         </td>
                                                     </tr>
                                                 </table>
