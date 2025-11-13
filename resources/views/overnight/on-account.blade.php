@@ -1033,288 +1033,290 @@
                     </div>
 
                     <script>
-                        document.addEventListener("DOMContentLoaded", function() {
+                    document.addEventListener("DOMContentLoaded", function() {
 
-                            //
-                            $(document).on('click', '.verify-btn', function() {
-                                //alert();
-                                const shipment_id = $(this).data('id');
-                                const vehicle_reg_no = $(this).data('vehicle');
-                                const rider = $(this).data('rider');
-                                const date_requested = $(this).data('date-requested');
-                                const request_id = $(this).data('request-id');
-                                const cost = $(this).data('cost');
-                                const total_cost = $(this).data('total-cost');
-                                const vat = $(this).data('vat');
-                                const base_cost = $(this).data('base-cost');
-                                $.ajax({
-                                    url: '/shipments/' + shipment_id + '/items',
-                                    method: 'GET',
-                                    success: function(response) {
-                                        let headerInfo = `
-                                            <form id="shipmentForm">
-                                                        @csrf
-                                                        @method('PUT')
+                        // Handle Verify Button Click
+                        $(document).on('click', '.verify-btn', function() {
+
+                            const shipment_id = $(this).data('id');
+                            const vehicle_reg_no = $(this).data('vehicle');
+                            const rider = $(this).data('rider');
+                            const date_requested = $(this).data('date-requested');
+                            const request_id = $(this).data('request-id');
+                            const cost = $(this).data('cost');
+                            const total_cost = $(this).data('total-cost');
+                            const vat = $(this).data('vat');
+                            const base_cost = $(this).data('base-cost');
+
+                            $.ajax({
+                                url: '/shipments/' + shipment_id + '/items',
+                                method: 'GET',
+                                success: function(response) {
+
+                                    let headerInfo = `
+                                        <form id="shipmentForm">
+                                            @csrf
+                                            @method('PUT')
+
                                             <div class="row">
                                                 <div class="form-group col-md-3">
                                                     <label class="text-primary">Request ID</label>
                                                     <input type="text" name="requestId" class="form-control" id="requestId" readonly>
                                                 </div>
+
                                                 <div class="form-group col-md-3">
                                                     <label class="text-primary">Rider</label>
-                                                    <input type="text" name="userId" id="riderName" class="form-control"  readonly>
+                                                    <input type="text" name="userId" id="riderName" class="form-control" readonly>
                                                 </div>
+
                                                 <div class="form-group col-md-3">
                                                     <label class="text-primary">Vehicle</label>
                                                     <input type="text" class="form-control" name="vehicleDisplay" id="vehicleRegNo" readonly>
                                                 </div>
+
                                                 <div class="form-group col-md-3">
                                                     <label class="text-primary">Date Requested</label>
                                                     <input type="datetime-local" name="dateRequested" class="form-control" id="dateRequested" readonly>
                                                 </div>
                                             </div>
-                                        `;
-
-                                        let itemsHtml =
-                                            '<div class="table-responsive"><table class="table table-bordered" id="shipmentTable">';
-                                        response.items.forEach((item, index) => {
-                                            const volume = item.length * item.width * item.height;
-
-                                            itemsHtml += `<thead> <tr><th class="text-primary"> Item No. </th> <th class="text-primary"> Item Name </th> <th class="text-primary"> Package No </th> <th class="text-primary"> Weight(Kg) </th> <th class="text-primary"> Length(cm) </th> <th class="text-primary"> Width(cm) </th> <th class="text-primary"> Height(cm) </th> <th class="text-primary"> Volume(Kg)</th><th class="text-primary"> Remarks </th> </tr> </thead>
-                                    <tr><td>${index + 1}<input type="hidden" name="items[${index}][id]" value="${item.id}"></td><td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td><td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td><td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td><td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td><td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td><td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td><td>${volume}<input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}"></td><td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td></tr>
-
-
-                                    <tr>
-                                        <td colspan="9">
-                                            <table class="table table-sm table-bordered mt-2">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th class="text-warning">Sub Item Name</th>
-                                                        <th class="text-warning">Quantity</th>
-                                                        <th class="text-warning">Weight (Kg)</th>
-                                                        <th class="text-warning">Remarks</th>
-                                                        <th class="text-warning">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="sub_items-${index}">
-                                                    <!-- Sub-items will be appended here -->
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item </button>
-                                        </td>
-                                    </tr>
-                                `;
-                                        });
-                                        itemsHtml += `
-                                        </tbody>
-                                    </table>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Cost *</small></label>
-                                            <input type="number" class="form-control cost" name="cost" id="cost" value="" readonly>
-                                        </div>
-
-                                        <input type="hidden" name="base_cost" id="baseCost" value="">
-
-                                        <!-- Fragile Goods Checkbox & Cost -->
-                                       <!-- <div class="form-group col-md-2">
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="fragileCheck">
-                                                <label class="form-check-label" for="fragileCheck"><small>Fragile Goods?</small></label>
-                                            </div>
-                                            <input type="number" class="form-control mt-2" id="fragileCost" placeholder="Fragile Cost" disabled>
-                                        </div>-->
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Tax (16%)*</small></label>
-                                            <input type="number" class="form-control" name="vat" id="vat" readonly>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Total Cost*</small></label>
-                                            <input type="number" class="form-control" name="total_cost" id="totalCost" value="" readonly>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Billing Party</small></label>
-                                            <select name="billing_party" class="form-control">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="Sender">Sender</option>
-                                                <option value="Receiver">Receiver</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Payment Mode</small></label>
-                                            <select name="payment_mode" id="payment_mode"  class="form-control payment_mode">
-                                                <option value="" selected>-- Select --</option>
-                                                <option value="M-Pesa">M-Pesa</option>
-                                                <option value="Cash">Cash</option>
-                                                <option value="COD">COD</option>
-                                                <option value="Cheque">Cheque</option>
-                                                <option value="Invoice">Invoice</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group col-md-2">
-                                            <label class="text-primary"><small>Reference</small></label>
-                                            <input type="text" id="reference" name="reference"
-                                                class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
-                                                maxlength="10" pattern="[A-Z0-9]{10}"
-                                                title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
-                                                oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
-                                        </div>
-                                    </div>
-
-
-                                    <div class="modal-footer d-flex justify-content-between align-items-center">
-                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
-                                    <button type="submit" class="btn btn-primary">Submit Verification</button>
-                                    </div></form>
                                     `;
 
+                                    let itemsHtml = `
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="shipmentTable">
+                                    `;
 
+                                    response.items.forEach((item, index) => {
+                                        const volume = item.length * item.width * item.height;
 
+                                        itemsHtml += `
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-primary">Item No.</th>
+                                                    <th class="text-primary">Item Name</th>
+                                                    <th class="text-primary">Package No</th>
+                                                    <th class="text-primary">Weight (Kg)</th>
+                                                    <th class="text-primary">Length (cm)</th>
+                                                    <th class="text-primary">Width (cm)</th>
+                                                    <th class="text-primary">Height (cm)</th>
+                                                    <th class="text-primary">Volume (Kg)</th>
+                                                    <th class="text-primary">Remarks</th>
+                                                </tr>
+                                            </thead>
 
-                                        // ✅ Correct usage
-                                        $('#modalItemsBody').html(headerInfo + itemsHtml);
-                                        document.getElementById('requestId').value = request_id;
-                                        document.getElementById('totalCost').value = total_cost;
-                                        document.getElementById('cost').value = cost;
-                                        document.getElementById('riderName').value = rider;
-                                        document.getElementById('vehicleRegNo').value = vehicle_reg_no;
-                                        document.getElementById('dateRequested').value = date_requested;
-                                        document.getElementById('vat').value = vat;
-                                        document.getElementById('baseCost').value = base_cost;
-                                        $('#itemsModal').modal('show');
-                                    },
-                                    error: function() {
-                                        $('#modalItemsBody').html('<p>Error loading items.</p>');
-                                        $('#itemsModal').modal('show');
-                                    }
-                                });
+                                            <tr>
+                                                <td>${index + 1}
+                                                    <input type="hidden" name="items[${index}][id]" value="${item.id}">
+                                                </td>
+                                                <td><input type="text" name="items[${index}][item_name]" class="form-control" value="${item.item_name}" required></td>
+                                                <td><input type="number" name="items[${index}][packages]" class="form-control packages" value="${item.packages_no}" required></td>
+                                                <td><input type="number" step="0.01" name="items[${index}][weight]" class="form-control weight" value="${item.weight}" required></td>
+                                                <td><input type="number" name="items[${index}][length]" class="form-control length" value="${item.length}"></td>
+                                                <td><input type="number" name="items[${index}][width]" class="form-control width" value="${item.width}"></td>
+                                                <td><input type="number" name="items[${index}][height]" class="form-control height" value="${item.height}"></td>
+                                                <td>${volume}
+                                                    <input type="hidden" name="items[${index}][volume]" class="volume" value="${volume}">
+                                                </td>
+                                                <td><input type="text" name="items[${index}][remarks]" class="form-control" value="${item.remarks ?? ''}"></td>
+                                            </tr>
 
-                            });
-
-                            // Total weight calculation and cost update
-                            function recalculateCosts() {
-                                let totalWeight = 0;
-                                let totalVolume = 0;
-
-                                $('#shipmentTable tbody tr').each(function() {
-                                    const row = $(this);
-                                    const weight = parseFloat(row.find('.weight').val()) || 0;
-                                    const packages = parseFloat(row.find('.packages').val()) || 1;
-                                    const volume = parseFloat(row.find('.volume').val()) || 1;
-                                    totalWeight += weight * packages;
-                                    totalVolume += volume;
-                                });
-
-                                const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                                let cost = baseCost;
-                                volumeWeight = totalVolume / 5000;
-
-                                let baseWeight = 0;
-
-
-                                if (totalWeight > volumeWeight) {
-                                    baseWeight = totalWeight;
-                                }
-                                if (volumeWeight > totalWeight) {
-                                    baseWeight = volumeWeight;
-                                }
-                                //alert('total volume weight ' + volumeWeight);
-                                alert('total weight ' + totalWeight);
-                                if (baseWeight > 25) {
-                                    alert('base weight used ' + baseWeight)
-                                    const extraWeight = baseWeight - 25;
-                                    cost += extraWeight * 50;
-                                }
-
-                                $('input[name="cost"]').val(cost.toFixed(2));
-
-                                const vat = cost * 0.16;
-                                $('input[name="vat"]').val(vat.toFixed(2));
-                                $('input[name="total_cost"]').val((cost + vat).toFixed(2));
-                            }
-
-                            // Watch for changes in volume dimensions
-                            $(document).on('input', '.length, .width, .height',
-                                function() {
-                                    const row = $(this).closest('tr');
-                                    calculateVolume(row);
-                                });
-
-                            // Watch for changes in weight or packages
-                            $(document).on('input', '.weight, .packages', function() {
-                                recalculateCosts();
-                            });
-
-                            // Handle dynamic sub-item row addition
-                            document.querySelectorAll('.add-sub-item-btn').forEach(button => {
-                                button.addEventListener('click', function() {
-                                    const itemIndex = this.getAttribute('data-item-index');
-                                    let subCount = parseInt(this.getAttribute('data-sub-count'), 10);
-                                    const tbody = document.querySelector(`#sub-items-body-${itemIndex}`);
-
-                                    const newRow = document.createElement('tr');
-                                    newRow.innerHTML = `
-                                    <td>
-                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][name]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][quantity]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" step="0.01" name="items[${itemIndex}][sub_items][${subCount}][weight]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][length]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][width]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="items[${itemIndex}][sub_items][${subCount}][height]" class="form-control">
-                                    </td>
-                                    <td>
-                                        <input type="text" name="items[${itemIndex}][sub_items][${subCount}][remarks]" class="form-control">
-                                    </td>
-                                `;
-
-                                    tbody.appendChild(newRow);
-
-                                    // Update sub-count for future additions
-                                    this.setAttribute('data-sub-count', subCount + 1);
-
-                                    // Bind cost listeners for the new row if needed
-                                    bindCostListeners(newRow);
-                                });
-                            });
-                            $(document).on('change', '.payment_mode', function() {
-                                //alert('you clicked me!');
-                                const mode = $(this).val();
-
-                                if (mode === 'Invoice') {
-                                    $.ajax({
-                                        url: '{{ route('get.latest.invoice.no') }}',
-                                        type: 'GET',
-                                        success: function(data) {
-                                            $('.reference').val(data
-                                                .invoice_no);
-                                        },
-                                        error: function() {
-                                            alert(
-                                                'Unable to fetch invoice number.');
-                                        }
+                                            <tr>
+                                                <td colspan="9">
+                                                    <table class="table table-sm table-bordered mt-2">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                <th class="text-warning">Sub Item Name</th>
+                                                                <th class="text-warning">Quantity</th>
+                                                                <th class="text-warning">Weight (Kg)</th>
+                                                                <th class="text-warning">Remarks</th>
+                                                                <th class="text-warning">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="sub_items-${index}">
+                                                            <!-- Sub-items will be appended here -->
+                                                        </tbody>
+                                                    </table>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSubItems(${index})">+ Add Sub Item</button>
+                                                </td>
+                                            </tr>
+                                        `;
                                     });
-                                } else {
-                                    $('.reference').val(''); // clear for other modes
+
+                                    itemsHtml += `
+                                            </tbody>
+                                        </table>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Cost *</small></label>
+                                                <input type="number" class="form-control cost" name="cost" id="cost" readonly>
+                                            </div>
+
+                                            <input type="hidden" name="base_cost" id="baseCost" value="">
+
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Tax (16%)*</small></label>
+                                                <input type="number" class="form-control" name="vat" id="vat" readonly>
+                                            </div>
+
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Total Cost*</small></label>
+                                                <input type="number" class="form-control" name="total_cost" id="totalCost" readonly>
+                                            </div>
+
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Billing Party</small></label>
+                                                <select name="billing_party" class="form-control">
+                                                    <option value="" selected>-- Select --</option>
+                                                    <option value="Sender">Sender</option>
+                                                    <option value="Receiver">Receiver</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Payment Mode</small></label>
+                                                <select name="payment_mode" id="payment_mode" class="form-control payment_mode">
+                                                    <option value="" selected>-- Select --</option>
+                                                    <option value="M-Pesa">M-Pesa</option>
+                                                    <option value="Cash">Cash</option>
+                                                    <option value="COD">COD</option>
+                                                    <option value="Cheque">Cheque</option>
+                                                    <option value="Invoice">Invoice</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-2">
+                                                <label class="text-primary"><small>Reference</small></label>
+                                                <input type="text" id="reference" name="reference" class="form-control text-uppercase"
+                                                    placeholder="e.g. TH647CDTNA" maxlength="10"
+                                                    pattern="[A-Z0-9]{10}"
+                                                    title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
+                                                    oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer d-flex justify-content-between align-items-center">
+                                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel X</button>
+                                            <button type="submit" class="btn btn-primary" id="submitVerificationBtn">
+                                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                <span class="btn-text">Submit Verification</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    `;
+
+                                    // Inject HTML into modal
+                                    $('#modalItemsBody').html(headerInfo + itemsHtml);
+
+                                    // Fill modal data
+                                    $('#requestId').val(request_id);
+                                    $('#totalCost').val(total_cost);
+                                    $('#cost').val(cost);
+                                    $('#riderName').val(rider);
+                                    $('#vehicleRegNo').val(vehicle_reg_no);
+                                    $('#dateRequested').val(date_requested);
+                                    $('#vat').val(vat);
+                                    $('#baseCost').val(base_cost);
+
+                                    // Show modal
+                                    $('#itemsModal').modal('show');
+                                },
+                                error: function() {
+                                    $('#modalItemsBody').html('<p>Error loading items.</p>');
+                                    $('#itemsModal').modal('show');
                                 }
                             });
                         });
+
+                        // Recalculate total cost dynamically
+                        function recalculateCosts() {
+                            let totalWeight = 0;
+                            let totalVolume = 0;
+
+                            $('#shipmentTable tbody tr').each(function() {
+                                const row = $(this);
+                                const weight = parseFloat(row.find('.weight').val()) || 0;
+                                const packages = parseFloat(row.find('.packages').val()) || 1;
+                                const volume = parseFloat(row.find('.volume').val()) || 1;
+
+                                totalWeight += weight * packages;
+                                totalVolume += volume;
+                            });
+
+                            const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                            let cost = baseCost;
+                            const volumeWeight = totalVolume / 5000;
+
+                            let baseWeight = Math.max(totalWeight, volumeWeight);
+
+                            if (baseWeight > 25) {
+                                const extraWeight = baseWeight - 25;
+                                cost += extraWeight * 50;
+                            }
+
+                            const vat = cost * 0.16;
+                            $('input[name="cost"]').val(cost.toFixed(2));
+                            $('input[name="vat"]').val(vat.toFixed(2));
+                            $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                        }
+
+                        // Watch for changes in volume dimensions
+                        $(document).on('input', '.length, .width, .height', function() {
+                            const row = $(this).closest('tr');
+                            calculateVolume(row);
+                        });
+
+                        // Watch for weight or package changes
+                        $(document).on('input', '.weight, .packages', function() {
+                            recalculateCosts();
+                        });
+
+                        // Add Sub-item Rows Dynamically
+                        document.querySelectorAll('.add-sub-item-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const itemIndex = this.getAttribute('data-item-index');
+                                let subCount = parseInt(this.getAttribute('data-sub-count'), 10);
+                                const tbody = document.querySelector(`#sub-items-body-${itemIndex}`);
+
+                                const newRow = document.createElement('tr');
+                                newRow.innerHTML = `
+                                    <td><input type="text" name="items[${itemIndex}][sub_items][${subCount}][name]" class="form-control"></td>
+                                    <td><input type="number" name="items[${itemIndex}][sub_items][${subCount}][quantity]" class="form-control"></td>
+                                    <td><input type="number" step="0.01" name="items[${itemIndex}][sub_items][${subCount}][weight]" class="form-control"></td>
+                                    <td><input type="number" name="items[${itemIndex}][sub_items][${subCount}][length]" class="form-control"></td>
+                                    <td><input type="number" name="items[${itemIndex}][sub_items][${subCount}][width]" class="form-control"></td>
+                                    <td><input type="number" name="items[${itemIndex}][sub_items][${subCount}][height]" class="form-control"></td>
+                                    <td><input type="text" name="items[${itemIndex}][sub_items][${subCount}][remarks]" class="form-control"></td>
+                                `;
+
+                                tbody.appendChild(newRow);
+                                this.setAttribute('data-sub-count', subCount + 1);
+                                bindCostListeners(newRow);
+                            });
+                        });
+
+                        // Handle Payment Mode Change
+                        $(document).on('change', '.payment_mode', function() {
+                            const mode = $(this).val();
+
+                            if (mode === 'Invoice') {
+                                $.ajax({
+                                    url: '{{ route('get.latest.invoice.no') }}',
+                                    type: 'GET',
+                                    success: function(data) {
+                                        $('.reference').val(data.invoice_no);
+                                    },
+                                    error: function() {
+                                        alert('Unable to fetch invoice number.');
+                                    }
+                                });
+                            } else {
+                                $('.reference').val('');
+                            }
+                        });
+
+                    });
                     </script>
 
                     <script>
@@ -1326,12 +1328,12 @@
 
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
-                            <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
-                            <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
-                            <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
-                            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
-                        `;
+                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][name]" class="form-control" required></td>
+                                <td><input type="number" name="items[${parentIndex}][sub_items][${subItemCount}][quantity]" class="form-control" required></td>
+                                <td><input type="number" step="0.01" name="items[${parentIndex}][sub_items][${subItemCount}][weight]" class="form-control" required></td>
+                                <td><input type="text" name="items[${parentIndex}][sub_items][${subItemCount}][remarks]" class="form-control"></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
+                            `;
 
                             container.appendChild(row);
                         }

@@ -39,24 +39,24 @@ class ShipmentItemController extends Controller
     }
 
     public function getItems(Request $request)
-{
-    $shipmentIds = $request->input('ids');
+    {
+        $shipmentIds = $request->input('ids');
 
-    $items = DB::table('shipment_items')
-        ->join('shipment_collections', 'shipment_items.shipment_id', '=', 'shipment_collections.id')
-        ->whereIn('shipment_items.shipment_id', $shipmentIds)
-        ->select(
-            'shipment_collections.id as shipment_id',
-            'shipment_collections.waybill_no',
-            'shipment_items.item_name',
-            'shipment_items.packages_no',
-            'shipment_items.actual_quantity',
-            'shipment_items.actual_weight'
-        )
-        ->get();
+        $items = DB::table('shipment_items')
+            ->join('shipment_collections', 'shipment_items.shipment_id', '=', 'shipment_collections.id')
+            ->whereIn('shipment_items.shipment_id', $shipmentIds)
+            ->select(
+                'shipment_collections.id as shipment_id',
+                'shipment_collections.waybill_no',
+                'shipment_items.item_name',
+                'shipment_items.packages_no',
+                'shipment_items.actual_quantity',
+                'shipment_items.actual_weight'
+            )
+            ->get();
 
-    return response()->json($items);
-}
+        return response()->json($items);
+    }
 
     /**
      * Display the specified resource.
@@ -89,4 +89,5 @@ class ShipmentItemController extends Controller
     {
         //
     }
+    
 }

@@ -1779,13 +1779,23 @@
         </script>
 
         <script>
-            // Handle form submission
+            // Handle form submission with spinner
             $(document).on('submit', '#shipmentForm', function(e) {
                 e.preventDefault();
 
                 const form = $(this);
                 const shipmentId = $('.verify-btn').data('id');
                 const formData = form.serialize();
+
+                // Target the submit button and its elements
+                const $btn = $('#submitVerificationBtn');
+                const $spinner = $btn.find('.spinner-border');
+                const $text = $btn.find('.btn-text');
+
+                // Disable button & show spinner
+                $btn.prop('disabled', true);
+                $spinner.removeClass('d-none');
+                $text.text('Submitting...');
 
                 $.ajax({
                     url: `/update_collections/${shipmentId}`,
@@ -1796,12 +1806,21 @@
                         'X-HTTP-Method-Override': 'PUT'
                     },
                     success: function(response) {
+                        // Restore button state
+                        $btn.prop('disabled', false);
+                        $spinner.addClass('d-none');
+                        $text.text('Submit Verification');
+
                         alert('Shipment Collection Verified Successfully!');
                         $('#itemsModal').modal('hide');
-                        // Optionally reload the page or update the table
-                        location.reload();
+                        location.reload(); // Optional: reload table or refresh page
                     },
                     error: function(xhr) {
+                        // Restore button state
+                        $btn.prop('disabled', false);
+                        $spinner.addClass('d-none');
+                        $text.text('Submit Verification');
+
                         alert('Error verifying shipment');
                         console.error(xhr.responseText);
                     }
