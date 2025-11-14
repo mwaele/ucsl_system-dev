@@ -854,9 +854,11 @@
                                     <input type="hidden" value="{{ $collection->client->special_rates_status }}"
                                         name='special_rate_state' id="special_rate_state">
 
-                                    <!-- Shipment Info Table -->
-                                    {{-- <div class="section-title"><b class="text-primary">Shipment Information</b></div> --}}
-                                    <div class="table-responsive mt-3">
+                                    <!-- Shipment Info Section -->
+                                    <div class="section-title"><b class="text-primary">Shipment Information</b></div>
+
+                                    <!-- Desktop Table (visible on md and up) -->
+                                    <div class="table-responsive mt-3 d-none d-md-block">
                                         <table class="table table-bordered shipmentTable" id="shipmentTable">
                                             <thead class="thead-success">
                                                 <tr class="text-primary">
@@ -872,32 +874,64 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td><input type="text" class="form-control" name="item_name[]">
-                                                    </td>
-                                                    <td><input type="number" min="0" class="form-control"
-                                                            name="packages[]">
-                                                    </td>
-                                                    <td><input type="number" min="0" class="form-control"
-                                                            name="weight[]"></td>
-                                                    <td><input type="number" min="0" class="form-control"
-                                                            name="length[]"></td>
-                                                    <td><input type="number" min="0" class="form-control"
-                                                            name="width[]"></td>
-                                                    <td><input type="number" min="0" class="form-control"
-                                                            name="height[]"></td>
-                                                    <td class="volume-display text-muted"><input type="number"
-                                                            min="0" class="form-control" name="volume[]" readonly>
-                                                    </td>
-                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row"
-                                                            title="Delete Row"><i class="fas fa-trash"></i></button>
-                                                    </td>
+                                                    <td><input type="text" class="form-control" name="item_name[]"></td>
+                                                    <td><input type="number" min="0" class="form-control" name="packages[]"></td>
+                                                    <td><input type="number" min="0" class="form-control" name="weight[]"></td>
+                                                    <td><input type="number" min="0" class="form-control" name="length[]"></td>
+                                                    <td><input type="number" min="0" class="form-control" name="width[]"></td>
+                                                    <td><input type="number" min="0" class="form-control" name="height[]"></td>
+                                                    <td class="volume-display text-muted"><input type="number" min="0" class="form-control" name="volume[]" readonly></td>
+                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row" title="Delete Row"><i class="fas fa-trash"></i></button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
 
-                                    <button type="button" class="btn btn-primary mb-3 addRowBtn" id="addRowBtn">Add
-                                        Row</button>
+                                    <!-- Mobile Cards Container (visible only on sm screens) -->
+                                    <div id="mobileCards" class="d-md-none mt-3">
+                                        <div class="card mobile-card mb-3 shadow-sm p-2">
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label class="form-label text-primary">Item Name</label>
+                                                    <input type="text" class="form-control" name="item_name[]">
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="form-group col-6">
+                                                        <label class="form-label text-primary">Packages #</label>
+                                                        <input type="number" min="0" class="form-control" name="packages[]">
+                                                    </div>
+                                                    <div class="form-group col-6">
+                                                        <label class="form-label text-primary">Weight (kg)</label>
+                                                        <input type="number" min="0" class="form-control" name="weight[]">
+                                                    </div>
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="form-group col-4">
+                                                        <label class="form-label text-primary">Length (cm)</label>
+                                                        <input type="number" min="0" class="form-control" name="length[]">
+                                                    </div>
+                                                    <div class="form-group col-4">
+                                                        <label class="form-label text-primary">Width (cm)</label>
+                                                        <input type="number" min="0" class="form-control" name="width[]">
+                                                    </div>
+                                                    <div class="form-group col-4">
+                                                        <label class="form-label text-primary">Height (cm)</label>
+                                                        <input type="number" min="0" class="form-control" name="height[]">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label text-primary">Volume Weight (Kg)</label>
+                                                    <input type="number" min="0" class="form-control" name="volume[]" readonly>
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm remove-row w-100">
+                                                    <i class="fas fa-trash"></i> Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Add Row Button (works for both views) -->
+                                    <button type="button" class="btn btn-primary mb-3 addRowBtn" id="addRowBtn">Add Row</button>
 
                                     <!-- Service Level -->
                                     <div class="section-title"></div>
@@ -1374,247 +1408,245 @@
 
             <!-- JavaScript to toggle and populate form -->
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    // const clientRadio = document.getElementById('clientRadio');
-                    // const agentRadio = document.getElementById('agentRadio');
-                    // const senderForm = document.getElementById('senderForm');
+            document.addEventListener('DOMContentLoaded', () => {
 
-                    // const cid = document.getElementById('cid').value;
+                // -------------------------
+                // Sender / Agent Logic
+                // -------------------------
+                document.querySelectorAll('.modal-body').forEach(modalBody => {
+                    const clientRadios = modalBody.querySelectorAll('.clientRadio');
+                    const agentRadios = modalBody.querySelectorAll('.agentRadio');
+                    const senderForm = modalBody.querySelector('#senderForm');
+                    const cidInput = modalBody.querySelector('#cid');
 
-                    // const sender_name = document.getElementById('sender_name');
-                    // const sender_id_no = document.getElementById('sender_id_no');
-                    // const sender_contact = document.getElementById('sender_contact');
-                    // const sender_town = document.getElementById('sender_town');
-                    // const sender_address = document.getElementById('sender_address');
-                    // const senderEmail = document.getElementById('senderEmail');
+                    clientRadios.forEach(radio => {
+                        radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                                senderForm.style.display = 'block';
+                                const cid = cidInput ? cidInput.value : null;
+                                if (!cid) return;
 
-                    // clientRadio.addEventListener('change', () => {
-                    //     if (clientRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         //console.log('cid:', cid);
-
-                    //         fetch('/clientData/' + cid) // Adjust this URL as needed
-                    //             .then(response => {
-                    //                 if (!response.ok) {
-                    //                     throw new Error('Network response was not ok');
-                    //                 }
-                    //                 return response.json();
-                    //             })
-                    //             .then(client => {
-                    //                 if (client && !client.message) { // Ensure it's not a 404 error response
-                    //                     sender_name.value = client.name || '';
-                    //                     sender_id_no.value = client.contact_person_id_no || '';
-                    //                     sender_contact.value = client.contact || '';
-                    //                     sender_town.value = client.city || '';
-                    //                     sender_address.value = client.address || '';
-                    //                     senderEmail.value = client.email || '';
-                    //                 } else {
-                    //                     alert('Client not found.');
-                    //                 }
-                    //             })
-                    //             .catch(error => {
-                    //                 console.error('Error fetching client data:', error);
-                    //                 alert('Failed to fetch client data.');
-                    //             });
-                    //     }
-                    // });
-
-                    document.querySelectorAll('.modal-body').forEach(modalBody => {
-                        const clientRadios = modalBody.querySelectorAll('.clientRadio');
-                        const agentRadios = modalBody.querySelectorAll('.agentRadio');
-                        const senderForm = modalBody.querySelector('#senderForm');
-                        const cidInput = modalBody.querySelector('#cid');
-
-                        // Handle client radios
-                        clientRadios.forEach(radio => {
-                            radio.addEventListener('change', () => {
-                                if (radio.checked) {
-                                    senderForm.style.display = 'block';
-
-                                    const cid = cidInput ? cidInput.value : null;
-                                    if (!cid) return;
-
-                                    fetch('/clientData/' + cid)
-                                        .then(response => {
-                                            if (!response.ok) throw new Error(
-                                                'Network response was not ok');
-                                            return response.json();
-                                        })
-                                        .then(client => {
-                                            if (client && !client.message) {
-                                                senderForm.querySelector('#sender_name').value =
-                                                    client.name || '';
-                                                senderForm.querySelector('#sender_id_no')
-                                                    .value = client.contact_person_id_no || '';
-                                                senderForm.querySelector('#sender_contact')
-                                                    .value = client.contact || '';
-                                                senderForm.querySelector('#sender_town').value =
-                                                    client.city || '';
-                                                senderForm.querySelector('#sender_address')
-                                                    .value = client.address || '';
-                                                senderForm.querySelector('#senderEmail').value =
-                                                    client.email || '';
-                                            } else {
-                                                alert('Client not found.');
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error fetching client data:', error);
-                                            alert('Failed to fetch client data.');
-                                        });
-                                }
-                            });
-                        });
-
-                        // Handle agent radios
-                        agentRadios.forEach(radio => {
-                            radio.addEventListener('change', () => {
-                                if (radio.checked) {
-                                    // Hide sender form for agent
-                                    //if (senderForm) senderForm.style.display = 'none';
-
-                                    // Optional: clear sender fields if previously filled
-                                    senderForm.querySelector('#sender_name').value = '';
-                                    senderForm.querySelector('#sender_id_no').value = '';
-                                    senderForm.querySelector('#sender_contact').value = '';
-                                    senderForm.querySelector('#sender_town').value = '';
-                                    senderForm.querySelector('#sender_address').value = '';
-                                    senderForm.querySelector('#senderEmail').value = '';
-                                }
-                            });
+                                fetch('/clientData/' + cid)
+                                    .then(response => response.ok ? response.json() : Promise.reject('Network error'))
+                                    .then(client => {
+                                        if (client && !client.message) {
+                                            senderForm.querySelector('#sender_name').value = client.name || '';
+                                            senderForm.querySelector('#sender_id_no').value = client.contact_person_id_no || '';
+                                            senderForm.querySelector('#sender_contact').value = client.contact || '';
+                                            senderForm.querySelector('#sender_town').value = client.city || '';
+                                            senderForm.querySelector('#sender_address').value = client.address || '';
+                                            senderForm.querySelector('#senderEmail').value = client.email || '';
+                                        } else {
+                                            alert('Client not found.');
+                                        }
+                                    })
+                                    .catch(err => { console.error(err); alert('Failed to fetch client data.') });
+                            }
                         });
                     });
 
+                    agentRadios.forEach(radio => {
+                        radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                                senderForm.style.display = 'none';
+                                senderForm.querySelectorAll('input').forEach(input => input.value = '');
+                            }
+                        });
+                    });
+                });
 
+                // -------------------------
+                // Shipment Table / Mobile Cards
+                // -------------------------
+                const addRowBtn = document.getElementById('addRowBtn');
+                const tableBody = document.querySelector('#shipmentTable tbody');
+                const mobileCards = document.getElementById('mobileCards');
 
-                    function clearForm() {
-                        sender_name.value = '';
-                        sender_id_no.value = '';
-                        sender_contact.value = '';
-                        sender_town.value = '';
-                        sender_address.value = '';
-                        senderEmail.value = '';
+                function calculateVolume(container) {
+                    const length = parseFloat(container.querySelector('input[name="length[]"]').value) || 0;
+                    const width = parseFloat(container.querySelector('input[name="width[]"]').value) || 0;
+                    const height = parseFloat(container.querySelector('input[name="height[]"]').value) || 0;
+                    const volume = (length * width * height) / 5000;
+                    const volumeField = container.querySelector('input[name="volume[]"]');
+                    if (volumeField) volumeField.value = volume ? volume.toFixed(2) : '';
+                }
+
+                function attachVolumeListeners(container) {
+                    container.querySelectorAll('input[name="length[]"], input[name="width[]"], input[name="height[]"]').forEach(input => {
+                        input.addEventListener('input', () => {
+                            calculateVolume(container);
+                            recalculateCosts();
+                        });
+                    });
+                    container.querySelectorAll('input[name="weight[]"], input[name="packages[]"]').forEach(input => {
+                        input.addEventListener('input', recalculateCosts);
+                    });
+                }
+
+                function attachRemoveListener(container) {
+                    const removeBtn = container.querySelector('.remove-row');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', () => {
+                            container.remove();
+                            recalculateCosts();
+                        });
                     }
+                }
 
+                function cloneTableRow() {
+                    let firstRow = tableBody.querySelector('tr');
+                    let clone = firstRow.cloneNode(true);
+                    clone.querySelectorAll('input').forEach(input => input.value = '');
+                    attachVolumeListeners(clone);
+                    attachRemoveListener(clone);
+                    return clone;
+                }
 
+                function cloneMobileCard() {
+                    let firstCard = mobileCards.querySelector('.mobile-card');
+                    let clone = firstCard.cloneNode(true);
+                    clone.querySelectorAll('input').forEach(input => input.value = '');
+                    attachVolumeListeners(clone);
+                    attachRemoveListener(clone);
+                    return clone;
+                }
 
-                    // agentRadio.addEventListener('change', () => {
-                    //     if (agentRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         clearForm(); // Allow fresh entry
-                    //     }
-                    // });
+                function recalculateCosts() {
+                    let totalWeight = 0;
 
-
-                    // get destinations
-
-
-                    $(document).on('change', '.origin-dropdown-special', function() {
-                        const originSelect2 = $(this);
-                        const selectedOfficeId2 = originSelect2.val();
-                        const modal = originSelect2.closest('.modal');
-                        const destinationSelect2 = modal.find('.destination-dropdown-special');
-                        $('#origin_id').val(selectedOfficeId2);
-                        destinationSelect2.html('<option value="">Select Destination</option>');
-
-                        if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
-                                .done(function(data) {
-                                    data.forEach(function(item) {
-                                        destinationSelect2.append(
-                                            `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
-                                        );
-                                    });
-                                })
-                                .fail(function() {
-                                    console.error("Failed to load destinations");
-                                });
-                        }
+                    // Desktop rows
+                    document.querySelectorAll('#shipmentTable tbody tr').forEach(row => {
+                        const weight = parseFloat(row.querySelector('input[name="weight[]"]').value) || 0;
+                        const packages = parseFloat(row.querySelector('input[name="packages[]"]').value) || 1;
+                        totalWeight += weight * packages;
                     });
 
-
-
-                    function recalculateCosts() {
-                        let totalWeight = 0;
-
-                        $('#shipmentTable tbody tr').each(function() {
-                            const row = $(this);
-                            const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
-                            const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                    // Mobile cards
+                    if (mobileCards) {
+                        mobileCards.querySelectorAll('.mobile-card').forEach(card => {
+                            const weight = parseFloat(card.querySelector('input[name="weight[]"]').value) || 0;
+                            const packages = parseFloat(card.querySelector('input[name="packages[]"]').value) || 1;
                             totalWeight += weight * packages;
                         });
-
-                        $('input[name="total_weight"]').val(totalWeight.toFixed(2));
-
-                        const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                        let cost = baseCost;
-
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
-                            cost += extraWeight * 50;
-                        }
-
-                        $('input[name="cost"]').val(cost.toFixed(2));
-
-                        const vat = cost * 0.16;
-                        $('input[name="vat"]').val(vat.toFixed(2));
-                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
                     }
 
-                    // Trigger when destination changes
-                    $(document).on('change', '.destination-dropdown-special', function() {
+                    const totalWeightInput = document.querySelector('input[name="total_weight"]');
+                    if (totalWeightInput) totalWeightInput.value = totalWeight.toFixed(2);
 
-                        const destinationId2 = $(this).val();
-                        const selectedOption2 = $(this).find('option:selected');
-                        const destination_id2 = selectedOption2.data('id');
-                        $("#destination_id_special").val(destination_id2);
-                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
-                        const originId2 = modal.find('.origin-dropdown-special').val();
-                        $('#destination_id').val(destination_id2);
-                        if (originId2 && destinationId2) {
-                            $.get(`/get_cost/${originId2}/${destinationId2}/${cid}`)
-                                .done(function(data) {
-                                    const baseCost = parseFloat(data.cost);
-                                    $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
-                                })
-                                .fail(function() {
-                                    console.error("Failed to fetch base cost");
-                                    $('input[name="base_cost"]').val(0);
-                                });
-                        }
-                    });
+                    const baseCost = parseFloat(document.querySelector('input[name="base_cost"]').value) || 0;
+                    let cost = baseCost;
+                    if (totalWeight > 25) cost += (totalWeight - 25) * 50;
 
-                    //  same day
-                    $(document).on('change', '.destination-dropdownxz', function() {
+                    const costInput = document.querySelector('input[name="cost"]');
+                    const vatInput = document.querySelector('input[name="vat"]');
+                    const totalCostInput = document.querySelector('input[name="total_cost"]');
 
-                        const destinationId2 = $(this).val();
+                    if (costInput) costInput.value = cost.toFixed(2);
+                    const vat = cost * 0.16;
+                    if (vatInput) vatInput.value = vat.toFixed(2);
+                    if (totalCostInput) totalCostInput.value = (cost + vat).toFixed(2);
+                }
 
-                        // const selectedOption2 = $(this).find('option:selected');
-                        // const destination_id2 = selectedOption2.data('id');
-                        // $("#destination_id_special").val(destination_id2);
-                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
-                        const originId2 = modal.find('.origin-dropdownxz').val();
-                        //$('#destination_id').val(destination_id2);
-                        if (originId2 && destinationId2) {
-                            //alert('ok');
-
-                            $.get(`/get_cost/${originId2}/${destinationId2}`)
-                                .done(function(data) {
-                                    const baseCost = parseFloat(data.cost);
-                                    $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
-                                })
-                                .fail(function() {
-                                    console.error("Failed to fetch base cost");
-                                    $('input[name="base_cost"]').val(0);
-                                });
-                        }
-                    });
-
-
+                // -------------------------
+                // Initialize existing rows & mobile cards
+                // -------------------------
+                document.querySelectorAll('#shipmentTable tbody tr').forEach(row => {
+                    attachVolumeListeners(row);
+                    attachRemoveListener(row);
                 });
+
+                if (mobileCards) {
+                    mobileCards.querySelectorAll('.mobile-card').forEach(card => {
+                        attachVolumeListeners(card);
+                        attachRemoveListener(card);
+                    });
+
+                    // Optional: Event delegation for real-time input (reduces need for per-card listener)
+                    mobileCards.addEventListener('input', (e) => {
+                        if (e.target.matches('input[name="weight[]"], input[name="packages[]"], input[name="length[]"], input[name="width[]"], input[name="height[]"]')) {
+                            const card = e.target.closest('.mobile-card');
+                            if (card) calculateVolume(card);
+                            recalculateCosts();
+                        }
+                    });
+                }
+
+                // -------------------------
+                // Add Row / Card Button
+                // -------------------------
+                addRowBtn.addEventListener('click', () => {
+                    if (window.innerWidth < 768 && mobileCards) {
+                        let newCard = cloneMobileCard();
+                        mobileCards.appendChild(newCard);
+                    } else {
+                        let newRow = cloneTableRow();
+                        tableBody.appendChild(newRow);
+                    }
+                    recalculateCosts();
+                });
+
+                // -------------------------
+                // Destination & Cost Fetch
+                // -------------------------
+                $(document).on('change', '.origin-dropdown-special', function() {
+                    const originSelect2 = $(this);
+                    const selectedOfficeId2 = originSelect2.val();
+                    const modal = originSelect2.closest('.modal');
+                    const destinationSelect2 = modal.find('.destination-dropdown-special');
+                    $('#origin_id').val(selectedOfficeId2);
+                    destinationSelect2.html('<option value="">Select Destination</option>');
+
+                    const cid = modal.find('#cid').val() || 0;
+
+                    if (selectedOfficeId2) {
+                        $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
+                            .done(data => data.forEach(item => destinationSelect2.append(
+                                `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                            )))
+                            .fail(() => console.error("Failed to load destinations"));
+                    }
+                });
+
+                $(document).on('change', '.destination-dropdown-special', function() {
+                    const destinationId2 = $(this).val();
+                    const selectedOption2 = $(this).find('option:selected');
+                    const destination_id2 = selectedOption2.data('id');
+                    $("#destination_id_special").val(destination_id2);
+                    const modal = $(this).closest('form');
+                    const originId2 = modal.find('.origin-dropdown-special').val();
+                    $('#destination_id').val(destination_id2);
+
+                    const cid = modal.find('#cid').val() || 0;
+
+                    if (originId2 && destinationId2) {
+                        $.get(`/get_cost/${originId2}/${destinationId2}/${cid}`)
+                            .done(data => {
+                                const baseCost = parseFloat(data.cost);
+                                $('input[name="base_cost"]').val(baseCost);
+                                recalculateCosts();
+                            })
+                            .fail(() => $('input[name="base_cost"]').val(0));
+                    }
+                });
+
+                $(document).on('change', '.destination-dropdownxz', function() {
+                    const destinationId2 = $(this).val();
+                    const modal = $(this).closest('form');
+                    const originId2 = modal.find('.origin-dropdownxz').val();
+                    if (originId2 && destinationId2) {
+                        $.get(`/get_cost/${originId2}/${destinationId2}`)
+                            .done(data => {
+                                const baseCost = parseFloat(data.cost);
+                                $('input[name="base_cost"]').val(baseCost);
+                                recalculateCosts();
+                            })
+                            .fail(() => $('input[name="base_cost"]').val(0));
+                    }
+                });
+
+            });
             </script>
+
         </div>
     </div>
 @endsection

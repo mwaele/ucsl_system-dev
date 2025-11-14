@@ -69,13 +69,15 @@ class TrackController extends Controller
                 $table = 'guests';
                 $id = auth('guest')->user()->id;
             }
+            
             UserLog::create([
-            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results not found',
-            'url' => $request->fullUrl(),
-            'reference_id' => $id,
-            'table' => $table,
-        ]);
+                'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+                'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results not found',
+                'url' => $request->fullUrl(),
+                'reference_id' => $id,
+                'table' => $table,
+            ]);
+            
             return response()->json(['message' => 'Tracking not found'], 404);
         }
 
@@ -139,7 +141,6 @@ class TrackController extends Controller
 
         return response()->json($track);
     }
-
 
     public function generateTrackingPdf($requestId, Request $request)
     {

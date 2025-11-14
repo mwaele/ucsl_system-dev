@@ -69,12 +69,12 @@ class AuthController extends Controller
             $id = auth('guest')->user()->id;
         }
         UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged in the tracking app',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Logged in the tracking app',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'table' => $table,
+        ]);
 
         return redirect('/dashboard')->with('success', 'Welcome, guest!');
     }
@@ -89,12 +89,12 @@ class AuthController extends Controller
             $id = auth('guest')->user()->id;
         }
         UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged out the tracking app',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Logged out the tracking app',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'table' => $table,
+        ]);
         Auth::guard('client')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

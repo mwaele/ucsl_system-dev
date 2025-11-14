@@ -11,6 +11,7 @@ use App\Models\ShipmentCollection;
 use App\Models\Vehicle;
 use App\Models\User;
 use App\Models\FrontOffice;
+use App\Models\UserLog;
 use App\Models\Office;
 use App\Models\Rate;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -54,6 +55,14 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', viewed overnight on-account parcels at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('overnight.on-account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
             'endDate', 'sub_category'));
@@ -85,7 +94,7 @@ class OvernightController extends Controller
             'endDate', 'sub_category'));
     }
 
-    public function walk_in()
+    public function walk_in(Request $request )
     {
         $offices = Office::where('id',2)->get();
         $loggedInUserId = Auth::user()->id;
@@ -125,6 +134,14 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', viewed overnight walk-in parcels at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('overnight.walk-in', compact('clientRequests', 'offices',
             'loggedInUserId',
             'destinations',
@@ -135,7 +152,7 @@ class OvernightController extends Controller
         ));
     }
 
-    public function overnight_account_report()
+    public function overnight_account_report(Request $request )
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
@@ -145,8 +162,14 @@ class OvernightController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
-
             
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', generated overnight on account parcels pdf report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'overnight.overnight_account_report',
@@ -167,6 +190,14 @@ class OvernightController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', generated overnight parcels pdf report from the client portal at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
             // $title = 'Report for All Overnight On-account Parcels from Client Portal';
         return $this->renderPdfWithPageNumbers(
@@ -197,6 +228,14 @@ class OvernightController extends Controller
         }
 
         $clientRequests = $clientRequests->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', generated overnight walk-in parcels pdf report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'overnight.walkin_report',
@@ -236,6 +275,14 @@ class OvernightController extends Controller
         }
 
         $clientRequests = $clientRequests->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ', generated overnight parcels pdf report from the client portal at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'overnight.client_portal_overnight_report',
@@ -327,6 +374,14 @@ class OvernightController extends Controller
             ]);
         }
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' allocated ' .$rider->name.' for request '. $requestId. ' at '. now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->back()->with('success', 'Rider allocated successfully');
     }
 
@@ -337,6 +392,14 @@ class OvernightController extends Controller
         $req->status = 'received_at_front_office';
         $req->received_at = now();
         $req->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' received a collected parcel from rider - ' . $req->user->name . ' for request ' . $req->requestId . ' at '. now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->back()->with('success', 'Collection received successfully.');
     }
