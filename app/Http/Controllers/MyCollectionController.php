@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
 use Carbon\Carbon;
 use App\Models\FailedCollection;
+use App\Models\UserLog;
 
 use Auth;
 
@@ -52,6 +53,15 @@ class MyCollectionController extends Controller
             })
             ->orderBy('created_at','desc')
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed rider collections at  ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
     }
 

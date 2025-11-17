@@ -50,7 +50,7 @@
                             <td>{{ $loop->iteration }}.</td>
                             <td>{{ $vehicle->regNo }}</td>
                             <td>{{ $vehicle->type }}</td>
-                            <td>{{ $vehicle->ownedBy }}</td>
+                            <td>{{ $vehicle->company->company_name }}</td>
                             <td>{{ $vehicle->user->name }}</td>
                             <td>{{ \Illuminate\Support\Str::title($vehicle->status) }}</td>
 
