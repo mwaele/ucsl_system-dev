@@ -313,7 +313,7 @@ class ShipmentCollectionController extends Controller
                 // Send receiver SMS
                 $waybill = $waybill_no;
                 $receiverPhone = $request->receiverPhone;
-                $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId} . {$trackingUrl}";
+                $parcelMessage = "Dear Customer, your parcel has been booked. We will notify you when it arrives. Tracking No: {$requestId} . {$track}";
 
                 $smsService->sendSms(
                     phone: $receiverPhone,
@@ -330,32 +330,6 @@ class ShipmentCollectionController extends Controller
                     'phone_number' => $receiverPhone,
                     'subject' => 'Parcel Booking Confirmation',
                     'message' => $parcelMessage,
-                ]);
-                
-                $track = "<strong>Tracking Link:</strong> <a href=\"{$trackingUrl}\" target=\"_blank\">Click To Track</a>";
-                
-
-            // Notify Sender
-                $senderMsg = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} . {$trackingUrl}";
-                
-                $senderEmail = "Hello {$senderName}, your parcel has been booked. Tracking No: {$requestId} ".$track;
-                $smsService->sendSms(
-                    phone: $senderPhone,
-                    subject: 'Parcel Booked',
-                    message: $senderMsg,
-                    addFooter: true
-                );
-                //$smsService->sendSms($senderPhone, 'Parcel Booked', $senderMsg, true);
-
-                SentMessage::create([
-                    'request_id' => $request->requestId,
-                    'client_id' => $clientId,
-                    'rider_id' => auth()->id(),
-                    'recipient_type' => 'sender',
-                    'recipient_name' => $senderName,
-                    'phone_number' => $senderPhone,
-                    'subject' => 'Parcel booked',
-                    'message' => $senderMsg,
                 ]);
 
             // sender email
