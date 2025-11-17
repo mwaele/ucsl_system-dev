@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Office;
 use App\Models\ShipmentCollection;
 use App\Models\ClientRequest;
+use App\Models\SubCategory;
 use App\Models\DeliveryFailed;
 use Auth;
 
@@ -59,13 +60,32 @@ class MyDeliveryController extends Controller
 
         $consignment_no = 'CN-' . $newNumber;
 
-        $collections = ClientRequest::with('shipmentCollection.office', 'shipmentCollection.destination', 'shipmentCollection.items', 'shipmentCollection.agent')
-            ->where('delivery_rider_id', $loggedInUserId)
-            ->orWhere('userId', $loggedInUserId)
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-        
+        $sameDayId = SubCategory::where('sub_category_name', 'Same Day')->value('id');
+
+        $collections = ClientRequest::with([
+            'shipmentCollection.office',
+            'shipmentCollection.destination',
+            'shipmentCollection.items',
+            'shipmentCollection.agent'
+        ])
+        ->where(function ($query) use ($loggedInUserId) {
+            $query->where('delivery_rider_id', $loggedInUserId)
+                ->orWhere('userId', $loggedInUserId);
+        })
+        ->where(function ($query) use ($sameDayId) {
+            $query->whereIn('status', [
+                    'Delivery Rider Allocated',
+                    'collected',
+                    'delivered'
+                ])
+                ->orWhere(function ($q) use ($sameDayId) {
+                    $q->where('status', 'pending collection')
+                    ->where('sub_category_id', $sameDayId);
+                });
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
+
         // $approvalStatuses = [];
 
         // foreach ($collections as $collection) {

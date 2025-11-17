@@ -18,6 +18,7 @@ use App\Models\FrontOffice;
 use App\Models\SameDayRate;
 use App\Models\Office;
 use App\Models\Rate;
+use App\Models\UserLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -120,7 +121,7 @@ class SameDayController extends Controller
             'endDate', 'sub_category','locations'));
     } 
 
-    public function walk_in()
+    public function walk_in(Request $request )
     {
         $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
         $offices = Office::where('id',Auth::user()->station)->get();

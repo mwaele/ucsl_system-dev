@@ -110,10 +110,12 @@
                         <tr>
                             <th>#</th>
                             <th>Req ID</th>
+                            <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
                             <th>Telephone Number</th>
-                            <th>Pickup Location</th>
+                            <th>Pick-up </th>
+                            <th>Drop-off</th>
                             <th>Parcel Details</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -124,10 +126,12 @@
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $collection->requestId }}</td>
+                                <td>{{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
                                 <td>{{ $collection->client->contactPersonPhone }}</td>
-                                <td>{{ $collection->collectionLocation }}</td>
+                                <td>{{ $collection->pickupLocation ?? $collection->office->name ?? $collection->shipmentCollection->office->name }}</td>
+                                <td>{{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}</td>
                                 <td>{{ $collection->parcelDetails }}</td>
                                 <td>
                                     <span class="badge p-2 fs-6 text-white
@@ -213,16 +217,17 @@
                         <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
                         <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}</p>
                         <p class="mb-1"><strong>Phone:</strong> {{ $collection->client->contactPersonPhone }}</p>
-                        <p class="mb-1"><strong>Pickup:</strong> {{ $collection->collectionLocation }}</p>
+                        <p class="mb-1"><strong>Pickup:</strong> {{ $collection->pickupLocation ?? $collection->office->name ?? $collection->shipmentCollection->office->name }} </p>
+                        <p class="mb-1"><strong>Dropoff:</strong> {{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }} </p>
                         <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
 
                         @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
-                            <p class="text-sm mt-1 text-red-600 font-semibold">
+                            <p class="badge p-2 mt-2 bg-danger text-white">
                                 Deliver by {{ \Carbon\Carbon::parse($collection->deadline_date)->format('g:i A') }}
                             </p>
                         @endif
 
-                        <div class="mt-3 flex flex-wrap gap-2">
+                        <div class="flex flex-wrap gap-2">
                             @if ($collection->status === 'pending collection')
                                 <button class="btn btn-warning btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
                                     data-toggle="modal" data-target="#collect-{{ $collection->id }}">

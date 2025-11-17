@@ -20,7 +20,7 @@ class MyCollectionController extends Controller
 {
     use PdfReportTrait;
     
-    public function show()
+    public function show(Request $request)
     {
         $offices = Office::where('id', Auth::user()->station)->get();
         $riders = User::where('role', 'driver')->get();
