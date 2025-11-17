@@ -17,6 +17,7 @@ use App\Models\ShipmentCollection;
 use App\Models\User;
 use App\Models\Tracking;
 use App\Models\TrackingInfo;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
@@ -527,6 +528,14 @@ class ClientPortalController extends Controller
             ->get();
         //dd($clientRequests);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels in the client portal at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('client_portal.shipments.same_day_on_account', compact('clientRequests', 'offices', 'categories',
             //'loggedInUserId',
             'destinations',
@@ -623,6 +632,14 @@ class ClientPortalController extends Controller
             Log::error('Client Request Store Error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' created a parcel collection request for sameday on-account parcel in the client portal at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         
 

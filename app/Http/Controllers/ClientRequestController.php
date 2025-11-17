@@ -467,7 +467,7 @@ class ClientRequestController extends Controller
 
     public function getSubCategories($categoryId)
     {
-        $subCategories = SubCategory::where('category_id', $categoryId)->get();
+        $subCategories = SubCategory::where('id', $categoryId)->get();
         return response()->json($subCategories);
     }
 

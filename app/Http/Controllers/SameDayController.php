@@ -67,12 +67,20 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return view('same_day.on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
             'endDate', 'sub_category','locations'));
-    } 
-    Public function client_on_account(Request $request )
+    }
+
+    public function client_on_account(Request $request )
     {
 
         $timeFilter = $request->query('time', 'all'); // default to all
@@ -99,6 +107,13 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels in the client portal at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return view('same_day.client_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
@@ -154,6 +169,13 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed sameday walk-in parcels at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return view('same_day.walk_in', compact('clientRequests',      'offices',
             'loggedInUserId',
@@ -179,6 +201,14 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated sameday walk-in parcels report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return $this->renderPdfWithPageNumbers(
             'same_day.sameday_walkin_report',
             ['clientRequests' => $clientRequests],
@@ -198,6 +228,15 @@ class SameDayController extends Controller
             })
             ->with(['client', 'user', 'vehicle'])
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated sameday on-account parcels report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
 
         return $this->renderPdfWithPageNumbers(
             'same_day.sameday_account_report',

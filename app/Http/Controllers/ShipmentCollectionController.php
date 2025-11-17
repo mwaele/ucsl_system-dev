@@ -1540,6 +1540,7 @@ class ShipmentCollectionController extends Controller
             'landscape'
         );
     }
+    
     public function exportdeliveryMetricPdf(Request $request)
     {
         $user = Auth::user();

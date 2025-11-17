@@ -136,7 +136,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', viewed overnight walk-in parcels at ' . now(),
+            'actions'      => Auth::user()->name . ' viewed overnight walk-in parcels at ' . now(),
             'url'          => $request->fullUrl(),
             'reference_id' => Auth::id(),
             'table'        => Auth::user()->getTable(),
@@ -165,7 +165,7 @@ class OvernightController extends Controller
             
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', generated overnight on account parcels pdf report at ' . now(),
+            'actions'      => Auth::user()->name . ' generated overnight on account parcels pdf report at ' . now(),
             'url'          => $request->fullUrl(),
             'reference_id' => Auth::id(),
             'table'        => Auth::user()->getTable(),
@@ -193,7 +193,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', generated overnight parcels pdf report from the client portal at ' . now(),
+            'actions'      => Auth::user()->name . ' generated overnight parcels pdf report from the client portal at ' . now(),
             'url'          => $request->fullUrl(),
             'reference_id' => Auth::id(),
             'table'        => Auth::user()->getTable(),
@@ -231,7 +231,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', generated overnight walk-in parcels pdf report at ' . now(),
+            'actions'      => Auth::user()->name . ' generated overnight walk-in parcels pdf report at ' . now(),
             'url'          => $request->fullUrl(),
             'reference_id' => Auth::id(),
             'table'        => Auth::user()->getTable(),
