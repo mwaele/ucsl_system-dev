@@ -756,21 +756,29 @@
                                         </div>
                                         <hr style="margin: 4px 0;">
 
-                                        <div style="font-weight: bold;">Receiver:</div>
-                                        <div>Name: {{ $collection->shipmentCollection->receiver_name }}
-                                        </div>
-                                        @php
-                                            $phone = $collection->shipmentCollection->receiver_phone;
-                                            if (!empty($phone) && strlen($phone) > 6) {
+                                    <div style="font-weight: bold;">Receiver:</div>
+                                    <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                    </div>
+
+                                    @php
+                                        $phone = $collection->shipmentCollection?->receiver_phone;
+
+                                        if (empty($phone)) {
+                                            $maskedPhone = 'N/A';   // or leave blank, or whatever you want
+                                        } else {
+                                            $len = strlen($phone);
+
+                                            if ($len > 6) {
                                                 $maskedPhone =
                                                     substr($phone, 0, 3) .
-                                                    str_repeat('*', strlen($phone) - 6) .
+                                                    str_repeat('*', $len - 6) .
                                                     substr($phone, -3);
                                             } else {
-                                                // If phone is too short, just show as is (or handle differently)
-                                                $maskedPhone = $phone;
+                                                $maskedPhone =
+                                                    str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
                                             }
-                                        @endphp
+                                        }
+                                    @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
 
@@ -1483,16 +1491,27 @@
                                             {{ $collection->shipmentCollection->client->kraPin }}
                                         </div>
 
-                                        @php
-                                            $phone = $collection->shipmentCollection->sender_contact;
-                                            if (!empty($phone) && strlen($phone) > 6) {
-                                                $maskedPhone =
-                                                    substr($phone, 0, 3) .
-                                                    str_repeat('*', strlen($phone) - 6) .
-                                                    substr($phone, -3);
+                                        @php 
+                                            $phone = $collection->client->contact;
+
+                                            if (empty($phone)) {
+                                                // Handle null or empty phone
+                                                $maskedPhone = 'N/A';
                                             } else {
-                                                // If phone is too short, just show as is (or handle differently)
-                                                $maskedPhone = $phone;
+                                                $len = strlen($phone);
+
+                                                if ($len > 6) {
+                                                    // Normal masking
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', $len - 6) .
+                                                        substr($phone, -3);
+                                                } else {
+                                                    // For short numbers, mask all except last character
+                                                    $maskedPhone =
+                                                        str_repeat('*', max($len - 1, 0)) .
+                                                        substr($phone, -1);
+                                                }
                                             }
                                         @endphp
 
@@ -1509,15 +1528,22 @@
                                             {{ $collection->shipmentCollection->receiver_name }}
                                         </div>
                                         @php
-                                            $phone = $collection->shipmentCollection->receiver_phone;
-                                            if (!empty($phone) && strlen($phone) > 6) {
-                                                $maskedPhone =
-                                                    substr($phone, 0, 3) .
-                                                    str_repeat('*', strlen($phone) - 6) .
-                                                    substr($phone, -3);
+                                            $phone = $collection->shipmentCollection?->receiver_phone;
+
+                                            if (empty($phone)) {
+                                                $maskedPhone = 'N/A';   // or leave blank, or whatever you want
                                             } else {
-                                                // If phone is too short, just show as is (or handle differently)
-                                                $maskedPhone = $phone;
+                                                $len = strlen($phone);
+
+                                                if ($len > 6) {
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', $len - 6) .
+                                                        substr($phone, -3);
+                                                } else {
+                                                    $maskedPhone =
+                                                        str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
+                                                }
                                             }
                                         @endphp
 

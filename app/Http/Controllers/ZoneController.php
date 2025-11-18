@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Zone;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
 
 class ZoneController extends Controller
@@ -10,9 +11,18 @@ class ZoneController extends Controller
     /**
      * Display a listing of the zones.
      */
-    public function index()
+    public function index(Request $request)
     {
         $zones = Zone::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed a zone at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('zones.index', compact('zones'));
     }
 
@@ -27,6 +37,14 @@ class ZoneController extends Controller
         ]);
 
         Zone::create($validated);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' created a zone at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->route('zones.index')->with('success', 'Zone created successfully.');
     }
@@ -44,16 +62,32 @@ class ZoneController extends Controller
         $zone = Zone::findOrFail($id);
         $zone->update($validated);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated a zone at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->route('zones.index')->with('success', 'Zone updated successfully.');
     }
 
     /**
      * Remove the specified zone from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $zone = Zone::findOrFail($id);
         $zone->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted a zone at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->route('zones.index')->with('success', 'Zone deleted successfully.');
     }

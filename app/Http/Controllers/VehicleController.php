@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
 use App\Models\Shipment;
+use App\Models\UserLog;
 use App\Models\User;
 use App\Models\CompanyInfo;
 use Illuminate\Http\Request;
@@ -13,23 +14,40 @@ class VehicleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $vehicles = Vehicle::all();
         $shipments = Shipment::all();
         $drivers = User::where('role', 'driver')->get();
         $users = User::where('role','driver')->get();
         $companies = CompanyInfo::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('vehicles.index', compact('vehicles', 'shipments', 'drivers', 'users', 'companies'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $companies = CompanyInfo::all();
         $users = User::where('role','driver')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return view('vehicles.create')->with([
             'users'=>$users,

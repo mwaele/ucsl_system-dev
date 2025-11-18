@@ -368,7 +368,7 @@ class ShipmentCollectionController extends Controller
             $validated = $request->validate([
                 'receiverContactPerson' => 'string',
                 'receiverIdNo' => 'string|nullable',
-                'receiverPhone' => 'string',
+                'receiverPhone' => 'string|nullable',
                 'receiverAddress' => 'required|string',
                 'receiverTown' => 'required|string',
                 'origin_id' => 'required',

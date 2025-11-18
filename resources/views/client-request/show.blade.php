@@ -1016,12 +1016,29 @@
                                         <div>KRA PIN:
                                             {{ $collection->shipmentCollection->client->kraPin }}
                                         </div>
-                                        @php
+
+                                        @php 
                                             $phone = $collection->client->contact;
-                                            $maskedPhone =
-                                                substr($phone, 0, 3) .
-                                                str_repeat('*', strlen($phone) - 6) .
-                                                substr($phone, -3);
+
+                                            if (empty($phone)) {
+                                                // Handle null or empty phone
+                                                $maskedPhone = 'N/A';
+                                            } else {
+                                                $len = strlen($phone);
+
+                                                if ($len > 6) {
+                                                    // Normal masking
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', $len - 6) .
+                                                        substr($phone, -3);
+                                                } else {
+                                                    // For short numbers, mask all except last character
+                                                    $maskedPhone =
+                                                        str_repeat('*', max($len - 1, 0)) .
+                                                        substr($phone, -1);
+                                                }
+                                            }
                                         @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
@@ -1033,11 +1050,23 @@
                                         <div>Name: {{ $collection->shipmentCollection->receiver_name }}
                                         </div>
                                         @php
-                                            $phone = $collection->shipmentCollection->receiver_phone;
-                                            $maskedPhone =
-                                                substr($phone, 0, 3) .
-                                                str_repeat('*', strlen($phone) - 6) .
-                                                substr($phone, -3);
+                                            $phone = $collection->shipmentCollection?->receiver_phone;
+
+                                            if (empty($phone)) {
+                                                $maskedPhone = 'N/A';   // or leave blank, or whatever you want
+                                            } else {
+                                                $len = strlen($phone);
+
+                                                if ($len > 6) {
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', $len - 6) .
+                                                        substr($phone, -3);
+                                                } else {
+                                                    $maskedPhone =
+                                                        str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
+                                                }
+                                            }
                                         @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
