@@ -92,6 +92,8 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/waybill-preview/{requestId}', [ClientRequestController::class, 'preview'])->name('waybill-preview');
 
     Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinationSameDay']);
+
+     Route::get('/getDestinationsOvernight/{office_id}', [RateController::class, 'getDestinations']);
     Route::put('/rates/{rate}', [RateController::class, 'edit'])->name('rates.edit');
 
 
@@ -179,7 +181,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/delivery-controls/{id}', [DeliveryControlController::class, 'destroy'])->name('delivery_controls.destroy');
     
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -187,7 +189,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users_report', [UserController::class, 'users_report']);
-    Route::put('/client/{id}', [ClientController::class, 'update'])->name('clients.update');
+    Route::put('/client/{id}', [ClientController::class, 'update'])->name('client.update');
 
     Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');
    

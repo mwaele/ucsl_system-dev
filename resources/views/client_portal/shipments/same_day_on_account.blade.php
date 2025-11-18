@@ -159,7 +159,7 @@
                                                 <input type="text" value="{{ auth('client')->user()->address }}"
                                                     class="form-control" name="collectionLocation">
                                             </div>
-                                            <input type="text" name='destination_id' id="destination_id">
+                                            <input type="hidden" name='destination_id' id="destination_id">
                                             <input type="hidden" name="clientId" value="{{ auth('client')->user()->id }}">
                                         </div>
 

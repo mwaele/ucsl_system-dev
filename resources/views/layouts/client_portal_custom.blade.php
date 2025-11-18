@@ -992,7 +992,7 @@
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/getDestinations/' + selectedOfficeId)
+                        $.get('/getDestinationsOvernight/' + selectedOfficeId)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(
