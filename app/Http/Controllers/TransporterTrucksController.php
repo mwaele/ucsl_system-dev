@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\TransporterTrucks;
+use Illuminate\Support\Facades\Auth;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
 
 class TransporterTrucksController extends Controller
@@ -39,6 +41,14 @@ class TransporterTrucksController extends Controller
 
         $transporter_truck = new TransporterTrucks($validatedData);
         $transporter_truck->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' added a transporter truck ' . $request->reg_no . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
         
         return redirect()->back()->with('Success', 'Transporter Truck Saved Successfully');
     }
@@ -76,6 +86,14 @@ class TransporterTrucksController extends Controller
         ]);
 
         $truck->update($validatedData);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated a transporter truck with registration, ' . $request->reg_no . ', at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->back()->with('success', 'Truck updated successfully!');
     }

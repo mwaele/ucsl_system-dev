@@ -8,6 +8,7 @@ use App\Models\UserLog;
 use App\Models\User;
 use App\Models\CompanyInfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
@@ -73,6 +74,14 @@ class VehicleController extends Controller
 
         $vehicle = new Vehicle($validatedData);
         $vehicle->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' registered vehicle ' . $request->regNo . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
         
         return redirect()->route('vehicles.index')->with('success', 'Vehicle saved successfully');
        
@@ -112,6 +121,14 @@ class VehicleController extends Controller
 
         $vehicle->update($validatedData);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated details of vehicle ' . $request->regNo . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully');
     }
 
@@ -121,6 +138,14 @@ class VehicleController extends Controller
     public function destroy(Vehicle $vehicle)
     {
         $vehicle->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted vehicle with registration ' . $request->regNo . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->route('vehicles.index')->with('success', 'Vehicle deleted successfully');
     }

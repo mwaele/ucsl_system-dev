@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Zone;
 use App\Models\UserLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ZoneController extends Controller
 {

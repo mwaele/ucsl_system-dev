@@ -117,14 +117,14 @@
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header bg-success">
-                        <h5 class="modal-title text-white"><strong>Add New Truck for {{ $name }}</strong></h5>
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    </div>
+                    <form action="{{ route('transporter_trucks.store') }}" method="post">
+                        @csrf
+                        <div class="modal-header bg-success">
+                            <h5 class="modal-title text-white"><strong>Add New Truck for {{ $name }}</strong></h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
 
-                    <div class="modal-body">
-                        <form action="{{ route('transporter_trucks.store') }}" method="post">
-                            @csrf
+                        <div class="modal-body">
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Reg No</label>
@@ -157,13 +157,13 @@
                                 </select>
                                 <input type="hidden" name="transporter_id" value="{{ $id }}">
                             </div>
-                        </form>
-                    </div>
+                        </div>
 
-                    <div class="modal-footer d-flex justify-content-between">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
+                        <div class="modal-footer d-flex justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

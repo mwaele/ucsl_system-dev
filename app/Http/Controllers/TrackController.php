@@ -120,7 +120,7 @@ class TrackController extends Controller
                 $table = 'guests';
                 $id = auth('guest')->user()->id;
             }
-            UserLog::create([
+        UserLog::create([
             'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
             'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results  found',
             'url' => $request->fullUrl(),
@@ -266,54 +266,5 @@ class TrackController extends Controller
         }
 
         return view('tracking.view', compact('track'));
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Track $track)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Track $track)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Track $track)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Track $track)
-    {
-        //
     }
 }

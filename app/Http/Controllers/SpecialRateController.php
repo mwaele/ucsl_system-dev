@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\Office;
 use App\Models\Zone;
-use Auth;
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class SpecialRateController extends Controller
@@ -15,12 +16,20 @@ class SpecialRateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $rates = SpecialRate::all();
         $offices = Office::all();
         $zones = Zone::all();
         $clients = Client::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed special rates list at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
  
         return view('special_rates.index', compact('rates','offices','zones','clients'));
     }
@@ -46,14 +55,22 @@ class SpecialRateController extends Controller
                 'zone_id'=>'required',
                 'client_id' => 'required'
             ]
-            );
-            $validatedDate['added_by'] = Auth::user()->id;
+        );
+        $validatedDate['added_by'] = Auth::user()->id;
 
-            //dd($validatedDate);
-            $rate = new SpecialRate($validatedDate);
-            $rate->save();
-        
-        return redirect()->route('special_rates.index')->with('Success', 'Special Rates Saved Successfully');
+        //dd($validatedDate);
+        $rate = new SpecialRate($validatedDate);
+        $rate->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' added a special rate for ' . $rate->client->name . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
+        return redirect()->route('special_rates.index')->with('success', 'Special Rates Saved Successfully');
 
     }
 
@@ -116,6 +133,14 @@ class SpecialRateController extends Controller
 
         $rate = SpecialRate::findOrFail($id);
         $rate->update($validated);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated special rate for ' . $rate->client->name . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->route('special_rates.index')->with('success', 'Special Rate updated successfully.');
     }

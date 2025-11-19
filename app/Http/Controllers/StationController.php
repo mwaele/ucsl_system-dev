@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Station;
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class StationController extends Controller
@@ -10,18 +12,19 @@ class StationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $stations = Station::all();
-        return view('stations.index')->with('stations',$stations);
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('stations.create');
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed stations at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
+        return view('stations.index')->with('stations',$stations);
     }
 
     /**
@@ -37,47 +40,41 @@ class StationController extends Controller
 
         $station = new Station($validatedData);
         $station->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' added ' . $request->station_name . ' station at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
         
         return redirect()->route('stations.index')->with('Success', 'Station Saved Successfully');
         
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Station $station)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Station $station)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Station $station)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $station = Station::find($id);
         $station->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted ' . $request->station_name . ' station at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->route('stations.index')->with('Success', 'Station info deleted successfully.');
     }
+
     public function checkStation(Request $request)
-{
-    $exists = Station::where('station_name', $request->station_name)->exists();
-    return response()->json(['exists' => $exists]);
-}
+    {
+        $exists = Station::where('station_name', $request->station_name)->exists();
+        return response()->json(['exists' => $exists]);
+    }
 }

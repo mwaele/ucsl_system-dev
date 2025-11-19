@@ -133,11 +133,6 @@ class ShipmentDeliveriesController extends Controller
                 'riderRemarks' => $request->remarks,
             ]);
 
-
-
-
-
-
             // Log::info("Delivery Created", ['deliveryId' => $delivery->id, 'requestId' => $request->requestId]);
 
             // 2. Create goods received note number
@@ -241,11 +236,11 @@ class ShipmentDeliveriesController extends Controller
             Log::info("Front Office Message Record Saved", ['requestId' => $request->requestId]);
 
             DB::commit();
-            Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);
+                Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);
 
-            return redirect()->back()->with('success', 'Delivery inserted successfully.');
+                return redirect()->back()->with('success', 'Delivery inserted successfully.');
 
-        } catch (\Throwable $e) {
+            } catch (\Throwable $e) {
             DB::rollBack();
 
             Log::error("Error in Store Delivery Request", [

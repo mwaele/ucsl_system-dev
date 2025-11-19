@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Office;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
 use App\Helpers\EmailHelper;
 use Illuminate\Support\Carbon;
@@ -19,10 +20,19 @@ class UserController extends Controller
 {
     use PdfReportTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         $stations = Office::all();
         $users = User::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed users at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('users.index', compact('users', 'stations'));
     }
 
@@ -69,6 +79,14 @@ class UserController extends Controller
                 // Dispatch email job
         SendUserAccountEmail::dispatch($user, $request->password);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' created a new user, ' . $request->name . ', at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->back()->with('success', 'User account created.');
 
                 return redirect()->back()->with('success', 'User account created successfully.');
@@ -97,7 +115,15 @@ class UserController extends Controller
         $user->status = $request->status;
         $user->password = Hash::make($request->password);
 
-        $user->save();   
+        $user->save(); 
+        
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated details of a user whose name is  , ' . $request->name . ', at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->back()->with('success', 'User updated successfully.');
     }
@@ -179,6 +205,14 @@ class UserController extends Controller
     {
         $users = User::orderBy('created_at', 'desc')->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated users report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return $this->renderPdfWithPageNumbers(
             'users.user_report',
             ['users' => $users],
@@ -193,6 +227,14 @@ class UserController extends Controller
         //
         $user = User::where('id', $id)->firstOrFail();
         $user->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted a user, ' . $request->name . ', at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return back()->with('success', 'User deleted successfully.');
     }

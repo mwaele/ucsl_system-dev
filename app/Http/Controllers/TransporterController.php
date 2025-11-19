@@ -7,6 +7,8 @@ use App\Models\TransporterTrucks;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\PdfReportTrait;
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class TransporterController extends Controller
@@ -16,10 +18,19 @@ class TransporterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
         $account_no = rand(100000, 999999);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed transporters at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return view('transporters.index', compact('transporters', 'account_no'));
     }
 
@@ -57,13 +68,21 @@ class TransporterController extends Controller
 
         $transporter = new Transporter($validatedData);
         $transporter->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' created a new transporter, ' . $request->name . ', at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
         
         return redirect()->route('transporters.index')->with('success', 'Transporter Saved Successfully');
     }
 
     public function fetchTrucks($id)
     {
-       $name = Transporter::find($id)?->name;
+        $name = Transporter::find($id)?->name;
         
         $transporter_trucks = TransporterTrucks::where(['transporter_id'=>$id])->get();
         return view('transporter_trucks.trucks')->with(['trucks'=>$transporter_trucks,'id'=>$id,'name'=>$name, 'id'=>$id]);
@@ -76,9 +95,17 @@ class TransporterController extends Controller
         return response()->json($trucks);
     }
 
-    public function transporter_report()
+    public function transporter_report(Request $request)
     {
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated transporters report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'transporters.truck_list_report',
@@ -152,6 +179,14 @@ class TransporterController extends Controller
         // Update transporter data
         $transporter->update($validatedData);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated ' . $request->name . ' transporter details at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
+
         return redirect()->route('transporters.index')->with('success', 'Transporter Updated Successfully');
     }
 
@@ -159,9 +194,17 @@ class TransporterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Transporter $transporter)
+    public function destroy(Request $request, Transporter $transporter)
     {
         $transporter->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted ' . $request->name . ' as a transporter at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => Auth::id(),
+            'table'        => Auth::user()->getTable(),
+        ]);
 
         return redirect()->route('transporters.index')->with('success', 'Transporter deleted successfully');
     }
