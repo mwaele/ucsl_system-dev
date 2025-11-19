@@ -20,8 +20,8 @@ class StationController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed stations at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "stations",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('stations.index')->with('stations',$stations);
@@ -45,8 +45,9 @@ class StationController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' added ' . $request->station_name . ' station at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $station->id,
+            'table'        => "stations",
+            'user_id'      => Auth::id(),
         ]);
         
         return redirect()->route('stations.index')->with('Success', 'Station Saved Successfully');
@@ -65,8 +66,9 @@ class StationController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted ' . $request->station_name . ' station at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $station->id,
+            'table'        => "stations",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('stations.index')->with('Success', 'Station info deleted successfully.');

@@ -281,7 +281,6 @@
                             placeholder="Enter Account Number" readonly>
                     </div>
 
-
                     <div class="form-group col-md-4">
                         <label>Password</label>
                         <input type="password" name="password" class="form-control" value="password"

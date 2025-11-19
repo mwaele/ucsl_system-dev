@@ -59,8 +59,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ', viewed overnight on-account parcels at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('overnight.on-account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
@@ -138,8 +138,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed overnight walk-in parcels at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('overnight.walk-in', compact('clientRequests', 'offices',
@@ -167,8 +167,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated overnight on account parcels pdf report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -180,7 +180,7 @@ class OvernightController extends Controller
         );
     }
 
-    public function client_overnight_account_report()
+    public function client_overnight_account_report(Request $request)
     {
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
 
@@ -195,8 +195,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated overnight parcels pdf report from the client portal at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
             // $title = 'Report for All Overnight On-account Parcels from Client Portal';
@@ -233,8 +233,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated overnight walk-in parcels pdf report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -280,8 +280,8 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ', generated overnight parcels pdf report from the client portal at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -378,8 +378,9 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' allocated ' .$rider->name.' for request '. $requestId. ' at '. now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $clientRequest->id,
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Rider allocated successfully');
@@ -397,8 +398,9 @@ class OvernightController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' received a collected parcel from rider - ' . $req->user->name . ' for request ' . $req->requestId . ' at '. now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $req->id,
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Collection received successfully.');

@@ -66,8 +66,9 @@ class SpecialRateController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' added a special rate for ' . $rate->client->name . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $rate->id,
+            'table'        => "special_rates",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('special_rates.index')->with('success', 'Special Rates Saved Successfully');
@@ -138,8 +139,9 @@ class SpecialRateController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated special rate for ' . $rate->client->name . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $rate->id,
+            'table'        => "special_rates",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('special_rates.index')->with('success', 'Special Rate updated successfully.');

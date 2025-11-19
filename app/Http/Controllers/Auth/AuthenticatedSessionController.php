@@ -36,8 +36,8 @@ class AuthenticatedSessionController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ', ' . $article . ' ' . $role . ', logged into U-PARMS at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
         
          if (Auth::user()->role === 'driver') {

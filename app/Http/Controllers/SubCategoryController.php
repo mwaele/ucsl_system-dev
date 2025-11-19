@@ -22,8 +22,8 @@ class SubCategoryController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed subcategories at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "sub_categories",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('sub_categories.index')->with(['sub_categories'=>$sub_categories,'categories'=>$categories]);
@@ -46,8 +46,9 @@ class SubCategoryController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' added new subcategory (' . $request->sub_category_name . ') at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $category->id,
+            'table'        => "sub_categories",
+            'user_id'      => Auth::id(),
         ]);
         
         return redirect()->route('sub_categories.index')->with('success', 'Sub-category saved successfully');
@@ -72,8 +73,9 @@ class SubCategoryController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated ' . $request->sub_category_name . ' subcategory details at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $sub_category->id,
+            'table'        => "sub_categories",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('sub_categories.index')->with('success', 'Sub-category updated successfully.');
@@ -91,8 +93,9 @@ class SubCategoryController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted ' . $request->sub_category_name . ' subcategory at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $sub_category->id,
+            'table'        => "sub_categories",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('sub_categories.index')->with('success', 'Category deleted successfully.');

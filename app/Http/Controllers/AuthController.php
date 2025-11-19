@@ -28,12 +28,14 @@ class AuthController extends Controller
             $table = 'guests';
             $id = auth('guest')->user()->id;
         }
+
         UserLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged in the tracking app',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'table' => $table,
+            'name'    => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Logged in the tracking app',
+            'url'     => $request->fullUrl(),
+            'reference_id' => $id,
+            'table'   => "users",
+            'user_id' => Auth::id(),
         ]);
 
         if (Auth::guard('client')->attempt($request->only('email', 'password'))) {
@@ -68,12 +70,14 @@ class AuthController extends Controller
             $table = 'guests';
             $id = auth('guest')->user()->id;
         }
+
         UserLog::create([
             'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
             'actions' => 'Logged in the tracking app',
             'url' => $request->fullUrl(),
             'reference_id' => $id,
-            'table' => $table,
+            'table'   => "users",
+            'user_id' => Auth::id(),
         ]);
 
         return redirect('/dashboard')->with('success', 'Welcome, guest!');

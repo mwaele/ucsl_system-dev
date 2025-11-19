@@ -72,8 +72,8 @@ class SameDayController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed sameday on-account parcels at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('same_day.on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
@@ -112,8 +112,8 @@ class SameDayController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed sameday on-account parcels in the client portal at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('same_day.client_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
@@ -121,7 +121,7 @@ class SameDayController extends Controller
             'endDate', 'sub_category','locations'));
     } 
 
-    public function walk_in(Request $request )
+    public function walk_in(Request $request)
     {
         $riders = User::where(['role'=>'driver','station'=>Auth::user()->station])->get();
         $offices = Office::where('id',Auth::user()->station)->get();
@@ -174,8 +174,8 @@ class SameDayController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed sameday walk-in parcels at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('same_day.walk_in', compact('clientRequests',      'offices',
@@ -191,7 +191,7 @@ class SameDayController extends Controller
         ));
     }
     
-    public function sameday_walkin_report()
+    public function sameday_walkin_report(Request $request)
     {
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
@@ -206,8 +206,8 @@ class SameDayController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated sameday walk-in parcels report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -219,7 +219,7 @@ class SameDayController extends Controller
         );
     }
 
-    public function sameday_account_report()
+    public function sameday_account_report(Request $request)
     {
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
@@ -234,8 +234,8 @@ class SameDayController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated sameday on-account parcels report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
 
@@ -382,6 +382,15 @@ class SameDayController extends Controller
         } catch (\Exception $e) {
             Log::warning('Failed to dispatch SendCollectionNotificationsJob', ['message' => $e->getMessage()]);
         }
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' allocated ' .$rider->name.' for request '. $requestId. ' at '. now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $clientRequest->id,
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }
