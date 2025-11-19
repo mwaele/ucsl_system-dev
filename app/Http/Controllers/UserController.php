@@ -29,8 +29,8 @@ class UserController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed users at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('users.index', compact('users', 'stations'));
@@ -83,8 +83,9 @@ class UserController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' created a new user, ' . $request->name . ', at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $user->id,
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'User account created.');
@@ -121,8 +122,9 @@ class UserController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated details of a user whose name is  , ' . $request->name . ', at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $user->id,
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'User updated successfully.');
@@ -209,8 +211,9 @@ class UserController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated users report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $users->id,
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -232,8 +235,9 @@ class UserController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted a user, ' . $request->name . ', at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $user->id,
+            'table'        => "users",
+            'user_id'      => Auth::id(),
         ]);
 
         return back()->with('success', 'User deleted successfully.');

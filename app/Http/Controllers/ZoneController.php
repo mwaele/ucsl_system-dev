@@ -20,8 +20,8 @@ class ZoneController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed a zone at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "zones",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('zones.index', compact('zones'));
@@ -37,14 +37,15 @@ class ZoneController extends Controller
             'description' => 'required|string|max:500',
         ]);
 
-        Zone::create($validated);
+        $zone = Zone::create($validated);;
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a zone at ' . now(),
+            'actions'      => Auth::user()->name . ' created a zone (' . $request->zone_name . ') at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $zone->id,
+            'table'        => "zones",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('zones.index')->with('success', 'Zone created successfully.');
@@ -65,10 +66,11 @@ class ZoneController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated a zone at ' . now(),
+            'actions'      => Auth::user()->name . ' updated a zone (' . $request->zone_name . ') at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $zone->id,
+            'table'        => "zones",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('zones.index')->with('success', 'Zone updated successfully.');
@@ -86,8 +88,9 @@ class ZoneController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted a zone at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $zone->id,
+            'table'        => "zones",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('zones.index')->with('success', 'Zone deleted successfully.');

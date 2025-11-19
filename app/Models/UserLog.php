@@ -12,5 +12,6 @@ class UserLog extends Model
         'url',
         'reference_id',
         'table',
+        'user_id'
     ];
 }

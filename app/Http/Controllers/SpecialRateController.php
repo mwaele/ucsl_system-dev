@@ -27,8 +27,8 @@ class SpecialRateController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed special rates list at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "special_rates",
+            'user_id'      => Auth::id(),
         ]);
  
         return view('special_rates.index', compact('rates','offices','zones','clients'));

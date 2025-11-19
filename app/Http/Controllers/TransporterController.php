@@ -27,8 +27,8 @@ class TransporterController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed transporters at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "transporters",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('transporters.index', compact('transporters', 'account_no'));
@@ -73,8 +73,9 @@ class TransporterController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' created a new transporter, ' . $request->name . ', at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $transporter->id,
+            'table'        => "transporters",
+            'user_id'      => Auth::id(),
         ]);
         
         return redirect()->route('transporters.index')->with('success', 'Transporter Saved Successfully');
@@ -103,8 +104,8 @@ class TransporterController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' generated transporters report at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "transporters",
+            'user_id'      => Auth::id(),
         ]);
 
         return $this->renderPdfWithPageNumbers(
@@ -183,8 +184,9 @@ class TransporterController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated ' . $request->name . ' transporter details at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $transporter->id,
+            'table'        => "transporters",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('transporters.index')->with('success', 'Transporter Updated Successfully');
@@ -202,8 +204,9 @@ class TransporterController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted ' . $request->name . ' as a transporter at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $transporter->id,
+            'table'        => "transporters",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('transporters.index')->with('success', 'Transporter deleted successfully');

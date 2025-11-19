@@ -46,11 +46,12 @@ class TransporterTrucksController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' added a transporter truck ' . $request->reg_no . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $transporter_truck->id,
+            'table'        => "transporter_trucks",
+            'user_id'      => Auth::id(),
         ]);
         
-        return redirect()->back()->with('Success', 'Transporter Truck Saved Successfully');
+        return redirect()->back()->with('success', 'Transporter Truck Saved Successfully');
     }
 
     /**
@@ -91,8 +92,9 @@ class TransporterTrucksController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated a transporter truck with registration, ' . $request->reg_no . ', at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $truck->id,
+            'table'        => "transporter_trucks",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Truck updated successfully!');

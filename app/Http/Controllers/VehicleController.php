@@ -27,8 +27,8 @@ class VehicleController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "vehicles",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('vehicles.index', compact('vehicles', 'shipments', 'drivers', 'users', 'companies'));
@@ -46,8 +46,8 @@ class VehicleController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "vehicles",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('vehicles.create')->with([
@@ -79,8 +79,9 @@ class VehicleController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' registered vehicle ' . $request->regNo . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $vehicle->id,
+            'table'        => "vehicles",
+            'user_id'      => Auth::id(),
         ]);
         
         return redirect()->route('vehicles.index')->with('success', 'Vehicle saved successfully');
@@ -125,8 +126,9 @@ class VehicleController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' updated details of vehicle ' . $request->regNo . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $vehicle->id,
+            'table'        => "vehicles",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully');
@@ -143,8 +145,9 @@ class VehicleController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' deleted vehicle with registration ' . $request->regNo . ' at ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'reference_id' => $vehicle->id,
+            'table'        => "vehicles",
+            'user_id'      => Auth::id(),
         ]);
 
         return redirect()->route('vehicles.index')->with('success', 'Vehicle deleted successfully');
