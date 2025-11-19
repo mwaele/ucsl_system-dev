@@ -65,8 +65,10 @@ class UserLogController extends Controller
      */
     public function show($id)
     {
-        $log = UserLog::findOrFail($id);
-        return view('user_logs.show', compact('log'));
+        
+        $logs = UserLog::where('user_id',$id)->get();
+        //dd($log->toArray());
+        return view('user_logs.show', compact('logs'));
     }
 
 
