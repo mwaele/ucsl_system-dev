@@ -243,6 +243,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
 
+    Route::resource('user_logs','App\Http\Controllers\UserLogController');
+
     Route::resource('sales_person','App\Http\Controllers\SalesPersonController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');

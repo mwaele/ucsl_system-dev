@@ -652,8 +652,8 @@
                                 Nairobi Rates
                                 <i class="fas fa-angle-down"></i>
                             </a>
-                            <div id="collapseNairobiRates" class="collapse ml-3" aria-labelledby="headingNairobiRates"
-                                data-parent="#collapseRates">
+                            <div id="collapseNairobiRates" class="collapse ml-3"
+                                aria-labelledby="headingNairobiRates" data-parent="#collapseRates">
                                 <a class="collapse-item" href="{{ route('rates.nairobi_office') }}">Overnight</a>
                                 <a class="collapse-item" href="{{ route('rates.nrb_rates_sameday') }}">Same Day</a>
                             </div>
@@ -666,8 +666,8 @@
                                 Mombasa Rates
                                 <i class="fas fa-angle-down"></i>
                             </a>
-                            <div id="collapseMombasaRates" class="collapse ml-3" aria-labelledby="headingMombasaRates"
-                                data-parent="#collapseRates">
+                            <div id="collapseMombasaRates" class="collapse ml-3"
+                                aria-labelledby="headingMombasaRates" data-parent="#collapseRates">
                                 <a class="collapse-item" href="{{ route('rates.mombasa_office') }}">Overnight</a>
                             </div>
                             <hr class="sidebar-divide my-0" />
@@ -711,6 +711,9 @@
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('failed_collection.index') }}"> Failed
                                 Collections
+                            </a>
+                            <hr class="sidebar-divide my-0" />
+                            <a class="collapse-item" href="{{ route('user_logs.index') }}"> User Logs
                             </a>
 
                         </div>

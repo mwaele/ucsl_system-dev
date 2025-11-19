@@ -12,7 +12,8 @@ class UserLogController extends Controller
      */
     public function index()
     {
-        //
+        $user_logs = UserLog::all();
+        return view('user_logs.index', compact('user_logs'));
     }
 
     /**
