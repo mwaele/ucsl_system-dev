@@ -14,4 +14,7 @@ class UserLog extends Model
         'table',
         'user_id'
     ];
+    public function user(){
+        return $this->belongsTo('App\Models\User');
+    }
 }
