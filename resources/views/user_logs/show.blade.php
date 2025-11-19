@@ -26,12 +26,12 @@
         function getCardColor($index)
         {
             $colors = [
-                '#4e73df', // Blue
-                '#1cc88a', // Green
-                '#36b9cc', // Teal
-                '#f6c23e', // Yellow
-                '#e74a3b', // Red
-                '#858796', // Gray
+                '#cfe0fc', // Blue light
+                '#c8f2e1', // Green light
+                '#c8f0f6', // Teal light
+                '#fff6c2', // Yellow light
+                '#fbc1bb', // Red light
+                '#e0e0e5', // Gray light
             ];
             return $colors[$index % count($colors)];
         }
@@ -51,12 +51,12 @@
                             <div class="timeline-item"
                                 style="margin-left: {{ $index % 2 == 1 ? '30px' : '0px' }};
                                                            background-color: {{ getCardColor($index) }};">
-                                <div class="timeline-content text-white p-3 shadow-sm rounded">
-                                    <span
-                                        class="fw-bold">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y H:i') }}</span>
+                                <div class="timeline-content text-dark p-3 shadow-sm rounded">
+                                    <span class="fw-bold">
+                                        <strong>{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y H:i') }}</strong></span>
                                     <p class="mb-1">{{ $log->actions }}</p>
                                     <a href="{{ $log->url }}" target="_blank"
-                                        class="text-white text-decoration-underline">
+                                        class="text-dark text-decoration-underline">
                                         {{ $log->url }}
                                     </a>
                                     {{-- <small class="text-light d-block mt-1">ID: {{ $log->id }}</small> --}}

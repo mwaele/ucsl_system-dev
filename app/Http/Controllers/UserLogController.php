@@ -66,7 +66,7 @@ class UserLogController extends Controller
     public function show($id)
     {
         
-        $logs = UserLog::where('user_id',$id)->get();
+        $logs = UserLog::where('user_id',$id)->orderBy('created_at','desc')->get();
         //dd($log->toArray());
         return view('user_logs.show', compact('logs'));
     }
