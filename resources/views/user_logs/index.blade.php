@@ -59,7 +59,8 @@
                                     <td>{{ $name }}</td>
                                     <td>{{ $date }}</td>
                                     <td>
-                                        <a href="{{ route('user_logs.show', $log->user_id) }}" class="btn btn-info btn-sm">
+                                        <a href="{{ route('user_logs.log_details', ['user_id' => $log->user_id, 'date' => $date]) }}"
+                                            class="btn btn-info btn-sm">
                                             Details
                                         </a>
                                     </td>

@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\UserLog;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Traits\PdfReportTrait;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserLogController extends Controller
 {
+    use PdfReportTrait;
     /**
      * Display a listing of the resource.
      */
@@ -63,13 +67,67 @@ class UserLogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($user_id, $date)
     {
         
-        $logs = UserLog::where('user_id',$id)->orderBy('created_at','desc')->get();
+         $logs = UserLog::where('user_id', $user_id)
+        ->whereDate('created_at', $date)
+        ->orderBy('created_at', 'desc')
+        ->get();
         //dd($log->toArray());
         return view('user_logs.show', compact('logs'));
     }
+    public function exportPdf(Request $request, $user_id, $date)
+    {
+        // Log the report generation
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated user logs report for User ID ' . $user_id . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $user_id,
+            'table'        => "user_logs",
+            'user_id'      => Auth::id(),
+        ]);
+        $logs = UserLog::where('user_id', $user_id)
+            ->whereDate('created_at', $date)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        
+
+        return $this->renderPdfWithPageNumbers(
+            'user_logs.user_logs_report',     // Your PDF Blade view
+            [
+                'logs' => $logs,
+                'user' => $logs->first()->name ?? 'Unknown User',
+                'date' => $date
+            ],
+            'user_logs_report_' . $user_id . '_' . $date . '.pdf',
+            'a4',
+            'portrait'      // timeline fits better in portrait
+        );
+    }
+
+    // public function exportPdf($user_id, $date)
+    // {
+    //     $logs = UserLog::where('user_id', $user_id)
+    //         ->whereDate('created_at', $date)
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
+
+    //     if ($logs->isEmpty()) {
+    //         return back()->with('error', 'No logs found for the selected date.');
+    //     }
+
+    //     $pdf = \PDF::loadView('user_logs.user_logs_report', [
+    //         'logs' => $logs,
+    //         'user' => $logs->first()->name ?? 'User',
+    //         'date' => $date
+    //     ]);
+
+    //     return $pdf->download('user_logs_report_' . $user_id . '_' . $date . '.pdf');
+    // }
+
 
 
     /**

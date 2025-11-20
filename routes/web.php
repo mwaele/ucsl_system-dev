@@ -53,6 +53,7 @@ use App\Http\Controllers\CODController;
 use App\Http\Controllers\DispatcherController;
 use App\Http\Controllers\DeliveryFailedController;
 use App\Http\Controllers\ShipmentDetailController;
+use App\Http\Controllers\UserLogController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -244,7 +245,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('loading_sheets','App\Http\Controllers\LoadingSheetController');
 
     Route::resource('user_logs','App\Http\Controllers\UserLogController');
-
+    Route::get('/user-logs/{user_id}/{date}', [UserLogController::class, 'show'])
+     ->name('user_logs.log_details');
+    Route::get('/user_logs_report/{user_id}/{date}', [UserLogController::class, 'exportPdf'])
+     ->name('user_logs_report');
     Route::resource('sales_person','App\Http\Controllers\SalesPersonController');
     Route::resource('loading_sheets_waybills','App\Http\Controllers\ClientController');
     Route::resource('stations','App\Http\Controllers\StationController');

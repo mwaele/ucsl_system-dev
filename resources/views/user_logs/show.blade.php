@@ -39,8 +39,10 @@
 
     <div class=" mt-5">
         <div class="card shadow-sm">
-            <div class="card-header  text-primary">
+            <div class="card-header  text-primary d-flex justify-content-between ">
                 <h4 class="mb-0">{{ $logs->first()->name ?? 'User Logs' }} Activity timeline</h4>
+                <a href="{{route('user_logs_report', ['user_id' => $logs->first()->user_id ?? 0, 'date' => \Carbon\Carbon::parse($logs->first()->created_at ?? now())->toDateString() ])}}">
+                    <button class="btn btn-danger">Download Report <i class="fas fa-download"></i></button></a>
             </div>
             <div class="card-body">
                 @if ($logs->isEmpty())
