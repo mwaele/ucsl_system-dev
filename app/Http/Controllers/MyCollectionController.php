@@ -58,8 +58,8 @@ class MyCollectionController extends Controller
             'name'         => Auth::user()->name,
             'actions'      => Auth::user()->name . ' viewed rider collections at  ' . now(),
             'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
         ]);
 
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
@@ -94,6 +94,15 @@ class MyCollectionController extends Controller
             ->where('source', 'client_portal')
             ->orderBy('created_at','desc')
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed rider collections at  ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders, 'failedCollections'=>$failedCollections]);
     }
 

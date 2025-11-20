@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\Payment;
 use App\Models\Invoice;
 use App\Models\Office;
+use App\Models\UserLog;
 use App\Models\DeliveryControl;
 use App\Helpers\EmailHelper;
 use App\Traits\PdfReportTrait;
@@ -138,17 +139,17 @@ class ShipmentCollectionController extends Controller
             ]);
             // 1b. Handle manual waybill number + image upload
             if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
-            $collection->manual_waybillNo = $validated['manualWaybillNo'] ?? null;
+                $collection->manual_waybillNo = $validated['manualWaybillNo'] ?? null;
 
-            if ($request->hasFile('manualWaybillImage')) {
-                $file = $request->file('manualWaybillImage');
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads'), $filename);
-                $collection->manual_waybill = $filename;
+                if ($request->hasFile('manualWaybillImage')) {
+                    $file = $request->file('manualWaybillImage');
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('uploads'), $filename);
+                    $collection->manual_waybill = $filename;
+                }
+
+                $collection->save();
             }
-
-            $collection->save();
-        }
 
             // 2. Rebuild items array from flat structure
             $itemCount = count($request->input('item_name', []));
@@ -346,6 +347,14 @@ class ShipmentCollectionController extends Controller
                 \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
             }
 
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' created an overnight walkin parcel (' . $requestId . ') at ' . now(),
+                'url'          => $request->fullUrl(),
+                'reference_id' => $requestId,
+                'table'        => "shipment_collections",
+                'user_id'      => Auth::id(),
+            ]);
 
             return redirect()->back()->with('success', 'Shipment collection created and receiver notified successfully.');
 
@@ -661,6 +670,15 @@ class ShipmentCollectionController extends Controller
             \Log::error('SMS Notification Error: ' . $e->getMessage());
         }
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' collected parcel (' . $requestId . ') for ' . $senderName . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $requestId,
+            'table'        => "shipment_collections",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->back()->with('success', 'Shipment saved successfully!');
     }
 
@@ -769,23 +787,29 @@ class ShipmentCollectionController extends Controller
         ClientRequest::where('requestId', $request->requestId)
             ->update(['status' => 'verified']);
 
-            ShipmentCollection::where('requestId', $request->requestId)
-            ->update(['waybill_no' => $waybill_no]);
+        ShipmentCollection::where('requestId', $request->requestId)
+        ->update(['waybill_no' => $waybill_no]);
 
+        $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
 
+        // 3. Insert into tracking_infos
+        DB::table('tracking_infos')->insert([
+            'trackId' => $id,
+            'date' => now(),
+            'details' => 'Parcel Verified and ready for dispatch',
+            'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated '.$waybill_no,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-            $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
-
-
-            // 3. Insert into tracking_infos
-            DB::table('tracking_infos')->insert([
-                'trackId' => $id,
-                'date' => now(),
-                'details' => 'Parcel Verified and ready for dispatch',
-                'remarks' => 'Rider delivered the parcel to the office for verification; Parcel Verified; Waybill Number generated '.$waybill_no,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' verified parcel (' . $requestId . ') for ' . $shipment->senderName . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $requestId,
+            'table'        => "shipment_collections",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->back()->with('success', 'Shipment collection verified successfully!');
     }
@@ -920,50 +944,7 @@ class ShipmentCollectionController extends Controller
                 'updated_at' => now()
             ]);  
             }
-
-            // ----------------------------
-            // ✅ SMS Notifications Logic
-            // ----------------------------
-            try {
-                $senderPhone = $shipment->sender_contact;
-                $senderName = $shipment->sender_name;
-                $receiverPhone = $shipment->receiver_phone;
-                $receiverName = $shipment->receiver_name;
-                $clientId = $shipment->client_id;
-
-                // Notify Sender
-                $senderMsg = "Hello {$senderName}, your parcel has been verified. Waybill No: {$waybill_no}. Thank you for choosing UCSL.";
-                $smsService->sendSms($senderPhone, 'Parcel Verified', $senderMsg, true);
-
-                SentMessage::create([
-                    'request_id' => $request->requestId,
-                    'client_id' => $clientId,
-                    'rider_id' => auth()->id(),
-                    'recipient_type' => 'sender',
-                    'recipient_name' => $senderName,
-                    'phone_number' => $senderPhone,
-                    'subject' => 'Parcel Verified',
-                    'message' => $senderMsg,
-                ]);
-
-                // Notify Receiver
-                $receiverMsg = "Hello {$receiverName}, your parcel has been booked with UCSL. We will notify when the parcel arrives. Waybill No: {$waybill_no}.";
-                $smsService->sendSms($receiverPhone, 'Parcel Booked', $receiverMsg, true);
-
-                SentMessage::create([
-                    'request_id' => $request->requestId,
-                    'client_id' => $clientId,
-                    'rider_id' => auth()->id(),
-                    'recipient_type' => 'receiver',
-                    'recipient_name' => $receiverName,
-                    'phone_number' => $receiverPhone,
-                    'subject' => 'Parcel Booked',
-                    'message' => $receiverMsg,
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
-            }
-
+            
             // ----------------------------
             // ✅ SMS Notifications Logic
             // ----------------------------
@@ -1023,6 +1004,15 @@ class ShipmentCollectionController extends Controller
                     'phone_number' => $receiverPhone,
                     'subject' => 'Parcel Booked',
                     'message' => $receiverMsg,
+                ]);
+
+                UserLog::create([
+                    'name'         => Auth::user()->name,
+                    'actions'      => Auth::user()->name . ' verified parcel (' . $requestId . ') for ' . $shipment->senderName . ' at ' . now(),
+                    'url'          => $request->fullUrl(),
+                    'reference_id' => $requestId,
+                    'table'        => "shipment_collections",
+                    'user_id'      => Auth::id(),
                 ]);
             } catch (\Exception $e) {
                 \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
