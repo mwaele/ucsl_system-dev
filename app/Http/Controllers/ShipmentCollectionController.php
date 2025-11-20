@@ -444,6 +444,7 @@ class ShipmentCollectionController extends Controller
             'sender_id_no' => $request->sender_id_no,
             'vat' => $request->vat,
             'total_cost' => $request->total_cost,
+            'total_weight' => $request->total_weight,
             'collected_by' => Auth::user()->id,
             'consignment_no' => $consignment_no,
             'base_cost' => $request->base_cost,
@@ -469,7 +470,6 @@ class ShipmentCollectionController extends Controller
                     'actual_cost' => $request->cost,
                     'actual_vat' => $request->vat,
                     'actual_total_cost' => $request->total_cost,
-                    'total_weight' => $request->total_weight,
                 ]);
         }
         
@@ -944,7 +944,16 @@ class ShipmentCollectionController extends Controller
                 'updated_at' => now()
             ]);  
             }
-            
+
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' verified parcel (' . $request->requestId . ') for ' . $shipment->sender_name . ' at ' . now(),
+                'url'          => $request->fullUrl(),
+                'reference_id' => $request->requestId,
+                'table'        => "shipment_collections",
+                'user_id'      => Auth::id(),
+            ]);
+
             // ----------------------------
             // ✅ SMS Notifications Logic
             // ----------------------------
@@ -1006,14 +1015,6 @@ class ShipmentCollectionController extends Controller
                     'message' => $receiverMsg,
                 ]);
 
-                UserLog::create([
-                    'name'         => Auth::user()->name,
-                    'actions'      => Auth::user()->name . ' verified parcel (' . $requestId . ') for ' . $shipment->senderName . ' at ' . now(),
-                    'url'          => $request->fullUrl(),
-                    'reference_id' => $requestId,
-                    'table'        => "shipment_collections",
-                    'user_id'      => Auth::id(),
-                ]);
             } catch (\Exception $e) {
                 \Log::error('SMS Notification Error (Verification): ' . $e->getMessage());
             }
@@ -1027,12 +1028,21 @@ class ShipmentCollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete($requestId)
+    public function delete(Request $request, $requestId)
     {
         //
         //
         $clientRequest = ShipmentCollection::where('requestId', $requestId)->firstOrFail();
         $clientRequest->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted Walk-in parcel (' . $clientRequest->requestId . ') for ' . $clientRequest->sender_name . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $clientRequest->requestId,
+            'table'        => "shipment_collections",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->back()->with('success', 'Walk-in parcel deleted successfully.');
     }
@@ -1206,6 +1216,15 @@ class ShipmentCollectionController extends Controller
                     'phone'    => $newRider->phone_number
                 ]);
             }
+
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' handed over parcel (' . $request->requestId . ') to ' . $newRider->name . ' at ' . now(),
+                'url'          => $request->fullUrl(),
+                'reference_id' => $request->requestId,
+                'table'        => "shipment_collections",
+                'user_id'      => Auth::id(),
+            ]);
 
         } catch (\Exception $e) {
             \Log::error('Handover process failed', [
@@ -1489,6 +1508,14 @@ class ShipmentCollectionController extends Controller
         // 🔹 Fetch results
         $shipments = $query->orderBy('created_at', 'desc')->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated a delivery metrics report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "shipment_collections",
+            'user_id'      => Auth::id(),
+        ]);
+
         // ✅ Export to PDF
         return $this->renderPdfWithPageNumbers(
             'pdf.delivery-metrics',
@@ -1614,6 +1641,14 @@ class ShipmentCollectionController extends Controller
 
         // 🔹 Fetch results
         $shipments = $query->orderBy('created_at', 'desc')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated a delivery metrics report at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "shipment_collections",
+            'user_id'      => Auth::id(),
+        ]);
 
         // ✅ Export to PDF
         return $this->renderPdfWithPageNumbers(

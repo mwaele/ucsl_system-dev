@@ -18,6 +18,7 @@ use App\Models\Client;
 use App\Models\ClientRequest;
 use App\Models\ShipmentCollection;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserLog;
 use App\Services\SmsService;
 use App\Models\SentMessage;
 use Illuminate\Support\Str;
@@ -235,21 +236,30 @@ class ShipmentDeliveriesController extends Controller
             ]);
             Log::info("Front Office Message Record Saved", ['requestId' => $request->requestId]);
 
-            DB::commit();
-                Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);
-
-                return redirect()->back()->with('success', 'Delivery inserted successfully.');
-
-            } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Log::error("Error in Store Delivery Request", [
-                'requestId' => $request->requestId ?? null,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' delivered parcel  ' . $request->requestId . ' to ' . $deliveredTo . ' at ' . now(),
+                'url'          => $request->fullUrl(),
+                'reference_id' => $requestId,
+                'table'        => "shipment_deliveries",
+                'user_id'      => Auth::id(),
             ]);
 
-            return redirect()->back()->with('error', 'An error occurred while processing the delivery.');
+            DB::commit();
+            Log::info("Store Delivery Request Completed Successfully", ['requestId' => $request->requestId]);
+
+            return redirect()->back()->with('success', 'Delivery inserted successfully.');
+
+        } catch (\Throwable $e) {
+        DB::rollBack();
+
+        Log::error("Error in Store Delivery Request", [
+            'requestId' => $request->requestId ?? null,
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return redirect()->back()->with('error', 'An error occurred while processing the delivery.');
         }
     }
 
@@ -327,6 +337,15 @@ class ShipmentDeliveriesController extends Controller
         $routeName   = $serviceLevel . '.' . $clientType;
         $approvalUrl = route($routeName) . '?requestId=' . $requestId;
         Log::info('Approval URL generated', ['routeName' => $routeName]);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' requested agent approval at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $requestId,
+            'table'        => "shipment_deliveries",
+            'user_id'      => Auth::id(),
+        ]);
 
         // Update tracking info (still works with tracks table)
         $trackId = DB::table('tracks')->where('requestId', $requestId)->value('id');
@@ -548,6 +567,15 @@ class ShipmentDeliveriesController extends Controller
                 'status'  => $action === 'approve' ? 'Agent Approved' : 'Agent Declined',
             ]);
         }
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' approved/rejected an agent approval request at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $requestId,
+            'table'        => "shipment_deliveries",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->back()->with(
             'success',
