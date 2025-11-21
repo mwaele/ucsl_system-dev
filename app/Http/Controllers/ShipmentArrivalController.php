@@ -14,9 +14,10 @@ use App\Models\LoadingSheetWaybill;
 use App\Models\ShipmentCollection;
 use Illuminate\Http\Request;
 use App\Traits\PdfReportTrait;
-use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendIssueNotificationsJob;
 use Illuminate\Support\Facades\Log;
 use App\Services\SmsService;
@@ -30,10 +31,8 @@ class ShipmentArrivalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-
-        
         $offices = Office::where('id',Auth::user()->station)->get();
         $destinations = $shipments = DB::table('shipment_collections')
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
@@ -57,6 +56,15 @@ class ShipmentArrivalController extends Controller
         $count = LoadingSheet::count()+1; // Example: 1
         $number = str_pad($count, 5, '0', STR_PAD_LEFT); // Result: 00001
         $drivers = User::where('role', 'driver')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed shipment arrivals at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('shipment_arrivals.index', with(['sheets'=>$sheets, 'drivers'=>$drivers, 'offices'=>$offices,'destinations'=>$destinations,'transporters'=>$transporters,'dispatchers'=>$dispatchers,'batch_no'=>$number]));
     
         //return view('shipment_arrivals.index');
@@ -134,6 +142,15 @@ class ShipmentArrivalController extends Controller
                     'truck_id' => $sheet->transporter_truck->id,
                 ]);
             }
+
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' allocated ' . $request->dispatchers . ' as the offloading clerk for  ' . $request->loading_sheet_id,
+                'url'          => $request->fullUrl(),
+                'reference_id' => $request->loading_sheet_id,
+                'table'        => "loading_sheets",
+                'user_id'      => Auth::id(),
+            ]);
 
             return response()->json([
                 'success' => true,

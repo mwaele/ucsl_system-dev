@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -10,9 +12,18 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed categories at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "client_categories",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('categories.index')->with('categories',$categories);
     }
 
@@ -36,6 +47,15 @@ class CategoryController extends Controller
 
         $category = new Category($validatedData);
         $category->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' added ' . $request->category_name . ' to client categories list at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $category->id,
+            'table'        => "client_categories",
+            'user_id'      => Auth::id(),
+        ]);
         
         return redirect()->route('categories.index')->with('success', 'Category Saved Successfully');
     }
@@ -69,6 +89,15 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->update($validated);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated ' . $request->category_name . ' in client categories list at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $category->id,
+            'table'        => "client_categories",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
@@ -79,6 +108,15 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted ' . $request->category_name . ' from the client categories list at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $category->id,
+            'table'        => "client_categories",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }

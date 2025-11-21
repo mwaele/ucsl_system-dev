@@ -398,6 +398,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('transporter_trucks','App\Http\Controllers\TransporterTrucksController');
 
+    
     Route::get('/get-trucks/{transporterId}', [TransporterController::class, 'getTrucks']);
 
     Route::get('/loadingsheet_waybills/{id}', [LoadingSheetController::class, 'loadingsheet_waybills'])->name('loadingsheet_waybills');

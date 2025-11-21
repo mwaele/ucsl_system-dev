@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Services\SmsService;
 use App\Mail\GenericMail;
+use App\Models\UserLog;
+use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendCollectionNotificationsJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,15 +28,32 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $clients = Client::orderBy('created_at', 'desc')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed all clients at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('clients.index')->with('clients', $clients);
     }
 
     public function clients_report()
     {
         $clients = Client::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated all client reports at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'clients.clients_report',
@@ -181,6 +200,15 @@ class ClientController extends Controller
                 // Don’t rollback — client is already created
             }
 
+            UserLog::create([
+                'name'         => Auth::user()->name,
+                'actions'      => Auth::user()->name . ' registered ' . $request->name . ' as a client at ' . now(),
+                'url'          => $request->fullUrl(),
+                'reference_id' => $client->id,
+                'table'        => "clients",
+                'user_id'      => Auth::id(),
+            ]);
+
             return redirect()->route('clients.index')
                             ->with('success', 'Client created successfully!');
 
@@ -235,6 +263,15 @@ class ClientController extends Controller
         $client->role = $request->role;
         $client->password = bcrypt($request->password);
         $client->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' updated the details of client - ' . $request->name . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $client->id,
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
         
         return redirect()->route('clients.index')->with('success','Successfully Updated');
     }
@@ -247,6 +284,16 @@ class ClientController extends Controller
         if($otp == $request->verified_otp){
         $client->verified_otp = $request->verified_otp;
         $client->save();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' verified client phone number through OTP at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $client->id,
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->route('clients.index')->with('success','OTP Verified');
         }
         else{
@@ -257,10 +304,20 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $client = Client::find($id);
         $client->delete();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' deleted the details of ' . $request->name . ' as a client at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $client->id,
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->route('clients.index')->with('Success');
     }
 }

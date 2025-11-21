@@ -11,6 +11,7 @@ use App\Models\Transporter;
 use App\Models\Dispatcher;
 use App\Models\ClientRequest;
 use App\Models\TransporterTrucks;
+use App\Models\UserLog;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class LoadingSheetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
         $offices = Office::where('id',Auth::user()->station)->get();
@@ -56,6 +57,15 @@ class LoadingSheetController extends Controller
         $count = LoadingSheet::count()+1; // Example: 1
         $number = str_pad($count, 5, '0', STR_PAD_LEFT); // Result: 00001
         $drivers = User::where('role', 'driver')->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed loading sheet details at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('loading-sheet.index', with(['sheets'=>$sheets, 'drivers'=>$drivers, 'offices'=>$offices,'destinations'=>$destinations,'transporters'=>$transporters,'dispatchers'=>$dispatchers,'batch_no'=>$number]));
     }
 
@@ -105,6 +115,15 @@ class LoadingSheetController extends Controller
         TransporterTrucks::where('id', $request->reg_no)
                         ->update(['status' => 'booked']);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' created a loading sheet at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $loadingSheet->id,
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->back()->with('success', 'Loading Sheet saved successfully!');
     }
 
@@ -145,8 +164,6 @@ class LoadingSheetController extends Controller
             ->select('loading_sheets.*', 'transporters.name as transporter_name', 'transporter_trucks.reg_no')
             ->first();
 
-            //dd($loadingSheets);
-
         return view('loading-sheet.loading_waybills')->with([
             'shipment_collections' => $shipment_collections,
             'ls_id' => $id,
@@ -156,7 +173,7 @@ class LoadingSheetController extends Controller
         ]);
     }
 
-    public function generate_loading_sheet($id)
+    public function generate_loading_sheet(Request $request, $id)
     {
                 // Fetch loading sheet details
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
@@ -214,6 +231,15 @@ class LoadingSheetController extends Controller
             ->where('lsw.loading_sheet_id', $id)
             ->first();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated a loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' in PDF format at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $loadingSheet->id,
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         // Generate PDF
         return $this->renderPdfWithPageNumbers(
             'loading-sheet.loading-sheet-pdf',
@@ -234,7 +260,7 @@ class LoadingSheetController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
         $destination = Rate::where('id',$loadingSheet->destination)->first();
@@ -272,6 +298,15 @@ class LoadingSheetController extends Controller
         ->first();
         //dd($data);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' viewed loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'reference_id' => $loadingSheet->id,
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('loading-sheet.loading_sheet')->with([
             'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals
         ]);
@@ -303,6 +338,7 @@ class LoadingSheetController extends Controller
     {
         //
     }
+
     public function dispatch($id, SmsService $smsService) 
     {
         $sheet = LoadingSheet::findOrFail($id);
@@ -395,4 +431,5 @@ class LoadingSheetController extends Controller
 
         return response()->json(['message' => 'Dispatch date updated', 'dispatch_date' => $sheet->dispatch_date,  'redirect' => route('loading_sheets.index')]);
     }
+
 }
