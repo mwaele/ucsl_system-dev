@@ -25,7 +25,7 @@ class VehicleController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
+            'actions'      => 'Accessed vehicles module',
             'url'          => $request->fullUrl(),
             'table'        => "vehicles",
             'user_id'      => Auth::id(),
@@ -44,7 +44,7 @@ class VehicleController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed vehicles at ' . now(),
+            'actions'      => 'Accessed vehicles module',
             'url'          => $request->fullUrl(),
             'table'        => "vehicles",
             'user_id'      => Auth::id(),
@@ -77,7 +77,7 @@ class VehicleController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' registered vehicle ' . $request->regNo . ' at ' . now(),
+            'actions'      => 'Registered a new vehicle with registration - ' . $request->regNo . '' ,
             'url'          => $request->fullUrl(),
             'reference_id' => $vehicle->id,
             'table'        => "vehicles",
@@ -124,7 +124,7 @@ class VehicleController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated details of vehicle ' . $request->regNo . ' at ' . now(),
+            'actions'      => 'Updated details of vehicle ' . $request->regNo . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $vehicle->id,
             'table'        => "vehicles",
@@ -143,7 +143,7 @@ class VehicleController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted vehicle with registration ' . $request->regNo . ' at ' . now(),
+            'actions'      => 'Deleted vehicle with registration ' . $request->regNo . ' ',
             'url'          => $request->fullUrl(),
             'reference_id' => $vehicle->id,
             'table'        => "vehicles",

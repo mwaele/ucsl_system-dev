@@ -30,6 +30,7 @@ use App\Traits\PdfReportTrait;
 use App\Services\RequestIdService;
 use App\Helpers\EmailHelper;
 use App\Models\Location;
+use App\Models\UserLog;
 use App\Jobs\SendCollectionNotificationsJob;
 use BaconQrCode\Writer;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -197,6 +198,15 @@ class ClientRequestController extends Controller
             ->get();
         $successfulDeliveries = (clone $shipmentBase)->where('status', 'parcel_delivered')
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Accessed the dashboard view for the application',
+            'url'          => $request->fullUrl(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('client-request.index', compact(
             'clients',
             'vehicles',
@@ -225,6 +235,15 @@ class ClientRequestController extends Controller
     public function generateWaybill($requestId) 
     {
         $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Accessed the dashboard view for the application',
+            'url'          => $request->fullUrl(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
+        ]);
+        
         $pdf = PDF::loadView('pdf.waybill', [
             'collection' => $collection,
             'isPdf' => true

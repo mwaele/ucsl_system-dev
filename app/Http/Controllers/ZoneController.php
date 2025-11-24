@@ -18,7 +18,7 @@ class ZoneController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed a zone at ' . now(),
+            'actions'      => 'Accessed zones module',
             'url'          => $request->fullUrl(),
             'table'        => "zones",
             'user_id'      => Auth::id(),
@@ -41,7 +41,7 @@ class ZoneController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a zone (' . $request->zone_name . ') at ' . now(),
+            'actions'      => 'Created a zone',
             'url'          => $request->fullUrl(),
             'reference_id' => $zone->id,
             'table'        => "zones",
@@ -66,7 +66,7 @@ class ZoneController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated a zone (' . $request->zone_name . ') at ' . now(),
+            'actions'      => 'Updated a zone (' . $request->zone_name . ')',
             'url'          => $request->fullUrl(),
             'reference_id' => $zone->id,
             'table'        => "zones",
@@ -86,7 +86,7 @@ class ZoneController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted a zone at ' . now(),
+            'actions'      => 'Deleted a zone',
             'url'          => $request->fullUrl(),
             'reference_id' => $zone->id,
             'table'        => "zones",

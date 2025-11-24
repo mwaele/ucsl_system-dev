@@ -18,7 +18,7 @@ class StationController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed stations at ' . now(),
+            'actions'      => 'Accessed stations module',
             'url'          => $request->fullUrl(),
             'table'        => "stations",
             'user_id'      => Auth::id(),
@@ -43,7 +43,7 @@ class StationController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' added ' . $request->station_name . ' station at ' . now(),
+            'actions'      => 'Added ' . $request->station_name . ' station',
             'url'          => $request->fullUrl(),
             'reference_id' => $station->id,
             'table'        => "stations",
@@ -64,7 +64,7 @@ class StationController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted ' . $request->station_name . ' station at ' . now(),
+            'actions'      => 'Deleted ' . $request->station_name . ' station',
             'url'          => $request->fullUrl(),
             'reference_id' => $station->id,
             'table'        => "stations",

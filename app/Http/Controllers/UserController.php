@@ -27,7 +27,7 @@ class UserController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed users at ' . now(),
+            'actions'      => 'Accessed users module',
             'url'          => $request->fullUrl(),
             'table'        => "users",
             'user_id'      => Auth::id(),
@@ -81,7 +81,7 @@ class UserController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a new user, ' . $request->name . ', at ' . now(),
+            'actions'      => 'Created a new user, ' . $request->name . ' ',
             'url'          => $request->fullUrl(),
             'reference_id' => $user->id,
             'table'        => "users",
@@ -120,7 +120,7 @@ class UserController extends Controller
         
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated details of a user whose name is  , ' . $request->name . ', at ' . now(),
+            'actions'      => 'Updated details of a user whose name is  , ' . $request->name . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $user->id,
             'table'        => "users",
@@ -209,7 +209,7 @@ class UserController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated users report at ' . now(),
+            'actions'      => 'Generated users report',
             'url'          => $request->fullUrl(),
             'reference_id' => $users->id,
             'table'        => "users",

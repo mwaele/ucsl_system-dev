@@ -143,9 +143,14 @@ class ShipmentArrivalController extends Controller
                 ]);
             }
 
-            UserLog::create([
+            $dispatcher = User::find($request->dispatchers);
+            $loadingSheet = LoadingSheet::find($request->loading_sheet_id);
+
+            UserLog::create([ 
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' allocated ' . $request->dispatchers . ' as the offloading clerk for  ' . $request->loading_sheet_id,
+                'actions'      => Auth::user()->name . 
+                                ' allocated ' . ($dispatcher->name ?? 'Unknown') .
+                                ' as the offloading clerk for loading sheet with batch no. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT ?? 'Unknown'),
                 'url'          => $request->fullUrl(),
                 'reference_id' => $request->loading_sheet_id,
                 'table'        => "loading_sheets",
@@ -208,7 +213,15 @@ class ShipmentArrivalController extends Controller
             $query->where('batch_no', 'like', "%$value%");
         } 
 
-        $loading_sheets = $query->get();
+        $loading_sheets = $query->get();       
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated shipment arrivals report for ' . $titled . ' at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'shipment_arrivals.arrivals_report',
@@ -277,6 +290,14 @@ class ShipmentArrivalController extends Controller
 
         $waybills = $query->get();
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => Auth::user()->name . ' generated detailed shipment arrivals report for at ' . now(),
+            'url'          => $request->fullUrl(),
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         //dd($data);
         $title = "Report of ";
 
@@ -290,7 +311,7 @@ class ShipmentArrivalController extends Controller
         // return view('reports.shipment_arrivals', compact('shipments', 'filter', 'value'));
     }
 
-    public function generateParcelsUncollected($id,$type)
+    public function generateParcelsUncollected(Request $request, $id, $type)
     {
         $sheet_id = $id;
         if($type=='Uncollected'){
@@ -323,7 +344,14 @@ class ShipmentArrivalController extends Controller
             ->where('sc.status',$status)
             ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode')
             ->get();
-
+        
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Generated uncollected parcels report',
+            'url'          => $request->fullUrl(),
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
         
         $pdf = Pdf::loadView('shipment_arrivals.arrivals_report_detail' , [
             'data'=>$data,
@@ -399,6 +427,15 @@ class ShipmentArrivalController extends Controller
             ->first();
             //dd($data);
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Generated uncollected parcels report',
+            'url'          => $request->fullUrl(),
+            'reference_id' => $request->loading_sheet_id,
+            'table'        => "loading_sheets",
+            'user_id'      => Auth::id(),
+        ]);
+
         return view('shipment_arrivals.manifest_details')->with([
             'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals,'id'=>$id
         ]);
@@ -407,7 +444,7 @@ class ShipmentArrivalController extends Controller
     /**
      * Display the parcel collection data.
      */
-    public function parcel_collection()
+    public function parcel_collection(Request $request)
     {
         // Fetch all shipment arrivals
         $shipmentArrivals = ShipmentArrival::with(['payment', 'transporter_truck', 'transporter'])
@@ -434,6 +471,14 @@ class ShipmentArrivalController extends Controller
             $agent = $arrival->shipmentCollection?->agent;
             return [$arrival->requestId => $agent?->agent_approved ?? false];
         });
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Viewed parcel collection page',
+            'url'          => $request->fullUrl(),
+            'table'        => "shipment_arrivals",
+            'user_id'      => Auth::id(),
+        ]);
 
         // Pass data to the view
         return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no', 'approvalStatuses'));
@@ -598,6 +643,14 @@ class ShipmentArrivalController extends Controller
             return redirect()->back()->with('error', 'Failed to allocate rider — ' . $e->getMessage());
         }
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Viewed parcel collection page',
+            'url'          => $request->fullUrl(),
+            'table'        => "shipment_arrivals",
+            'user_id'      => Auth::id(),
+        ]);
+
         return redirect()->back()->with('success', 'Rider allocated successfully.');
     }
     
@@ -744,16 +797,33 @@ class ShipmentArrivalController extends Controller
             Log::warning("⚠️ Failed to dispatch notification job", ['message' => $e->getMessage()]);
         }
 
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Issued parcel over-the-counter to ' . $arrival->shipmentCollection->sender_name,
+            'url'          => $request->fullUrl(),
+            'reference_id' => $arrival->shipmentCollection->requestId,
+            'table'        => "shipment_arrivals",
+            'user_id'      => Auth::id(),
+        ]);
+
         Log::info("✅ Parcel issued successfully", ['arrival_id' => $arrival->id]);
         return back()->with('success', 'Parcel delivered successfully.');
     }
 
-    public function parcel_collection_report()
+    public function parcel_collection_report(Request $request)
     {
         // Fetch all shipment arrivals
         $shipmentArrivals = ShipmentArrival::with(['payment', 'transporter_truck', 'transporter'])
             ->orderBy('created_at', 'desc')
             ->get();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Generated parcel collection report',
+            'url'          => $request->fullUrl(),
+            'table'        => "shipment_arrivals",
+            'user_id'      => Auth::id(),
+        ]);
 
         return $this->renderPdfWithPageNumbers(
             'shipment_arrivals.parcel_collection_report',
