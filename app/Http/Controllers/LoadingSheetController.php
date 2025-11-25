@@ -60,7 +60,7 @@ class LoadingSheetController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed loading sheet details at ' . now(),
+            'actions'      => 'Accessed loading sheet module',
             'url'          => $request->fullUrl(),
             'table'        => "loading_sheets",
             'user_id'      => Auth::id(),
@@ -117,7 +117,7 @@ class LoadingSheetController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a loading sheet at ' . now(),
+            'actions'      => 'Created a loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT),
             'url'          => $request->fullUrl(),
             'reference_id' => $loadingSheet->id,
             'table'        => "loading_sheets",
@@ -233,7 +233,7 @@ class LoadingSheetController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated a loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' in PDF format at ' . now(),
+            'actions'      => 'Generated a loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' in PDF format',
             'url'          => $request->fullUrl(),
             'reference_id' => $loadingSheet->id,
             'table'        => "loading_sheets",
@@ -300,7 +300,7 @@ class LoadingSheetController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' at ' . now(),
+            'actions'      => 'Viewed loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' at ' . now(),
             'url'          => $request->fullUrl(),
             'reference_id' => $loadingSheet->id,
             'table'        => "loading_sheets",

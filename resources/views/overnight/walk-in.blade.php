@@ -130,7 +130,7 @@
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
                                                 <select class="form-control selectpicker" data-live-search="true"
-                                                    id="clientId" name="clientId">
+                                                    id="clientId" name="clientId" required>
                                                     <option value="">Select Client</option>
                                                     @foreach ($walkInClients as $client)
                                                         <option value="{{ $client->id }}"
@@ -145,7 +145,7 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="clientCategories" class="text-primary">Client Categories</h6>
-                                                <select class="form-control" id="clientCategories" name="category_id">
+                                                <select class="form-control" id="clientCategories" name="category_id" required>
                                                     <option value="">Select Client Categories</option>
                                                 </select>
                                             </div>
@@ -172,7 +172,7 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <h6 for="collectionLocation" class="text-primary">To</h6>
-                                                <select name="destination" class="form-control destination-dropdown">
+                                                <select name="destination" class="form-control destination-dropdown" required>
                                                     <option value="{{ $office->id }}" data-id="{{ $office->id }}">
                                                         {{ $office->name }}</option>
                                                 </select>

@@ -148,9 +148,8 @@ class ShipmentArrivalController extends Controller
 
             UserLog::create([ 
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . 
-                                ' allocated ' . ($dispatcher->name ?? 'Unknown') .
-                                ' as the offloading clerk for loading sheet with batch no. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT ?? 'Unknown'),
+                'actions'      => 'Allocated ' . ($dispatcher->name ?? 'Unknown') .
+                                  ' as the offloading clerk for loading sheet with batch no. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT ?? 'Unknown'),
                 'url'          => $request->fullUrl(),
                 'reference_id' => $request->loading_sheet_id,
                 'table'        => "loading_sheets",
@@ -426,15 +425,6 @@ class ShipmentArrivalController extends Controller
             )->where('lsw.loading_sheet_id',$id)
             ->first();
             //dd($data);
-
-        UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Generated uncollected parcels report',
-            'url'          => $request->fullUrl(),
-            'reference_id' => $request->loading_sheet_id,
-            'table'        => "loading_sheets",
-            'user_id'      => Auth::id(),
-        ]);
 
         return view('shipment_arrivals.manifest_details')->with([
             'loading_sheet'=>$loadingSheet,'destination'=>$destination,'data'=>$data,'totals'=>$totals,'id'=>$id

@@ -479,9 +479,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/route-performance', [ReportController::class, 'routePerformanceReport'])->name('reports.route.performance');
         Route::get('/routes/export/pdf', [ReportController::class, 'exportRoutePerformancePDF'])->name('reports.routes.export.pdf');
         Route::get('/routes/export/excel', [ReportController::class, 'exportRoutePerformanceExcel'])->name('reports.routes.export.excel');
-
-
-
     });
 
     Route::get('/reports/filter', [ReportController::class, 'filter'])->name('reports.filter');
