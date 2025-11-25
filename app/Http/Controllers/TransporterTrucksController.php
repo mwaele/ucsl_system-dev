@@ -44,7 +44,7 @@ class TransporterTrucksController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' added a transporter truck ' . $request->reg_no . ' at ' . now(),
+            'actions'      => 'Added a transporter truck with registration, ' . $request->reg_no . '' ,
             'url'          => $request->fullUrl(),
             'reference_id' => $transporter_truck->id,
             'table'        => "transporter_trucks",
@@ -90,7 +90,7 @@ class TransporterTrucksController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated a transporter truck with registration, ' . $request->reg_no . ', at ' . now(),
+            'actions'      => 'Updated a transporter truck with registration, ' . $request->reg_no . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $truck->id,
             'table'        => "transporter_trucks",

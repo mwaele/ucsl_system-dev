@@ -59,7 +59,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed shipment arrivals at ' . now(),
+            'actions'      => 'Viewed shipment arrivals',
             'url'          => $request->fullUrl(),
             'table'        => "loading_sheets",
             'user_id'      => Auth::id(),
@@ -217,7 +217,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated shipment arrivals report for ' . $titled . ' at ' . now(),
+            'actions'      => 'Generated shipment arrivals report for ' . $titled . '',
             'url'          => $request->fullUrl(),
             'table'        => "loading_sheets",
             'user_id'      => Auth::id(),
@@ -292,7 +292,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated detailed shipment arrivals report for at ' . now(),
+            'actions'      => 'Generated detailed shipment arrivals report',
             'url'          => $request->fullUrl(),
             'table'        => "loading_sheets",
             'user_id'      => Auth::id(),
@@ -360,7 +360,7 @@ class ShipmentArrivalController extends Controller
         return $pdf->download("arrivals_report_detailed.pdf");
     }
 
-    public function arrival_details($id)
+    public function arrival_details(Request $request, $id)
     {
 
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
@@ -474,7 +474,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => 'Viewed parcel collection page',
+            'actions'      => 'Accessed parcel collection module',
             'url'          => $request->fullUrl(),
             'table'        => "shipment_arrivals",
             'user_id'      => Auth::id(),
@@ -645,7 +645,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => 'Viewed parcel collection page',
+            'actions'      => 'Accessed parcel collection module',
             'url'          => $request->fullUrl(),
             'table'        => "shipment_arrivals",
             'user_id'      => Auth::id(),

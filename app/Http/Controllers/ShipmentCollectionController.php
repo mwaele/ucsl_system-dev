@@ -349,7 +349,7 @@ class ShipmentCollectionController extends Controller
 
             UserLog::create([
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' created an overnight walkin parcel (' . $requestId . ') at ' . now(),
+                'actions'      => 'Created an overnight walkin parcel (' . $requestId . ')',
                 'url'          => $request->fullUrl(),
                 'reference_id' => $requestId,
                 'table'        => "shipment_collections",
@@ -672,7 +672,7 @@ class ShipmentCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' collected parcel (' . $requestId . ') for ' . $senderName . ' at ' . now(),
+            'actions'      => 'Collected parcel (' . $requestId . ') for ' . $senderName . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $requestId,
             'table'        => "shipment_collections",
@@ -804,7 +804,7 @@ class ShipmentCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' verified parcel (' . $requestId . ') for ' . $shipment->senderName . ' at ' . now(),
+            'actions'      => 'Verified parcel (' . $requestId . ') for ' . $shipment->senderName . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $requestId,
             'table'        => "shipment_collections",
@@ -947,7 +947,7 @@ class ShipmentCollectionController extends Controller
 
             UserLog::create([
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' verified parcel (' . $request->requestId . ') for ' . $shipment->sender_name . ' at ' . now(),
+                'actions'      => 'Verified parcel (' . $request->requestId . ') for ' . $shipment->sender_name . '',
                 'url'          => $request->fullUrl(),
                 'reference_id' => $request->requestId,
                 'table'        => "shipment_collections",
@@ -1037,7 +1037,7 @@ class ShipmentCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted Walk-in parcel (' . $clientRequest->requestId . ') for ' . $clientRequest->sender_name . ' at ' . now(),
+            'actions'      => 'Deleted Walk-in parcel (' . $clientRequest->requestId . ') for ' . $clientRequest->sender_name . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $clientRequest->requestId,
             'table'        => "shipment_collections",
@@ -1219,7 +1219,7 @@ class ShipmentCollectionController extends Controller
 
             UserLog::create([
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' handed over parcel (' . $request->requestId . ') to ' . $newRider->name . ' at ' . now(),
+                'actions'      => 'Handed over parcel (' . $request->requestId . ') to ' . $newRider->name . '',
                 'url'          => $request->fullUrl(),
                 'reference_id' => $request->requestId,
                 'table'        => "shipment_collections",
@@ -1510,7 +1510,7 @@ class ShipmentCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated a delivery metrics report at ' . now(),
+            'actions'      => 'Generated a delivery metrics report',
             'url'          => $request->fullUrl(),
             'table'        => "shipment_collections",
             'user_id'      => Auth::id(),
@@ -1644,7 +1644,7 @@ class ShipmentCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated a delivery metrics report at ' . now(),
+            'actions'      => 'Generated a delivery metrics report',
             'url'          => $request->fullUrl(),
             'table'        => "shipment_collections",
             'user_id'      => Auth::id(),

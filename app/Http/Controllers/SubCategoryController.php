@@ -20,7 +20,7 @@ class SubCategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed subcategories at ' . now(),
+            'actions'      => 'Viewed subcategories module',
             'url'          => $request->fullUrl(),
             'table'        => "sub_categories",
             'user_id'      => Auth::id(),
@@ -44,7 +44,7 @@ class SubCategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' added new subcategory (' . $request->sub_category_name . ') at ' . now(),
+            'actions'      => 'Added new subcategory (' . $request->sub_category_name . ')',
             'url'          => $request->fullUrl(),
             'reference_id' => $category->id,
             'table'        => "sub_categories",
@@ -71,7 +71,7 @@ class SubCategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated ' . $request->sub_category_name . ' subcategory details at ' . now(),
+            'actions'      => 'Updated ' . $request->sub_category_name . ' subcategory details',
             'url'          => $request->fullUrl(),
             'reference_id' => $sub_category->id,
             'table'        => "sub_categories",
@@ -91,7 +91,7 @@ class SubCategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted ' . $request->sub_category_name . ' subcategory at ' . now(),
+            'actions'      => 'Deleted ' . $request->sub_category_name . ' subcategory',
             'url'          => $request->fullUrl(),
             'reference_id' => $sub_category->id,
             'table'        => "sub_categories",

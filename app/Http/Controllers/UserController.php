@@ -233,7 +233,7 @@ class UserController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted a user, ' . $request->name . ', at ' . now(),
+            'actions'      => 'Deleted a user, ' . $request->name . ' ',
             'url'          => $request->fullUrl(),
             'reference_id' => $user->id,
             'table'        => "users",

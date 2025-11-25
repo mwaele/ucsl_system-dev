@@ -91,7 +91,7 @@ class CategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated ' . $request->category_name . ' in client categories list at ' . now(),
+            'actions'      => 'Updated ' . $request->category_name . ' in client categories list',
             'url'          => $request->fullUrl(),
             'reference_id' => $category->id,
             'table'        => "client_categories",
@@ -111,7 +111,7 @@ class CategoryController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted ' . $request->category_name . ' from the client categories list at ' . now(),
+            'actions'      => 'Deleted ' . $request->category_name . ' from the client categories list',
             'url'          => $request->fullUrl(),
             'reference_id' => $category->id,
             'table'        => "client_categories",

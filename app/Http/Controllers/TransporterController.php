@@ -25,7 +25,7 @@ class TransporterController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed transporters at ' . now(),
+            'actions'      => 'Accessed transporters module',
             'url'          => $request->fullUrl(),
             'table'        => "transporters",
             'user_id'      => Auth::id(),
@@ -71,7 +71,7 @@ class TransporterController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a new transporter, ' . $request->name . ', at ' . now(),
+            'actions'      => 'Created a new transporter, ' . $request->name . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $transporter->id,
             'table'        => "transporters",
@@ -102,7 +102,7 @@ class TransporterController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated transporters report at ' . now(),
+            'actions'      => 'Generated transporters report',
             'url'          => $request->fullUrl(),
             'table'        => "transporters",
             'user_id'      => Auth::id(),
@@ -182,7 +182,7 @@ class TransporterController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated ' . $request->name . ' transporter details at ' . now(),
+            'actions'      => "Updated {$request->name}'s transporter details",
             'url'          => $request->fullUrl(),
             'reference_id' => $transporter->id,
             'table'        => "transporters",
@@ -202,7 +202,7 @@ class TransporterController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted ' . $request->name . ' as a transporter at ' . now(),
+            'actions'      => 'Deleted ' . $request->name . ' as a transporter',
             'url'          => $request->fullUrl(),
             'reference_id' => $transporter->id,
             'table'        => "transporters",

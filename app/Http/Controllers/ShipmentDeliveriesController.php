@@ -238,7 +238,7 @@ class ShipmentDeliveriesController extends Controller
 
             UserLog::create([
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' delivered parcel  ' . $request->requestId . ' to ' . $deliveredTo . ' at ' . now(),
+                'actions'      => 'Delivered parcel  ' . $request->requestId . ' to ' . $deliveredTo . '',
                 'url'          => $request->fullUrl(),
                 'reference_id' => $requestId,
                 'table'        => "shipment_deliveries",
@@ -340,7 +340,7 @@ class ShipmentDeliveriesController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' requested agent approval at ' . now(),
+            'actions'      => 'Requested agent approval',
             'url'          => $request->fullUrl(),
             'reference_id' => $requestId,
             'table'        => "shipment_deliveries",
@@ -570,7 +570,7 @@ class ShipmentDeliveriesController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' approved/rejected an agent approval request at ' . now(),
+            'actions'      => 'Approved/rejected an agent approval request',
             'url'          => $request->fullUrl(),
             'reference_id' => $requestId,
             'table'        => "shipment_deliveries",

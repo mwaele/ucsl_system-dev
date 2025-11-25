@@ -25,7 +25,7 @@ class SpecialRateController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed special rates list at ' . now(),
+            'actions'      => 'Viewed special rates list',
             'url'          => $request->fullUrl(),
             'table'        => "special_rates",
             'user_id'      => Auth::id(),
@@ -64,7 +64,7 @@ class SpecialRateController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' added a special rate for ' . $rate->client->name . ' at ' . now(),
+            'actions'      => 'Added a special rate for ' . $rate->client->name . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $rate->id,
             'table'        => "special_rates",
@@ -137,7 +137,7 @@ class SpecialRateController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated special rate for ' . $rate->client->name . ' at ' . now(),
+            'actions'      => 'Updated special rate for ' . $rate->client->name . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $rate->id,
             'table'        => "special_rates",

@@ -70,7 +70,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels at ' . now(),
+            'actions'      => 'Accessed sameday on-account module',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -110,7 +110,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels in the client portal at ' . now(),
+            'actions'      => 'Accessed sameday on-account parcels in the client portal',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -172,7 +172,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed sameday walk-in parcels at ' . now(),
+            'actions'      => 'Accessed sameday walk-in parcels',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -204,7 +204,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated sameday walk-in parcels report at ' . now(),
+            'actions'      => 'Generated sameday walk-in parcels report',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -232,7 +232,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated sameday on-account parcels report at ' . now(),
+            'actions'      => 'Generated sameday on-account parcels report',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -385,7 +385,7 @@ class SameDayController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' allocated ' .$rider->name.' for request '. $requestId. ' at '. now(),
+            'actions'      => 'Allocated ' .$rider->name.' for request '. $requestId. '',
             'url'          => $request->fullUrl(),
             'reference_id' => $clientRequest->id,
             'table'        => "client_requests",

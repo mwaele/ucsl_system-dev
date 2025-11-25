@@ -57,7 +57,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', viewed overnight on-account parcels at ' . now(),
+            'actions'      => 'Accessed overnight on-account module',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -136,7 +136,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed overnight walk-in parcels at ' . now(),
+            'actions'      => 'Accessed overnight walk-in parcels module',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -165,7 +165,7 @@ class OvernightController extends Controller
             
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated overnight on account parcels pdf report at ' . now(),
+            'actions'      => 'Generated overnight on account parcels pdf report',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -193,7 +193,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated overnight parcels pdf report from the client portal at ' . now(),
+            'actions'      => 'Generated overnight parcels pdf report from the client portal',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -231,7 +231,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated overnight walk-in parcels pdf report at ' . now(),
+            'actions'      => 'Generated overnight walk-in parcels pdf report',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -278,7 +278,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', generated overnight parcels pdf report from the client portal at ' . now(),
+            'actions'      => 'Generated overnight parcels pdf report from the client portal',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -376,7 +376,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' allocated ' .$rider->name.' for request '. $requestId. ' at '. now(),
+            'actions'      => 'Allocated ' .$rider->name.' for request '. $requestId. '',
             'url'          => $request->fullUrl(),
             'reference_id' => $clientRequest->id,
             'table'        => "client_requests",
@@ -396,7 +396,7 @@ class OvernightController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' received a collected parcel from rider - ' . $req->user->name . ' for request ' . $req->requestId . ' at '. now(),
+            'actions'      => 'Received a collected parcel from rider - ' . $req->user->name . ' for request ' . $req->requestId . '',
             'url'          => $request->fullUrl(),
             'reference_id' => $req->id,
             'table'        => "client_requests",

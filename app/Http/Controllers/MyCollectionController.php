@@ -56,7 +56,7 @@ class MyCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed rider collections at  ' . now(),
+            'actions'      => 'Accessed rider collections module',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),
@@ -97,7 +97,7 @@ class MyCollectionController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed rider collections at  ' . now(),
+            'actions'      => 'Accessed rider collections module',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),

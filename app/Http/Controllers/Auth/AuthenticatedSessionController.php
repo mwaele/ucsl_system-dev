@@ -29,12 +29,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $role = Auth::user()->role;
-        $article = in_array(strtolower($role[0]), ['a', 'e', 'i', 'o', 'u']) ? 'an' : 'a';
-
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ', ' . $article . ' ' . $role . ', logged into U-PARMS at ' . now(),
+            'actions'      => 'Logged into U-PARMS and accessed the dashboard',
             'url'          => $request->fullUrl(),
             'table'        => "users",
             'user_id'      => Auth::id(),
