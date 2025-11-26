@@ -16,13 +16,28 @@ class ZoneController extends Controller
     {
         $zones = Zone::all();
 
+        $currentModule = 'zone module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+         // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed zones module',
-            'url'          => $request->fullUrl(),
-            'table'        => "zones",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "zones",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "zones",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('zones.index', compact('zones'));
     }

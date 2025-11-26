@@ -22,39 +22,34 @@ class VehicleController extends Controller
         $drivers = User::where('role', 'driver')->get();
         $users = User::where('role','driver')->get();
         $companies = CompanyInfo::all();
+  
+        $currentModule = 'vehicle module';
+        $previousModule = session('current_module');
+        
+        session(['current_module' => $currentModule]);
 
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed vehicles module',
-            'url'          => $request->fullUrl(),
-            'table'        => "vehicles",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "vehicles",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "vehicles",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('vehicles.index', compact('vehicles', 'shipments', 'drivers', 'users', 'companies'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
-    {
-        $companies = CompanyInfo::all();
-        $users = User::where('role','driver')->get();
-
-        UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed vehicles module',
-            'url'          => $request->fullUrl(),
-            'table'        => "vehicles",
-            'user_id'      => Auth::id(),
-        ]);
-
-        return view('vehicles.create')->with([
-            'users'=>$users,
-            'companies'=>$companies
-        ]);
-    }
 
     /**
      * Store a newly created resource in storage.

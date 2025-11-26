@@ -25,13 +25,29 @@ class UserController extends Controller
         $stations = Office::all();
         $users = User::all();
 
+        $currentModule = 'users module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed users module',
-            'url'          => $request->fullUrl(),
-            'table'        => "users",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "users",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "users",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('users.index', compact('users', 'stations'));
     }
@@ -159,27 +175,26 @@ class UserController extends Controller
 
     public function getUnallocatedDrivers()
     {
-    $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
+        $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
 
 
-    // Get user IDs from client_requests table for today
-    $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
-        ->pluck('userId')
-        ->toArray();
+        // Get user IDs from client_requests table for today
+        $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
+            ->pluck('userId')
+            ->toArray();
 
-    // Fetch drivers not in that list
-    $drivers = User::where('users.role', 'driver')
-        ->where('users.station', Auth::user()->station)
-        ->when(!empty($allocatedDriverIds), function ($query) use ($allocatedDriverIds) {
-            $query->whereNotIn('users.id', $allocatedDriverIds);
-        })
-        ->join('offices', 'users.station', '=', 'offices.id')
-        ->select('users.id', 'users.name', 'offices.name as station')
-        ->get();
+        // Fetch drivers not in that list
+        $drivers = User::where('users.role', 'driver')
+            ->where('users.station', Auth::user()->station)
+            ->when(!empty($allocatedDriverIds), function ($query) use ($allocatedDriverIds) {
+                $query->whereNotIn('users.id', $allocatedDriverIds);
+            })
+            ->join('offices', 'users.station', '=', 'offices.id')
+            ->select('users.id', 'users.name', 'offices.name as station')
+            ->get();
 
-    return response()->json($drivers);
-
-        }
+        return response()->json($drivers);
+    }
 
     public function getAllDrivers()
     {
