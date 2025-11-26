@@ -77,18 +77,18 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>Date</th>
                 <th>Time</th>
                 <th>Action Taken</th>
-                <th>URL Visited</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($logs as $i => $log)
                 <tr>
                     <td>{{ $i + 1 }}</td>
+                    <td>{{ \Carbon\Carbon::parse($log->created_at)->format('d-m-Y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($log->created_at)->format('H:i:s') }}</td>
                     <td>{{ $log->actions }}</td>
-                    <td>{{ $log->url }}</td>
                 </tr>
             @endforeach
         </tbody>

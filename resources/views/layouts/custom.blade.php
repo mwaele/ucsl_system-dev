@@ -10,6 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
+
     <title>U-PARMS</title>
 
     <!-- Custom fonts for this template-->
@@ -162,6 +163,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
@@ -323,6 +326,9 @@
 
                             <!-- Dispatch Process -->
                             <a class="collapse-item" href="{{ route('loading_sheets.index') }}">Dispatch Process</a>
+
+                            <!-- Dispatch Process -->
+                            <a class="collapse-item" href="{{ route('riderHandover') }}">Rider Handover </a>
                         </div>
                     </div>
                 </li>
@@ -991,6 +997,76 @@
         <script src="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script> --}}
 
         <!-- Toast JS -->
+        <script>
+            $(document).ready(function() {
+
+                // CSRF for all AJAX requests
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                // OPEN MODAL & LOAD DATA
+                $('#updateHandover').on('show.bs.modal', function(event) {
+                    let button = $(event.relatedTarget);
+
+                    let handoverId = button.data('id');
+                    let requestId = button.data('request-id');
+
+                    // Set hidden fields
+                    $('#requestId').val(requestId);
+
+                    // Load handover details
+                    $.ajax({
+                        url: "/handover/details/" + handoverId,
+                        type: "GET",
+                        success: function(res) {
+                            $("#from_user_id").val(res.from_user_id);
+                            $("#to_user_id").val(res.to_user_id);
+                        }
+                    });
+                });
+
+                // SUBMIT FORM USING AJAX
+                $('#updateHandoverForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    let form = $(this);
+                    let formData = form.serialize();
+                    let actionUrl = form.attr('action');
+
+                    $.ajax({
+                        url: actionUrl,
+                        method: "POST", // Laravel will detect @method('PUT')
+                        data: formData,
+                        success: function(res) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Handover Approved!',
+                                text: 'The handover has been successfully approved.',
+                            });
+
+                            $('#updateHandover').modal('hide');
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1200);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: xhr.responseJSON?.message ?? 'Something went wrong.',
+                            });
+                        }
+                    });
+                });
+
+            });
+        </script>
+
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const toasts = document.querySelectorAll('.timeout-toast');

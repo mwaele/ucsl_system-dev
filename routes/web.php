@@ -54,6 +54,7 @@ use App\Http\Controllers\DispatcherController;
 use App\Http\Controllers\DeliveryFailedController;
 use App\Http\Controllers\ShipmentDetailController;
 use App\Http\Controllers\UserLogController;
+use App\Http\Controllers\HandoverController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -159,6 +160,8 @@ Route::post('/client/logout', [AuthController::class, 'logout'])
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
+
     Route::get('/client_requests', [ClientRequestController::class, 'delayed_collection'])->name('client_requests.delayed_collection');
 
     Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
@@ -217,6 +220,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('vehicles','App\Http\Controllers\VehicleController');
     Route::resource('offices','App\Http\Controllers\OfficeController');
+    Route::resource('office_users','App\Http\Controllers\OfficeUserController');
     Route::resource('rates','App\Http\Controllers\RateController');
     Route::get('mombasa_rates', [RateController::class, 'mombasa_office'])->name('rates.mombasa_office');
     Route::get('mombasa_rates_sameday', [RateController::class, 'mombasa_rates_sameday'])->name('rates.mombasa_rates_sameday');
@@ -496,7 +500,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/dispatch-summary/{office}', [ReportController::class, 'dispatchSummaryDetail'])->name('reports.dispatch-summary.detail');
     Route::get('/reports/client/{id}', [ReportController::class, 'clientDetail'])->name('reports.client.detail');
 
-    Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
+    
+    Route::get('delivery_handovers', [HandoverController::class, 'riderHandover'])->name('riderHandover');
+    Route::post('/shipments/approve_handovers/{id}', [HandoverController::class, 'approveHandover'])
+    ->name('approveHandover');
+
     Route::post('/shipments/failedCollections/{requestId}', [FailedCollectionController::class, 'failedCollections'])->name('shipments.failedCollections');
     Route::post('/shipments/releaseCollections/{requestId}', [ShipmentCollectionController::class, 'releaseCollections'])->name('collection.release');
     

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\OfficeUser;
+use App\Models\User;
+use App\Models\Office;
 use Illuminate\Http\Request;
 
 class OfficeUserController extends Controller
@@ -12,7 +14,10 @@ class OfficeUserController extends Controller
      */
     public function index()
     {
-        //
+        $office_users = OfficeUser::all();
+        $users = User::all();
+        $offices = Office::all();
+        return view('office_users.index', with(['office_users'=>$office_users, 'users'=>$users, 'offices'=>$offices]));
     }
 
     /**
@@ -28,7 +33,19 @@ class OfficeUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'office_id' => 'required|exists:offices,id',
+            'user_id' => 'required|exists:users,id',
+            'status' => 'required|string|max:255',
+        ]);
+
+        OfficeUser::create([
+            'office_id' => $request->office_id,
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('office_users.index')->with('success', 'Office User assigned successfully.');
     }
 
     /**

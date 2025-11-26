@@ -23,7 +23,10 @@ class MyCollectionController extends Controller
     public function show(Request $request)
     {
         $offices = Office::where('id', Auth::user()->station)->get();
-        $riders = User::where('role', 'driver')->get();
+        $riders = User::where('role', 'driver')
+              ->where('id', '!=', auth()->id())
+              ->where('station', Auth::user()->station)
+              ->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
@@ -65,10 +68,12 @@ class MyCollectionController extends Controller
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
     }
 
-    public function collect()
+    public function collect(Request $request)
     {
         $offices = Office::where('id', Auth::user()->station)->get();
-        $riders = User::where('role', 'driver')->get();
+        $riders = User::where('role', 'driver')
+              ->where('id', '!=', auth()->id())
+              ->get();
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
         $failedCollections = FailedCollection::all();

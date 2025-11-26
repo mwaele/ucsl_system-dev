@@ -404,7 +404,8 @@
                                 <td class="d-flex flex-wrap gap-2">
                                     {{-- Pending Collection --}}
                                     @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
-                                        <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 ml-1 mb-1 mr-1"
+                                        <button
+                                            class="btn btn-warning btn-sm d-flex align-items-center gap-1 ml-1 mb-1 mr-1"
                                             data-toggle="modal" title="Collect parcels"
                                             data-target="#collect-{{ $collection->id }}">
                                             <i class="fas fa-box mr-1"></i> Collect
@@ -425,7 +426,8 @@
                                     {{-- Collected --}}
                                     @if ($collection->status === 'collected')
                                         <!-- Consignment Button -->
-                                        <button class="btn btn-primary btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                        <button
+                                            class="btn btn-primary btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
                                             title="Print Consignment Note" data-toggle="modal"
                                             data-target="#printModal-{{ $collection->id }}">
                                             <i class="fas fa-file-alt mr-1"></i> <span>Consignment</span>
@@ -435,17 +437,17 @@
 
                                         <!-- Release Collection Button -->
                                         <!-- <button
-                                            class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
-                                            data-toggle="modal" title="Release Collection"
-                                            data-target="#releaseCollectionModal-{{ $collection->id }}">
-                                            Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                        </button> -->
+                                                    class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                                    data-toggle="modal" title="Release Collection"
+                                                    data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                                    Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                                </button> -->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                title="Generate Waybill"
-                                                                                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                            </button> -->
+                                                                                                                        title="Generate Waybill"
+                                                                                                                        data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                    </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -555,10 +557,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                            title="Waybill" data-toggle="modal"
-                                                                                                            data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                        </button> -->
+                                                                                                                    title="Waybill" data-toggle="modal"
+                                                                                                                    data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -853,12 +855,11 @@
 
                                     <input type="hidden" value="{{ $collection->client->special_rates_status }}"
                                         name='special_rate_state' id="special_rate_state">
-                                         
+
                                     <!-- Shipment Info Table -->
                                     {{-- <div class="section-title"><b class="text-primary">Shipment Information</b></div> --}}
                                     <div class="table-responsive mt-3">
-                                        <table class="table table-bordered shipmentTable"
-                                            id="shipmentTable">
+                                        <table class="table table-bordered shipmentTable" id="shipmentTable">
                                             <thead class="thead-success">
                                                 <tr class="text-primary">
                                                     <th>Item Name</th>
@@ -873,27 +874,24 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td><input type="text" class="form-control"
-                                                            name="item_name[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="packages[]">
+                                                    <td><input type="text" class="form-control" name="item_name[]">
                                                     </td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="weight[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="length[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="width[]"></td>
-                                                    <td><input type="number" min="0"
-                                                            class="form-control" name="height[]"></td>
-                                                    <td class="volume-display text-muted"><input
-                                                            type="number" min="0"
-                                                            class="form-control" name="volume[]"
-                                                            readonly></td>
-                                                    <td><button type="button"
-                                                            class="btn btn-danger btn-sm remove-row"
-                                                            title="Delete Row"><i
-                                                                class="fas fa-trash"></i></button>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="packages[]">
+                                                    </td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="weight[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="length[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="width[]"></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            name="height[]"></td>
+                                                    <td class="volume-display text-muted"><input type="number"
+                                                            min="0" class="form-control" name="volume[]" readonly>
+                                                    </td>
+                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row"
+                                                            title="Delete Row"><i class="fas fa-trash"></i></button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -901,7 +899,8 @@
                                     </div>
 
                                     <!-- Add Row Button (works for both views) -->
-                                    <button type="button" class="btn btn-primary mb-3 addRowBtn" id="addRowBtn">Add Row</button>
+                                    <button type="button" class="btn btn-primary mb-3 addRowBtn" id="addRowBtn">Add
+                                        Row</button>
 
                                     <!-- Service Level -->
                                     <div class="section-title"></div>
@@ -1017,7 +1016,7 @@
                                             {{ $collection->shipmentCollection->client->kraPin }}
                                         </div>
 
-                                        @php 
+                                        @php
                                             $phone = $collection->client->contact;
 
                                             if (empty($phone)) {
@@ -1035,8 +1034,7 @@
                                                 } else {
                                                     // For short numbers, mask all except last character
                                                     $maskedPhone =
-                                                        str_repeat('*', max($len - 1, 0)) .
-                                                        substr($phone, -1);
+                                                        str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
                                                 }
                                             }
                                         @endphp
@@ -1053,7 +1051,7 @@
                                             $phone = $collection->shipmentCollection?->receiver_phone;
 
                                             if (empty($phone)) {
-                                                $maskedPhone = 'N/A';   // or leave blank, or whatever you want
+                                                $maskedPhone = 'N/A'; // or leave blank, or whatever you want
                                             } else {
                                                 $len = strlen($phone);
 
@@ -1210,7 +1208,9 @@
                                 </button>
                             </div>
 
-                            <form action="{{ route('shipments.handover', $collection->requestId) }}" method="POST">
+                            <form action="{{ route('shipments.handover', ['requestId' => $collection->requestId]) }}"
+                                method="POST">
+
                                 @csrf
                                 <div class="modal-body">
                                     <p class="mb-3">Please select the rider you want to handover
@@ -1226,6 +1226,8 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        <input type="hidden" value="{{ $collection->requestId }}" name="requestId"
+                                            id="requestId">
                                     </div>
 
                                     <div class="form-group">
