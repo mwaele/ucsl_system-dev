@@ -23,13 +23,29 @@ class TransporterController extends Controller
         $transporters = Transporter::orderBy('created_at', 'desc')->get();
         $account_no = rand(100000, 999999);
 
+        $currentModule = 'transporters module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed transporters module',
-            'url'          => $request->fullUrl(),
-            'table'        => "transporters",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "transporters",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "transporters",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('transporters.index', compact('transporters', 'account_no'));
     }

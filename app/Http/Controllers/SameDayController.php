@@ -68,13 +68,29 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        $currentModule = 'sameday on-account module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed sameday on-account module',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('same_day.on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
@@ -108,13 +124,29 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        $currentModule = 'sameday on-account module in the client portal';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed sameday on-account parcels in the client portal',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('same_day.client_on_account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
@@ -170,13 +202,29 @@ class SameDayController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        $currentModule = 'sameday walk-in module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed sameday walk-in parcels',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('same_day.walk_in', compact('clientRequests',      'offices',
             'loggedInUserId',

@@ -57,13 +57,29 @@ class MyCollectionController extends Controller
             ->orderBy('created_at','desc')
             ->get();
 
+        $currentModule = 'rider collections module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed rider collections module',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
     }

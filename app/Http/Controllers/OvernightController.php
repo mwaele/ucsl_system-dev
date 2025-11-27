@@ -55,13 +55,29 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        $currentModule = 'overnight on-account module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed overnight on-account module',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }                                                                                
 
         return view('overnight.on-account', compact('clients', 'clientRequests', 'vehicles', 'drivers','timeFilter',
             'startDate',
@@ -134,13 +150,29 @@ class OvernightController extends Controller
             ->with(['client', 'user', 'vehicle'])
             ->get();
 
+        $currentModule = 'overnight walk-in module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed overnight walk-in parcels module',
-            'url'          => $request->fullUrl(),
-            'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }     
 
         return view('overnight.walk-in', compact('clientRequests', 'offices',
             'loggedInUserId',

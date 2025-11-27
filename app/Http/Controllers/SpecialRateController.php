@@ -22,14 +22,30 @@ class SpecialRateController extends Controller
         $offices = Office::all();
         $zones = Zone::all();
         $clients = Client::all();
+        
+        $currentModule = 'special rates module';
+        $previousModule = session('current_module');
 
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Viewed special rates list',
-            'url'          => $request->fullUrl(),
-            'table'        => "special_rates",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "special_rates",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "special_rates",
+                'user_id' => Auth::id(),
+            ]);
+        }
  
         return view('special_rates.index', compact('rates','offices','zones','clients'));
     }

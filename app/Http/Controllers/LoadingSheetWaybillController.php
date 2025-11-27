@@ -46,7 +46,7 @@ class LoadingSheetWaybillController extends Controller
 
             UserLog::create([
                 'name'         => Auth::user()->name,
-                'actions'      => Auth::user()->name . ' added waybills to loading sheet',
+                'actions'      => 'Added waybills to loading sheet',
                 'url'          => $request->fullUrl(),
                 'reference_id' => $shipment->id,
                 'table'        => "loading_sheet_waybills",

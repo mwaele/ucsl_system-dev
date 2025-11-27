@@ -57,13 +57,29 @@ class ShipmentArrivalController extends Controller
         $number = str_pad($count, 5, '0', STR_PAD_LEFT); // Result: 00001
         $drivers = User::where('role', 'driver')->get();
 
+        $currentModule = 'shipment arrivals module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Viewed shipment arrivals',
-            'url'          => $request->fullUrl(),
-            'table'        => "loading_sheets",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "loading_sheets",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "loading_sheets",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('shipment_arrivals.index', with(['sheets'=>$sheets, 'drivers'=>$drivers, 'offices'=>$offices,'destinations'=>$destinations,'transporters'=>$transporters,'dispatchers'=>$dispatchers,'batch_no'=>$number]));
     
@@ -462,13 +478,29 @@ class ShipmentArrivalController extends Controller
             return [$arrival->requestId => $agent?->agent_approved ?? false];
         });
 
+        $currentModule = 'parcel collection module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Accessed parcel collection module',
-            'url'          => $request->fullUrl(),
-            'table'        => "shipment_arrivals",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "shipment_arrivals",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "shipment_arrivals",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         // Pass data to the view
         return view('shipment_arrivals.parcel_collection', compact('shipmentArrivals', 'riders', 'grn_no', 'approvalStatuses'));
@@ -635,7 +667,7 @@ class ShipmentArrivalController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => 'Accessed parcel collection module',
+            'actions'      => 'Allocated ' . $rider_name . ' as the delivery rider for shipment with Request ID. ' . $shipment->requestId,
             'url'          => $request->fullUrl(),
             'table'        => "shipment_arrivals",
             'user_id'      => Auth::id(),

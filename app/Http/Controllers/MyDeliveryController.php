@@ -10,12 +10,13 @@ use App\Models\ShipmentCollection;
 use App\Models\ClientRequest;
 use App\Models\SubCategory;
 use App\Models\DeliveryFailed;
+use App\Models\UserLog;
 use Auth;
 
 class MyDeliveryController extends Controller
 {
     //
-    public function show()
+    public function show(Request $request )
     {
         $offices = Office::where('id', Auth::user()->station)->get();
         $riders = User::where('role', 'driver')->get();
@@ -97,6 +98,30 @@ class MyDeliveryController extends Controller
             $agent = $collection->shipmentCollection?->agent;
             return [$collection->requestId => $agent?->agent_approved ?? false];
         });
+        
+        $currentModule = 'rider deliveries module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
+        UserLog::create([
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "client_requests",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
+        ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "client_requests",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('client-request.deliveries', compact(
             'collections',

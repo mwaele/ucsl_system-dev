@@ -18,13 +18,29 @@ class SubCategoryController extends Controller
         $sub_categories = SubCategory::all();
         $categories = Category::all();
 
+        $currentModule = 'subcategories module';
+        $previousModule = session('current_module');
+
+        session(['current_module' => $currentModule]);
+
+        // Log new module access
         UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => 'Viewed subcategories module',
-            'url'          => $request->fullUrl(),
-            'table'        => "sub_categories",
-            'user_id'      => Auth::id(),
+            'name'    => Auth::user()->name,
+            'actions' => 'Accessed ' . $currentModule,
+            'table'   => "sub_categories",
+            'url'     => request()->fullUrl(),
+            'user_id' => Auth::id(),
         ]);
+
+        if ($previousModule && $previousModule !== $currentModule) {
+            UserLog::create([
+                'name'    => Auth::user()->name,
+                'actions' => 'Exited ' . $previousModule,
+                'url'     => request()->fullUrl(),
+                'table'   => "sub_categories",
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         return view('sub_categories.index')->with(['sub_categories'=>$sub_categories,'categories'=>$categories]);
     }
