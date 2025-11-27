@@ -238,7 +238,7 @@ class ClientRequestController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => 'Accessed the dashboard view for the application',
+            'actions'      => 'Generated waybill PDF for Request ID: ' . $requestId,
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
             'user_id'      => Auth::id(),

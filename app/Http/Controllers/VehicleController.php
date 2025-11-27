@@ -78,8 +78,8 @@ class VehicleController extends Controller
             'table'        => "vehicles",
             'user_id'      => Auth::id(),
         ]);
-        
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle saved successfully');
+
+        return back()->with('success', 'Vehicle saved successfully');
        
     }
 
@@ -126,7 +126,7 @@ class VehicleController extends Controller
             'user_id'      => Auth::id(),
         ]);
 
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully');
+        return back()->with('success', 'Vehicle updated successfully');
     }
 
     /**

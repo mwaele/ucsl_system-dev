@@ -316,7 +316,7 @@ class LoadingSheetController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => 'Viewed loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT) . ' at ' . now(),
+            'actions'      => 'Viewed loading sheet with Batch No. ' . str_pad($loadingSheet->batch_no, 4, '0', STR_PAD_LEFT),
             'url'          => $request->fullUrl(),
             'reference_id' => $loadingSheet->id,
             'table'        => "loading_sheets",
