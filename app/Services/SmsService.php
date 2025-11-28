@@ -5,14 +5,19 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SmsService
+class SmsService 
 {
-    public function sendSms(string $phone, string $subject, string $message, bool $addFooter = false): bool
+    public function sendSms(?string $phone, string $subject, string $message, bool $addFooter = false): bool
     {
-        $apiKey = config('services.bitwise_sms.api_key');
+        if (empty($phone)) {
+            Log::channel('sms')->warning('SMS skipped: phone number is null or empty');
+            return false;
+        }
+
+        $apiKey   = config('services.bitwise_sms.api_key');
         $senderId = config('services.bitwise_sms.sender_id');
-        $apiUrl = config('services.bitwise_sms.url');
-        $terms = config('services.bitwise_sms.terms_and_conditions');
+        $apiUrl   = config('services.bitwise_sms.url');
+        $terms    = config('services.bitwise_sms.terms_and_conditions');
 
         $footer = "Terms & Conditions apply: {$terms} \r\n\nFast . Reliable . Secure";
 
@@ -29,11 +34,12 @@ class SmsService
             ])->post($apiUrl, $payload);
 
             Log::channel('sms')->info('SMS Sent', ['response' => $response->json()]);
-
             return true;
+
         } catch (\Exception $e) {
             Log::channel('sms')->error('SMS Error', ['error' => $e->getMessage()]);
             return false;
         }
     }
 }
+

@@ -400,79 +400,78 @@ class ClientRequestController extends Controller
     }
     
     public function exportPdfDelayed(Request $request)
-{
-    $user = Auth::user();
-    $stationParam = $request->query('station');
-    $timeFilter = $request->query('time', 'all');
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+    {
+        $user = Auth::user();
+        $stationParam = $request->query('station');
+        $timeFilter = $request->query('time', 'all');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    // Determine station name
-    if ($user->role === 'admin') {
-        $station = $stationParam ?: 'All';
-    } else {
-        $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
-    }
-
-    // Determine date range
-    if ($startDate && $endDate) {
-        $dateRange = [
-            Carbon::parse($startDate)->startOfDay(),
-            Carbon::parse($endDate)->endOfDay(),
-        ];
-    } else {
-        $dateRange = match ($timeFilter) {
-            'daily' => [now()->startOfDay(), now()->endOfDay()],
-            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
-            'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
-            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
-            'yearly' => [now()->startOfYear(), now()->endOfYear()],
-            default => null,
-        };
-    }
-
-    // Build base query
-    $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office'])
-        ->where('status', 'pending collection')
-        ->where('updated_at', '<', Carbon::now()->subHours(2)); // Delayed by more than 2 hours
-        
-
-    // Filter by station
-    if ($user->role === 'admin') {
-        if ($stationParam && strtolower($stationParam) !== 'all') {
-            $officeId = Office::where('name', $stationParam)->value('id');
-            if ($officeId) {
-                $query->where('office_id', $officeId);
-            }
+        // Determine station name
+        if ($user->role === 'admin') {
+            $station = $stationParam ?: 'All';
+        } else {
+            $station = Office::where('id', $user->station)->value('name') ?? 'Unknown';
         }
-    } else {
-        $query->where('office_id', $user->station);
+
+        // Determine date range
+        if ($startDate && $endDate) {
+            $dateRange = [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ];
+        } else {
+            $dateRange = match ($timeFilter) {
+                'daily' => [now()->startOfDay(), now()->endOfDay()],
+                'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+                'biweekly' => [now()->subDays(14)->startOfDay(), now()->endOfDay()],
+                'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+                'yearly' => [now()->startOfYear(), now()->endOfYear()],
+                default => null,
+            };
+        }
+
+        // Build base query
+        $query = ClientRequest::with(['client', 'vehicle', 'user', 'shipmentCollection', 'createdBy', 'office'])
+            ->where('status', 'pending collection')
+            ->where('updated_at', '<', Carbon::now()->subHours(2)); // Delayed by more than 2 hours
+            
+
+        // Filter by station
+        if ($user->role === 'admin') {
+            if ($stationParam && strtolower($stationParam) !== 'all') {
+                $officeId = Office::where('name', $stationParam)->value('id');
+                if ($officeId) {
+                    $query->where('office_id', $officeId);
+                }
+            }
+        } else {
+            $query->where('office_id', $user->station);
+        }
+
+        // Apply optional date range
+        if ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }
+
+        // Fetch delayed pending collection requests
+        $client_requests = $query->orderBy('created_at', 'desc')->get();
+
+        // Generate PDF
+        return $this->renderPdfWithPageNumbers(
+            'pdf.client-requests',
+            [
+                'client_requests' => $client_requests,
+                'station' => $station,
+                'status' => 'Delayed Collection (Pending > 2 Hours)',
+                'reportingPeriod' => $dateRange,
+                'timeFilter' => $timeFilter,
+            ],
+            'delayed_collections.pdf',
+            'a4',
+            'landscape'
+        );
     }
-
-    // Apply optional date range
-    if ($dateRange) {
-        $query->whereBetween('created_at', $dateRange);
-    }
-
-    // Fetch delayed pending collection requests
-    $client_requests = $query->orderBy('created_at', 'desc')->get();
-
-    // Generate PDF
-    return $this->renderPdfWithPageNumbers(
-        'pdf.client-requests',
-        [
-            'client_requests' => $client_requests,
-            'station' => $station,
-            'status' => 'Delayed Collection (Pending > 2 Hours)',
-            'reportingPeriod' => $dateRange,
-            'timeFilter' => $timeFilter,
-        ],
-        'delayed_collections.pdf',
-        'a4',
-        'landscape'
-    );
-}
-
 
     public function getClientCategories($clientId)
     {
@@ -707,6 +706,15 @@ class ClientRequestController extends Controller
         // 5. Dispatch background job to send notifications
         $client = Client::find($clientRequest->clientId);
         SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicle);
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Created a new client request with Request ID: ' . $requestId,
+            'reference_id' => $requestId,
+            'url'          => $request->fullUrl(),
+            'table'        => "client_requests",
+            'user_id'      => Auth::id(),
+        ]);
 
         return redirect()->back()->with('success', 'Client request submitted successfully.');
     }

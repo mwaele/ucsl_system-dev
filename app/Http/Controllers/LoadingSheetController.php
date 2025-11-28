@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LoadingSheet;
 use App\Models\LoadingSheetWaybill;
+use Illuminate\Support\Facades\Log;
 use App\Models\Office;
 use App\Models\Rate;
 use App\Models\ShipmentCollection;
@@ -421,15 +422,19 @@ class LoadingSheetController extends Controller
                 addFooter: true
             );
 
-            SentMessage::create([
-                'request_id'      => $requestId,
-                'client_id'       => $client->id,
-                'recipient_type'  => 'receiver',
-                'recipient_name'  => $shipment->receiver_name ?? 'Receiver',
-                'phone_number'    => $receiverPhone,
-                'subject'         => 'Parcel Dispatch Alert',
-                'message'         => $parcelMessage,
-            ]);
+            if (!empty($phone)) {
+                SentMessage::create([
+                    'request_id'      => $requestId,
+                    'client_id'       => $client->id,
+                    'recipient_type'  => 'receiver',
+                    'recipient_name'  => $shipment->receiver_name ?? 'Receiver',
+                    'phone_number'    => $receiverPhone,
+                    'subject'         => 'Parcel Dispatch Alert',
+                    'message'         => $parcelMessage,
+                ]);
+            } else {
+                Log::warning("Message record skipped: phone number is null for {$$shipment->receiver_name}");
+            }
 
             // sender email
             $parcelSenderMessage = "Dear Customer, your parcel has been dispatched. Track it using tracking no. $requestId ";
