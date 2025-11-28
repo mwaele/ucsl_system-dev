@@ -232,7 +232,7 @@ class ClientRequestController extends Controller
         ));
     }
 
-    public function generateWaybill($requestId) 
+    public function generateWaybill(Request $request ,$requestId) 
     {
         $collection = ShipmentCollection::with(['items', 'office', 'destination', 'clientRequest.serviceLevel'])->where('requestId', $requestId)->firstOrFail();
 

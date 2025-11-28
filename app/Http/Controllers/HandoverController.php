@@ -33,7 +33,7 @@ class HandoverController extends Controller
     }
     public function approveHandover(Request $request, $id)
     {
-        dd($request->all());
+        //dd($request->all());
         // Find the handover record by ID
         $handover = DeliveryHandover::find($id);
 
@@ -47,5 +47,31 @@ class HandoverController extends Controller
         $handover->save();
 
         return redirect()->back()->with('success', 'Handover approved successfully.');
+    }
+    public function rejectHandover(Request $request, $id)
+    {
+        // Find the handover record by ID
+        $handover = DeliveryHandover::find($id);
+
+        if (!$handover) {
+            return redirect()->back()->with('error', 'Handover record not found.');
+        }
+
+        // Update the status to rejected
+        $handover->status = 'rejected';
+        $handover->rejected_at = now();
+        $handover->save();
+
+        return redirect()->back()->with('success', 'Handover rejected successfully.');
+    }
+    public function handoverDetails($id)
+    {
+        $handover = DeliveryHandover::find($id);
+
+        if (!$handover) {
+            return response()->json(['error' => 'Handover record not found.'], 404);
+        }
+
+        return response()->json(['handover' => $handover], 200);
     }
 }

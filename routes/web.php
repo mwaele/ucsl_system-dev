@@ -504,6 +504,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('delivery_handovers', [HandoverController::class, 'riderHandover'])->name('riderHandover');
     Route::post('/shipments/approve_handovers/{id}', [HandoverController::class, 'approveHandover'])
     ->name('approveHandover');
+    Route::post('/shipments/reject_handovers/{id}', [HandoverController::class, 'rejectHandover'])
+    ->name('rejectHandover');   
+    Route::get('/handover/details/{id}', [HandoverController::class, 'handoverDetails'])->name('handoverDetails');
 
     Route::post('/shipments/failedCollections/{requestId}', [FailedCollectionController::class, 'failedCollections'])->name('shipments.failedCollections');
     Route::post('/shipments/releaseCollections/{requestId}', [ShipmentCollectionController::class, 'releaseCollections'])->name('collection.release');

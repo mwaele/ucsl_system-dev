@@ -15,6 +15,7 @@ class DeliveryHandover extends Model
         'handover_time',
         'status ',
         'remarks ',
+        'approved_at',
     ];
 
     public function fromUser()

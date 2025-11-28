@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\UserLog;
 
 
 class DashboardController extends Controller
