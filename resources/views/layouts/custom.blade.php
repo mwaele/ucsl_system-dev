@@ -1047,6 +1047,8 @@
                     let form = $(this);
                     let formData = form.serialize();
 
+                    //console.log(formData);
+
                     let handoverId = form.find('input[name="handover_id"]').val();
 
                     $.ajax({

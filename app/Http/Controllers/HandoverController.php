@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\ShipmentCollection;  
 use Illuminate\Support\Facades\DB;
 use App\Models\DeliveryHandover;
+use Carbon\Carbon;
+use App\Models\ClientRequest;
+use App\Models\User;  
+use App\Services\SmsService;    
+use Auth;
+      
+
+
 
 class HandoverController extends Controller
 {
@@ -31,11 +39,98 @@ class HandoverController extends Controller
 
         return response()->json(['message' => 'Rider collection handover recorded successfully.'], 200);
     }
-    public function approveHandover(Request $request, $id)
+    public function approveHandover(Request $request, $id, SmsService $smsService)
     {
+
+        \Log::info($request->all());
         //dd($request->all());
         // Find the handover record by ID
         $handover = DeliveryHandover::find($id);
+
+        //$handover = DB::table('delivery_handovers')->where('id', $id)->first();
+
+        $shipment   = ShipmentCollection::where('requestId', $handover->requestId)->firstOrFail();
+
+        $fromUserId = $request->from_rider_id;
+
+        try {
+            DB::transaction(function () use ($shipment, $fromUserId, $request) {
+                
+
+                // Update shipment
+                $shipment->update([
+                    'collected_by' => $request->rider_id,
+                    'status'       => 'rider_handover_in_transit',
+                ]);
+
+                \Log::info('Shipment updated for handover', [
+                    'requestId'   => $request->requestId,
+                    'new_rider'   => $request->rider_id
+                ]);
+
+                // ✅ Update related client_request
+                DB::table('client_requests')
+                    ->where('requestId', $shipment->requestId)
+                    ->update([
+                        'delivery_rider_id' => $request->rider_id,
+                        'userId'            => $request->rider_id,
+                        'updated_at'        => now(),
+                    ]);
+
+                \Log::info('ClientRequest updated after handover', [
+                    'requestId' => $shipment->requestId,
+                    'new_rider' => $request->rider_id
+                ]);
+
+                // Update tracking info
+                $trackId = DB::table('tracks')
+                    ->where('requestId', $shipment->requestId)
+                    ->value('id');
+
+                if ($trackId) {
+                    DB::table('tracking_infos')->insert([
+                        'trackId'    => $trackId,
+                        'date'       => now(),
+                        'details'    => "Shipment handed over",
+                        'remarks'    => "Shipment handed over from rider ID {$fromUserId} to rider ID {$request->rider_id}.",
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+
+                    DB::table('tracks')->where('id', $trackId)->update([
+                        'current_status' => 'Rider Handover In Transit',
+                        'updated_at'     => now(),
+                    ]);
+
+                    \Log::info('Tracking updated after handover', [
+                        'trackId'   => $trackId,
+                        'requestId' => $request->requestId,
+                    ]);
+                }
+            });
+
+            // Notify new rider
+            $newRider = User::find($request->rider_id);
+            if ($newRider) {
+                $msg = "Hello {$newRider->name}, you have been handed over shipment with Request ID {$shipment->requestId} for delivery.";
+                $smsService->sendSms($newRider->phone_number, 'Shipment Handover', $msg, true);
+
+                \Log::info('New rider notified via SMS', [
+                    'rider_id' => $newRider->id,
+                    'phone'    => $newRider->phone_number
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Handover process failed', [
+                'requestId' => $request->requestId,
+                'shipment_id' => $shipment->id ?? null,
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Failed to complete rider handover.');
+        }
+
+
 
         if (!$handover) {
             return redirect()->back()->with('error', 'Handover record not found.');
