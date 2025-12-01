@@ -39,7 +39,7 @@ class RateController extends Controller
 
     public function nairobi_office()
     {
-        $rates = Rate::where('office_id',2)->get();
+        $rates = Rate::where('office_id',2)->whereIn('type', ['pharmaceutical', 'normal'])->get();
         $zones = Zone::all();
 
         $offices = Office::where('id',2)->get();

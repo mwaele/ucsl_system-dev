@@ -112,6 +112,7 @@
                         <tr class="text-success">
                             <th>#</th>
                             <th>Request ID</th>
+                            <th>Client</th>
                             <th>Date Received</th>
                             <th>Waybill No.</th>
                             <th>Verified By</th>
@@ -125,6 +126,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $arrival->requestId }}</td>
+                                <td>{{ $arrival->clientRequestById->client->name }}</td>
                                 <td data-date="{{ $arrival->date_received }}">
                                     {{ \Carbon\Carbon::parse($arrival->date_received)->format('d M, Y') }}</td>
                                 <td>{{ $arrival->shipmentCollection->waybill_no }}</td>
@@ -406,7 +408,7 @@
                                         </script>
                                     </div>
 
-                                    @if ($arrival->delivery_rider_status != 'Allocated')
+                                    @if ($arrival->delivery_rider_status != 'Allocated' && $arrival->status !== 'delivered')
                                         <button class="btn btn-sm btn-warning" title="Delivery" data-toggle="modal"
                                             data-target="#allocateRider-{{ $arrival->id }}">
                                             Allocate Rider <i class="fas fa-box-open"></i> <i

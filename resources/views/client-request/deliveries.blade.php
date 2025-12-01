@@ -248,7 +248,7 @@
 
                             @if ($collection->status === 'collected')
                                 <button
-                                    class="btn btn-primary btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
+                                    class="btn btn-primary btn-sm rounded-md flex items-center gap-1 mb-1 shadow-sm w-full sm:w-auto"
                                     data-toggle="modal" data-target="#printModal-{{ $collection->id }}">
                                     <i class="fas fa-print"></i> Consignment
                                 </button>

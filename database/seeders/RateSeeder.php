@@ -214,7 +214,7 @@ class RateSeeder extends Seeder
                 'origin' => 'Nairobi',
                 'destination' => $route['destination'],
                 'rate' => $route['rate'],
-                'type' => 'same_day',
+                'type' => 'Same Day',
                 'bands' => 'INTERCITY EXPRESS DELIVERY',
                 'additional_cost_per_kg' => 50,
                 'intercity_additional_cost_per_kg' => 100,
