@@ -1013,39 +1013,51 @@
 
                     let handoverId = button.data('id');
                     let requestId = button.data('request-id');
+                    let from_user_id = button.data('from-user-id');
+                    let to_user_id = button.data('to-user-id');
 
+
+                    //console.log('From User ID:', from_user_id);
+
+                    $('#from_user_id')
                     // Set hidden fields
                     $('#requestId').val(requestId);
+                    $('#from_user_id').val(from_user_id);
+                    $('#to_user_id').val(to_user_id);
+                    $('#handover_id').val(handoverId);
 
                     // Load handover details
-                    $.ajax({
-                        url: "/handover/details/" + handoverId,
-                        type: "GET",
-                        success: function(res) {
-                            $("#from_user_id").val(res.from_user_id);
-                            $("#to_user_id").val(res.to_user_id);
-                        }
-                    });
+                    // $.ajax({
+                    //     url: "/handover/details/" + handoverId,
+                    //     type: "GET",
+                    //     success: function(res) {
+
+                    //         //console.log(res);
+                    //         $("#from_user_id").val(res.from_user_id);
+                    //         $("#to_user_id").val(res.to_user_id);
+                    //     }
+                    // });
                 });
 
                 // SUBMIT FORM USING AJAX
                 $('#updateHandoverForm').on('submit', function(e) {
                     e.preventDefault();
 
+
                     let form = $(this);
                     let formData = form.serialize();
-                    let actionUrl = form.attr('action');
+
+                    //console.log(formData);
+
+                    let handoverId = form.find('input[name="handover_id"]').val();
 
                     $.ajax({
-                        url: actionUrl,
+                        url: "/shipments/approve_handovers/" + handoverId,
                         method: "POST", // Laravel will detect @method('PUT')
                         data: formData,
                         success: function(res) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Handover Approved!',
-                                text: 'The handover has been successfully approved.',
-                            });
+
+                            alert('The handover has been successfully approved.');
 
                             $('#updateHandover').modal('hide');
 
@@ -1054,7 +1066,7 @@
                             }, 1200);
                         },
                         error: function(xhr) {
-                            Swal.fire({
+                            alert({
                                 icon: 'error',
                                 title: 'Error!',
                                 text: xhr.responseJSON?.message ?? 'Something went wrong.',

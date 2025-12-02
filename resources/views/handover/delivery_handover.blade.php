@@ -56,7 +56,9 @@
                                     @if ($handover->status === 'pending_approval')
                                         <button type="button" class="btn btn-sm btn-info mr-1" data-toggle="modal"
                                             data-target="#updateHandover" data-id="{{ $handover->id }}"
-                                            data-request-id="{{ $handover->requestId }}"><i class="fas fa-check"></i>
+                                            data-request-id="{{ $handover->requestId }}"
+                                            data-from-user-id="{{ $handover->from_user_id }}"
+                                            data-to-user-id="{{ $handover->to_user_id }}"><i class="fas fa-check"></i>
                                             Approve
                                         </button>
                                     @else
@@ -74,15 +76,15 @@
     <div class="modal fade" id="updateHandover" tabindex="-1" role="dialog" aria-labelledby="UpdateHandoverModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
-            <form action="  {{ route('approveHandover') }} " method="post" id="updateHandoverForm">
+            <form method="post" id="updateHandoverForm">
                 @method('PUT')
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title" id="UpdateHandoverModalLabel">Approve Handover
                         </h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                        <button class="close " type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true"> <span class="text-danger btn btn-sm">×</span> </span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -95,6 +97,8 @@
                                         required readonly>
                                     <input type="hidden" name="to_user_id" id="to_user_id" class="form-control" required
                                         readonly>
+                                    <input type="hidden" name="handover_id" id="handover_id" class="form-control" required
+                                        readonly>
                                     <input type="hidden" name="requestId" id="requestId" class="form-control" required
                                         readonly>
                                 </div>
@@ -104,7 +108,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Approve Handover </button>
                     </div>
