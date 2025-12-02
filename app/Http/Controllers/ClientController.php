@@ -43,13 +43,13 @@ class ClientController extends Controller
         return view('clients.index')->with('clients', $clients);
     }
 
-    public function clients_report()
+    public function clients_report(Request $request)
     {
         $clients = Client::all();
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' generated all client reports at ' . now(),
+            'actions'      => 'Generated all clients report',
             'url'          => $request->fullUrl(),
             'table'        => "clients",
             'user_id'      => Auth::id(),
@@ -266,7 +266,7 @@ class ClientController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' updated the details of client - ' . $request->name . ' at ' . now(),
+            'actions'      => 'Updated the details of client - ' . $request->name,
             'url'          => $request->fullUrl(),
             'reference_id' => $client->id,
             'table'        => "clients",
@@ -287,7 +287,7 @@ class ClientController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' verified client phone number through OTP at ' . now(),
+            'actions'      => 'Verified client phone number through OTP',
             'url'          => $request->fullUrl(),
             'reference_id' => $client->id,
             'table'        => "clients",
@@ -311,7 +311,7 @@ class ClientController extends Controller
 
         UserLog::create([
             'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' deleted the details of ' . $request->name . ' as a client at ' . now(),
+            'actions'      => 'Deleted the details of ' . $request->name . ' as a client',
             'url'          => $request->fullUrl(),
             'reference_id' => $client->id,
             'table'        => "clients",

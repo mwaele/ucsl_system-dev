@@ -91,29 +91,29 @@ class CompanyInfoController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    $validatedData = $request->validate([
-        'company_name' => 'required',
-        'slogan' => 'required',
-        'location' => 'required',
-        'address' => 'required',
-        'email' => 'required|email',
-        'pin' => 'required',
-        'contact' => 'required',
-        'website' => 'required',
-    ]);
-    
-    $companyInfo = CompanyInfo::find($id);
-    
-    if (!$companyInfo) {
-        return back()->with('error', 'Company info not found.');
-    }
-    
-    $companyInfo->update($validatedData);
+    {
+        $validatedData = $request->validate([
+            'company_name' => 'required',
+            'slogan' => 'required',
+            'location' => 'required',
+            'address' => 'required',
+            'email' => 'required|email',
+            'pin' => 'required',
+            'contact' => 'required',
+            'website' => 'required',
+        ]);
+        
+        $companyInfo = CompanyInfo::find($id);
+        
+        if (!$companyInfo) {
+            return back()->with('error', 'Company info not found.');
+        }
+        
+        $companyInfo->update($validatedData);
 
-    return redirect()->route('company_infos.index')
-                     ->with('success', 'Company info updated successfully.');
-}
+        return redirect()->route('company_infos.index')
+                        ->with('success', 'Company info updated successfully.');
+    }
 
 
     /**

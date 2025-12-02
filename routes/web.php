@@ -215,7 +215,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/company_info_report', [CompanyInfoController::class, 'company_info_report'])->name('company_info_report');
     
-    Route::get('/offices_report', [CompanyInfoController::class, 'offices_report'])->name('offices_report');
+    Route::get('/offices_report', [CompanyInfoController::class, 'company_info_report'])->name('offices_report');
     
 
     Route::resource('vehicles','App\Http\Controllers\VehicleController');

@@ -33,7 +33,7 @@ class SameDayRateController extends Controller
     
     public function nrb_rates_sameday_report()
     {
-        $rates = SameDayRate::where('office_id', 2)
+        $rates = Rate::where(['office_id'=>2,'type'=>'Same Day'])
             ->orderBy('created_at', 'desc')
             ->get();
 

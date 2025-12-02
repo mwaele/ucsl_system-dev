@@ -1297,25 +1297,33 @@
                         });
 
                         // Handle Payment Mode Change
-                        $(document).on('change', '.payment_mode', function() {
-                            const mode = $(this).val();
+                        $(document).ready(function() {
+                            // Simulate onchange after 10 seconds if user is still on page
+                            setTimeout(function() {
+                                if ($('#payment_mode').length && $('#payment_mode').val() === 'Invoice') {
+                                    $('#payment_mode').trigger('change');
+                                }
+                            }, 10000); // 10,000 ms = 10 seconds
 
-                            if (mode === 'Invoice') {
-                                $.ajax({
-                                    url: '{{ route('get.latest.invoice.no') }}',
-                                    type: 'GET',
-                                    success: function(data) {
-                                        $('.reference').val(data.invoice_no);
-                                    },
-                                    error: function() {
-                                        alert('Unable to fetch invoice number.');
-                                    }
-                                });
-                            } else {
-                                $('.reference').val('');
-                            }
+                            $('#payment_mode').on('change', function() {
+                                const mode = $(this).val();
+
+                                if (mode === 'Invoice') {
+                                    $.ajax({
+                                        url: '{{ route('get.latest.invoice.no') }}',
+                                        type: 'GET',
+                                        success: function(data) {
+                                            $('#reference').val(data.invoice_no);
+                                        },
+                                        error: function() {
+                                            alert('Unable to fetch invoice number.');
+                                        }
+                                    });
+                                } else {
+                                    $('#reference').val(''); // clear for other modes
+                                }
+                            });
                         });
-
                     });
                     </script>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rate;
+use App\Models\SpecialRate;
 use App\Models\Office;
 use App\Models\Zone;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -141,12 +142,18 @@ class RateController extends Controller
 
     public function rates_report()
     {
-        $rates = Rate::orderBy('created_at', 'desc')->get();
+        $rates = SpecialRate::orderBy('created_at', 'desc')->get();
+        $head = "Special Rates Report";
+        $title = "Special Rates From Mombasa and Nairobi to Other Destinations";
 
         return $this->renderPdfWithPageNumbers(
             'rates.rate_report',
-            ['rates' => $rates],
-            'rates_report.pdf',
+            [
+                'rates' => $rates,
+                'title' => $title,
+                'head' => $head,
+            ],
+            'special_rates_report.pdf',
             'a4',
             'landscape'
         );
