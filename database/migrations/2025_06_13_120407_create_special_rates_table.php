@@ -12,20 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('special_rates', function (Blueprint $table) {
-            $table->id();$table->integer("approvedBy")->nullable();
+            $table->id();
+            $table->integer("approvedBy")->nullable();
             $table->foreignId('added_by')->constrained('users', 'id')->onDelete('cascade');
             $table->string("routeFrom")->nullable();
             $table->string("zone")->nullable();
             $table->string("origin")->nullable();
             $table->string("destination")->nullable();
             $table->integer("rate")->default(0);
+            $table->decimal('additional_cost_per_kg', 10, 2)->nullable();
+            $table->string('type')->nullable();
             $table->dateTime("applicableFrom")->nullable();
             $table->dateTime("applicableTo")->nullable();
-            $table->string("status")->default("active"); //inactive
-            $table->string("approvalStatus")->default("pending"); //pending/approved
+            $table->string("status")->default("active");
+            $table->string("approvalStatus")->default("approved");
             $table->foreignId('client_id');
             $table->foreignId('office_id');
-            $table->foreignId('zone_id');
+            $table->foreignId('zone_id')->nullable();
             $table->dateTime("dateApproved")->nullable();
             $table->timestamps();
         });

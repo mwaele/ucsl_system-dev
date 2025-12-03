@@ -13,6 +13,8 @@ class SpecialRate extends Model
         'origin',
         'destination',
         'rate',
+        'additional_cost_per_kg',
+        'type',
         'applicableFrom',
         'applicableTo',
         'status',

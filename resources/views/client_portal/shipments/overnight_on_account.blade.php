@@ -318,7 +318,7 @@
                                                 </select>
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="mt-2 col-md-2">
                                                 <h6 for="payment_mode" class="text-primary">Payment Reference</h6>
                                                 <input type="text" id="reference" name="reference"
                                                     class="form-control text-uppercase" placeholder="e.g. TH647CDTNA"
@@ -327,7 +327,7 @@
                                                     oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="mt-2 col-md-2">
                                                 <h6 for="priority_level" class="text-primary">Priority Level</h6>
                                                 <select class="form-control" name="priority_level" id="priority_level">
                                                     <option value="normal" selected>Normal</option>
@@ -557,7 +557,7 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Collected By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -571,7 +571,7 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Collected By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -589,7 +589,7 @@
                                 <td> {{ $request->shipmentCollection?->destination->destination }} </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
-                                <td> {{ $request->shipmentCollection->collectedBy->name ?? 'user' }} </td>
+                                <td> {{ $request->shipmentCollection->collectedBy->name ?? 'Pending' }} </td>
                                 <td>
                                     @php
                                         $status = $request->shipmentCollection->clientRequestById->status ?? null;
@@ -612,67 +612,13 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
-                                    @if ($request->status === 'Pending-Collection')
-                                        <button class="btn btn-danger" data-toggle="modal"
-                                            data-target="#cancelRequestModal{{ $request->requestId }}">Cancel Request
-                                            X</button>
-                                        <div class="modal fade" id="cancelRequestModal{{ $request->requestId }}"
-                                            tabindex="-1" role="dialog" aria-labelledby="CancelRequestLabel"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title text-primary">Cancel Shipment Collection
-                                                            Request</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <form id="clientPortal.cancelRequest" method="post"
-                                                        action="{{ route('clientPortal.cancelRequest', $request->requestId) }}">
-                                                        @csrf
-                                                        <div class="modal-body"
-                                                            style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                            <div class="row">
-                                                                {{-- <div class="col-md-12 mb-3">
-                                                                    <label for="subject"
-                                                                        class="text-primary"><strong>Subject:
-                                                                        </strong></label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="subject">
-                                                                </div> --}}
-                                                                <div class="col-md-12">
-                                                                    <label for="message"
-                                                                        class="text-primary"><strong>Reason for
-                                                                            Cancellation: <span
-                                                                                class="text-danger">*</span>
-                                                                        </strong></label>
-                                                                    <textarea name="message" id="" class="form-control" rows="10" required></textarea>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div
-                                                            class="modal-footer d-flex justify-content-between align-items-center">
-                                                            <button type="button" class="btn btn-warning"
-                                                                data-dismiss="modal">Close</button>
-                                                            <button class="btn btn-danger " type="submit">Cancel Request
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
+                                    
                                     @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
                                         {{-- Waybill Generation --}}
                                         <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             <i class="fas fa-file-invoice"></i> Generate Waybill
                                         </button>
-
-
 
                                         <div class="modal fade" id="waybillModal{{ $request->requestId }}"
                                             tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
@@ -908,38 +854,50 @@
                                             </div>
                                         </div>
                                     @endif
-                                    {{-- <button class="btn btn-sm btn-info mr-1" data-toggle="modal"
-                                        data-target="#editUserModal-{{ $request->id }}">
-                                        Edit
-                                    </button> --}}
-                                    {{-- <button class="btn btn-sm btn-danger mr-1" title="Delete Client Request"
-                                        data-toggle="modal" data-target="#deleteUser-{{ $request->id }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button> --}}
-                                    <!-- Delete Modal-->
-                                    {{-- <div class="modal fade" id="deleteUser-{{ $request->id }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete {{ $request->name }}?
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-dismiss="modal">Cancel</button>
-                                                    <form action =" {{ route('user.destroy', $request->id) }}"
-                                                        method = "POST">
-                                                        @method('DELETE')
+                                    @if ($request->status === 'Pending-Collection')
+                                        <button class="btn btn-sm btn-danger" data-toggle="modal"
+                                            data-target="#cancelRequestModal{{ $request->requestId }}">
+                                            <i class="fas fa-times-circle"></i> Cancel Request
+                                        </button>
+                                        <div class="modal fade" id="cancelRequestModal{{ $request->requestId }}"
+                                            tabindex="-1" role="dialog" aria-labelledby="CancelRequestLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-md" role="document">
+                                                <div class="modal-content">
+                                                    
+                                                    <form id="clientPortal.cancelRequest" method="post"
+                                                        action="{{ route('clientPortal.cancelRequest', $request->requestId) }}">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            title="Delete" value="DELETE">YES DELETE <i
-                                                                class="fas fa-trash"></i> </button>
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title text-primary">Cancel Shipment Collection
+                                                                Request</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body"
+                                                            style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label for="message"
+                                                                        class="text-primary"><strong>Reason for
+                                                                            Cancellation: <span
+                                                                                class="text-danger">*</span>
+                                                                        </strong></label>
+                                                                    <textarea name="message" id="" class="form-control" rows="5" required></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-danger">Cancel Request</button>
+                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> --}}
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
