@@ -55,6 +55,8 @@ use App\Http\Controllers\DeliveryFailedController;
 use App\Http\Controllers\ShipmentDetailController;
 use App\Http\Controllers\UserLogController;
 use App\Http\Controllers\HandoverController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubCategoryController;
 
 
 Route::middleware('client.auth')->group(function () {
@@ -196,6 +198,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/client/{id}', [ClientController::class, 'update'])->name('client.update');
 
     Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');
+    Route::get('/categories_report', [CategoryController::class, 'categories_report'])->name('categories_report');
+    Route::get('/sub_categories_report', [SubCategoryController::class, 'sub_categories_report'])->name('sub_categories_report');
    
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

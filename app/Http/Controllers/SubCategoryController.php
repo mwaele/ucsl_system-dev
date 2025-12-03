@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\SubCategory;
 use App\Models\Category;
 use App\Models\UserLog;
+use App\Traits\PdfReportTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -43,7 +46,7 @@ class SubCategoryController extends Controller
         }
 
         return view('sub_categories.index')->with(['sub_categories'=>$sub_categories,'categories'=>$categories]);
-    }
+    }   
 
     /**
      * Store a newly created resource in storage.
@@ -95,6 +98,27 @@ class SubCategoryController extends Controller
         ]);
 
         return redirect()->route('sub_categories.index')->with('success', 'Sub-category updated successfully.');
+    }
+
+    public function sub_categories_report(Request $request)
+    {
+        $sub_categories = SubCategory::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Generated all sub categories report',
+            'url'          => $request->fullUrl(),
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
+
+        return $this->renderPdfWithPageNumbers(
+            'clients.sub_categories_report',
+            ['sub_categories' => $sub_categories],
+            'sub_categories_report.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     /**

@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\UserLog;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\PdfReportTrait;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    use PdfReportTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -59,6 +62,28 @@ class CategoryController extends Controller
         
         return redirect()->route('categories.index')->with('success', 'Category Saved Successfully');
     }
+
+    public function categories_report(Request $request)
+    {
+        $categories = Category::all();
+
+        UserLog::create([
+            'name'         => Auth::user()->name,
+            'actions'      => 'Generated all categories report',
+            'url'          => $request->fullUrl(),
+            'table'        => "clients",
+            'user_id'      => Auth::id(),
+        ]);
+
+        return $this->renderPdfWithPageNumbers(
+            'clients.categories_report',
+            ['categories' => $categories],
+            'categories_report.pdf',
+            'a4',
+            'landscape'
+        );
+    }
+
 
     /**
      * Display the specified resource.
