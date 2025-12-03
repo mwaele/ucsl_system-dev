@@ -47,7 +47,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Zone</label>
-                                                <select name="zone_id" class="form-control" required>
+                                                <select name="zone_id" class="form-control">
                                                     <option value="">Select</option>
                                                     @foreach ($zones as $zone)
                                                         <option value="{{ $zone->id }}">{{ $zone->zone_name }}</option>
@@ -119,6 +119,24 @@
                                                     <option value="active">Active</option>
                                                     <option value="closed">Closed</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="text-primary">Type</label>
+                                                <select name="status" class="form-control">
+                                                    <option value="">Select Type</option>
+                                                    <option value="Overnight">Overnight</option>
+                                                    <option value="Same Day">Closed</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="text-primary">Additional Cost Per KM</label>
+                                                <input type="number" name="addtionalCostPerKm" class="form-control">
                                             </div>
                                         </div>
                                     </div>
