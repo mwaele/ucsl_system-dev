@@ -120,13 +120,13 @@ class TrackController extends Controller
                 $table = 'guests';
                 $id = auth('guest')->user()->id;
             }
-        UserLog::create([
-            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results  found',
-            'url' => $request->fullUrl(),
-            'reference_id' => $id,
-            'table' => $table,
-        ]);
+        // UserLog::create([
+        //     'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        //     'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and results  found',
+        //     'url' => $request->fullUrl(),
+        //     'reference_id' => $id,
+        //     'table' => $table,
+        // ]);
 
         $deliveryType = $track->clientRequest->serviceLevel->sub_category_name ?? null;
         $clientType = $track->clientRequest->client->type ?? null;
@@ -236,13 +236,13 @@ class TrackController extends Controller
             $table = 'guests';
             $id = auth('guest')->user()->id;
         }
-        UserLog::create([
-            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-            'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and generated pdf report',
-            'url' => $request->fullUrl(),
-            'reference_id' => $id,
-            'table' => $table,
-        ]);
+        // UserLog::create([
+        //     'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        //     'actions' => 'Tracked Parcel Request ID: '.$requestId. ' and generated pdf report',
+        //     'url' => $request->fullUrl(),
+        //     'reference_id' => $id,
+        //     'table' => $table,
+        // ]);
 
         return $this->renderPdfWithPageNumbers(
             'tracking.pdf_report',

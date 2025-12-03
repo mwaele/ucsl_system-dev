@@ -111,7 +111,7 @@ Route::get('/shipmentDetails/{requestId}', [ShipmentDetailController::class, 'sh
 
 // Client auth routes
 Route::get('/client/login', [ClientAuthController::class, 'showLoginForm'])->name('client.login');
-Route::post('/client/login', [ClientAuthController::class, 'login']);
+//Route::post('/client/login', [ClientAuthController::class, 'login']);
 Route::post('/client/logout', [ClientAuthController::class, 'logout'])->name('client.logout');
 
 Route::post('/client/login', [ClientAuthController::class, 'login']);

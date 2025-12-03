@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\SendCollectionNotificationsJob;
 use Carbon\Carbon;
 use Auth;
+use App\Models\ClientLog;
 
 class OvernightController extends Controller
 {
@@ -308,12 +309,12 @@ class OvernightController extends Controller
 
         $clientRequests = $clientRequests->get();
 
-        UserLog::create([
-            'name'         => Auth::user()->name,
+        ClientLog::create([
+            'name'         => auth('client')->user()->name ?? auth('guest')->user()->name,
             'actions'      => 'Generated overnight parcels pdf report from the client portal',
             'url'          => $request->fullUrl(),
             'table'        => "client_requests",
-            'user_id'      => Auth::id(),
+            'client'      => auth('client')->user()->id,
         ]);
 
         return $this->renderPdfWithPageNumbers(

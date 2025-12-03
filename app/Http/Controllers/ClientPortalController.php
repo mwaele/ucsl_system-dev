@@ -36,6 +36,7 @@ use App\Models\OfficeUser;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\DeliveryControl;
+use App\Models\ClientLog;
 
 
 
@@ -205,6 +206,15 @@ class ClientPortalController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->get();
+
+        ClientLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Accessed the client portal shipments on-account',
+        'url' => $request->fullUrl(),
+        'reference_id' => '',
+        'client_id' => auth('client')->user()->id ?? null,
+        'table' => 'shipment_collections',
+    ]);
 
         return view('client_portal.index', compact(
             'totalRequests',
@@ -528,13 +538,14 @@ class ClientPortalController extends Controller
             ->get();
         //dd($clientRequests);
 
-        UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' viewed sameday on-account parcels in the client portal at ' . now(),
-            'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
-        ]);
+        ClientLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Accessed the client portal shipments Sameday on-account',
+        'url' => $request->fullUrl(),
+        'reference_id' => '',
+        'client_id' => auth('client')->user()->id ?? null,
+        'table' => 'shipment_collections',
+    ]);
 
         return view('client_portal.shipments.same_day_on_account', compact('clientRequests', 'offices', 'categories',
             //'loggedInUserId',
@@ -621,7 +632,7 @@ class ClientPortalController extends Controller
 
             // 5. Dispatch background job to send notifications
         $client = Client::find($clientRequest->clientId);
-        dd($client);
+        //dd($client);
         ClientPortalJob::dispatch($clientRequest, $client);
 
             DB::commit();
@@ -633,13 +644,14 @@ class ClientPortalController extends Controller
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
 
-        UserLog::create([
-            'name'         => Auth::user()->name,
-            'actions'      => Auth::user()->name . ' created a parcel collection request for sameday on-account parcel in the client portal at ' . now(),
-            'url'          => $request->fullUrl(),
-            'reference_id' => Auth::id(),
-            'table'        => Auth::user()->getTable(),
-        ]);
+        ClientLog::create([
+        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+        'actions' => 'Accessed the shipment tracking module',
+        'url' => $request->fullUrl(),
+        'reference_id' => '',
+        'client_id' => auth('client')->user()->id ?? null,
+        'table' => 'shipment_collections',
+    ]);
 
         
 

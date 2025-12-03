@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
-use App\Models\UserLog;
+use App\Models\ClientLog;
 
 class ClientAuthController extends Controller
 {
@@ -53,11 +53,12 @@ class ClientAuthController extends Controller
             $table = 'guests';
             $id = auth('guest')->user()->id;
         }
-        UserLog::create([
+        ClientLog::create([
         'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged in the tracking app',
+        'actions' => 'Logged in the client portal and accessed dashboard',
         'url' => $request->fullUrl(),
         'reference_id' => $id,
+        'client_id' => auth('client')->user()->id ?? null,
         'table' => $table,
     ]);
 
