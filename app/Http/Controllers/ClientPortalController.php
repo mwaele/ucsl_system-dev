@@ -208,13 +208,13 @@ class ClientPortalController extends Controller
             ->get();
 
         ClientLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Accessed the client portal shipments on-account',
-        'url' => $request->fullUrl(),
-        'reference_id' => '',
-        'client_id' => auth('client')->user()->id ?? null,
-        'table' => 'shipment_collections',
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Accessed the client portal shipments on-account',
+            'url' => $request->fullUrl(),
+            'reference_id' => '',
+            'client_id' => auth('client')->user()->id ?? null,
+            'table' => 'shipment_collections',
+        ]);
 
         return view('client_portal.index', compact(
             'totalRequests',
@@ -539,13 +539,13 @@ class ClientPortalController extends Controller
         //dd($clientRequests);
 
         ClientLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Accessed the client portal shipments Sameday on-account',
-        'url' => $request->fullUrl(),
-        'reference_id' => '',
-        'client_id' => auth('client')->user()->id ?? null,
-        'table' => 'shipment_collections',
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Accessed the client portal shipments Sameday on-account',
+            'url' => $request->fullUrl(),
+            'reference_id' => '',
+            'client_id' => auth('client')->user()->id ?? null,
+            'table' => 'shipment_collections',
+        ]);
 
         return view('client_portal.shipments.same_day_on_account', compact('clientRequests', 'offices', 'categories',
             //'loggedInUserId',
@@ -645,13 +645,13 @@ class ClientPortalController extends Controller
         }
 
         ClientLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Accessed the shipment tracking module',
-        'url' => $request->fullUrl(),
-        'reference_id' => '',
-        'client_id' => auth('client')->user()->id ?? null,
-        'table' => 'shipment_collections',
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Accessed the shipment tracking module',
+            'url' => $request->fullUrl(),
+            'reference_id' => '',
+            'client_id' => auth('client')->user()->id ?? null,
+            'table' => 'shipment_collections',
+        ]);
 
         
 

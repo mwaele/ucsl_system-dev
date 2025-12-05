@@ -711,7 +711,7 @@
                                                             Name <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" class="form-control"
-                                                            name="receiverContactPerson" required>
+                                                            name="receiverContactPerson" value="{{ $collection->shipmentCollection?->receiver_name }}" required>
                                                         <input type="hidden" name='client_id'
                                                             value="{{ $collection->client->id }}">
                                                         <input type="hidden" name="requestId"
