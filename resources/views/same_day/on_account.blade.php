@@ -414,7 +414,7 @@
                             <th>#</th>
                             <th>Request ID</th>
                             <th>Client</th>
-                            <th>Pick-up Location</th>
+                            <th>Drop-off Location</th>
                             <th>Date Requested</th>
                             <th>Rider</th>
                             <th>Vehicle</th>

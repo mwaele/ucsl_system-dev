@@ -93,14 +93,16 @@ class AuthController extends Controller
             $table = 'guests';
             $id = auth('guest')->user()->id;
         }
+        
         ClientLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged out the client portal',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'client_id' => auth('client')->user()->id ?? null,
-        'table' => $table,
-    ]);
+            'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
+            'actions' => 'Logged out the client portal',
+            'url' => $request->fullUrl(),
+            'reference_id' => $id,
+            'client_id' => auth('client')->user()->id ?? null,
+            'table' => $table,
+        ]);
+
         Auth::guard('client')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

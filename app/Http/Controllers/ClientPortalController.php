@@ -102,6 +102,7 @@ class ClientPortalController extends Controller
         ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
         ->where('sub_categories.sub_category_name', 'Overnight')
         ->where('client_requests.source','client_portal')
+        ->where('client_requests.clientId', auth('client')->id())
         ->count();
 
         $sameDay = DB::table('shipment_collections')
@@ -109,8 +110,8 @@ class ClientPortalController extends Controller
         ->join('sub_categories', 'client_requests.sub_category_id', '=', 'sub_categories.id')
         ->where('sub_categories.sub_category_name', 'Same Day')
         ->where('client_requests.source','client_portal')
+        ->where('client_requests.clientId', auth('client')->id())
         ->count();
-
 
         foreach ($allMonths as $index => $monthName) {
             $monthNumber = $index + 1;

@@ -34,40 +34,47 @@ class ClientAuthController extends Controller
     // }
 
     public function login(Request $request)
-{
-    $request->validate([
-        'email'    => 'required|email',
-        'password' => 'required',
-    ]);
-
-    if (Auth::guard('client')->attempt([
-        'email' => $request->email,
-        'password' => $request->password,
-    ])) {
-        $request->session()->regenerate();
-
-         if(auth('client')->user()->name ?? ''){
-            $table = 'clients';
-            $id = auth('client')->user()->id;
-        }else if(auth('guest')->user()->name){
-            $table = 'guests';
-            $id = auth('guest')->user()->id;
-        }
-        ClientLog::create([
-        'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
-        'actions' => 'Logged in the client portal and accessed dashboard',
-        'url' => $request->fullUrl(),
-        'reference_id' => $id,
-        'client_id' => auth('client')->user()->id ?? null,
-        'table' => $table,
-    ]);
-
-        return response()->json([
-            'success' => true,
-            'redirect' => '/tracker',
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
         ]);
+
+        if (Auth::guard('client')->attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ])) {
+
+            // Regenerate session after login
+            $request->session()->regenerate();
+
+            $user = auth('client')->user();
+
+            // 🔒 Check client type
+            if ($user->type !== 'on_account') {
+                Auth::guard('client')->logout();
+                return response()->json([
+                    'message' => 'Only on-account clients can access the client portal.'
+                ], 403);
+            }
+
+            // Log the action
+            ClientLog::create([
+                'name'         => $user->name,
+                'actions'      => 'Logged in the client portal and accessed dashboard',
+                'url'          => $request->fullUrl(),
+                'reference_id' => $user->id,
+                'client_id'    => $user->id,
+                'table'        => 'clients',
+            ]);
+
+            return response()->json([
+                'success'  => true,
+                'redirect' => '/tracker',
+            ]);
+        }
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    return response()->json(['message' => 'Invalid credentials'], 401);
-}
 }

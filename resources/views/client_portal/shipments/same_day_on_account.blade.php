@@ -602,7 +602,7 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Created By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -616,7 +616,7 @@
                             <th>Origin</th>
                             <th>Destination</th>
                             <th>Service Level</th>
-                            <th>Received By</th>
+                            <th>Created By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -630,9 +630,9 @@
                                 <td data-date="{{ $request->shipmentCollection?->created_at }}">
                                     {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y') ?? null }}
                                 </td>
-                                <td> {{ $request->shipmentCollection?->office->name }} </td>
-                                <td> {{ $request->shipmentCollection?->destination->destination }} </td>
-                                <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
+                                <td> {{ $request->shipmentCollection?->office->name ?? $request->pickupLocation }} </td>
+                                <td> {{ $request->shipmentCollection?->destination->destination ?? $request->collectionLocation }} </td>
+                                <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name ?? $request->serviceLevel?->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->collectedBy->name ?? 'user' }} </td>
                                 <td>
