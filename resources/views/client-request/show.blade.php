@@ -102,250 +102,6 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    // const clientRadio = document.getElementById('clientRadio');
-                    // const agentRadio = document.getElementById('agentRadio');
-                    // const senderForm = document.getElementById('senderForm');
-
-                    // const cid = document.getElementById('cid').value;
-
-                    // const sender_name = document.getElementById('sender_name');
-                    // const sender_id_no = document.getElementById('sender_id_no');
-                    // const sender_contact = document.getElementById('sender_contact');
-                    // const sender_town = document.getElementById('sender_town');
-                    // const sender_address = document.getElementById('sender_address');
-                    // const senderEmail = document.getElementById('senderEmail');
-
-                    // clientRadio.addEventListener('change', () => {
-                    //     if (clientRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         //console.log('cid:', cid);
-
-                    //         fetch('/clientData/' + cid) // Adjust this URL as needed
-                    //             .then(response => {
-                    //                 if (!response.ok) {
-                    //                     throw new Error('Network response was not ok');
-                    //                 }
-                    //                 return response.json();
-                    //             })
-                    //             .then(client => {
-                    //                 if (client && !client.message) { // Ensure it's not a 404 error response
-                    //                     sender_name.value = client.name || '';
-                    //                     sender_id_no.value = client.contact_person_id_no || '';
-                    //                     sender_contact.value = client.contact || '';
-                    //                     sender_town.value = client.city || '';
-                    //                     sender_address.value = client.address || '';
-                    //                     senderEmail.value = client.email || '';
-                    //                 } else {
-                    //                     alert('Client not found.');
-                    //                 }
-                    //             })
-                    //             .catch(error => {
-                    //                 console.error('Error fetching client data:', error);
-                    //                 alert('Failed to fetch client data.');
-                    //             });
-                    //     }
-                    // });
-
-                    document.querySelectorAll('.modal-body').forEach(modalBody => {
-                        const clientRadios = modalBody.querySelectorAll('.clientRadio');
-                        const agentRadios = modalBody.querySelectorAll('.agentRadio');
-                        const senderForm = modalBody.querySelector('#senderForm');
-                        const cidInput = modalBody.querySelector('#cid');
-
-                        // Handle client radios
-                        clientRadios.forEach(radio => {
-                            radio.addEventListener('change', () => {
-                                if (radio.checked) {
-                                    senderForm.style.display = 'block';
-
-                                    const cid = cidInput ? cidInput.value : null;
-                                    if (!cid) return;
-
-                                    fetch('/clientData/' + cid)
-                                        .then(response => {
-                                            if (!response.ok) throw new Error(
-                                                'Network response was not ok');
-                                            return response.json();
-                                        })
-                                        .then(client => {
-                                            if (client && !client.message) {
-                                                senderForm.querySelector('#sender_name').value =
-                                                    client.name || '';
-                                                senderForm.querySelector('#sender_id_no')
-                                                    .value = client.contact_person_id_no || '';
-                                                senderForm.querySelector('#sender_contact')
-                                                    .value = client.contact || '';
-                                                senderForm.querySelector('#sender_town').value =
-                                                    client.city || '';
-                                                senderForm.querySelector('#sender_address')
-                                                    .value = client.address || '';
-                                                senderForm.querySelector('#senderEmail').value =
-                                                    client.email || '';
-                                            } else {
-                                                alert('Client not found.');
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error fetching client data:', error);
-                                            alert('Failed to fetch client data.');
-                                        });
-                                }
-                            });
-                        });
-
-                        // Handle agent radios
-                        agentRadios.forEach(radio => {
-                            radio.addEventListener('change', () => {
-                                if (radio.checked) {
-                                    // Hide sender form for agent
-                                    //if (senderForm) senderForm.style.display = 'none';
-
-                                    // Optional: clear sender fields if previously filled
-                                    senderForm.querySelector('#sender_name').value = '';
-                                    senderForm.querySelector('#sender_id_no').value = '';
-                                    senderForm.querySelector('#sender_contact').value = '';
-                                    senderForm.querySelector('#sender_town').value = '';
-                                    senderForm.querySelector('#sender_address').value = '';
-                                    senderForm.querySelector('#senderEmail').value = '';
-                                }
-                            });
-                        });
-                    });
-
-
-
-                    function clearForm() {
-                        sender_name.value = '';
-                        sender_id_no.value = '';
-                        sender_contact.value = '';
-                        sender_town.value = '';
-                        sender_address.value = '';
-                        senderEmail.value = '';
-                    }
-
-
-
-                    // agentRadio.addEventListener('change', () => {
-                    //     if (agentRadio.checked) {
-                    //         senderForm.style.display = 'block';
-                    //         clearForm(); // Allow fresh entry
-                    //     }
-                    // });
-
-
-                    // get destinations
-
-
-                    $(document).on('change', '.origin-dropdown-special', function() {
-                        const originSelect2 = $(this);
-                        const selectedOfficeId2 = originSelect2.val();
-                        const modal = originSelect2.closest('.modal');
-                        const destinationSelect2 = modal.find('.destination-dropdown-special');
-                        $('#origin_id').val(selectedOfficeId2);
-                        destinationSelect2.html('<option value="">Select Destination</option>');
-
-                        if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
-                                .done(function(data) {
-                                    data.forEach(function(item) {
-                                        destinationSelect2.append(
-                                            `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
-                                        );
-                                    });
-                                })
-                                .fail(function() {
-                                    console.error("Failed to load destinations");
-                                });
-                        }
-                    });
-
-
-
-                    function recalculateCosts() {
-                        let totalWeight = 0;
-
-                        $('#shipmentTable tbody tr').each(function() {
-                            const row = $(this);
-                            const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
-                            const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
-                            totalWeight += weight * packages;
-                        });
-
-                        $('input[name="total_weight"]').val(totalWeight.toFixed(2));
-
-                        const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                        let cost = baseCost;
-
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
-                            cost += extraWeight * 50;
-                        }
-
-                        $('input[name="cost"]').val(cost.toFixed(2));
-
-                        const vat = cost * 0.16;
-                        $('input[name="vat"]').val(vat.toFixed(2));
-                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
-                    }
-
-                    // Trigger when destination changes
-                    $(document).on('change', '.destination-dropdown-special', function() {
-
-                        const destinationId2 = $(this).val();
-                        const selectedOption2 = $(this).find('option:selected');
-                        const destination_id2 = selectedOption2.data('id');
-                        $("#destination_id_special").val(destination_id2);
-                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
-                        const originId2 = modal.find('.origin-dropdown-special').val();
-                        $('#destination_id').val(destination_id2);
-                        if (originId2 && destinationId2) {
-                            $.get(`/get_cost/${originId2}/${destinationId2}/${cid}`)
-                                .done(function(data) {
-                                    const baseCost = parseFloat(data.cost);
-                                    $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
-                                })
-                                .fail(function() {
-                                    console.error("Failed to fetch base cost");
-                                    $('input[name="base_cost"]').val(0);
-                                });
-                        }
-                    });
-
-                    //  same day
-                    $(document).on('change', '.destination-dropdownxz', function() {
-
-                        const destinationId2 = $(this).val();
-
-                        // const selectedOption2 = $(this).find('option:selected');
-                        // const destination_id2 = selectedOption2.data('id');
-                        // $("#destination_id_special").val(destination_id2);
-                        const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
-                        const originId2 = modal.find('.origin-dropdownxz').val();
-                        //$('#destination_id').val(destination_id2);
-                        if (originId2 && destinationId2) {
-                            //alert('ok');
-
-                            $.get(`/get_cost/${originId2}/${destinationId2}`)
-                                .done(function(data) {
-                                    const baseCost = parseFloat(data.cost);
-                                    $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
-                                })
-                                .fail(function() {
-                                    console.error("Failed to fetch base cost");
-                                    $('input[name="base_cost"]').val(0);
-                                });
-                        }
-                    });
-
-
-                });
-            </script>
-        </div>
 
         <div class="card-body">
 
@@ -1542,20 +1298,26 @@
                     // });
                     // get destinations
 
-                    $(document).on('change', '.origin-dropdown-special', function() {
+                    $(document).on('change', '.origin-dropdown-special', function() { 
                         const originSelect2 = $(this);
-                        const selectedOfficeId2 = originSelect2.val();
                         const modal = originSelect2.closest('.modal');
+
+                        // FIX: Get the VALUE, not the element
+                        const cid = modal.find('#cid').val();
+
+                        const selectedOfficeId2 = originSelect2.val();
                         const destinationSelect2 = modal.find('.destination-dropdown-special');
-                        $('#origin_id').val(selectedOfficeId2);
+
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
-                        if (selectedOfficeId2) {
+                        if (selectedOfficeId2 && cid) {
                             $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
                                 .done(function(data) {
                                     data.forEach(function(item) {
                                         destinationSelect2.append(
-                                            `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                                            `<option data-id="${item.id}" value="${item.destination}">
+                                                ${item.destination}
+                                            </option>`
                                         );
                                     });
                                 })
@@ -1564,6 +1326,7 @@
                                 });
                         }
                     });
+
 
                     function recalculateCosts() {
                         let totalWeight = 0;
