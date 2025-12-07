@@ -769,7 +769,7 @@
                 // Listen for change
                 $('#collectionLocation').on('changed.bs.select', function() {
                     const location = $(this).val();
-                    //alert('Selected: ' + location);
+                    alert('Selected: ' + location);
                     fetchDriversByLocation(location);
                 });
                 // let debounceTimer;

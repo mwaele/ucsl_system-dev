@@ -840,7 +840,8 @@
                                     {{ Auth::user()->name }} | UCSL -
                                     {{ Auth::user()->role === 'admin' ? 'All Stations' : Auth::user()->office->name ?? 'No Office' }}
                                 </span>
-                                <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
+                                <img class="img-profile rounded-circle"
+                                    src="{{ asset('images/user-avatar.png') }}" />
 
 
                             </a>

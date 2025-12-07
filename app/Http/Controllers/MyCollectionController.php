@@ -116,6 +116,8 @@ class MyCollectionController extends Controller
             ->orderBy('created_at','desc')
             ->get();
 
+            //dd($collections);
+
         UserLog::create([
             'name'         => Auth::user()->name,
             'actions'      => 'Accessed rider collections module',
