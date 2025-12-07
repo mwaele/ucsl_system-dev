@@ -198,10 +198,10 @@
                                         </button>
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                                                                            title="Generate Waybill"
-                                                                                                                                                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                        </button> -->
+                                                                                                                                                                                    title="Generate Waybill"
+                                                                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                                </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -317,10 +317,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                                                                        title="Waybill" data-toggle="modal"
-                                                                                                                                                                        data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                    </button> -->
+                                                                                                                                                                                title="Waybill" data-toggle="modal"
+                                                                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                            </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -1375,11 +1375,8 @@
 
                     //  same day
                     $(document).on('change', '.destination-dropdownxz', function() {
-
-
-
                         const destinationId2 = $(this).val();
-                        alert('destination id:', destinationId2);
+                        //alert('destination id:', destinationId2);
 
                         // const selectedOption2 = $(this).find('option:selected');
                         // const destination_id2 = selectedOption2.data('id');
