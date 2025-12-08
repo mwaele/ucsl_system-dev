@@ -321,6 +321,8 @@
                                                 <div class="form-check form-check-inline">
                                                     <input type="hidden" name="cid" id="cid"
                                                         value="{{ $collection->client->id }}">
+                                                    <input type="hidden" id="service_type" 
+                                                        value="{{ $collection->serviceLevel->sub_category_name }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
                                                     <input class="form-check-input clientRadio" type="radio"
@@ -1879,11 +1881,14 @@
                         const selectedOfficeId2 = originSelect2.val();
                         const modal = originSelect2.closest('.modal');
                         const destinationSelect2 = modal.find('.destination-dropdown-special');
+                        const cid = modal.find('#cid').val();
+                        const serviceType = modal.find('#service_type').val();
+
                         $('#origin_id').val(selectedOfficeId2);
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
                         if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
+                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' + serviceType)
                                 .done(function(data) {
                                     data.forEach(function(item) {
                                         destinationSelect2.append(
@@ -1926,7 +1931,7 @@
 
                     // Trigger when destination changes
                     $(document).on('change', '.destination-dropdown-special', function() {
-
+                        const cid = $('#cid').val();
                         const destinationId2 = $(this).val();
                         const selectedOption2 = $(this).find('option:selected');
                         const destination_id2 = selectedOption2.data('id');

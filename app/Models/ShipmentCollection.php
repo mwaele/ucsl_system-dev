@@ -90,6 +90,11 @@ class ShipmentCollection extends Model
         return $this->belongsTo(SpecialRate::class, 'destination_id');
     }
 
+    public function special_destination_by_id()
+    {
+        return $this->hasOne(SpecialRate::class, 'destination_id', 'destination_id');
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');

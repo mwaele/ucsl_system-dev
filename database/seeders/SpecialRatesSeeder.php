@@ -65,8 +65,8 @@ class SpecialRatesSeeder extends Seeder
                 'approvalStatus' => 'approved',
                 'client_id' => $townTeamId,
                 'office_id' => $officeId,
-                'applicableFrom' => $now,
-                'applicableTo' => null,
+                'applicableFrom' => Carbon::create(2025, 1, 1, 0, 0, 0),
+                'applicableTo'   => Carbon::create(2025, 12, 31, 23, 59, 59),
                 'created_at' => $now,
                 'updated_at' => $now
             ]);
@@ -85,8 +85,8 @@ class SpecialRatesSeeder extends Seeder
                 'approvalStatus' => 'approved',
                 'client_id' => $townTeamId,
                 'office_id' => $officeId,
-                'applicableFrom' => $now,
-                'applicableTo' => null,
+                'applicableFrom' => Carbon::create(2025, 1, 1, 0, 0, 0),
+                'applicableTo'   => Carbon::create(2025, 12, 31, 23, 59, 59),
                 'created_at' => $now,
                 'updated_at' => $now
             ]);
@@ -113,8 +113,8 @@ class SpecialRatesSeeder extends Seeder
                 'approvalStatus' => 'approved',
                 'client_id' => $jefreyCodeId,
                 'office_id' => $officeId,
-                'applicableFrom' => $now,
-                'applicableTo' => null,
+                'applicableFrom' => Carbon::create(2025, 1, 1, 0, 0, 0),
+                'applicableTo'   => Carbon::create(2025, 12, 31, 23, 59, 59),
                 'created_at' => $now,
                 'updated_at' => $now
             ]);
@@ -133,8 +133,8 @@ class SpecialRatesSeeder extends Seeder
                 'approvalStatus' => 'approved',
                 'client_id' => $jefreyCodeId,
                 'office_id' => $officeId,
-                'applicableFrom' => $now,
-                'applicableTo' => null,
+                'applicableFrom' => Carbon::create(2025, 1, 1, 0, 0, 0),
+                'applicableTo'   => Carbon::create(2025, 12, 31, 23, 59, 59),
                 'created_at' => $now,
                 'updated_at' => $now
             ]);

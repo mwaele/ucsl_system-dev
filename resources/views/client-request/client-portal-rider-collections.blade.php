@@ -370,6 +370,8 @@
                                                 <div class="form-check form-check-inline">
                                                     <input type="hidden" name="cid" id="cid"
                                                         value="{{ $collection->client->id }}">
+                                                    <input type="hidden" id="service_type" 
+                                                        value="{{ $collection->serviceLevel->sub_category_name }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
                                                     <input class="form-check-input clientRadio" type="radio"
@@ -557,6 +559,9 @@
                                                 <select name="destination"
                                                     class="form-control destination-dropdown-special">
                                                     <option value="">Select</option>
+                                                    <option value="{{ $collection->shipmentCollection->destination_id }}">
+                                                        {{ $collection->shipmentCollection->receiver_town }}
+                                                    </option>
                                                 </select>
                                             </div>
                                             <input type="hidden" name='destination_id' id="destination_id_special">
@@ -1300,12 +1305,15 @@
                         const selectedOfficeId2 = originSelect2.val();
                         const modal = originSelect2.closest('.modal');
                         const destinationSelect2 = modal.find('.destination-dropdown-special');
+                        const serviceType = modal.find('#service_type').val();
+                        const cid = modal.find('#cid').val();
+
                         $('#origin_id').val(selectedOfficeId2);
                         const cid = document.getElementById('cid').value;
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
                         if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid)
+                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' + serviceType)
                                 .done(function(data) {
                                     data.forEach(function(item) {
                                         destinationSelect2.append(
