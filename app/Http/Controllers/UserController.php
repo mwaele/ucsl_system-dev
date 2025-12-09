@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Office;
+use App\Models\Client;
 use App\Models\UserLog;
 use Illuminate\Http\Request;
 use App\Helpers\EmailHelper;
@@ -23,7 +24,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $stations = Office::all();
-        $users = User::all();
+        $users = User::with('dedicatedClient')->get();
+        $clients = Client::all();
 
         $currentModule = 'users module';
         $previousModule = session('current_module');
@@ -49,7 +51,7 @@ class UserController extends Controller
             ]);
         }
 
-        return view('users.index', compact('users', 'stations'));
+        return view('users.index', compact('users', 'stations', 'clients'));
     }
 
     public function create()
@@ -61,14 +63,17 @@ class UserController extends Controller
     {
         try {
             $user = new User();
-            $user->name         = $request->name;
-            $user->email        = $request->email;
-            $user->phone_number = $request->phone_number;
-            $user->station      = $request->station;
-            $user->role         = $request->role;
-            $user->status       = $request->status;
-            $plainPassword      = $request->password;
-            $user->password     = Hash::make($plainPassword);
+            $user->name                = $request->name;
+            $user->email               = $request->email;
+            $user->phone_number        = $request->phone_number;
+            $user->station             = $request->station;
+            $user->role                = $request->role;
+            $user->isRider             = $request->isRider;
+            $user->isDedicatedToClient = $request->isDedicatedToClient;
+            $user->dedicatedClientId   = $request->dedicatedClientId;
+            $user->status              = $request->status;
+            $plainPassword             = $request->password;
+            $user->password            = Hash::make($plainPassword);
 
             if ($user->save()) {
                 // $loginUrl = url('/login');

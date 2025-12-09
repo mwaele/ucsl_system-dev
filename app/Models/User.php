@@ -56,4 +56,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Office::class, 'station');
     }
+
+    public function dedicatedClient()
+    {
+        return $this->belongsTo(Client::class, 'dedicatedClientId');
+    }
+
 }

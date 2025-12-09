@@ -62,9 +62,10 @@
                                 </select>
                             </div>
 
+                            <!-- Role -->
                             <div class="form-group col-md-6">
-                                <label>Role</label>
-                                <select name="role" class="form-control">
+                                <label class="form-label">Role</label>
+                                <select name="role" id="roleSelect" class="form-control">
                                     {{--  to revisit and change the code to accomodate rider<option value="rider">Rider</option> --}}
                                     <option value="user" selected>User</option>
                                     <option value="driver">Driver</option>
@@ -73,6 +74,41 @@
                                     <option value="super-admin">Super Admin</option>
                                 </select>
                             </div>
+
+                            <!-- Driver Type (Only shows if role = driver) -->
+                            <div class="form-group col-md-6 d-none" id="driverTypeWrapper">
+                                <label class="form-label">Driver Type</label>
+                                <select id="driverTypeSelect" class="form-control" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option value="driver">Driver</option>
+                                    <option value="rider">Rider</option>
+                                </select>
+                            </div>
+
+                            <!-- Rider Type (Only shows if driverType = rider) -->
+                            <div class="form-group col-md-6 d-none" id="riderTypeWrapper">
+                                <label class="form-label">Rider Type</label>
+                                <select id="riderTypeSelect" class="form-control" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="dedicated">Dedicated</option>
+                                </select>
+                            </div>
+
+                            <!-- Client Select (Only if Dedicated) -->
+                            <div class="form-group col-md-6 d-none" id="clientWrapper">
+                                <label class="form-label">Select Client</label>
+                                <select name="dedicatedClientId" class="form-control" required>
+                                    <option value="">-- Select Client --</option>
+                                    @foreach($clients as $client)
+                                        <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Hidden DB Fields -->
+                            <input type="hidden" name="isRider" id="isRider">
+                            <input type="hidden" name="isDedicatedToClient" id="isDedicatedToClient">
 
                             <div class="form-group col-md-6">
                                 <label>Status</label>
@@ -99,6 +135,57 @@
                         </div>
                     </div>
                 </form>
+                <script>
+                const roleSelect = document.getElementById('roleSelect');
+                const driverTypeWrapper = document.getElementById('driverTypeWrapper');
+                const driverTypeSelect = document.getElementById('driverTypeSelect');
+
+                const riderTypeWrapper = document.getElementById('riderTypeWrapper');
+                const riderTypeSelect = document.getElementById('riderTypeSelect');
+
+                const clientWrapper = document.getElementById('clientWrapper');
+
+                const isRiderInput = document.getElementById('isRider');
+                const isDedicatedInput = document.getElementById('isDedicatedToClient');
+
+                roleSelect.addEventListener('change', function () {
+                    if (this.value === 'driver') {
+                        driverTypeWrapper.classList.remove('d-none');
+                    } else {
+                        driverTypeWrapper.classList.add('d-none');
+                        riderTypeWrapper.classList.add('d-none');
+                        clientWrapper.classList.add('d-none');
+                        resetHiddenValues();
+                    }
+                });
+
+                driverTypeSelect.addEventListener('change', function () {
+                    if (this.value === 'rider') {
+                        riderTypeWrapper.classList.remove('d-none');
+                        isRiderInput.value = 1;
+                    } else {
+                        riderTypeWrapper.classList.add('d-none');
+                        clientWrapper.classList.add('d-none');
+                        isRiderInput.value = 0;
+                        isDedicatedInput.value = null;
+                    }
+                });
+
+                riderTypeSelect.addEventListener('change', function () {
+                    if (this.value === 'dedicated') {
+                        clientWrapper.classList.remove('d-none');
+                        isDedicatedInput.value = 1;
+                    } else {
+                        clientWrapper.classList.add('d-none');
+                        isDedicatedInput.value = 0;
+                    }
+                });
+
+                function resetHiddenValues() {
+                    isRiderInput.value = null;
+                    isDedicatedInput.value = null;
+                }
+                </script>
             </div>
         </div>
 
@@ -123,7 +210,14 @@
                         @foreach ($users as $index => $user)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $user->name }}</td>
+                                <td class="mb-1">
+                                    {{ $user->name }}
+                                    @if($user->isRider && $user->isDedicatedToClient && $user->dedicatedClient)
+                                        <span class="badge-info rounded text-white p-1">
+                                             Dedicated to {{ $user->dedicatedClient->name }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->phone_number ?? 'N/A' }}</td>
                                 <td>
