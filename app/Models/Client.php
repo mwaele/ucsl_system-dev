@@ -72,6 +72,11 @@ class Client extends Authenticatable
         return $this->hasMany(Payment::class, 'client_id', 'id');
     }
 
+    public function dedicatedRiders()
+    {
+        return $this->hasMany(User::class, 'dedicatedClientId', 'id');
+    }
+
     public function shipmentItems()
     {
         return $this->hasManyThrough(

@@ -224,16 +224,15 @@
 
                                             <h6 class="text-muted text-primary"> Rider Details.</h6>
                                             <div class="row mb-2 bg-success">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="currentLocation" value="currentLocation">
                                                         <label class="form-check-label" for="allRiders"> Pickup
                                                             Location</label>
-
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="unallocatedRiders" value="unallocated">
@@ -242,11 +241,18 @@
                                                             Riders</label>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="allRiders" value="all">
                                                         <label class="form-check-label" for="allRiders">All Riders</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="riderOption"
+                                                            id="dedicatedRiders" value="dedicated">
+                                                        <label class="form-check-label" for="dedicatedRiders">Dedicated Riders</label>
                                                     </div>
                                                 </div>
                                             </div>

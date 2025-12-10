@@ -223,6 +223,20 @@ class UserController extends Controller
         return response()->json($drivers);
     }
 
+    public function getDedicatedDrivers(Request $request)
+    {
+        $clientId = $request->clientId;
+
+        $drivers = User::where('role', 'driver')
+            ->where('isDedicatedToClient', 1)
+            ->where('dedicatedClientId', $clientId)
+            ->where('station', Auth::user()->station)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($drivers);
+    }
+
     public function users_report()
     {
         $users = User::orderBy('created_at', 'desc')->get();

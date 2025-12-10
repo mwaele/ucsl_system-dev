@@ -1557,6 +1557,55 @@
                     }
                 });
 
+                // Function to load dedicated riders
+                function loadDedicatedRiders() {
+                    const clientId = $('#clientId').val();
+
+                    // If no client selected, clear dropdown
+                    if (!clientId) {
+                        $('#userId').empty().append('<option value="">Select Rider</option>');
+                        return;
+                    }
+
+                    // Only load if the Dedicated Riders radio is selected
+                    if (!$('#dedicatedRiders').is(':checked')) {
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "{{ route('drivers.dedicated') }}",
+                        method: "GET",
+                        data: { clientId: clientId },
+                        success: function(drivers) {
+                            const select = $('#userId');
+                            select.empty().append('<option value="">Select Rider</option>');
+
+                            if (drivers.length > 0) {
+                                drivers.forEach(driver => {
+                                    select.append(
+                                        `<option value="${driver.id}">${driver.name}</option>`
+                                    );
+                                });
+                            } else {
+                                select.append('<option disabled>No dedicated riders found</option>');
+                            }
+                        }
+                    });
+                }
+
+                // When Dedicated Riders option is selected
+                $('#dedicatedRiders').on('change', function () {
+                    if ($(this).is(':checked')) {
+                        loadDedicatedRiders();
+                    }
+                });
+
+                // When a new client is selected
+                $('#clientId').on('change', function () {
+                    loadDedicatedRiders();
+                });
+
+
                 $('#currentLocation').on('change', function() {
                     if ($(this).is(':checked')) {
                         const location = $('#collectionLocationx').val().trim();
@@ -2349,7 +2398,7 @@
                                 if (drivers.length > 0) {
                                     drivers.forEach(driver => {
                                         select.append(
-                                            `<option value="${driver.id}">${driver.name} (Unallocated)</option>`
+                                            `<option value="${driver.id}">${driver.name} (${driver.collectionLocations ?? 'Unallocated'}</option>`
                                         );
                                     });
                                 } else {
@@ -2385,6 +2434,55 @@
                             }
                         });
                     }
+                });
+
+                // Dedicated Riders
+                function loadDedicatedRidersInModal(modal) {
+                    const select = modal.find('.userId');
+                    const clientId = $('#clientId').val();
+
+                    if (!clientId) {
+                        select.empty().append('<option value="">Select Rider</option>');
+                        return;
+                    }
+
+                    // Only load if dedicatedRiders radio is selected
+                    if (!modal.find('#dedicatedRiders').is(':checked')) {
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "{{ route('drivers.dedicated') }}",
+                        method: "GET",
+                        data: { clientId: clientId },
+                        success: function(drivers) {
+                            select.empty().append('<option value="">Select Rider</option>');
+
+                            if (drivers.length > 0) {
+                                drivers.forEach(driver => {
+                                    select.append(
+                                        `<option value="${driver.id}">${driver.name}</option>`
+                                    );
+                                });
+                            } else {
+                                select.append('<option disabled>No dedicated riders found</option>');
+                            }
+                        }
+                    });
+                }
+
+                // Trigger when dedicated riders radio changes
+                $(document).on('change', '#dedicatedRiders', function () {
+                    const modal = $(this).closest('.modal');
+                    loadDedicatedRidersInModal(modal);
+                });
+
+                // Trigger when client selection changes
+                $('#clientId').on('change', function () {
+                    // Reload for *all open modals* in case multiple are used
+                    $('.modal.show').each(function () {
+                        loadDedicatedRidersInModal($(this));
+                    });
                 });
 
                 // Current Location

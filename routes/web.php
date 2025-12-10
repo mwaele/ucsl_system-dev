@@ -360,6 +360,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/drivers/unallocated', [UserController::class, 'getUnallocatedDrivers'])->name('drivers.unallocated');
     Route::get('/drivers/all', [UserController::class, 'getAllDrivers'])->name('drivers.all');
+    Route::get('/drivers/dedicated', [UserController::class, 'getDedicatedDrivers'])->name('drivers.dedicated');
+    Route::get('/drivers/dedicated', [UserController::class, 'getDedicatedDrivers'])->name('drivers.dedicated');
 
     Route::put('/update_collections/{id}', [ShipmentCollectionController::class, 'update_collections'])->name('shipments.update_collections');
 
