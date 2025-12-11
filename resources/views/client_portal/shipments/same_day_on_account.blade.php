@@ -130,6 +130,10 @@
 
                                             <input type="hidden" name="source" value="client_portal">
 
+
+                                            <input type="hidden" name="cid" id="cid"
+                                                value="{{ auth('client')->user()->id }}">
+
                                             <!-- Hidden input to store the ID -->
                                             <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
                                             <div class="col-md-3">
@@ -160,7 +164,8 @@
                                                     class="form-control" name="collectionLocation">
                                             </div>
                                             <input type="hidden" name='destination_id' id="destination_id">
-                                            <input type="hidden" name="clientId" value="{{ auth('client')->user()->id }}">
+                                            <input type="hidden" name="clientId"
+                                                value="{{ auth('client')->user()->id }}">
                                         </div>
 
                                         <div class="modal-header bg-primary">
@@ -443,6 +448,39 @@
                                                     id="deadline_date">
                                             </div>
                                         </div>
+                                        @if ($dedicatedRider)
+                                            <div class="modal-header bg-primary">
+                                                <h5 class=" text-white  ">Dedicated Rider </h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <h6 for="rider_id" class="text-primary mt-3"> Dedicated
+                                                        Rider</h6>
+                                                    <select name="dedicated_user_id" id="dedicated_user_id"
+                                                        class="form-control">
+                                                        <option value="">Select Rider</option>
+
+                                                        <option value="{{ $dedicatedRider->id }}">
+                                                            {{ $dedicatedRider->name }} -
+                                                            {{ $dedicatedRider->phone_number }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 for="vehicle_id" class="text-primary mt-3"> Vehicle
+                                                    </h6>
+                                                    <input type="text" id="vehicle" class="form-control"
+                                                        name="vehicle_display" placeholder="Select rider to populate"
+                                                        readonly>
+                                                    <input type="hidden" id="vehicleId" name="vehicleId">
+                                                </div>
+
+
+
+
+
+                                            </div>
+                                        @endif
 
                                         @push('scripts')
                                             <script>
@@ -631,7 +669,8 @@
                                     {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->office->name ?? $request->pickupLocation }} </td>
-                                <td> {{ $request->shipmentCollection?->destination->destination ?? $request->collectionLocation }} </td>
+                                <td> {{ $request->shipmentCollection?->destination->destination ?? $request->collectionLocation }}
+                                </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name ?? $request->serviceLevel?->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->collectedBy->name ?? 'user' }} </td>
@@ -1026,6 +1065,33 @@
         });
     </script>
     <script>
+        const vehicleMap = {
+            @foreach ($vehicles as $vehicle)
+                "{{ $vehicle->user_id }}": {
+                    id: "{{ $vehicle->id }}",
+                    regNo: "{{ $vehicle->regNo }}",
+                    status: "{{ $vehicle->status }}"
+                },
+            @endforeach
+        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSelect = document.getElementById('dedicated_user_id');
+            const vehicleInput = document.getElementById('vehicle');
+            const vehicleIdInput = document.getElementById('vehicleId');
+
+            userSelect.addEventListener('change', function() {
+                const selectedUserId = this.value;
+                const vehicle = vehicleMap[selectedUserId];
+
+                if (vehicle) {
+                    vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                    vehicleIdInput.value = vehicle.id;
+                } else {
+                    vehicleInput.value = '';
+                    vehicleIdInput.value = '';
+                }
+            });
+        });
         const radioYes = document.getElementById('radioYes');
         const radioNo = document.getElementById('radioNo');
         const fileUploadSection = document.getElementById('fileUploadSection');

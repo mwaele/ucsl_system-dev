@@ -397,7 +397,43 @@
                                                 <input type="datetime-local" class="form-control" name="deadline_date"
                                                     id="deadline_date">
                                             </div>
+
+
                                         </div>
+
+                                        @if ($dedicatedRider)
+                                            <div class="modal-header bg-primary">
+                                                <h5 class=" text-white  ">Dedicated Rider </h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <h6 for="rider_id" class="text-primary mt-3"> Dedicated
+                                                        Rider</h6>
+                                                    <select name="dedicated_user_id" id="dedicated_user_id"
+                                                        class="form-control">
+                                                        <option value="">Select Rider</option>
+
+                                                        <option value="{{ $dedicatedRider->id }}">
+                                                            {{ $dedicatedRider->name }} -
+                                                            {{ $dedicatedRider->phone_number }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h6 for="vehicle_id" class="text-primary mt-3"> Vehicle
+                                                    </h6>
+                                                    <input type="text" id="vehicle" class="form-control"
+                                                        name="vehicle_display" placeholder="Select rider to populate"
+                                                        readonly>
+                                                    <input type="hidden" id="vehicleId" name="vehicleId">
+                                                </div>
+
+
+
+
+
+                                            </div>
+                                        @endif
 
                                         @push('scripts')
                                             <script>
@@ -531,10 +567,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
+                                    <div class="modal-footer d-flex justify-content-between align-items-center bg-light">
+
                                         <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close
+                                            X</button>
                                     </div>
                                 </div>
                             </div>
@@ -612,7 +649,7 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
-                                    
+
                                     @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
                                         {{-- Waybill Generation --}}
                                         <button class="btn btn-sm btn-primary mr-1" title="Generate Waybill"
@@ -864,7 +901,7 @@
                                             aria-hidden="true">
                                             <div class="modal-dialog modal-md" role="document">
                                                 <div class="modal-content">
-                                                    
+
                                                     <form id="clientPortal.cancelRequest" method="post"
                                                         action="{{ route('clientPortal.cancelRequest', $request->requestId) }}">
                                                         @csrf
@@ -890,8 +927,10 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-danger">Cancel Request</button>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-danger">Cancel
+                                                                Request</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -936,6 +975,35 @@
         });
     </script>
     <script>
+        const vehicleMap = {
+            @foreach ($vehicles as $vehicle)
+                "{{ $vehicle->user_id }}": {
+                    id: "{{ $vehicle->id }}",
+                    regNo: "{{ $vehicle->regNo }}",
+                    status: "{{ $vehicle->status }}"
+                },
+            @endforeach
+        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSelect = document.getElementById('dedicated_user_id');
+            const vehicleInput = document.getElementById('vehicle');
+            const vehicleIdInput = document.getElementById('vehicleId');
+
+            userSelect.addEventListener('change', function() {
+                const selectedUserId = this.value;
+                const vehicle = vehicleMap[selectedUserId];
+
+                if (vehicle) {
+                    vehicleInput.value = `${vehicle.regNo} (${vehicle.status})`;
+                    vehicleIdInput.value = vehicle.id;
+                } else {
+                    vehicleInput.value = '';
+                    vehicleIdInput.value = '';
+                }
+            });
+        });
+
+
         const radioYes = document.getElementById('radioYes');
         const radioNo = document.getElementById('radioNo');
         const fileUploadSection = document.getElementById('fileUploadSection');

@@ -109,7 +109,7 @@
     <style>
         /* Default for large screens */
         .navbar-bg {
-            background-image: url('{{ asset('images/U-Parkms Orange-1.jpg') }}');
+            background-image: url('{{ asset('images/u-parms.png') }}');
             background-size: auto 100%;
             /* fills nav keeping aspect ratio */
             background-position: left;
@@ -345,7 +345,8 @@
 
                                     {{ auth('client')->user()->name }}
                                 </span>
-                                <img class="img-profile rounded-circle" src="{{ asset('images/jkl.jpg') }}" />
+                                <img class="img-profile rounded-circle"
+                                    src="{{ asset('images/user-avatar.png') }}" />
 
 
                             </a>
@@ -1012,10 +1013,14 @@
                     const modal = originSelect.closest('.modal');
                     const destinationSelect = modal.find('.destination-dropdownx');
 
+                    const cid = modal.find('#cid').val();
+                    const serviceType = 'Same Day';
+
+
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/getDestinations/' + selectedOfficeId)
+                        $.get('/get_destinations/' + selectedOfficeId + '/' + cid + '/' + serviceType)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(
@@ -1227,9 +1232,10 @@
                     $("#destination_id").val(destination_id);
                     const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                     const originId = modal.find('.origin-dropdownx').val();
+                    const cid = modal.find('#cid').val();
 
                     if (originId && destinationId) {
-                        $.get(`/getCost/${originId}/${destinationId}`)
+                        $.get(`/get_cost/${originId}/${destinationId}/${cid}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);

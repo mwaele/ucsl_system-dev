@@ -193,17 +193,17 @@
 
                                         <!-- Release Collection Button -->
                                         <!-- <button
-                                                    class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
-                                                    data-toggle="modal" title="Release Collection"
-                                                    data-target="#releaseCollectionModal-{{ $collection->id }}">
-                                                    Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                                </button> -->
+                                                        class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                                        data-toggle="modal" title="Release Collection"
+                                                        data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                                        Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                                    </button> -->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                        title="Generate Waybill"
-                                                                                                                        data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                    </button> -->
+                                                                                                                            title="Generate Waybill"
+                                                                                                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                        </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -313,10 +313,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                    title="Waybill" data-toggle="modal"
-                                                                                                                    data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                </button> -->
+                                                                                                                        title="Waybill" data-toggle="modal"
+                                                                                                                        data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                    </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -366,7 +366,7 @@
                                                 <div class="form-check form-check-inline">
                                                     <input type="hidden" name="cid" id="cid"
                                                         value="{{ $collection->client->id }}">
-                                                    <input type="hidden" id="service_type" 
+                                                    <input type="hidden" id="service_type"
                                                         value="{{ $collection->serviceLevel->sub_category_name }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
@@ -749,7 +749,7 @@
 
                                         <div style="font-size: 14px;"><strong>Request ID:
                                                 {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                        <div style="font-size: 14px;"><strong>Consignment Number:
+                                        <div style="font-size: 14px;"><strong>Consignment Note No:
                                                 {{ $collection->consignment_no ?? 'N/A' }}</strong>
                                         </div>
                                         <div>
@@ -1300,7 +1300,7 @@
                     // });
                     // get destinations
 
-                    $(document).on('change', '.origin-dropdown-special', function() { 
+                    $(document).on('change', '.origin-dropdown-special', function() {
                         const originSelect2 = $(this);
                         const modal = originSelect2.closest('.modal');
                         const cid = modal.find('#cid').val();

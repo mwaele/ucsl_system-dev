@@ -37,6 +37,16 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\DeliveryControl;
 use App\Models\ClientLog;
+use App\Models\Vehicles;
+
+use App\Jobs\SendCollectionNotificationsJob;
+use BaconQrCode\Writer;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\Color\RgbColor;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\Color\Rgb;
 
 
 
@@ -421,12 +431,17 @@ class ClientPortalController extends Controller
 
     public function overnight_onaccount(Request $request)  
     {
+
+
+        $dedicatedRider = User::where('role', 'driver')->where('status', 'active')->where('isDedicatedToClient', 1)->where('dedicatedClientId', auth('client')->user()->id)->first();
+
             $categories = ClientCategory::where('client_id', auth('client')->user()->id)
             ->join('categories', 'client_categories.category_id', '=', 'categories.id')
             ->select('categories.id as category_id', 'categories.category_name')
             ->get();
 
         $offices = Office::all();
+        $vehicles = Vehicle::all();
         // $loggedInUserId = Auth::user()->id;
         $id = auth('client')->user()->id;
         $destinations = Rate::where('type', 'normal')->get();
@@ -468,11 +483,14 @@ class ClientPortalController extends Controller
 
         return view('client_portal.shipments.overnight_on_account', compact('clientRequests', 'offices', 'categories',
             //'loggedInUserId',
+            'dedicatedRider',
             'destinations',
             'walkInClients',
             'collections',
             'consignment_no',
-            'sub_category'
+            'sub_category',
+            'offices',
+            'vehicles',
         ));
     }
 
@@ -498,7 +516,16 @@ class ClientPortalController extends Controller
             ->select('categories.id as category_id', 'categories.category_name')
             ->get();
 
+            $dedicatedRider = User::where('role', 'driver')
+            ->where('status', 'active')
+            ->where('isDedicatedToClient', 1)
+            ->where('dedicatedClientId', auth('client')->user()->id)
+            ->first();
+
+            //dd($dedicatedRider);
+
         $offices = Office::all();
+        $vehicles = Vehicle::all();
         // $loggedInUserId = Auth::user()->id;
         $id = auth('client')->user()->id;
         $destinations = Rate::where('type', 'normal')->get();
@@ -554,7 +581,10 @@ class ClientPortalController extends Controller
             'walkInClients',
             'collections',
             'consignment_no',
-            'sub_category'
+            'sub_category',
+            'dedicatedRider',
+            'offices',
+            'vehicles',
         )); 
     }
 
@@ -575,6 +605,8 @@ class ClientPortalController extends Controller
             'sub_category_id' => 'required|integer',
             'priority_level' => 'required|string',
             'deadline_date' => 'nullable|date',
+            'userId' => 'nullable|integer',
+            'vehicleId' => 'nullable|integer',
             'office_id' => 'required|integer',
             //'rate_id'=>'nullable',
         ]);
@@ -582,6 +614,42 @@ class ClientPortalController extends Controller
         DB::beginTransaction();
 
         try {
+
+                       // Define the renderer
+    $renderer = new ImageRenderer(
+        new RendererStyle(
+            300, // size in px
+            1,   // margin
+            null,
+            null,
+            Fill::uniformColor(
+                new Rgb(255, 255, 255), // background color
+                new Rgb(0, 0, 0)        // foreground color
+            )
+        ),
+        new SvgImageBackEnd() // or use GD if available
+    );
+
+    // Create the QR code writer
+    $writer = new Writer($renderer);
+
+    // Encode the requestId into the QR code
+    $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
+    $qrContent = $writer->writeString($qrCoLink);
+
+    // Define save path (in /public/qrcodes)
+    $qrCodeName =  $requestId . '.svg';
+    $qrCodePath = public_path('qrcodes/' . $qrCodeName);
+
+    // Ensure directory exists
+    if (!file_exists(public_path('qrcodes'))) {
+        mkdir(public_path('qrcodes'), 0777, true);
+    }
+
+    // Save QR Code
+    file_put_contents($qrCodePath, $qrContent);
+            // $clientRequest->update(['qr_code_path' => $fileName]);
+
             // 1. Create client request
             $clientRequest = ClientRequest::create([
                 'clientId' => $validated['clientId'],
@@ -599,6 +667,9 @@ class ClientPortalController extends Controller
                 'office_id' => $validated['office_id'],
                 'source' => $source,
                 'status' => 'Pending-Collection',
+                'qr_code_path' => $qrCodePath,
+                'userId' => $validated['userId'],
+                'vehicleId' => $validated['vehicleId'],
             ]);
 
             // 2. Create track
@@ -645,6 +716,75 @@ class ClientPortalController extends Controller
             return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
 
+        // check if dedicated rider exists for the client
+        $dedicatedRider = User::where('role', 'driver')
+            ->where('status', 'active')
+            ->where('isDedicatedToClient', 1)
+            ->where('dedicatedClientId', $clientRequest->clientId)
+            ->first();
+
+        if ($dedicatedRider) {
+            // Send SMS to dedicated rider
+            // $smsService = new SmsService();
+            // $formattedPhone = $this->formatPhoneNumber($dedicatedRider->phone);
+            // $message = "New collection request ({$clientRequest->requestId}) has been assigned to you. Please check your dashboard for details.";
+            // $smsService->sendSms($formattedPhone, $message); 
+            
+             // Lookup Client Request
+        $clientRequest = ClientRequest::findOrFail($clientRequest->id);
+
+        $now = now();
+        $requestId = $clientRequest->requestId;
+
+        // Lookup Rider
+        $rider = $validated['userId'];
+        $vehicleId = $validatedData['vehicleId'];
+
+        // Lookup Client (resolve id → name, contact, email)
+        $client = Client::findOrFail($clientRequest->clientId);
+
+        DB::transaction(function () use (
+            $clientRequest, $validatedData, $requestId, $now, $rider
+        ) {
+
+            
+
+            // update track status
+            $trackId = DB::table('tracks')
+                ->where('requestId', $requestId)
+                ->tap(function ($query) use ($now) {
+                    $query->update([
+                        'current_status' => 'Collection Rider Allocated',
+                        'updated_at' => $now
+                    ]);
+                })
+                ->value('id');
+
+            // insert tracking info
+            DB::table('tracking_infos')->insert([
+                'trackId' => $trackId,
+                'date' => $now,
+                'details' => "Collection Rider Allocated",
+                'remarks' => "We have allocated {$rider->name} (phone: {$rider->phone_number}) to collect parcel {$requestId}.",
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
+        });
+
+        // Dispatch notification job
+        try {
+            SendCollectionNotificationsJob::dispatch($clientRequest, $client, $rider, $vehicleId);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch SendCollectionNotificationsJob.', [
+                'clientRequest_id' => $clientRequest->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+
+        }
+
         ClientLog::create([
             'name' => auth('client')->user()->name ?? auth('guest')->user()->name,
             'actions' => 'Accessed the shipment tracking module',
@@ -687,10 +827,46 @@ class ClientPortalController extends Controller
             'manualWaybillImage'  => 'sometimes|nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'manualWaybillNo'     => 'sometimes|nullable|string|max:13',
         ]);
+
+        //dd($request->all());
       
         DB::beginTransaction();
 
         try {
+
+            // Define the renderer
+    $renderer = new ImageRenderer(
+        new RendererStyle(
+            300, // size in px
+            1,   // margin
+            null,
+            null,
+            Fill::uniformColor(
+                new Rgb(255, 255, 255), // background color
+                new Rgb(0, 0, 0)        // foreground color
+            )
+        ),
+        new SvgImageBackEnd() // or use GD if available
+    );
+
+    // Create the QR code writer
+    $writer = new Writer($renderer);
+
+    // Encode the requestId into the QR code
+    $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
+    $qrContent = $writer->writeString($qrCoLink);
+
+    // Define save path (in /public/qrcodes)
+    $qrCodeName =  $requestId . '.svg';
+    $qrCodePath = public_path('qrcodes/' . $qrCodeName);
+
+    // Ensure directory exists
+    if (!file_exists(public_path('qrcodes'))) {
+        mkdir(public_path('qrcodes'), 0777, true);
+    }
+
+    // Save QR Code
+    file_put_contents($qrCodePath, $qrContent);
 
             // Generate waybill
             $prefix = 'UCSL';
@@ -874,6 +1050,15 @@ class ClientPortalController extends Controller
                 'updated_at' => now()
             ]);
 
+            $rider_id = $request->dedicated_user_id ? $request->dedicated_user_id : null;
+            $vehicle_id = $request->vehicleId ? $request->vehicleId : null;
+
+            if ($rider_id) {
+                $status = "pending collection";
+            }else{
+                $status = "Pending-Collection";
+            }
+
             // 6. Save to client_requests table
             DB::table('client_requests')->insert([
                 'clientId' => $request->clientId,
@@ -883,11 +1068,11 @@ class ClientPortalController extends Controller
                 'collectionLocation' => $request->collectionLocation,
                 'parcelDetails' => 'Waybill No: '.$waybill_no.', Items: '.$itemCount.', Total Weight: '.$totalWeight.'kg',
                 'dateRequested' => now(),
-                'userId' => null,
-                'vehicleId' => null,
+                'userId' =>$rider_id,
+                'vehicleId' => $vehicle_id,
                 'created_by' => auth()->id(),
                 'office_id' => $request->origin_id,
-                'status' => 'Pending-Collection',
+                'status' => $status,
                 'priority_level' => $request->priority_level,
                 'deadline_date' => $request->deadline_date,
                 'collected_by' => auth()->id(),
@@ -896,6 +1081,38 @@ class ClientPortalController extends Controller
                 'updated_at' => now(),
                 'source'=> $request->source,
             ]);
+
+            if($rider_id) {
+                // Dispatch notification job
+                try {
+                    $rider = User::find($rider_id);
+                    $vehicle = Vehicle::find($vehicle_id);
+                    SendCollectionNotificationsJob::dispatch($collection, $client, $rider, $vehicle);
+
+                } catch (\Exception $e) {
+                    Log::error('Failed to dispatch SendCollectionNotificationsJob.', [
+                        'shipmentCollection_id' => $collection->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                }
+                // update track status
+                DB::table('tracks')
+                ->where('requestId', $requestId)
+                ->update([
+                    'current_status' => 'Collection Rider Allocated',
+                    'updated_at' => now()
+                ]); 
+                // insert tracking info
+                DB::table('tracking_infos')->insert([
+                    'trackId' => $trackingId,
+                    'date' => now(),
+                    'details' => "Collection Rider Allocated",
+                    'remarks' => "We have allocated {$rider->name} (phone: {$rider->phone_number}) to collect parcel {$requestId}.",
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]); 
+            }
 
             // 7. Save to payments table
             if (in_array($request->payment_mode, ['M-Pesa', 'Cash', 'Cheque'])) {
@@ -928,7 +1145,7 @@ class ClientPortalController extends Controller
 
            /// dd($client);
             $client = Client::find($collection->clientId);
-            ClientPortalJob::dispatch($collection, $client);
+            //ClientPortalJob::dispatch($collection, $client);
 
             DB::commit();                 
 
