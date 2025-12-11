@@ -155,42 +155,55 @@ class UserController extends Controller
     {
         $location = $request->input('location');
 
-        $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
+        $today = Carbon::now(config('app.timezone'))->toDateString();
 
         $drivers = DB::table('users')
-        ->join('client_requests', function ($join) use ($today) {
-            $join->on('users.id', '=', 'client_requests.userId')
-                ->whereIn('client_requests.status', ['pending collection', 'collected'])
-                ->whereDate('client_requests.dateRequested', $today);
-        })
-        ->join('stations', 'users.station', '=', 'stations.id')
-        ->where('users.role', 'driver')
-        ->where('users.station', Auth::user()->station)
-        ->select(
-            'users.id',
-            'users.name',
-            'stations.station_name as station',
-            DB::raw("GROUP_CONCAT(DISTINCT client_requests.collectionLocation SEPARATOR ', ') as collectionLocations")
-        )
-        ->groupBy('users.id', 'users.name', 'stations.station_name')
-        ->get();
+            ->join('client_requests', function ($join) use ($today) {
+                $join->on('users.id', '=', 'client_requests.userId')
+                    ->whereIn('client_requests.status', ['pending collection', 'collected'])
+                    ->whereDate('client_requests.dateRequested', $today);
+            })
+            ->join('stations', 'users.station', '=', 'stations.id')
+            ->where('users.role', 'driver')
+            ->where('users.station', Auth::user()->station)
+
+            // NEW CONDITIONS
+            ->where(function ($q) {
+                $q->where('users.isDedicatedToClient', false)
+                ->orWhereNull('users.isDedicatedToClient');
+            })
+            ->whereNull('users.dedicatedClientId')
+
+            ->select(
+                'users.id',
+                'users.name',
+                'stations.station_name as station',
+                DB::raw("GROUP_CONCAT(DISTINCT client_requests.collectionLocation SEPARATOR ', ') as collectionLocations")
+            )
+            ->groupBy('users.id', 'users.name', 'stations.station_name')
+            ->get();
 
         return response()->json($drivers);
     }
 
     public function getUnallocatedDrivers()
     {
-        $today = Carbon::now(config('app.timezone'))->format('Y-m-d H:i:s');
+        $today = Carbon::now(config('app.timezone'))->toDateString();
 
-
-        // Get user IDs from client_requests table for today
         $allocatedDriverIds = ClientRequest::whereDate('dateRequested', $today)
             ->pluck('userId')
             ->toArray();
 
-        // Fetch drivers not in that list
         $drivers = User::where('users.role', 'driver')
             ->where('users.station', Auth::user()->station)
+
+            // NEW CONDITIONS
+            ->where(function ($q) {
+                $q->where('users.isDedicatedToClient', false)
+                ->orWhereNull('users.isDedicatedToClient');
+            })
+            ->whereNull('users.dedicatedClientId')
+
             ->when(!empty($allocatedDriverIds), function ($query) use ($allocatedDriverIds) {
                 $query->whereNotIn('users.id', $allocatedDriverIds);
             })
@@ -212,6 +225,14 @@ class UserController extends Controller
             ->join('offices', 'users.station', '=', 'offices.id')
             ->where('users.role', 'driver')
             ->where('users.station', Auth::user()->station)
+
+            // NEW CONDITIONS
+            ->where(function ($q) {
+                $q->where('users.isDedicatedToClient', false)
+                ->orWhereNull('users.isDedicatedToClient');
+            })
+            ->whereNull('users.dedicatedClientId')
+
             ->select(
                 'users.id',
                 'users.name',
@@ -220,6 +241,7 @@ class UserController extends Controller
             )
             ->groupBy('users.id', 'users.name', 'offices.name')
             ->get();
+
         return response()->json($drivers);
     }
 
