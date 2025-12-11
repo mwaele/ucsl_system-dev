@@ -130,8 +130,10 @@
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
                                 <td>{{ $collection->client->contactPersonPhone }}</td>
-                                <td>{{ $collection->pickupLocation ?? $collection->office->name ?? $collection->shipmentCollection->office->name }}</td>
-                                <td>{{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}</td>
+                                <td>{{ $collection->pickupLocation ?? ($collection->office->name ?? $collection->shipmentCollection->office->name) }}
+                                </td>
+                                <td>{{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}
+                                </td>
                                 <td>{{ $collection->parcelDetails }}</td>
                                 <td>
                                     <span
@@ -169,9 +171,9 @@
                                         </button>
 
                                         <!-- <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 ml-1 mr-1 shadow-sm"
-                                                        data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                        <i class="fas fa-file-invoice"></i> Waybill
-                                                    </button> -->
+                                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                            <i class="fas fa-file-invoice"></i> Waybill
+                                                        </button> -->
 
                                         <button
                                             class="btn btn-info btn-sm rounded-md flex items-center gap-1 mb-1 mr-1 shadow-sm"
@@ -227,8 +229,12 @@
                         <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
                         <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}</p>
                         <p class="mb-1"><strong>Phone:</strong> {{ $collection->client->contactPersonPhone }}</p>
-                        <p class="mb-1"><strong>Pickup:</strong> {{ $collection->pickupLocation ?? $collection->office->name ?? $collection->shipmentCollection->office->name }} </p>
-                        <p class="mb-1"><strong>Dropoff:</strong> {{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }} </p>
+                        <p class="mb-1"><strong>Pickup:</strong>
+                            {{ $collection->pickupLocation ?? ($collection->office->name ?? $collection->shipmentCollection->office->name) }}
+                        </p>
+                        <p class="mb-1"><strong>Dropoff:</strong>
+                            {{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}
+                        </p>
                         <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
 
                         @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
@@ -254,9 +260,9 @@
                                 </button>
 
                                 <!-- <button class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
-                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                <i class="fas fa-file-invoice"></i> Waybill
-                                            </button> -->
+                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                    <i class="fas fa-file-invoice"></i> Waybill
+                                                </button> -->
 
                                 <button
                                     class="btn btn-info btn-sm rounded-md flex items-center gap-1 shadow-sm w-full sm:w-auto"
@@ -321,7 +327,7 @@
                                                 <div class="form-check form-check-inline">
                                                     <input type="hidden" name="cid" id="cid"
                                                         value="{{ $collection->client->id }}">
-                                                    <input type="hidden" id="service_type" 
+                                                    <input type="hidden" id="service_type"
                                                         value="{{ $collection->serviceLevel->sub_category_name }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
@@ -712,7 +718,7 @@
 
                                         <div style="font-size: 14px;"><strong>Request ID:
                                                 {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                        <div style="font-size: 14px;"><strong>Consignment Number:
+                                        <div style="font-size: 14px;"><strong>Consignment Note Number:
                                                 {{ $collection->consignment_no ?? 'N/A' }}</strong>
                                         </div>
                                         <div>
@@ -758,29 +764,29 @@
                                         </div>
                                         <hr style="margin: 4px 0;">
 
-                                    <div style="font-weight: bold;">Receiver:</div>
-                                    <div>Name: {{ $collection->shipmentCollection->receiver_name }}
-                                    </div>
+                                        <div style="font-weight: bold;">Receiver:</div>
+                                        <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                        </div>
 
-                                    @php
-                                        $phone = $collection->shipmentCollection?->receiver_phone;
+                                        @php
+                                            $phone = $collection->shipmentCollection?->receiver_phone;
 
-                                        if (empty($phone)) {
-                                            $maskedPhone = 'N/A';   // or leave blank, or whatever you want
-                                        } else {
-                                            $len = strlen($phone);
-
-                                            if ($len > 6) {
-                                                $maskedPhone =
-                                                    substr($phone, 0, 3) .
-                                                    str_repeat('*', $len - 6) .
-                                                    substr($phone, -3);
+                                            if (empty($phone)) {
+                                                $maskedPhone = 'N/A'; // or leave blank, or whatever you want
                                             } else {
-                                                $maskedPhone =
-                                                    str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
+                                                $len = strlen($phone);
+
+                                                if ($len > 6) {
+                                                    $maskedPhone =
+                                                        substr($phone, 0, 3) .
+                                                        str_repeat('*', $len - 6) .
+                                                        substr($phone, -3);
+                                                } else {
+                                                    $maskedPhone =
+                                                        str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
+                                                }
                                             }
-                                        }
-                                    @endphp
+                                        @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
 
@@ -1493,7 +1499,7 @@
                                             {{ $collection->shipmentCollection->client->kraPin }}
                                         </div>
 
-                                        @php 
+                                        @php
                                             $phone = $collection->client->contact;
 
                                             if (empty($phone)) {
@@ -1511,8 +1517,7 @@
                                                 } else {
                                                     // For short numbers, mask all except last character
                                                     $maskedPhone =
-                                                        str_repeat('*', max($len - 1, 0)) .
-                                                        substr($phone, -1);
+                                                        str_repeat('*', max($len - 1, 0)) . substr($phone, -1);
                                                 }
                                             }
                                         @endphp
@@ -1533,7 +1538,7 @@
                                             $phone = $collection->shipmentCollection?->receiver_phone;
 
                                             if (empty($phone)) {
-                                                $maskedPhone = 'N/A';   // or leave blank, or whatever you want
+                                                $maskedPhone = 'N/A'; // or leave blank, or whatever you want
                                             } else {
                                                 $len = strlen($phone);
 

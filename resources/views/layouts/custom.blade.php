@@ -114,7 +114,7 @@
     <style>
         /* Default for large screens */
         .navbar-bg {
-            background-image: url('{{ asset('images/U-Parkms Orange-1.jpg') }}');
+            background-image: url('{{ asset('images/u-parms.png') }}');
             background-size: auto 100%;
             /* fills nav keeping aspect ratio */
             background-position: left;

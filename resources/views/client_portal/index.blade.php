@@ -89,7 +89,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
                                 Dispatched</div>
-                            <div class="h5 mb-0 font-weight-bold text-white">18</div>
+                            <div class="h5 mb-0 font-weight-bold text-white">{{ $dispatched }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-bars fa-2x text-white"></i>

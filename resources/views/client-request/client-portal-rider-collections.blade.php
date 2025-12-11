@@ -198,10 +198,10 @@
                                         </button>
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                                                                                    title="Generate Waybill"
-                                                                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                                </button> -->
+                                                                                                                                                                                                                    title="Generate Waybill"
+                                                                                                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                                                                </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -317,10 +317,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                                                                                title="Waybill" data-toggle="modal"
-                                                                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                            </button> -->
+                                                                                                                                                                                                                title="Waybill" data-toggle="modal"
+                                                                                                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                                                            </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -370,7 +370,7 @@
                                                 <div class="form-check form-check-inline">
                                                     <input type="hidden" name="cid" id="cid"
                                                         value="{{ $collection->client->id }}">
-                                                    <input type="hidden" id="service_type" 
+                                                    <input type="hidden" id="service_type"
                                                         value="{{ $collection->serviceLevel->sub_category_name }}">
                                                     <input type="hidden" name="rqid"
                                                         value="{{ $collection->requestId }}">
@@ -781,7 +781,7 @@
 
                                         <div style="font-size: 14px;"><strong>Request ID:
                                                 {{ $collection->requestId ?? 'N/A' }}</strong></div>
-                                        <div style="font-size: 14px;"><strong>Consignment Number:
+                                        <div style="font-size: 14px;"><strong>Consignment Note No:
                                                 {{ $collection->consignment_no ?? 'N/A' }}</strong>
                                         </div>
                                         <div>
@@ -932,6 +932,14 @@
                                             </div><br>
                                             These are provisional charges based on details provided by
                                             sender.<br><br>
+                                            <br>
+                                            <div class=" mt-0 pt-0 " style="text-align: center">
+                                                <img src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
+                                                    alt="Authorized QR Code"
+                                                    style="width: 120px; height: auto; margin-top: 10px;">
+                                            </div>
+                                            <br>
+                                            <hr style="margin: 6px 0;">
                                             <strong>TERMS & CONDITIONS</strong><br>
                                             Carriage of this shipment is subject to the terms and
                                             conditions. Visit www.ufanisicourier.co.ke/terms
@@ -1276,8 +1284,6 @@
                         });
                     });
 
-
-
                     function clearForm() {
                         sender_name.value = '';
                         sender_id_no.value = '';
@@ -1287,29 +1293,23 @@
                         senderEmail.value = '';
                     }
 
-
-
                     // agentRadio.addEventListener('change', () => {
                     //     if (agentRadio.checked) {
                     //         senderForm.style.display = 'block';
                     //         clearForm(); // Allow fresh entry
                     //     }
                     // });
-
-
                     // get destinations
-
 
                     $(document).on('change', '.origin-dropdown-special', function() {
                         const originSelect2 = $(this);
                         const selectedOfficeId2 = originSelect2.val();
                         const modal = originSelect2.closest('.modal');
                         const destinationSelect2 = modal.find('.destination-dropdown-special');
-                        const serviceType = modal.find('#service_type').val();
                         const cid = modal.find('#cid').val();
+                        const serviceType = modal.find('#service_type').val();
 
                         $('#origin_id').val(selectedOfficeId2);
-                        const cid = document.getElementById('cid').value;
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
                         if (selectedOfficeId2) {
@@ -1326,8 +1326,6 @@
                                 });
                         }
                     });
-
-
 
                     function recalculateCosts() {
                         let totalWeight = 0;
@@ -1358,8 +1356,7 @@
 
                     // Trigger when destination changes
                     $(document).on('change', '.destination-dropdown-special', function() {
-                        const client_id = document.getElementById('cid').value;
-
+                        const cid = $('#cid').val();
                         const destinationId2 = $(this).val();
                         const selectedOption2 = $(this).find('option:selected');
                         const destination_id2 = selectedOption2.data('id');
@@ -1368,7 +1365,7 @@
                         const originId2 = modal.find('.origin-dropdown-special').val();
                         $('#destination_id').val(destination_id2);
                         if (originId2 && destinationId2) {
-                            $.get(`/get_cost/${originId2}/${destinationId2}/${client_id}`)
+                            $.get(`/get_cost/${originId2}/${destinationId2}/${cid}`)
                                 .done(function(data) {
                                     const baseCost = parseFloat(data.cost);
                                     $('input[name="base_cost"]').val(baseCost);
@@ -1383,8 +1380,8 @@
 
                     //  same day
                     $(document).on('change', '.destination-dropdownxz', function() {
+
                         const destinationId2 = $(this).val();
-                        //alert('destination id:', destinationId2);
 
                         // const selectedOption2 = $(this).find('option:selected');
                         // const destination_id2 = selectedOption2.data('id');
@@ -1407,8 +1404,6 @@
                                 });
                         }
                     });
-
-
                 });
             </script>
         </div>

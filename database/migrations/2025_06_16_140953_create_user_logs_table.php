@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('actions');
             $table->string('url');
-             $table->unsignedBigInteger('reference_id')->nullable();
+             $table->string('reference_id',255)->nullable();
             $table->string('table');
             $table->timestamps();
         });
