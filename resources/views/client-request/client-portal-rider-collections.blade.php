@@ -528,8 +528,6 @@
                                                         <input type="text" class="form-control" name="receiverTown"
                                                             value="{{ $collection->shipmentCollection?->receiver_town }}"
                                                             required>
-                                                        <input type="hidden" value="{{ $consignment_no }}"
-                                                            name="consignment_no">
                                                     </div>
                                                 </div>
 

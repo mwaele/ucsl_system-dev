@@ -30,20 +30,6 @@ class MyCollectionController extends Controller
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
 
-        // Get the latest consignment number
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
-
         $failedCollections = FailedCollection::all();
 
         $collections = ClientRequest::with('shipmentCollection.office',
@@ -81,7 +67,7 @@ class MyCollectionController extends Controller
             ]);
         }
 
-        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no,'failedCollections'=>$failedCollections, 'riders'=>$riders]);
+        return view('client-request.show')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'failedCollections'=>$failedCollections, 'riders'=>$riders]);
     }
 
     public function collect(Request $request)
@@ -93,20 +79,6 @@ class MyCollectionController extends Controller
         $loggedInUserId = Auth::user()->id;
         $destinations = Rate::all();
         $failedCollections = FailedCollection::all();
-
-        // Get the latest consignment number
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id') // Or use orderByRaw('CAST(SUBSTRING(consignment_no, 4) AS UNSIGNED) DESC') for numeric sort
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
 
         $collections = ClientRequest::with('shipmentCollection.office',
                                             'shipmentCollection.destination',
@@ -126,7 +98,7 @@ class MyCollectionController extends Controller
             'user_id'      => Auth::id(),
         ]);
 
-        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'consignment_no'=> $consignment_no, 'riders'=>$riders, 'failedCollections'=>$failedCollections]);
+        return view('client-request.client-portal-rider-collections')->with(['collections'=>$collections,'offices'=>$offices,'destinations'=>$destinations, 'loggedInUserId'=>$loggedInUserId, 'riders'=>$riders, 'failedCollections'=>$failedCollections]);
     }
 
     public function store(Request $request)

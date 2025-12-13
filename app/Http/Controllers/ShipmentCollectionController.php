@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\URL;
 use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
 use App\Services\RequestIdService;
+use App\Services\ConsignmentNumberService;
 use App\Services\SmsService;
 use App\Models\SentMessage;
 use App\Models\Client;
@@ -34,11 +35,16 @@ class ShipmentCollectionController extends Controller
     use PdfReportTrait;
 
     protected $requestIdService;
+    protected $consignmentNumberService;
 
-    public function __construct(RequestIdService $requestIdService)
-    {
+    public function __construct(
+        RequestIdService $requestIdService,
+        ConsignmentNumberService $consignmentNumberService
+    ) {
         $this->requestIdService = $requestIdService;
+        $this->consignmentNumberService = $consignmentNumberService;
     }
+    
     /**
      * Display a listing of the resource.
      */
@@ -53,6 +59,7 @@ class ShipmentCollectionController extends Controller
     public function create(Request $request, SmsService $smsService)
     {
         $requestId = $this->requestIdService->generate();
+        $consignment_no = $this->consignmentNumberService->generate();
         // Validate input
         $validated = $request->validate([
             'manualWaybillStatus' => 'nullable|in:yes,no',
@@ -109,7 +116,7 @@ class ShipmentCollectionController extends Controller
                 'client_id' => $request->clientId,
                 'origin_id' => $request->origin_id,
                 'destination_id' => $request->destination_id,
-                'consignment_no' => $request->consignment_no,
+                'consignment_no' => $consignment_no,
                 'waybill_no' => $waybill_no,
                 'base_cost' => $request->base_cost,
                 'cost' => $request->cost,
@@ -260,7 +267,7 @@ class ShipmentCollectionController extends Controller
                 'priority_level_amount' => $request->priority_extra_charge,
                 'fragile_item_amount' => $request->fragile_charge,
                 'collected_by' => auth()->id(),
-                'consignment_no' => $request->consignment_no,
+                'consignment_no' => $consignment_no,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'source'=> $request->source,
@@ -402,7 +409,6 @@ class ShipmentCollectionController extends Controller
                 'sender_id_no' => 'string',
                 'vat' => 'required|string',
                 'total_cost' => 'required|string',
-                'consignment_no' => 'string',
                 'base_cost' => 'string',
                 'special_rate_state' => 'string|nullable',
                 'senderEmail' => 'string',
@@ -424,7 +430,9 @@ class ShipmentCollectionController extends Controller
 
         Log::info('After validation - proceeding with store logic');
 
-        $consignment_no = $request->consignment_no;
+        // Generate CN via service
+        $consignment_no = $this->consignmentNumberService->generate();
+
         // Save main shipment
         $shipment = ShipmentCollection::create([
             'receiver_name' => $request->receiverContactPerson,
@@ -582,7 +590,7 @@ class ShipmentCollectionController extends Controller
         // ---------------------------
         try {
             $requestId = $request->requestId;
-            $consignmentNo = $request->consignment_no;
+            $consignmentNo = $consignment_no;
             $receiverName = $request->receiverContactPerson;
             $receiverPhone = $request->receiverPhone;
 

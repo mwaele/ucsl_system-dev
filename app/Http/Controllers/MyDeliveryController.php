@@ -47,20 +47,6 @@ class MyDeliveryController extends Controller
         $grn_no = 'GRN-' . $newNumber;
         // dd($grn_no);
 
-        // Get the latest Consignment
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id')
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
-
         $sameDayId = SubCategory::where('sub_category_name', 'Same Day')->value('id');
 
         $collections = ClientRequest::with([
@@ -128,7 +114,6 @@ class MyDeliveryController extends Controller
             'offices',
             'destinations',
             'loggedInUserId',
-            'consignment_no',
             'approvalStatuses',
             'riders',
             'grn_no',

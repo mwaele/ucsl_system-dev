@@ -176,19 +176,6 @@ class SameDayController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get the latest consignment number
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id')
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
         $locations = Rate::where('office_id', 2)
             ->whereIn('type', ['Same Day', 'same_day'])
             ->get();
@@ -231,7 +218,6 @@ class SameDayController extends Controller
             'destinations',
             'walkInClients',
             'collections',
-            'consignment_no',
             'sub_category',
             'locations',
             'vehicles',

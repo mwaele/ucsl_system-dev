@@ -478,8 +478,6 @@
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverTown"
                                                             required>
-                                                        <input type="hidden" value="{{ $consignment_no }}"
-                                                            name="consignment_no">
                                                     </div>
                                                 </div>
                                             </div>

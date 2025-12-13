@@ -127,7 +127,6 @@
                                         </div>
 
                                         <div class="row mt-3 mb-3">
-                                            <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                             <div class="col-md-2">
                                                 <h6 for="clientId" class="text-primary">Client</h6>
                                                 <select class="form-control selectpicker" data-live-search="true"
