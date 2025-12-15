@@ -84,6 +84,7 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/client_portal/overnight-on-account', [ClientPortalController::class, 'overnight_onaccount'])->name('overnight_onaccount');
     // Route::get('/client_portal/sameday-walkin', [ClientPortalController::class, 'sameday_walkin'])->name('sameday_walkin');
     Route::get('/client_portal/sameday-on-account', [ClientPortalController::class, 'sameday_on_account'])->name('sameday_on_account');
+    Route::get('/client_portal/get_destinations/{office_id}/{client_id}/{service_type}', [SpecialRateController::class, 'getDestinations']);
 
     Route::post('/client_portal_request', [ClientPortalController::class, 'store'])->name('clientPortalRequest.store');
 

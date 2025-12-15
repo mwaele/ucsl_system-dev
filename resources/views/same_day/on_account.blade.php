@@ -166,7 +166,7 @@
                                                     </label>
                                                     <select name="collectionLocation" id="collectionLocation"
                                                         class="form-control selectpicker text-primary bg-light border-success"
-                                                        data-live-search="true">
+                                                        data-live-search="true" required>
                                                         <option value="">-- Select Delivery Location --</option>
                                                         @foreach ($locations->sortBy('destination') as $location)
                                                             <option value="{{ $location->destination }}"

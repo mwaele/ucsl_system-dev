@@ -111,7 +111,6 @@
                                         </div> --}}
 
                                         <div class="row  mt-3 mb-3">
-                                            <input type="hidden" value="{{ $consignment_no }}" name="consignment_no">
                                             <div class="col-md-3">
                                                 <h6 for="clientCategories" class="text-primary"> Shipment Category
                                                 </h6>

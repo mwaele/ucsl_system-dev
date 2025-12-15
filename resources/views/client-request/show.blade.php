@@ -737,7 +737,7 @@
                                     <div id="receipt-{{ $collection->id }}"
                                         style="font-family: monospace; font-size: 13px; line-height: 1.2;">
                                         <div style="text-align: center;">
-                                            <img src="{{ asset('images/UCSLogo1.png') }}" alt="Logo"
+                                            <img src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
                                                 style="height: 70px;">
                                         </div>
 

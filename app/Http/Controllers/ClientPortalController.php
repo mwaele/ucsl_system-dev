@@ -38,7 +38,7 @@ use App\Models\Payment;
 use App\Models\DeliveryControl;
 use App\Models\ClientLog;
 use App\Models\Vehicles;
-
+use App\Services\ConsignmentNumberService;
 use App\Jobs\SendCollectionNotificationsJob;
 use BaconQrCode\Writer;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -56,10 +56,14 @@ class ClientPortalController extends Controller
     use PdfReportTrait;
 
     protected $requestIdService;
+    protected $consignmentNumberService;
 
-    public function __construct(RequestIdService $requestIdService)
-    {
+    public function __construct(
+        RequestIdService $requestIdService,
+        ConsignmentNumberService $consignmentNumberService
+    ) {
         $this->requestIdService = $requestIdService;
+        $this->consignmentNumberService = $consignmentNumberService;
     }
 
     public function index(Request $request)
@@ -432,10 +436,9 @@ class ClientPortalController extends Controller
     public function overnight_onaccount(Request $request)  
     {
 
-
         $dedicatedRider = User::where('role', 'driver')->where('status', 'active')->where('isDedicatedToClient', 1)->where('dedicatedClientId', auth('client')->user()->id)->first();
 
-            $categories = ClientCategory::where('client_id', auth('client')->user()->id)
+        $categories = ClientCategory::where('client_id', auth('client')->user()->id)
             ->join('categories', 'client_categories.category_id', '=', 'categories.id')
             ->select('categories.id as category_id', 'categories.category_name')
             ->get();
@@ -447,7 +450,6 @@ class ClientPortalController extends Controller
         $destinations = Rate::where('type', 'normal')->get();
         $walkInClients = Client::where('type', 'walkin')->get();
         $sub_category = SubCategory::where('sub_category_name', 'Overnight')->firstOrFail();
-
         
         $collections = ShipmentCollection::with('client')
             ->whereHas('client', function ($query) {
@@ -455,20 +457,6 @@ class ClientPortalController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->get();
-
-        // Get the latest consignment number
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id')
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
 
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Overnight')->pluck('id');
         //dd($overnightSubCategoryIds);
@@ -487,7 +475,6 @@ class ClientPortalController extends Controller
             'destinations',
             'walkInClients',
             'collections',
-            'consignment_no',
             'sub_category',
             'offices',
             'vehicles',
@@ -540,20 +527,6 @@ class ClientPortalController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get the latest consignment number
-        $latestConsignment = ShipmentCollection::where('consignment_no', 'LIKE', 'CN-%')
-            ->orderByDesc('id')
-            ->first();
-
-        if ($latestConsignment && preg_match('/CN-(\d+)/', $latestConsignment->consignment_no, $matches)) {
-            $lastNumber = intval($matches[1]);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 10000; // Start from CN-10000
-        }
-
-        $consignment_no = 'CN-' . $newNumber;
-
         $overnightSubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
         //dd($overnightSubCategoryIds);
 
@@ -580,7 +553,6 @@ class ClientPortalController extends Controller
             'destinations',
             'walkInClients',
             'collections',
-            'consignment_no',
             'sub_category',
             'dedicatedRider',
             'offices',
@@ -614,40 +586,39 @@ class ClientPortalController extends Controller
         DB::beginTransaction();
 
         try {
+            // Define the renderer
+            $renderer = new ImageRenderer(
+                new RendererStyle(
+                    300, // size in px
+                    1,   // margin
+                    null,
+                    null,
+                    Fill::uniformColor(
+                        new Rgb(255, 255, 255), // background color
+                        new Rgb(0, 0, 0)        // foreground color
+                    )
+                ),
+                new SvgImageBackEnd() // or use GD if available
+            );
 
-                       // Define the renderer
-    $renderer = new ImageRenderer(
-        new RendererStyle(
-            300, // size in px
-            1,   // margin
-            null,
-            null,
-            Fill::uniformColor(
-                new Rgb(255, 255, 255), // background color
-                new Rgb(0, 0, 0)        // foreground color
-            )
-        ),
-        new SvgImageBackEnd() // or use GD if available
-    );
+            // Create the QR code writer
+            $writer = new Writer($renderer);
 
-    // Create the QR code writer
-    $writer = new Writer($renderer);
+            // Encode the requestId into the QR code
+            $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
+            $qrContent = $writer->writeString($qrCoLink);
 
-    // Encode the requestId into the QR code
-    $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
-    $qrContent = $writer->writeString($qrCoLink);
+            // Define save path (in /public/qrcodes)
+            $qrCodeName =  $requestId . '.svg';
+            $qrCodePath = public_path('qrcodes/' . $qrCodeName);
 
-    // Define save path (in /public/qrcodes)
-    $qrCodeName =  $requestId . '.svg';
-    $qrCodePath = public_path('qrcodes/' . $qrCodeName);
+            // Ensure directory exists
+            if (!file_exists(public_path('qrcodes'))) {
+                mkdir(public_path('qrcodes'), 0777, true);
+            }
 
-    // Ensure directory exists
-    if (!file_exists(public_path('qrcodes'))) {
-        mkdir(public_path('qrcodes'), 0777, true);
-    }
-
-    // Save QR Code
-    file_put_contents($qrCodePath, $qrContent);
+            // Save QR Code
+            file_put_contents($qrCodePath, $qrContent);
             // $clientRequest->update(['qr_code_path' => $fileName]);
 
             // 1. Create client request
@@ -821,6 +792,7 @@ class ClientPortalController extends Controller
     public function create(Request $request, SmsService $smsService)
     {
         $requestId = $this->requestIdService->generate();
+        $consignment_no = $this->consignmentNumberService->generate();
         // Validate input
         $validated = $request->validate([
             'manualWaybillStatus' => 'nullable|in:yes,no',
@@ -835,38 +807,38 @@ class ClientPortalController extends Controller
         try {
 
             // Define the renderer
-    $renderer = new ImageRenderer(
-        new RendererStyle(
-            300, // size in px
-            1,   // margin
-            null,
-            null,
-            Fill::uniformColor(
-                new Rgb(255, 255, 255), // background color
-                new Rgb(0, 0, 0)        // foreground color
-            )
-        ),
-        new SvgImageBackEnd() // or use GD if available
-    );
+            $renderer = new ImageRenderer(
+                new RendererStyle(
+                    300, // size in px
+                    1,   // margin
+                    null,
+                    null,
+                    Fill::uniformColor(
+                        new Rgb(255, 255, 255), // background color
+                        new Rgb(0, 0, 0)        // foreground color
+                    )
+                ),
+                new SvgImageBackEnd() // or use GD if available
+            );
 
-    // Create the QR code writer
-    $writer = new Writer($renderer);
+            // Create the QR code writer
+            $writer = new Writer($renderer);
 
-    // Encode the requestId into the QR code
-    $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
-    $qrContent = $writer->writeString($qrCoLink);
+            // Encode the requestId into the QR code
+            $qrCoLink = "https://u-parms.eclipsefrt.com/shipmentDetails/" . $requestId;
+            $qrContent = $writer->writeString($qrCoLink);
 
-    // Define save path (in /public/qrcodes)
-    $qrCodeName =  $requestId . '.svg';
-    $qrCodePath = public_path('qrcodes/' . $qrCodeName);
+            // Define save path (in /public/qrcodes)
+            $qrCodeName =  $requestId . '.svg';
+            $qrCodePath = public_path('qrcodes/' . $qrCodeName);
 
-    // Ensure directory exists
-    if (!file_exists(public_path('qrcodes'))) {
-        mkdir(public_path('qrcodes'), 0777, true);
-    }
+            // Ensure directory exists
+            if (!file_exists(public_path('qrcodes'))) {
+                mkdir(public_path('qrcodes'), 0777, true);
+            }
 
-    // Save QR Code
-    file_put_contents($qrCodePath, $qrContent);
+            // Save QR Code
+            file_put_contents($qrCodePath, $qrContent);
 
             // Generate waybill
             $prefix = 'UCSL';
@@ -913,7 +885,7 @@ class ClientPortalController extends Controller
                 'client_id' => $request->clientId,
                 'origin_id' => $request->origin_id,
                 'destination_id' => $request->destination_id,
-                'consignment_no' => $request->consignment_no,
+                'consignment_no' => $consignment_no,
                 'waybill_no' => $waybill_no,
                 'base_cost' => $request->base_cost,
                 'cost' => $request->cost,
@@ -1076,7 +1048,7 @@ class ClientPortalController extends Controller
                 'priority_level' => $request->priority_level,
                 'deadline_date' => $request->deadline_date,
                 'collected_by' => auth()->id(),
-                'consignment_no' => $request->consignment_no,
+                'consignment_no' => $consignment_no,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'source'=> $request->source,

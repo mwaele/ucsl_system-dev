@@ -1020,7 +1020,7 @@
                     destinationSelect.html('<option value="">Select Destination</option>');
 
                     if (selectedOfficeId) {
-                        $.get('/get_destinations/' + selectedOfficeId + '/' + cid + '/' + serviceType)
+                        $.get('/client_portal/get_destinations/' + selectedOfficeId + '/' + cid + '/' + serviceType)
                             .done(function(data) {
                                 data.forEach(function(item) {
                                     destinationSelect.append(

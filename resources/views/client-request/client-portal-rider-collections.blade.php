@@ -557,8 +557,8 @@
                                                 <select name="destination"
                                                     class="form-control destination-dropdown-special">
                                                     <option value="">Select</option>
-                                                    <option value="{{ $collection->shipmentCollection->destination_id }}">
-                                                        {{ $collection->shipmentCollection->receiver_town }}
+                                                    <option value="{{ $collection->shipmentCollection?->destination_id }}">
+                                                        {{ $collection->shipmentCollection?->receiver_town }}
                                                     </option>
                                                 </select>
                                             </div>
@@ -769,7 +769,7 @@
                                     <div id="receipt-{{ $collection->id }}"
                                         style="font-family: monospace; font-size: 13px; line-height: 1.2;">
                                         <div style="text-align: center;">
-                                            <img src="{{ asset('images/UCSLogo1.png') }}" alt="Logo"
+                                            <img src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
                                                 style="height: 70px;">
                                         </div>
 
