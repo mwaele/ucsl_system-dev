@@ -70,6 +70,7 @@ class MyDeliveryController extends Controller
                     ->where('sub_category_id', $sameDayId);
                 });
         })
+        ->where('status', '!=', 'pending collection')
         ->orderBy('created_at', 'desc')
         ->get();
 

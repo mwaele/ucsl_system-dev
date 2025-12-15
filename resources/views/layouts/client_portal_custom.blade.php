@@ -78,6 +78,10 @@
             border: 2px solid #14489f !important;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         /* Highlight collapsed child item (e.g., inside dropdown) */
         .collapse-item.active {
             font-weight: bold;

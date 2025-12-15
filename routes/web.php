@@ -282,6 +282,8 @@ Route::middleware(['auth'])->group(function () {
     //special rates
     Route::get('/get_destinations/{office_id}/{client_id}/{service_type}', [SpecialRateController::class, 'getDestinations']);
 
+    Route::get('special_rates/get_destinations/{office_id}/{client_id}/{destination_id}', [SpecialRateController::class, 'getDestinationSpecialRate']);
+
 
     // rates 
     Route::get('/get-destination/{office_id}', [RateController::class, 'getDestinationSameDay']);

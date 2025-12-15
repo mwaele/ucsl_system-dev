@@ -107,6 +107,25 @@ class SpecialRateController extends Controller
 
         return response()->json($destinations);
     }
+    public function getDestinationSpecialRate($office_id, $client_id, $destination_id)
+    {
+        $today = Carbon::today();
+        $destinations = SpecialRate::where([
+            'office_id' => $office_id,
+            'client_id' => $client_id,
+            'id' => $destination_id,
+            'status' => 'active',
+        ])
+        ->whereDate('applicableTo', '>=', $today)
+        ->orderBy('destination', 'asc')
+        ->get(['destination', 'id']);
+
+        if ($destinations) {
+            return response()->json($destinations);
+        }
+
+        return response()->json(['destinations' => 'N/A'], 404);
+    }
  
     public function getCost($originId, $destinationId, $client_id)
     {

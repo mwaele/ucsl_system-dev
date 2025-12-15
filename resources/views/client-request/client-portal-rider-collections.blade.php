@@ -198,10 +198,10 @@
                                         </button>
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                                                                                                                    title="Generate Waybill"
-                                                                                                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                                                                </button> -->
+                                                                                                                                                                                                                                                                                                                title="Generate Waybill"
+                                                                                                                                                                                                                                                                                                                data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                                                                                                                                                            </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -317,10 +317,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                                                                                                                title="Waybill" data-toggle="modal"
-                                                                                                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                                                            </button> -->
+                                                                                                                                                                                                                                                                                                            title="Waybill" data-toggle="modal"
+                                                                                                                                                                                                                                                                                                            data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                                                                                                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                                                                                                                                                                                        </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -423,8 +423,8 @@
                                                             <label class="form-label text-primary text-primary">Sender
                                                                 Email
                                                             </label>
-                                                            <input type="email" class="form-control" name="senderEmail"
-                                                                id="senderEmail">
+                                                            <input type="email" class="form-control hidden"
+                                                                name="senderEmail" id="senderEmail">
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
@@ -562,7 +562,9 @@
                                                     </option>
                                                 </select>
                                             </div>
-                                            <input type="hidden" name='destination_id' id="destination_id_special">
+                                            <input type="hidden"
+                                                value="{{ $collection->shipmentCollection->destination_id }}"
+                                                name='destination_id' id="destination_id_special">
                                         </div>
                                         {{-- <input type="hidden" name='destination' id="destination_id">
 
@@ -1307,11 +1309,15 @@
                         const cid = modal.find('#cid').val();
                         const serviceType = modal.find('#service_type').val();
 
+                        const destinationIdSpecialInput = modal.find('#destination_id_special')
+                            .val(); // Clear previous destination ID
+
                         $('#origin_id').val(selectedOfficeId2);
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
                         if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' + serviceType)
+                            $.get('/special_rates/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' +
+                                    destinationIdSpecialInput)
                                 .done(function(data) {
                                     data.forEach(function(item) {
                                         destinationSelect2.append(
@@ -1325,31 +1331,103 @@
                         }
                     });
 
+                    // function recalculateCosts() {
+                    //     let totalWeight = 0;
+
+                    //     $('#shipmentTable tbody tr').each(function() {
+                    //         const row = $(this);
+                    //         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                    //         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                    //         totalWeight += weight * packages;
+                    //     });
+
+                    //     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
+                    //     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                    //     let cost = baseCost;
+
+                    //     if (totalWeight > 25) {
+                    //         const extraWeight = totalWeight - 25;
+                    //         cost += extraWeight * 50;
+                    //     }
+
+                    //     $('input[name="cost"]').val(cost.toFixed(2));
+
+                    //     const vat = cost * 0.16;
+                    //     $('input[name="vat"]').val(vat.toFixed(2));
+                    //     $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                    // }
+
                     function recalculateCosts() {
                         let totalWeight = 0;
+                        let totalVolume = 0;
 
                         $('#shipmentTable tbody tr').each(function() {
                             const row = $(this);
                             const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                             const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                            const volume = parseFloat(row.find('.volume').val()) || 1;
                             totalWeight += weight * packages;
+                            totalVolume += volume;
                         });
 
                         $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
                         const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                         let cost = baseCost;
+                        volumeWeight = totalVolume / 5000;
 
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
+                        let baseWeight = 0;
+
+
+                        if (totalWeight > volumeWeight) {
+                            baseWeight = totalWeight;
+                            //alert('weight' + baseWeight)
+                        }
+                        if (volumeWeight > totalWeight) {
+                            baseWeight = volumeWeight;
+                            //alert('volume weight' + baseWeight)
+                            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                        }
+
+                        if (baseWeight > 25) {
+                            const extraWeight = baseWeight - 25;
                             cost += extraWeight * 50;
                         }
 
-                        $('input[name="cost"]').val(cost.toFixed(2));
+                        function extractVAT(costWithVAT) {
+                            // Calculate raw VAT when total already includes VAT
+                            const rawVat = (costWithVAT * 0.16) / 1.16;
 
-                        const vat = cost * 0.16;
-                        $('input[name="vat"]').val(vat.toFixed(2));
-                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                            const integerPart = Math.floor(rawVat);
+                            const decimalPart = rawVat - integerPart;
+                            let roundedDecimal = 0;
+
+                            // Apply the same custom rounding rules
+                            if (decimalPart <= 0.03) {
+                                roundedDecimal = 0.00;
+                            } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                                roundedDecimal = 0.05;
+                            } else {
+                                roundedDecimal = 0.10;
+                            }
+
+                            let result = integerPart + roundedDecimal;
+
+                            // Handle carry-over if rounding pushes to next integer
+                            if (result >= integerPart + 1) {
+                                result = integerPart + 1.00;
+                            }
+
+                            // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                            return result.toFixed(2);
+                        }
+
+
+                        const vat = extractVAT(cost);
+                        $('input[name="cost"]').val((cost - vat).toFixed(2));
+                        $('input[name="vat"]').val(vat);
+                        $('input[name="total_cost"]').val((cost).toFixed(2));
                     }
 
                     // Trigger when destination changes
@@ -1358,6 +1436,7 @@
                         const destinationId2 = $(this).val();
                         const selectedOption2 = $(this).find('option:selected');
                         const destination_id2 = selectedOption2.data('id');
+                        //alert(destination_id2);
                         $("#destination_id_special").val(destination_id2);
                         const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                         const originId2 = modal.find('.origin-dropdown-special').val();
