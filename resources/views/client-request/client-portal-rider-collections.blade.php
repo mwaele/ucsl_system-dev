@@ -280,13 +280,13 @@
                                 {{-- Mobile Buttons (same logic, just smaller) --}}
                                 @if ($collection->status === 'pending collection')
                                     <button
-                                        class="btn btn-warning btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
+                                        class="btn btn-warning btn-sm d-flex mb-2 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         data-toggle="modal" title="Collect parcels"
                                         data-target="#collect-{{ $collection->id }}">
                                         <i class="fas fa-box mr-1"></i> <span>Collect</span>
                                     </button>
                                     <button
-                                        class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center"
+                                        class="btn btn-danger btn-sm d-flex mb-2 mr-1 ml-1 align-items-center gap-1 justify-content-center"
                                         data-toggle="modal" title="Failed Collection"
                                         data-target="#failedCollectionModal-{{ $collection->id }}">
                                         <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>

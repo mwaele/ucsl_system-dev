@@ -312,6 +312,7 @@
                                 <th>Request ID</th>
                                 <th>Client</th>
                                 <th>Pick-up Location</th>
+                                <th>Destination</th>
                                 <th>Date Requested</th>
                                 <th>Rider</th>
                                 <th>Vehicle</th>
@@ -327,6 +328,7 @@
                                     <td> {{ $request->requestId }} </td>
                                     <td> {{ $request->client->name }} </td>
                                     <td> {{ $request->collectionLocation }} </td>
+                                    <td> {{ $request->shipmentCollection?->receiver_town }} </td>
                                     <td data-date="{{ $request->dateRequested }}">
                                         {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
                                     </td>

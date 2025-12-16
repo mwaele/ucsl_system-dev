@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Earnings (Monthly) Card Example -->
+        <!-- Collected Card Example -->
         <div class="col-xl-2 col-md-6 mb-4">
             {{-- <a href="{{ route('client_index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
                 title="View Collected Parcels" class="text-decoration-none text-dark"> --}}
@@ -69,6 +69,31 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
                                     <div class="h5 mb-0 mr-3 font-weight-bold text-white">{{ $collected }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- </a> --}}
+        </div>
+
+        <!-- Verified Card Example -->
+        <div class="col-xl-2 col-md-6 mb-4">
+            {{-- <a href="{{ route('client_index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}"
+                title="View Collected Parcels" class="text-decoration-none text-dark"> --}}
+            <div class="card border-left-warning bg-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Verified
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-white">{{ $verified }}</div>
                                 </div>
                             </div>
                         </div>
@@ -225,7 +250,6 @@
                     cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr class="text-success">
-                            <th>#</th>
                             <th>Service Level</th>
                             <th>Number of Shipments</th>
                             <th>Action</th>
@@ -233,7 +257,6 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
                             <td>Overnight</td>
                             <td>{{ $overnight }}</td>
                             <td><a class="collapse-item"
@@ -241,7 +264,6 @@
                                     Account</a></td>
                         </tr>
                         <tr>
-                            <td>1</td>
                             <td>Same Day</td>
                             <td>{{ $sameDay }}</td>
                             <td><a class="collapse-item"

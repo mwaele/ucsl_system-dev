@@ -117,6 +117,7 @@ class ClientPortalController extends Controller
         ->where('sub_categories.sub_category_name', 'Overnight')
         ->where('client_requests.source','client_portal')
         ->where('client_requests.clientId', auth('client')->id())
+        ->groupBy('shipment_collections.id')
         ->count();
 
         $sameDay = DB::table('shipment_collections')
