@@ -308,15 +308,10 @@
                             </a>
                             <div id="collapseClient" class="collapse ml-3" aria-labelledby="headingClient"
                                 data-parent="#collapseShipments">
-                                {{-- <a class="collapse-item"
-                                    href="{{ route('overnight.walk-in', ['type' => 'client']) }}">Overnight -
-                                    Walk-in</a> --}}
                                 <a class="collapse-item"
                                     href="{{ route('client.overnight.on-account', ['type' => 'client']) }}">Overnight
                                     - On
                                     Account</a>
-                                {{-- <a class="collapse-item"
-                                    href="{{ route('sameday.walk-in', ['type' => 'client']) }}">SameDay - Walk-in</a> --}}
                                 <a class="collapse-item"
                                     href="{{ route('client.sameday.on-account', ['type' => 'client']) }}">SameDay - On
                                     Account</a>

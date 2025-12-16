@@ -128,7 +128,7 @@
                                                 <div class="col-md-6">
                                                     <label for="clientId" class="form-label text-primary">Client</label>
                                                     <select class="form-control selectpicker" data-live-search="true"
-                                                        id="clientId" name="clientId">
+                                                        id="clientId" name="clientId" required>
                                                         <option value="">Select Client</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->id }}"
@@ -146,7 +146,7 @@
                                                         Location
                                                     </label>
                                                     <select name="collectionLocation" id="collectionLocation"
-                                                        class="form-control selectpicker" data-live-search="true">
+                                                        class="form-control selectpicker" data-live-search="true" required>
                                                         <option value="">-- Select Location --</option>
                                                         @foreach ($locations->sortBy('destination') as $location)
                                                             <option value="{{ $location->destination }}"
@@ -174,7 +174,7 @@
                                                         Categories</label>
                                                     <!-- Client's Categories -->
                                                     <select class="form-control mt-1" id="clientCategories"
-                                                        name="category_id">
+                                                        name="category_id" required>
                                                         <option value="">Select Client Categories</option>
                                                     </select>
 
@@ -197,12 +197,12 @@
                                                 <label for="parcelDetails" class="form-label fw-medium text-primary">Parcel
                                                     Details</label>
                                                 <textarea class="form-control" id="parcelDetails" name="parcelDetails" rows="3"
-                                                    placeholder="Fill in the description of goods."></textarea>
+                                                    placeholder="Fill in the description of goods." required></textarea>
                                             </div>
 
                                             <h6 class="text-muted text-primary"> Rider Details.</h6>
                                             <div class="row mb-2 bg-success">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="currentLocation" value="currentLocation">
@@ -211,7 +211,7 @@
 
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="unallocatedRiders" value="unallocated">
@@ -220,11 +220,18 @@
                                                             Riders</label>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="riderOption"
                                                             id="allRiders" value="all">
                                                         <label class="form-check-label" for="allRiders">All Riders</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="riderOption"
+                                                            id="dedicatedRiders" value="dedicated">
+                                                        <label class="form-check-label" for="dedicatedRiders">Dedicated Riders</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -232,7 +239,7 @@
                                             <div class="row">
                                                 <div class="col-md-12 mb-3">
                                                     <label for="userId" class="form-label text-primary">Rider</label>
-                                                    <select class="form-control" id="userId" name="userId">
+                                                    <select class="form-control" id="userId" name="userId" required>
                                                         <option value="">Select Rider</option>
                                                     </select>
                                                 </div>
@@ -243,7 +250,7 @@
                                                     <label for="vehicle" class="form-label text-primary">Vehicle</label>
                                                     <input type="text" id="vehicle" class="form-control"
                                                         name="vehicle_display" placeholder="Select rider to populate"
-                                                        readonly>
+                                                        required readonly>
                                                     <input type="hidden" id="vehicleId" name="vehicleId">
                                                 </div>
 
@@ -281,14 +288,8 @@
                                                 <div class="col-md-3 mb-3">
                                                     <label for="datetime" class="text-primary">Date of Request</label>
                                                     <div class="input-group">
-                                                        <input type="text" name="dateRequested" id="datetime"
-                                                            class="form-control" placeholder="Select date & time">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text" id="calendar-trigger"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </span>
-                                                        </div>
+                                                        <input type="datetime-local" name="dateRequested" placeholder="Select date & time" 
+                                                            class="form-control" required>
                                                     </div>
 
                                                     <script>
