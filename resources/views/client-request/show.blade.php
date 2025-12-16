@@ -193,17 +193,17 @@
 
                                         <!-- Release Collection Button -->
                                         <!-- <button
-                                                        class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
-                                                        data-toggle="modal" title="Release Collection"
-                                                        data-target="#releaseCollectionModal-{{ $collection->id }}">
-                                                        Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                                    </button> -->
+                                                                class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                                                data-toggle="modal" title="Release Collection"
+                                                                data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                                                Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                                            </button> -->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                            title="Generate Waybill"
-                                                                                                                            data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                        </button> -->
+                                                                                                                                    title="Generate Waybill"
+                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -313,10 +313,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                        title="Waybill" data-toggle="modal"
-                                                                                                                        data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                    </button> -->
+                                                                                                                                title="Waybill" data-toggle="modal"
+                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                            </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -1327,30 +1327,123 @@
 
                     function recalculateCosts() {
                         let totalWeight = 0;
+                        let totalVolume = 0;
 
                         $('#shipmentTable tbody tr').each(function() {
                             const row = $(this);
                             const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                             const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                            const volume = parseFloat(row.find('.volume').val()) || 1;
                             totalWeight += weight * packages;
+                            totalVolume += volume;
                         });
 
                         $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
                         const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                         let cost = baseCost;
+                        volumeWeight = totalVolume / 5000;
 
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
+                        let baseWeight = 0;
+
+
+                        if (totalWeight > volumeWeight) {
+                            baseWeight = totalWeight;
+                            //alert('weight' + baseWeight)
+                        }
+                        if (volumeWeight > totalWeight) {
+                            baseWeight = volumeWeight;
+                            //alert('volume weight' + baseWeight)
+                            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                        }
+
+                        if (baseWeight > 25) {
+                            const extraWeight = baseWeight - 25;
                             cost += extraWeight * 50;
                         }
 
-                        $('input[name="cost"]').val(cost.toFixed(2));
 
-                        const vat = cost * 0.16;
-                        $('input[name="vat"]').val(vat.toFixed(2));
-                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+
+                        // function extractVAT(costWithVAT) {
+                        //     // Calculate raw VAT when total already includes VAT
+                        //     const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                        //     let integerPart = Math.floor(rawVat);
+                        //     const decimal = rawVat - integerPart;
+
+                        //     let roundedVat;
+                        //     if (decimal < 0.3) {
+                        //         roundedVat = integerPart;
+                        //     } else if (decimal >= 0.7) {
+                        //         roundedVat = integerPart + 0.5;
+                        //     } else {
+                        //         roundedVat = integerPart + 1;
+                        //     }
+
+                        //     // Always return a formatted string like "69.00" or "69.50"
+                        //     return roundedVat.toFixed(2);
+                        // }
+                        function extractVAT(costWithVAT) {
+                            // Calculate raw VAT when total already includes VAT
+                            const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                            const integerPart = Math.floor(rawVat);
+                            const decimalPart = rawVat - integerPart;
+                            let roundedDecimal = 0;
+
+                            // Apply the same custom rounding rules
+                            if (decimalPart <= 0.03) {
+                                roundedDecimal = 0.00;
+                            } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                                roundedDecimal = 0.05;
+                            } else {
+                                roundedDecimal = 0.10;
+                            }
+
+                            let result = integerPart + roundedDecimal;
+
+                            // Handle carry-over if rounding pushes to next integer
+                            if (result >= integerPart + 1) {
+                                result = integerPart + 1.00;
+                            }
+
+                            // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                            return result.toFixed(2);
+                        }
+
+
+                        const vat = extractVAT(cost);
+                        $('input[name="cost"]').val((cost - vat).toFixed(2));
+                        $('input[name="vat"]').val(vat);
+                        $('input[name="total_cost"]').val((cost).toFixed(2));
                     }
+
+                    // function recalculateCosts() {
+                    //     let totalWeight = 0;
+
+                    //     $('#shipmentTable tbody tr').each(function() {
+                    //         const row = $(this);
+                    //         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                    //         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                    //         totalWeight += weight * packages;
+                    //     });
+
+                    //     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
+                    //     const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                    //     let cost = baseCost;
+
+                    //     if (totalWeight > 25) {
+                    //         const extraWeight = totalWeight - 25;
+                    //         cost += extraWeight * 50;
+                    //     }
+
+                    //     $('input[name="cost"]').val(cost.toFixed(2));
+
+                    //     const vat = cost * 0.16;
+                    //     $('input[name="vat"]').val(vat.toFixed(2));
+                    //     $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                    // }
 
                     // Trigger when destination changes
                     $(document).on('change', '.destination-dropdown-special', function() {

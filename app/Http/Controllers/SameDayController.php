@@ -58,6 +58,8 @@ class SameDayController extends Controller
             ->whereIn('type', ['Same Day', 'same_day'])
             ->get();
 
+        //dd($locations);
+
         $samedaySubCategoryIds = SubCategory::where('sub_category_name', 'Same Day')->pluck('id');
 
         $clientRequests = ClientRequest::whereIn('sub_category_id', $samedaySubCategoryIds)
