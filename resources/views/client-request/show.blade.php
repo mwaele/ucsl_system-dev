@@ -193,17 +193,17 @@
 
                                         <!-- Release Collection Button -->
                                         <!-- <button
-                                                                class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
-                                                                data-toggle="modal" title="Release Collection"
-                                                                data-target="#releaseCollectionModal-{{ $collection->id }}">
-                                                                Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                                            </button> -->
+                                                                    class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
+                                                                    data-toggle="modal" title="Release Collection"
+                                                                    data-target="#releaseCollectionModal-{{ $collection->id }}">
+                                                                    Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
+                                                                </button> -->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
-                                                                                                                                    title="Generate Waybill"
-                                                                                                                                    data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                </button> -->
+                                                                                                                                        title="Generate Waybill"
+                                                                                                                                        data-toggle="modal" data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                        <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                    </button> -->
                                     @endif
 
                                     {{-- Verified / Delivered --}}
@@ -313,10 +313,10 @@
                                     </button>
 
                                     <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                                title="Waybill" data-toggle="modal"
-                                                                                                                                data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                            </button> -->
+                                                                                                                                    title="Waybill" data-toggle="modal"
+                                                                                                                                    data-target="#waybillModal{{ $collection->requestId }}">
+                                                                                                                                    <i class="fas fa-file-invoice"></i> <span>Waybill</span>
+                                                                                                                                </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))
@@ -1357,8 +1357,8 @@
                             $('input[name="total_weight"]').val(baseWeight.toFixed(2));
                         }
 
-                        if (baseWeight > 25) {
-                            const extraWeight = baseWeight - 25;
+                        if (baseWeight > 5) {
+                            const extraWeight = baseWeight - 5;
                             cost += extraWeight * 50;
                         }
 

@@ -1779,8 +1779,8 @@
                         $('input[name="total_weight"]').val(baseWeight.toFixed(2));
                     }
 
-                    if (baseWeight > 25) {
-                        const extraWeight = baseWeight - 25;
+                    if (baseWeight > 5) {
+                        const extraWeight = baseWeight - 5;
                         cost += extraWeight * 50;
                     }
 
