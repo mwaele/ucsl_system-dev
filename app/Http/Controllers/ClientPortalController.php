@@ -913,17 +913,23 @@ class ClientPortalController extends Controller
             ]);
             // 1b. Handle manual waybill number + image upload
             if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
-            $collection->manual_waybillNo = $validated['manualWaybillNo'] ?? null;
 
-            if ($request->hasFile('manualWaybillImage')) {
-                $file = $request->file('manualWaybillImage');
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads'), $filename);
-                $collection->manual_waybill = $filename;
-            }
+    $updateData = [
+        'manual_waybillNo' => $validated['manualWaybillNo'] ?? null,
+    ];
 
-            $collection->save();
-        }
+    if ($request->hasFile('manualWaybillImage')) {
+        $file = $request->file('manualWaybillImage');
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads'), $filename);
+
+        $updateData['manual_waybill'] = $filename;
+    }
+
+    // ✅ UPDATE EXISTING RECORD (NO DUPLICATION)
+    $collection->update($updateData);
+}
+
 
             // 2. Rebuild items array from flat structure
             $itemCount = count($request->input('item_name', []));
