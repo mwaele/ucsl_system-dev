@@ -98,7 +98,8 @@ Route::middleware('client.auth')->group(function () {
 
     Route::get('/getDestinations/{office_id}', [RateController::class, 'getDestinationSameDay']);
 
-     Route::get('/getDestinationsOvernight/{office_id}', [RateController::class, 'getDestinations']);
+    Route::get('/getDestinationsOvernight/{office_id}', [RateController::class, 'getDestinations']);
+    Route::get('client_portal/getDestinationsOvernight/{office_id}', [SpecialRateController::class, 'getSpecialDestinations']);
     Route::put('/rates/{rate}', [RateController::class, 'edit'])->name('rates.edit');
 
 
