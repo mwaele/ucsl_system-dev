@@ -44,7 +44,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <!-- <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Zone</label>
                                                 <select name="zone_id" class="form-control">
@@ -54,7 +54,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -62,15 +62,16 @@
                                                 <input type="text" name="destination" class="form-control">
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Rate <span class="text-danger">*</span></label>
                                                 <input type="text" name="rate" class="form-control" required>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="row">
 
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -85,9 +86,7 @@
                                                 <input type="date" name="applicableTo" class="form-control">
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Approval Status</label>
@@ -98,6 +97,10 @@
                                                 </select>
                                             </div>
                                         </div>
+
+                                    </div>
+
+                                    <div class="row">
 
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -121,18 +124,20 @@
                                                 </select>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
+
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Type</label>
                                                 <select name="status" class="form-control">
                                                     <option value="">Select Type</option>
                                                     <option value="Overnight">Overnight</option>
-                                                    <option value="Same Day">Closed</option>
+                                                    <option value="Same Day">Same Day</option>
                                                 </select>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Additional Cost Per KM</label>
@@ -164,7 +169,7 @@
                             <th>#</th>
                             <th>Client</th>
                             <th>Origin</th>
-                            <th>Zone</th>
+                            <th>Type</th>
                             <th>Destination</th>
                             <th>Rate</th>
                             <th>Valid From</th>
@@ -179,7 +184,7 @@
                             <th>#</th>
                             <th>Client</th>
                             <th>Origin</th>
-                            <th>Zone</th>
+                            <th>Type</th>
                             <th>Destination</th>
                             <th>Rate</th>
                             <th>Valid From</th>
@@ -196,7 +201,7 @@
                                 <td> {{ $loop->iteration }}.</td>
                                 <td> {{ $rate->client->name }} </td>
                                 <td> {{ $rate->office->name }} </td>
-                                <td> {{ $rate->zone_name->zone_name ?? null }} </td>
+                                <td> {{ $rate->type }} </td>
                                 <td> {{ $rate->destination }} </td>
                                 <td> {{ $rate->rate }} </td>
                                 <td> {{ \Carbon\Carbon::parse($rate->applicableFrom)->format('M d, Y') ?? null }} </td>
@@ -253,10 +258,10 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-4">
+                                                            <!-- <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Zone</label>
-                                                                    <select name="zone_id" class="form-control" required>
+                                                                    <select name="zone_id" class="form-control">
                                                                         <option value="">Select</option>
                                                                         @foreach ($zones as $zone)
                                                                             <option value="{{ $zone->id }}"
@@ -266,7 +271,7 @@
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
 
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
@@ -276,9 +281,7 @@
                                                                         value="{{ $rate->destination }}">
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Rate <span
@@ -288,13 +291,15 @@
                                                                         value="{{ $rate->rate }}">
                                                                 </div>
                                                             </div>
+                                                        </div>
 
+                                                        <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Applicable From</label>
                                                                     <input type="date" name="applicableFrom"
                                                                         class="form-control"
-                                                                        value="{{ $rate->applicableFrom }}">
+                                                                        value="{{ \Carbon\Carbon::parse($rate->applicableFrom)->format('Y-m-d') }}" required>
                                                                 </div>
                                                             </div>
 
@@ -303,12 +308,11 @@
                                                                     <label class="text-primary">Applicable To</label>
                                                                     <input type="date" name="applicableTo"
                                                                         class="form-control"
-                                                                        value="{{ $rate->applicableTo }}">
+                                                                        value="{{ \Carbon\Carbon::parse($rate->applicableTo)->format('Y-m-d') }}"
+                                                                        required>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <div class="row">
                                                             <div class="col-md-4">
                                                                 <div class="form-group">
                                                                     <label class="text-primary">Approval Status</label>
@@ -323,6 +327,9 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+                                                        </div>
+
+                                                        <div class="row">
 
                                                             <div class="col-md-4">
                                                                 <div class="form-group">

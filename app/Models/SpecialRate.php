@@ -24,6 +24,11 @@ class SpecialRate extends Model
         'zone_id',
         'client_id'
     ];
+
+    protected $casts = [
+        'applicableTo' => 'datetime',
+    ];
+
     public function office()
     {
         return $this->belongsTo(Office::class);

@@ -58,7 +58,6 @@ class SpecialRateController extends Controller
         $validatedDate = $request->validate(
             [
                 'approvedBy'=>'nullable|string',
-                'zone'=>'nullable|string',
                 'origin'=>'nullable|string',
                 'destination'=>'nullable|string',
                 'rate'=>'required',
@@ -68,7 +67,6 @@ class SpecialRateController extends Controller
                 'approvalStatus'=>'required',
                 'dateApproved'=>'nullable|string',
                 'office_id' =>'required',
-                'zone_id'=>'required',
                 'client_id' => 'required'
             ]
         );
@@ -172,7 +170,6 @@ class SpecialRateController extends Controller
     {
         $validated = $request->validate([
             'office_id' => 'required|integer',
-            'zone_id' => 'required|integer',
             'destination' => 'nullable|string|max:255',
             'rate' => 'required|numeric',
             'applicableFrom' => 'nullable|date',
