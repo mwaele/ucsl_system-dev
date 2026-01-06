@@ -43,6 +43,7 @@ use App\Http\Controllers\Accounts\Debtors\CreditNoteController;
 use App\Http\Controllers\Accounts\Creditors\InvoiceController as CreditorInvoiceController;
 use App\Http\Controllers\Accounts\LedgerController;
 use App\Http\Controllers\ClientPortalController;
+use App\Http\Controllers\ClientPortalReportsController;
 use App\Http\Controllers\ServiceRateController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\HomeController;
@@ -93,6 +94,9 @@ Route::middleware('client.auth')->group(function () {
     Route::post('/client_portal_request', [ClientPortalController::class, 'store'])->name('clientPortalRequest.store');
 
     Route::post('/client_portal_request/on-account', [ClientPortalController::class, 'create'])->name('client_portal_request.create');
+
+    Route::get('/client_portal/client_shipments_report', [ClientPortalReportsController::class, 'client_shipments_report'])->name('client_shipments_report');
+    Route::get('/client_portal/client_payments_report', [ClientPortalReportsController::class, 'client_payments_report'])->name('client_payments_report');
 
     Route::get('client_portal/get-latest-invoice-no', [InvoiceController::class, 'getLatestInvoiceNo'])->name('get-latest-invoice-no');
 

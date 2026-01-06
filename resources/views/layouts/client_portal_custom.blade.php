@@ -245,10 +245,6 @@
                             Account</a>
 
                         <hr class="sidebar-divide my-0" />
-
-
-
-
                     </div>
                 </div>
             </li>
@@ -262,6 +258,27 @@
                     <i class="fas fa-fw fa-clipboard"></i>
                     <span class="sized">Tracking</span>
                 </a>
+            </li>
+
+            <!-- Nav Item - Reports -->
+            <li class="nav-item {{ request()->routeIs('client_shipments_report', 'client_payments_report') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
+                    aria-expanded="true" aria-controls="collapseShipments">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span class="sized">Reports</span>
+                </a>
+
+                <div id="collapseShipments" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}"
+                    aria-labelledby="headingShipments" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item"
+                            href="{{ route('client_shipments_report', ['type' => 'client_portal']) }}">Shipment Reports</a>
+                        <hr class="sidebar-divide my-0" />
+                        <a class="collapse-item"
+                            href="{{ route('client_payments_report', ['type' => 'client_portal']) }}">Payment reports</a>
+                        <hr class="sidebar-divide my-0" />
+                    </div>
+                </div>
             </li>
 
             {{-- <li class="nav-item {{ request()->routeIs('tracking.*') ? 'active' : '' }}">
