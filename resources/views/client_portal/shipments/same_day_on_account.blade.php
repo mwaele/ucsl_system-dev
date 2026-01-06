@@ -155,7 +155,13 @@
                                                             {{ $destination->destination }}</option>
                                                     @endforeach
                                                 </select>
+                                                
+                                                <input type="hidden" id="rate_id">
                                             </div>
+                                            <div class="col-md-3 d-none" id="destination-wrapper">
+                                                <h6 for="collectionLocation" class="text-primary">Specify Destination Location</h6>
+                                        <input type="text" name="destination_location" class="form-control">
+                                    </div>
 
                                             <div class="col-md-3">
                                                 <h6 for="collectionLocation" class="text-primary">Pickup Location</h6>
@@ -668,7 +674,7 @@
                                     {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->office->name ?? $request->pickupLocation }} </td>
-                                <td> {{ $request->shipmentCollection?->destination->destination ?? $request->collectionLocation }}
+                                <td> {{ $request->shipmentCollection?->special_destination->destination ?? $request->collectionLocation }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name ?? $request->serviceLevel?->sub_category_name }}
                                 </td>

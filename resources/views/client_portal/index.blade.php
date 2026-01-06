@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Collected Card Example -->
+        <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-2 col-md-6 mb-4">
             {{-- <a href="{{ route('client_index', array_merge($queryParams, ['status' => 'collected', 'time' => $timeFilter])) }}"
                 title="View Collected Parcels" class="text-decoration-none text-dark"> --}}
@@ -80,8 +80,7 @@
             </div>
             {{-- </a> --}}
         </div>
-
-        <!-- Verified Card Example -->
+        
         <div class="col-xl-2 col-md-6 mb-4">
             {{-- <a href="{{ route('client_index', array_merge($queryParams, ['status' => 'verified', 'time' => $timeFilter])) }}"
                 title="View Collected Parcels" class="text-decoration-none text-dark"> --}}

@@ -328,7 +328,7 @@
                                     <td> {{ $request->requestId }} </td>
                                     <td> {{ $request->client->name }} </td>
                                     <td> {{ $request->collectionLocation }} </td>
-                                    <td> {{ $request->shipmentCollection?->receiver_town }} </td>
+                                    <td>{{ $request->shipmentCollection?->receiver_town}}</td>
                                     <td data-date="{{ $request->dateRequested }}">
                                         {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
                                     </td>

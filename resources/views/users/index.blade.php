@@ -78,7 +78,7 @@
                             <!-- Driver Type (Only shows if role = driver) -->
                             <div class="form-group col-md-6 d-none" id="driverTypeWrapper">
                                 <label class="form-label">Driver Type</label>
-                                <select id="driverTypeSelect" class="form-control" required>
+                                <select id="driverTypeSelect" class="form-control" >
                                     <option value="">-- Select Type --</option>
                                     <option value="driver">Driver</option>
                                     <option value="rider">Rider</option>
@@ -88,7 +88,7 @@
                             <!-- Rider Type (Only shows if driverType = rider) -->
                             <div class="form-group col-md-6 d-none" id="riderTypeWrapper">
                                 <label class="form-label">Rider Type</label>
-                                <select id="riderTypeSelect" class="form-control" required>
+                                <select id="riderTypeSelect" class="form-control" >
                                     <option value="">-- Select Type --</option>
                                     <option value="normal">Normal</option>
                                     <option value="dedicated">Dedicated</option>
@@ -98,7 +98,7 @@
                             <!-- Client Select (Only if Dedicated) -->
                             <div class="form-group col-md-6 d-none" id="clientWrapper">
                                 <label class="form-label">Select Client</label>
-                                <select name="dedicatedClientId" class="form-control" required>
+                                <select name="dedicatedClientId" class="form-control" >
                                     <option value="">-- Select Client --</option>
                                     @foreach($clients as $client)
                                         <option value="{{ $client->id }}">{{ $client->name }}</option>

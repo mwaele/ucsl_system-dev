@@ -701,6 +701,10 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item" href="{{ route('users.index') }}">All Users</a>
                             <hr class="sidebar-divide my-0" />
+                            
+                            <a class="collapse-item" href="{{ route('office_users.index') }}">Front Office Users</a>
+                            <hr class="sidebar-divide my-0" />
+                            
                             <a class="collapse-item" href="{{ route('sales_person.index') }}">Sales Person</a>
                             <hr class="sidebar-divide my-0" />
                             <a class="collapse-item" href="{{ route('dispatchers.index') }}">Dispatch Clerks</a>

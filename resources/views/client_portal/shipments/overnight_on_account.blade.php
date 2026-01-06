@@ -109,6 +109,8 @@
                                         {{-- <div class="modal-header bg-primary">
                                             <h5 class="text-white">Fill in the Client details.</h5>
                                         </div> --}}
+                                        
+                                        <input type="hidden" id="overnight" value="overnight" name="service_type">
 
                                         <div class="row  mt-3 mb-3">
                                             <div class="col-md-3">
@@ -131,9 +133,11 @@
 
                                             <!-- Hidden input to store the ID -->
                                             <input type="hidden" name="sub_category_id" value="{{ $sub_category->id }}">
+                                            <input type="hidden" name="cid" id="cid"
+                                                value="{{ auth('client')->user()->id }}">
                                             <div class="col-md-3">
                                                 <h6 for="collectionLocation" class="text-primary">From</h6>
-                                                <select name="origin_id" id="origin_id" class="form-control origin-dropdown"
+                                                <select name="origin_id" id="origin_id" class="form-control origin-dropdown-special"
                                                     required>
                                                     <option value="">Select</option>
                                                     @foreach ($offices as $office)
@@ -144,9 +148,9 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <h6 for="collectionLocation" class="text-primary">To</h6>
-                                                <select name="destination" class="form-control destination-dropdown">
+                                                <select name="destination" class="form-control destination-dropdown-special">
                                                     <option value="{{ $office->id }}" data-id="{{ $office->id }}">
-                                                        {{ $office->name }}</option>
+                                                        {{ $office->name  }}</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
@@ -155,7 +159,7 @@
                                                     class="form-control" name="collectionLocation">
                                             </div>
                                             <input type="hidden" name='destination_id' id="destination_id">
-                                            <input type="hidden" name="clientId" value="{{ auth('client')->user()->id }}">
+                                            <input type="hidden" name="clientId" id="clientId" value="{{ auth('client')->user()->id }}">
                                         </div>
 
                                         <div class="modal-header bg-primary">
@@ -568,7 +572,8 @@
                                     </div>
                                     <div class="modal-footer d-flex justify-content-between align-items-center bg-light">
 
-                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="submit" id="submitBtn" class="btn btn-primary">Submit </button>
+
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close
                                             X</button>
                                     </div>
@@ -576,6 +581,32 @@
                             </div>
                         </div>
                     </form>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.querySelector('form[action="{{ route('client_portal_request.create') }}"]');
+                        const submitBtn = document.getElementById('submitBtn');
+                    
+                        if (!form) return;
+                    
+                        form.addEventListener('submit', function () {
+                            submitBtn.disabled = true;
+                            submitBtn.innerText = 'Submitting...';
+                        });
+                    });
+                    $('#registerParcel').on('hidden.bs.modal', function () {
+                        const btn = document.getElementById('submitBtn');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerText = 'Submit';
+                        }
+                    });
+                    document.querySelector('form').addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                                e.preventDefault();
+                            }
+                        });
+                    </script>
+
                 </div>
             </div>
         </div>
@@ -622,7 +653,7 @@
                                     {{ $request->shipmentCollection?->created_at?->format('M d, Y') }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->office->name ?? '' }} </td>
-                                <td> {{ $request->shipmentCollection?->destination->destination }} </td>
+                                <td> {{ $request->shipmentCollection?->special_destination?->destination }} </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'Pending' }} </td>

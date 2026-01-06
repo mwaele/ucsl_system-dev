@@ -47,6 +47,11 @@ class ClientRequest extends Model
     {
         return $this->belongsTo(Vehicle::class, 'vehicleId');
     }
+    
+    public function rate()
+    {
+        return $this->belongsTo(Rate::class, 'rate_id');
+    }
 
     public function shipmentCollection()
     {

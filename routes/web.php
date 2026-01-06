@@ -70,6 +70,10 @@ Route::middleware('client.auth')->group(function () {
     
     Route::get('/parcel/create', [ParcelController::class, 'create'])->name('parcel.create');
     Route::post('/parcel', [ParcelController::class, 'store'])->name('parcel.store'); 
+    
+    Route::get('/client_portal/get_cost/{originId}/{destinationId}/{client_id}', [SpecialRateController::class, 'getCost']);
+
+
 
     Route::resource('service_rates', ServiceRateController::class);
 
@@ -167,6 +171,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/shipments/{requestId}/handover', [ShipmentCollectionController::class, 'handover'])->name('shipments.handover');
 
     Route::get('/client_requests', [ClientRequestController::class, 'delayed_collection'])->name('client_requests.delayed_collection');
+    
+    Route::get('/almost_delayed_collection/', [ClientRequestController::class, 'almost_delayed_collection'])->name('client_requests.almost_delayed_collection');
 
     Route::get('/my_collections/client-portal', [MyCollectionController::class, 'collect'])->name('my_collections.collect');
 //collections

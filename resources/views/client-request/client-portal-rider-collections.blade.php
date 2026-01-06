@@ -190,12 +190,12 @@
                                         </button>
 
                                         <!-- Release Collection Button -->
-                                        <button
-                                            class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"
-                                            data-toggle="modal" title="Release Collection"
-                                            data-target="#releaseCollectionModal-{{ $collection->id }}">
-                                            Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                        </button>
+                                        <!--<button-->
+                                        <!--    class="btn btn-warning btn-sm ml-1 mr-1 mb-1 d-flex align-items-center gap-1"-->
+                                        <!--    data-toggle="modal" title="Release Collection"-->
+                                        <!--    data-target="#releaseCollectionModal-{{ $collection->id }}">-->
+                                        <!--    Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>-->
+                                        <!--</button>-->
 
                                         <!-- <button class="btn btn-warning btn-sm mr-1 mb-1 d-flex align-items-center gap-1 text-white"
                                                                                                                                                                                                                                                                                                                 title="Generate Waybill"
@@ -280,13 +280,13 @@
                                 {{-- Mobile Buttons (same logic, just smaller) --}}
                                 @if ($collection->status === 'pending collection')
                                     <button
-                                        class="btn btn-warning btn-sm d-flex mb-2 mr-1 align-items-center gap-1 w-50 justify-content-center"
+                                        class="btn btn-warning btn-sm d-flex mb-1 mr-1 align-items-center gap-1 w-50 justify-content-center"
                                         data-toggle="modal" title="Collect parcels"
                                         data-target="#collect-{{ $collection->id }}">
                                         <i class="fas fa-box mr-1"></i> <span>Collect</span>
                                     </button>
                                     <button
-                                        class="btn btn-danger btn-sm d-flex mb-2 mr-1 ml-1 align-items-center gap-1 justify-content-center"
+                                        class="btn btn-danger btn-sm d-flex mb-1 mr-1 ml-1 align-items-center gap-1 justify-content-center"
                                         data-toggle="modal" title="Failed Collection"
                                         data-target="#failedCollectionModal-{{ $collection->id }}">
                                         <i class="fas fa-exclamation-triangle mr-1"></i> <span>Failed Collection</span>
@@ -540,7 +540,7 @@
                                         <!-- Origin & Destination -->
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label class="form-label text-primary text-primary">Origin
+                                                <label class="form-label text-primary text-primary">Origins
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="origin_id" id="origin_id_special"
                                                     class="form-control origin-dropdown-special">
@@ -1446,7 +1446,7 @@
                                 .done(function(data) {
                                     const baseCost = parseFloat(data.cost);
                                     $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
+                                    //recalculateCosts();
                                 })
                                 .fail(function() {
                                     console.error("Failed to fetch base cost");

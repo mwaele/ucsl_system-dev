@@ -448,7 +448,7 @@
                     <div class="modal-header bg-success">
                         <h5 class="modal-title text-white" id="exampleModalLabel">Ready to Leave?</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                            <span aria-hidden="true">Ã—</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -813,17 +813,17 @@
 
 
 
-                // // ⬅ Handle suggestion click
+                // // â¬… Handle suggestion click
                 $(document).on('click', '#locationSuggestions a', function(e) {
                     e.preventDefault();
                     const selected = $(this).text();
                     $('#collectionLocation').val(selected);
                     $('#locationSuggestions').hide();
 
-                    fetchDriversByLocation(selected); // ✅ fetch drivers on selection
+                    fetchDriversByLocation(selected); // âœ… fetch drivers on selection
                 });
 
-                // ⬅ Handle focusout on input
+                // â¬… Handle focusout on input
                 $('#collectionLocation').on('focusout', function() {
                     $('#locationSuggestions').hide();
                 });
@@ -964,7 +964,7 @@
                 $('#categories-multiselect').multiselect({
                     includeSelectAllOption: true,
                     enableFiltering: true,
-                    buttonWidth: '100%', // 👈 Ensures dropdown matches form-control width
+                    buttonWidth: '100%', // ðŸ‘ˆ Ensures dropdown matches form-control width
                     nonSelectedText: 'Select categories'
                 });
 
@@ -1019,6 +1019,57 @@
 
                     const cid = modal.find('#cid').val();
                     const serviceType = 'Same Day';
+
+
+                    destinationSelect.html('<option value="">Select Destination</option>');
+
+                    if (selectedOfficeId) {
+                        $.get('/client_portal/get_destinations/' + selectedOfficeId + '/' + cid + '/' + serviceType)
+                            .done(function(data) {
+                                data.forEach(function(item) {
+                                    destinationSelect.append(
+                                        `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                                    );
+                                });
+                            })
+                            .fail(function() {
+                                console.error("Failed to load destinations");
+                            });
+                    }
+                });
+                
+                $(document).on('change', '.origin-dropdown', function() {
+                    const originSelect = $(this);
+                    const selectedOfficeId = originSelect.val();
+                    const modal = originSelect.closest('.modal');
+                    const destinationSelect = modal.find('.destination-dropdown');
+
+                    destinationSelect.html('<option value="">Select Destination</option>');
+
+                    if (selectedOfficeId) {
+                        $.get('/getDestinationsOvernight/' + selectedOfficeId)
+                            .done(function(data) {
+                                data.forEach(function(item) {
+                                    destinationSelect.append(
+                                        `<option data-id="${item.id}" value="${item.destination}">${item.destination}</option>`
+                                    );
+                                });
+                            })
+                            .fail(function() {
+                                console.error("Failed to load destinations");
+                            });
+                    }
+                });
+                
+                $(document).on('change', '.origin-dropdown-special', function() {
+                    //alert();
+                    const originSelect = $(this);
+                    const selectedOfficeId = originSelect.val();
+                    const modal = originSelect.closest('.modal');
+                    const destinationSelect = modal.find('.destination-dropdown-special');
+
+                    const cid = modal.find('#cid').val();
+                    const serviceType = 'Overnight';
 
 
                     destinationSelect.html('<option value="">Select Destination</option>');
@@ -1099,98 +1150,235 @@
                 // $('input[name="vat"]').val(vat.toFixed(2));
                 // $('input[name="total_cost"]').val((cost + vat).toFixed(2));
                 // }
+                
+                // function recalculateCosts() {
+                //     let totalWeight = 0;
+                //     let totalVolume = 0;
+                //     let totalPackages = 0;
+                //     let cost = 0;
+                    
+                    
+                    
+                //     let client_id = $('#cid').val();
+                //     const cid = $('#clientId').val();
+                    
+                //     // fallback if client_id is undefined, null, or empty
+                //     client_id = client_id ?? cid;
+                    
+                //     let extraCost = 0;
+                    
+                //     if (parseInt(client_id) === 11) {
+                //         extraCost = 30;
+                //     } 
+                //     else if(parseInt(client_id) === 9){
+                //         extraCost = null;
+                //     }
+                    
+                //     else {
+                //         extraCost = 50;
+                //     }
+
+                
+
+                //     $('#shipmentTable tbody tr').each(function() {
+                //         const row = $(this);
+                //         const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                //         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                //         const volume = parseFloat(row.find('.volume').val()) || 1;
+                        
+                //         const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                        
+                //     // 🔥 CLIENT 9 RULE: cost per package
+                      
+                //     if (parseInt(client_id) === 9) {
+                //         cost += baseCost * packages;
+                //     } else{
+                        
+                //         totalWeight += weight * packages;
+                //         totalVolume += volume;
+                //         totalPackages += packages;
+                //     }
+                //     });
+
+                //     $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+
+                //     // const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                //     let cost = baseCost;
+                //     volumeWeight = totalVolume / 5000;
+
+                //     let baseWeight = 0;
+
+
+                //     if (totalWeight > volumeWeight) {
+                //         baseWeight = totalWeight;
+                //         //alert('weight' + baseWeight)
+                //     }
+                //     if (volumeWeight > totalWeight) {
+                //         baseWeight = volumeWeight;
+                //         //alert('volume weight' + baseWeight)
+                //         $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                //     }
+
+                //     if (baseWeight > 5) {
+                //         const extraWeight = baseWeight - 5;
+                //         cost += extraWeight * extraCost;
+                //     }
+
+                    
+                    
+                    
+                //     function extractVAT(costWithVAT) {
+                //         // Calculate raw VAT when total already includes VAT
+                //         const rawVat = (costWithVAT * 0.16) / 1.16;
+
+                //         const integerPart = Math.floor(rawVat);
+                //         const decimalPart = rawVat - integerPart;
+                //         let roundedDecimal = 0;
+
+                //         // Apply the same custom rounding rules
+                //         if (decimalPart <= 0.03) {
+                //             roundedDecimal = 0.00;
+                //         } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                //             roundedDecimal = 0.05;
+                //         } else {
+                //             roundedDecimal = 0.10;
+                //         }
+
+                //         let result = integerPart + roundedDecimal;
+
+                //         // Handle carry-over if rounding pushes to next integer
+                //         if (result >= integerPart + 1) {
+                //             result = integerPart + 1.00;
+                //         }
+
+                //         // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                //         return result.toFixed(2);
+                //     }
+
+
+                //     const vat = extractVAT(cost);
+                //     $('input[name="cost"]').val((cost - vat).toFixed(2));
+                //     $('input[name="vat"]').val(vat);
+                //     $('input[name="total_cost"]').val((cost).toFixed(2));
+                // }
+                
+                
                 function recalculateCosts() {
-                    let totalWeight = 0;
-                    let totalVolume = 0;
+    let totalWeight = 0;
+    let totalVolume = 0;
+    let cost = 0;
+    let rate_id = $('#rate_id').val();
 
-                    $('#shipmentTable tbody tr').each(function() {
-                        const row = $(this);
-                        const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
-                        const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
-                        const volume = parseFloat(row.find('.volume').val()) || 1;
-                        totalWeight += weight * packages;
-                        totalVolume += volume;
-                    });
+    let client_id = $('#cid').val() ?? $('#clientId').val();
+    client_id = parseInt(client_id);
+    
+    let serviceType = $('#overnight').val();
 
-                    $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+    const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
 
-                    const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
-                    let cost = baseCost;
-                    volumeWeight = totalVolume / 5000;
+    let extraCost = 50;
+    if (client_id === 11) extraCost = 30;
+    if (client_id === 12) extraCost = 50; // handled separately
 
-                    let baseWeight = 0;
+    $('#shipmentTable tbody tr').each(function () {
+        const row = $(this);
 
+        // ✅ Skip non-item rows (like sub-item containers)
+        if (row.find('input[name="packages[]"]').length === 0) return;
 
-                    if (totalWeight > volumeWeight) {
-                        baseWeight = totalWeight;
-                        //alert('weight' + baseWeight)
-                    }
-                    if (volumeWeight > totalWeight) {
-                        baseWeight = volumeWeight;
-                        //alert('volume weight' + baseWeight)
-                        $('input[name="total_weight"]').val(baseWeight.toFixed(2));
-                    }
+        const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+        const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+        const volume = parseFloat(row.find('input[name="volume[]"]').val()) || 0;
+        
+        // ✅ ALWAYS calculate totals
+        totalWeight += weight * packages;
+        totalVolume += volume;
 
-                    if (baseWeight > 25) {
-                        const extraWeight = baseWeight - 25;
-                        cost += extraWeight * 50;
-                    }
+        if (client_id === 12 && serviceType ==="overnight") {
+            // 🔥 Client 9: cost per item × packages
+            cost += baseCost * packages;
+        }
+        
+    });
 
+    // ==========================
+    // NORMAL CLIENTS (NOT 9)
+    // ==========================
+       $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
+    if ( client_id !== 11 && serviceType !== "overnight") {
+        const volumeWeight = totalVolume / 5000;
+        let baseWeight = Math.max(totalWeight, volumeWeight);
 
-                    // function extractVAT(costWithVAT) {
-                    //     // Calculate raw VAT when total already includes VAT
-                    //     const rawVat = (costWithVAT * 0.16) / 1.16;
+        if (volumeWeight > totalWeight) {
+            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+        }
 
-                    //     let integerPart = Math.floor(rawVat);
-                    //     const decimal = rawVat - integerPart;
+        cost = baseCost;
 
-                    //     let roundedVat;
-                    //     if (decimal < 0.3) {
-                    //         roundedVat = integerPart;
-                    //     } else if (decimal >= 0.7) {
-                    //         roundedVat = integerPart + 0.5;
-                    //     } else {
-                    //         roundedVat = integerPart + 1;
-                    //     }
+        if (baseWeight > 5) {
+            const extraWeight = baseWeight - 5;
+            cost += extraWeight * extraCost;
+        }
+    }
+    if (client_id == 11 && rate_id !== 220) {
+        const volumeWeight = totalVolume / 5000;
+        let baseWeight = Math.max(totalWeight, volumeWeight);
 
-                    //     // Always return a formatted string like "69.00" or "69.50"
-                    //     return roundedVat.toFixed(2);
-                    // }
-                    function extractVAT(costWithVAT) {
-                        // Calculate raw VAT when total already includes VAT
-                        const rawVat = (costWithVAT * 0.16) / 1.16;
+        if (volumeWeight > totalWeight) {
+            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+        }
 
-                        const integerPart = Math.floor(rawVat);
-                        const decimalPart = rawVat - integerPart;
-                        let roundedDecimal = 0;
+        cost = baseCost;
 
-                        // Apply the same custom rounding rules
-                        if (decimalPart <= 0.03) {
-                            roundedDecimal = 0.00;
-                        } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
-                            roundedDecimal = 0.05;
-                        } else {
-                            roundedDecimal = 0.10;
-                        }
+        if (baseWeight > 5) {
+            const extraWeight = baseWeight - 5;
+            cost += 1 * 0;
+        }
+    }
+    if (client_id == 11 && rate_id == 220) {
+        const volumeWeight = totalVolume / 5000;
+        let baseWeight = Math.max(totalWeight, volumeWeight);
 
-                        let result = integerPart + roundedDecimal;
+        if (volumeWeight > totalWeight) {
+            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+        }
 
-                        // Handle carry-over if rounding pushes to next integer
-                        if (result >= integerPart + 1) {
-                            result = integerPart + 1.00;
-                        }
+        cost = baseCost;
 
-                        // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
-                        return result.toFixed(2);
-                    }
+        if (baseWeight > 5) {
+            const extraWeight = baseWeight - 5;
+            cost += extraWeight * extraCost;
+        }
+    }
 
+    // ==========================
+    // VAT CALCULATION
+    // ==========================
+    function extractVAT(costWithVAT) {
+        const rawVat = (costWithVAT * 0.16) / 1.16;
 
-                    const vat = extractVAT(cost);
-                    $('input[name="cost"]').val((cost - vat).toFixed(2));
-                    $('input[name="vat"]').val(vat);
-                    $('input[name="total_cost"]').val((cost).toFixed(2));
-                }
+        const integerPart = Math.floor(rawVat);
+        const decimalPart = rawVat - integerPart;
+
+        let roundedDecimal = 0;
+        if (decimalPart <= 0.03) roundedDecimal = 0.00;
+        else if (decimalPart <= 0.07) roundedDecimal = 0.05;
+        else roundedDecimal = 0.10;
+
+        let result = integerPart + roundedDecimal;
+        if (result >= integerPart + 1) result = integerPart + 1.00;
+
+        return result.toFixed(2);
+    }
+
+    const vat = extractVAT(cost);
+
+    $('input[name="cost"]').val((cost - vat).toFixed(2));
+    $('input[name="vat"]').val(vat);
+    $('input[name="total_cost"]').val(cost.toFixed(2));
+}
+
 
 
                 // Watch for changes in volume dimensions
@@ -1214,9 +1402,35 @@
                     $("#destination_id").val(destination_id);
                     const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                     const originId = modal.find('.origin-dropdown').val();
+                    
+                    const cid = modal.find('#cid').val();
 
                     if (originId && destinationId) {
-                        $.get(`/getCost/${originId}/${destinationId}`)
+                        $.get(`/client_portal/get_cost/${originId}/${destinationId}/${cid}`)
+                            .done(function(data) {
+                                const baseCost = parseFloat(data.cost);
+                                $('input[name="base_cost"]').val(baseCost);
+                                recalculateCosts();
+                            })
+                            .fail(function() {
+                                console.error("Failed to fetch base cost");
+                                $('input[name="base_cost"]').val(0);
+                            });
+                    }
+                });
+                // Trigger when destination changes
+                $(document).on('change', '.destination-dropdown-special', function() {
+                    const destinationId = $(this).val();
+                    const selectedOption = $(this).find('option:selected');
+                    const destination_id = selectedOption.data('id');
+                    $("#destination_id").val(destination_id);
+                    const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
+                    const originId = modal.find('.origin-dropdown-special').val();
+                    
+                    const cid = modal.find('#cid').val();
+
+                    if (originId && destinationId) {
+                        $.get(`/client_portal/get_cost/${originId}/${destinationId}/${cid}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);
@@ -1234,12 +1448,14 @@
                     const selectedOption = $(this).find('option:selected');
                     const destination_id = selectedOption.data('id');
                     $("#destination_id").val(destination_id);
+                    $("#rate_id").val(destination_id);
+                    
                     const modal = $(this).closest('form'); // Adjust if you're using modal or form wrapper
                     const originId = modal.find('.origin-dropdownx').val();
                     const cid = modal.find('#cid').val();
 
                     if (originId && destinationId) {
-                        $.get(`/get_cost/${originId}/${destinationId}/${cid}`)
+                        $.get(`/client_portal/get_cost/${originId}/${destinationId}/${cid}`)
                             .done(function(data) {
                                 const baseCost = parseFloat(data.cost);
                                 $('input[name="base_cost"]').val(baseCost);
@@ -1249,6 +1465,11 @@
                                 console.error("Failed to fetch base cost");
                                 $('input[name="base_cost"]').val(0);
                             });
+                    }
+                    if (destination_id == 220) {
+                        $('#destination-wrapper').removeClass('d-none');
+                    } else {
+                        $('#destination-wrapper').addClass('d-none');
                     }
                 });
 
@@ -1443,7 +1664,7 @@
                     const fragileExtra = parseFloat(fragileExtraInput.value) || 0;
                     const insuranceExtra = parseFloat(insuranceExtraInput2.value) || 0;
 
-                    // Compute the new total — starting from the base cost
+                    // Compute the new total â€” starting from the base cost
                     const itemCost = baseCost + priorityExtra + fragileExtra + insuranceExtra;
 
                     // Update total field with two decimals
