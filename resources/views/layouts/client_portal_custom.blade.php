@@ -260,15 +260,18 @@
                 </a>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
             <!-- Nav Item - Reports -->
             <li class="nav-item {{ request()->routeIs('client_shipments_report', 'client_payments_report') ? 'active' : '' }}">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseShipments"
-                    aria-expanded="true" aria-controls="collapseShipments">
-                    <i class="fas fa-fw fa-cogs"></i>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
+                    aria-expanded="true" aria-controls="collapseReports">
+                    <i class="fas fa-file-alt"></i> 
                     <span class="sized">Reports</span>
                 </a>
 
-                <div id="collapseShipments" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}"
+                <div id="collapseReports" class="collapse {{ request()->routeIs('reports.*') ? 'show' : '' }}"
                     aria-labelledby="headingShipments" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item"
@@ -276,7 +279,6 @@
                         <hr class="sidebar-divide my-0" />
                         <a class="collapse-item"
                             href="{{ route('client_payments_report', ['type' => 'client_portal']) }}">Payment reports</a>
-                        <hr class="sidebar-divide my-0" />
                     </div>
                 </div>
             </li>
@@ -292,7 +294,7 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
+            <div class="mt-2 text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
         </ul>
