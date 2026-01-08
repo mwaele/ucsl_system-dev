@@ -681,6 +681,7 @@ class ReportController extends Controller
             'paymentCounts'
         ));
     }
+    
     public function vehiclePerformanceReport(Request $request)
     {
         $startDate = $request->start_date
@@ -746,6 +747,7 @@ class ReportController extends Controller
 
         return view('reports.vehicle_performance_report', compact('report', 'startDate', 'endDate'));
     }
+
     public function exportVehiclePerformanceExcel(Request $request)
     {
         // Reuse the same logic as your report method

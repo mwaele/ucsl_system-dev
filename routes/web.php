@@ -98,7 +98,7 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/client_portal/client_shipments_report', [ClientPortalReportsController::class, 'client_shipments_report'])->name('client_shipments_report');
     Route::get('/client_portal/client_payments_report', [ClientPortalReportsController::class, 'client_payments_report'])->name('client_payments_report');
     Route::get('/client_shipment_report/generate', [ClientPortalReportsController::class, 'shipmentReportGenerate'])->name('shipment_report.generate');
-
+    Route::get('/client_payment_report/generate', [ClientPortalReportsController::class, 'paymentReportGenerate'])->name('payment_report.generate');
 
     Route::get('client_portal/get-latest-invoice-no', [InvoiceController::class, 'getLatestInvoiceNo'])->name('get-latest-invoice-no');
 

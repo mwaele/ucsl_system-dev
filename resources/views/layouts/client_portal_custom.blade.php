@@ -267,7 +267,7 @@
             <li class="nav-item {{ request()->routeIs('client_shipments_report', 'client_payments_report') ? 'active' : '' }}">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
                     aria-expanded="true" aria-controls="collapseReports">
-                    <i class="fas fa-file-alt"></i> 
+                    <i class="fas fa-fw fa-file-alt"></i> 
                     <span class="sized">Reports</span>
                 </a>
 
