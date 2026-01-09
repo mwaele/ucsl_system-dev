@@ -135,7 +135,9 @@ class UserController extends Controller
         $user->station = $request->station;
         $user->role = $request->role;
         $user->status = $request->status;
-        $user->password = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
 
         $user->save(); 
         

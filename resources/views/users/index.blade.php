@@ -136,55 +136,55 @@
                     </div>
                 </form>
                 <script>
-                const roleSelect = document.getElementById('roleSelect');
-                const driverTypeWrapper = document.getElementById('driverTypeWrapper');
-                const driverTypeSelect = document.getElementById('driverTypeSelect');
+                    const roleSelect = document.getElementById('roleSelect');
+                    const driverTypeWrapper = document.getElementById('driverTypeWrapper');
+                    const driverTypeSelect = document.getElementById('driverTypeSelect');
 
-                const riderTypeWrapper = document.getElementById('riderTypeWrapper');
-                const riderTypeSelect = document.getElementById('riderTypeSelect');
+                    const riderTypeWrapper = document.getElementById('riderTypeWrapper');
+                    const riderTypeSelect = document.getElementById('riderTypeSelect');
 
-                const clientWrapper = document.getElementById('clientWrapper');
+                    const clientWrapper = document.getElementById('clientWrapper');
 
-                const isRiderInput = document.getElementById('isRider');
-                const isDedicatedInput = document.getElementById('isDedicatedToClient');
+                    const isRiderInput = document.getElementById('isRider');
+                    const isDedicatedInput = document.getElementById('isDedicatedToClient');
 
-                roleSelect.addEventListener('change', function () {
-                    if (this.value === 'driver') {
-                        driverTypeWrapper.classList.remove('d-none');
-                    } else {
-                        driverTypeWrapper.classList.add('d-none');
-                        riderTypeWrapper.classList.add('d-none');
-                        clientWrapper.classList.add('d-none');
-                        resetHiddenValues();
-                    }
-                });
+                    roleSelect.addEventListener('change', function () {
+                        if (this.value === 'driver') {
+                            driverTypeWrapper.classList.remove('d-none');
+                        } else {
+                            driverTypeWrapper.classList.add('d-none');
+                            riderTypeWrapper.classList.add('d-none');
+                            clientWrapper.classList.add('d-none');
+                            resetHiddenValues();
+                        }
+                    });
 
-                driverTypeSelect.addEventListener('change', function () {
-                    if (this.value === 'rider') {
-                        riderTypeWrapper.classList.remove('d-none');
-                        isRiderInput.value = 1;
-                    } else {
-                        riderTypeWrapper.classList.add('d-none');
-                        clientWrapper.classList.add('d-none');
-                        isRiderInput.value = 0;
+                    driverTypeSelect.addEventListener('change', function () {
+                        if (this.value === 'rider') {
+                            riderTypeWrapper.classList.remove('d-none');
+                            isRiderInput.value = 1;
+                        } else {
+                            riderTypeWrapper.classList.add('d-none');
+                            clientWrapper.classList.add('d-none');
+                            isRiderInput.value = 0;
+                            isDedicatedInput.value = null;
+                        }
+                    });
+
+                    riderTypeSelect.addEventListener('change', function () {
+                        if (this.value === 'dedicated') {
+                            clientWrapper.classList.remove('d-none');
+                            isDedicatedInput.value = 1;
+                        } else {
+                            clientWrapper.classList.add('d-none');
+                            isDedicatedInput.value = 0;
+                        }
+                    });
+
+                    function resetHiddenValues() {
+                        isRiderInput.value = null;
                         isDedicatedInput.value = null;
                     }
-                });
-
-                riderTypeSelect.addEventListener('change', function () {
-                    if (this.value === 'dedicated') {
-                        clientWrapper.classList.remove('d-none');
-                        isDedicatedInput.value = 1;
-                    } else {
-                        clientWrapper.classList.add('d-none');
-                        isDedicatedInput.value = 0;
-                    }
-                });
-
-                function resetHiddenValues() {
-                    isRiderInput.value = null;
-                    isDedicatedInput.value = null;
-                }
                 </script>
             </div>
         </div>
@@ -319,9 +319,10 @@
                                     </select>
                                 </div>
 
+                                <!-- Role -->
                                 <div class="form-group col-md-6">
-                                    <label>Role</label>
-                                    <select name="role" class="form-control">
+                                    <label class="form-label">Role</label>
+                                    <select name="role" id="roleSelect-{{ $user->id }}" class="form-control">
                                         <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff
                                         </option>
                                         <option value="driver" {{ $user->role == 'driver' ? 'selected' : '' }}>Driver
@@ -335,6 +336,43 @@
                                     </select>
                                 </div>
 
+                                <!-- Driver Type (Only shows if role = driver) -->
+                                <div class="form-group col-md-6 d-none" id="driverTypeWrapper-{{ $user->id }}">
+                                    <label class="form-label">Driver Type</label>
+                                    <select id="driverTypeSelect-{{ $user->id }}" class="form-control">
+                                        <option value="">-- Select Type --</option>
+                                        <option value="driver" {{ !$user->isRider ? 'selected' : '' }}>Driver</option>
+                                        <option value="rider" {{ $user->isRider ? 'selected' : '' }}>Rider</option>
+                                    </select>
+                                </div>
+
+                                <!-- Rider Type (Only shows if driverType = rider) -->
+                                <div class="form-group col-md-6 d-none" id="riderTypeWrapper">
+                                    <label class="form-label">Rider Type</label>
+                                    <select id="riderTypeSelect-{{ $user->id }}" class="form-control">
+                                        <option value="">-- Select Type --</option>
+                                        <option value="normal" {{ $user->isRider && !$user->isDedicatedToClient ? 'selected' : '' }}>Normal</option>
+                                        <option value="dedicated" {{ $user->isDedicatedToClient ? 'selected' : '' }}>Dedicated</option>
+                                    </select>
+                                </div>
+
+                                <!-- Client Select (Only if Dedicated) -->
+                                <div class="form-group col-md-6 d-none" id="clientWrapper">
+                                    <label class="form-label">Select Client</label>
+                                    <select name="dedicatedClientId" class="form-control">
+                                        @foreach($clients as $client)
+                                            <option value="{{ $client->id }}"
+                                                {{ $user->dedicatedClientId == $client->id ? 'selected' : '' }}>
+                                                {{ $client->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Hidden DB Fields -->
+                                <input type="hidden" name="isRider" id="isRider-{{ $user->id }}" value="{{ $user->isRider }}">
+                                <input type="hidden" name="isDedicatedToClient" id="isDedicatedToClient-{{ $user->id }}" value="{{ $user->isDedicatedToClient }}">
+
                                 <div class="form-group col-md-6">
                                     <label>Status</label>
                                     <select name="status" class="form-control">
@@ -347,8 +385,7 @@
 
                                 <div class="form-group col-md-6">
                                     <label>Password</label>
-                                    <input name="password" type="password" class="form-control"
-                                        value="{{ $user->password }}">
+                                    <input name="password" type="password" class="form-control" placeholder="Leave blank to keep current password">
                                 </div>
                             </div>
 
@@ -359,8 +396,76 @@
 
                         </div>
                     </form>
+                    <script>
+                        (function () {
+                            const userId = "{{ $user->id }}";
+
+                            const roleSelect = document.getElementById(`roleSelect-${userId}`);
+                            const driverTypeWrapper = document.getElementById(`driverTypeWrapper-${userId}`);
+                            const driverTypeSelect = document.getElementById(`driverTypeSelect-${userId}`);
+
+                            const riderTypeWrapper = document.getElementById(`riderTypeWrapper-${userId}`);
+                            const riderTypeSelect = document.getElementById(`riderTypeSelect-${userId}`);
+
+                            const clientWrapper = document.getElementById(`clientWrapper-${userId}`);
+                            const isRiderInput = document.getElementById(`isRider-${userId}`);
+                            const isDedicatedInput = document.getElementById(`isDedicatedToClient-${userId}`);
+
+                            function initialize() {
+                                if (roleSelect.value === 'driver') {
+                                    driverTypeWrapper.classList.remove('d-none');
+
+                                    if (isRiderInput.value == 1) {
+                                        riderTypeWrapper.classList.remove('d-none');
+                                    }
+
+                                    if (isDedicatedInput.value == 1) {
+                                        clientWrapper.classList.remove('d-none');
+                                    }
+                                }
+                            }
+
+                            roleSelect.addEventListener('change', () => {
+                                if (roleSelect.value === 'driver') {
+                                    driverTypeWrapper.classList.remove('d-none');
+                                } else {
+                                    driverTypeWrapper.classList.add('d-none');
+                                    riderTypeWrapper.classList.add('d-none');
+                                    clientWrapper.classList.add('d-none');
+                                    isRiderInput.value = 0;
+                                    isDedicatedInput.value = 0;
+                                }
+                            });
+
+                            driverTypeSelect.addEventListener('change', () => {
+                                if (driverTypeSelect.value === 'rider') {
+                                    riderTypeWrapper.classList.remove('d-none');
+                                    isRiderInput.value = 1;
+                                } else {
+                                    riderTypeWrapper.classList.add('d-none');
+                                    clientWrapper.classList.add('d-none');
+                                    isRiderInput.value = 0;
+                                    isDedicatedInput.value = 0;
+                                }
+                            });
+
+                            riderTypeSelect.addEventListener('change', () => {
+                                if (riderTypeSelect.value === 'dedicated') {
+                                    clientWrapper.classList.remove('d-none');
+                                    isDedicatedInput.value = 1;
+                                } else {
+                                    clientWrapper.classList.add('d-none');
+                                    isDedicatedInput.value = 0;
+                                }
+                            });
+
+                            initialize();
+                        })();
+                    </script>
                 </div>
             </div>
         @endforeach
     </div>
+    
+
 @endsection

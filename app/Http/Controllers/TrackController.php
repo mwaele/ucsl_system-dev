@@ -95,7 +95,7 @@ class TrackController extends Controller
                 
 
             // Get destination from rates
-            $destinationName = DB::table('rates')
+            $destinationName = DB::table('special_rates')
                 ->where('id', $shipment->destination_id)
                 ->value('destination');
 
