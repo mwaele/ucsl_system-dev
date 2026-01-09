@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Shipment Report PDF</title>
+    <title>Client Shipment Report PDF</title>
     <meta charset="UTF-8">
     <style>
         body {
@@ -95,12 +95,12 @@
                                 {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
                             </td>
                             <td>{{ $collection->client->name ?? '' }}</td>
-                            <td>{{ $collection->receiver_name ?? '' }}</td>
-                            <td>{{ \Illuminate\Support\Str::title($collection->clientRequestById->serviceLevel->sub_category_name ?? null) }}</td>
-                            <td>{{ $collection->items?->count() ?? '' }}</td>
-                            <td>{{ optional($collection->collectedBy?->user)->name ? optional($collection->collectedBy?->user)->name . ' | ' . optional($collection->collectedBy?->vehicle)->regNo : 'Pending' }}</td>
-                            <td>{{ $collection->sender_town ?? '' }}</td>
-                            <td>{{ $collection->receiver_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
+                            <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name ?? null) }}</td>
+                            <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                            <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
+                            <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
                             <td>{{ $collection->status ?? '' }}</td>
                         </tr>
                 @empty

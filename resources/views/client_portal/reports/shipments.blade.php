@@ -15,7 +15,8 @@
                 <label for="status" class="form-label text-primary mb-0"><strong>Status:</strong></label>
                 <select id="status" class="form-control">
                     <option value="">All</option>
-                    <option value="parcel_booked">Pending delivery</option>
+                    <option value="pending collection">Pending collection</option>
+                    <option value="collected">Collected</option>
                     <option value="delivered">Delivered</option>
                 </select>
             </div>
@@ -194,12 +195,12 @@
                                 {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
                             </td>
                             <td>{{ $collection->client->name ?? '' }}</td>
-                            <td>{{ $collection->receiver_name ?? '' }}</td>
-                            <td>{{ \Illuminate\Support\Str::title($collection->clientRequestById->serviceLevel->sub_category_name ?? null) }}</td>
-                            <td>{{ $collection->items?->count() ?? '' }}</td>
-                            <td>{{ optional($collection->collectedBy->user)->name ? optional($collection->collectedBy->user)->name . ' | ' . optional($collection->collectedBy->vehicle)->regNo : 'Pending' }}</td>
-                            <td>{{ $collection->sender_town ?? '' }}</td>
-                            <td>{{ $collection->receiver_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
+                            <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name ?? null) }}</td>
+                            <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                            <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
+                            <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
                             <td>{{ $collection->status ?? '' }}</td>
                         </tr>
                     @empty

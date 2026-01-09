@@ -15,12 +15,10 @@ class ClientPortalReportsController extends Controller
     public function client_shipments_report(Request $request)  
     {
         
-        $shipments = ShipmentCollection::with('client')
-            ->whereHas('client', function ($query) {
-                $query->where('client_id', auth('client')->user()->id); 
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $shipments = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy'])
+                        ->where('clientId', auth('client')->user()->id)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
         return view('client_portal.reports.shipments', compact('shipments'));
     }
@@ -62,7 +60,9 @@ class ClientPortalReportsController extends Controller
         $serviceLevel = $request->input('serviceLevel');
         $status = $request->input('status');
 
-        $query = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy']);
+
+        $query = ClientRequest::with(['client', 'shipmentCollection', 'serviceLevel', 'user', 'vehicle', 'createdBy'])
+                    ->where('clientId', auth('client')->user()->id);
 
         if ($startDate) {
             $query->whereDate('dateRequested', '>=', $startDate);
@@ -85,7 +85,7 @@ class ClientPortalReportsController extends Controller
         $clientRequests = $query->orderBy('dateRequested', 'desc')->get();
 
         // Dynamically build the report title
-        $reportTitle = 'Shipment Report';
+        $reportTitle = 'Client Shipment Report';
 
         if ($status || $serviceLevel || $startDate || $endDate) {
             $filters = [];
