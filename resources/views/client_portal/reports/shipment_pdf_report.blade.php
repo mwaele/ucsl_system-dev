@@ -75,51 +75,46 @@
                     <th>#</th>
                     <th>Request ID</th>
                     <th>Date</th>
-                    <th>Consigner</th>
-                    <th>Consignee</th>
                     <th>Service Level</th>
                     <th>Items</th>
                     <th>Assigned rider & truck</th>
                     <th>From</th>
                     <th>To</th>
+                    <th>Receiver</th>
                     <th>Collection Status</th>
+                    <th style="text-align: right;">Amount (Ksh)</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($clientRequests as $collection)
                     <tr>
-                        <tr>
-                            <td>{{ $loop->iteration }}.</td>
-                            <td>{{ $collection->requestId }}</td>
-                            <td data-date="{{ $collection->dateRequested }}">
-                                {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
-                            </td>
-                            <td>{{ $collection->client->name ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
-                            <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name ?? null) }}</td>
-                            <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
-                            <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
-                            <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
-                            <td>{{ $collection->status ?? '' }}</td>
-                        </tr>
+                        <td>{{ $loop->iteration }}.</td>
+                        <td>{{ $collection->requestId }}</td>
+                        <td data-date="{{ $collection->dateRequested }}">
+                            {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
+                        </td>
+                        <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name ?? null) }}</td>
+                        <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                        <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
+                        <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
+                        <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
+                        <td>{{ $collection->status ?? '' }}</td>
+                        <td style="text-align: right;"> {{ number_format($collection->shipmentCollection?->actual_total_cost, 2) }} </td>
+                    </tr>
                 @empty
                     <tr><td colspan="13" class="text-center">No records found</td></tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr>
-                    <th>#</th>
-                    <th>Request ID</th>
-                    <th>Date</th>
-                    <th>Consigner</th>
-                    <th>Consignee</th>
-                    <th>Service level</th>
-                    <th>Items</th>
-                    <th>Assigned rider & truck</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Collection status</th>
+                    <th colspan="10" style="text-align: right;">Total</th>
+                    <th style="text-align: right;">
+                        {{ number_format(
+                            $clientRequests->sum(fn ($request) => $request->shipmentCollection?->actual_total_cost ?? 0),
+                            2
+                        ) }}
+                    </th>
                 </tr>
             </tfoot>
         </table>

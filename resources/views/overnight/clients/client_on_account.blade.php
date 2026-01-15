@@ -103,7 +103,7 @@
                         }
 
                         // Example usage for "Overnight walk-in" page
-                        initDateFilter("dataTable", 4, "/client_overnight_account_report");
+                        initDateFilter("dataTable", 5, "/client_overnight_account_report");
                     </script>
 
                 </div>
@@ -342,7 +342,10 @@
                                             @elseif ($request->status == 'collected')
                                                 bg-warning
                                             @elseif ($request->status == 'verified')
-                                                bg-primary @endif
+                                                bg-primary
+                                            @else
+                                                bg-dark
+                                            @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($request->status) }}
                                         </span>

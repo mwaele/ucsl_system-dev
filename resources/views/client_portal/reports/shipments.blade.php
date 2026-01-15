@@ -82,8 +82,8 @@
 
                         for (let i = 1; i < rows.length; i++) {
                             let dateCell = rows[i].getElementsByTagName("td")[dateColIndex];
-                            let serviceLevelCell = rows[i].getElementsByTagName("td")[5];
-                            let statusCell = rows[i].getElementsByTagName("td")[10];
+                            let serviceLevelCell = rows[i].getElementsByTagName("td")[3];
+                            let statusCell = rows[i].getElementsByTagName("td")[9];
 
                             if (!dateCell || !serviceLevelCell || !statusCell) continue;
 
@@ -161,14 +161,14 @@
                         <th>#</th>
                         <th>Request ID</th>
                         <th>Date</th>
-                        <th>Consigner</th>
-                        <th>Consignee</th>
                         <th>Service Level</th>
                         <th>Items</th>
-                        <th>Assigned rider & truck</th>
+                        <th>Assigned rider & vehicle</th>
                         <th>From</th>
                         <th>To</th>
+                        <th>Receiver</th>
                         <th>Collection Status</th>
+                        <th style="text-align: right;">Amount (Ksh)</th>
                     </tr>
                 </thead>
                 <tfoot class="text-success">
@@ -176,14 +176,14 @@
                         <th>#</th>
                         <th>Request ID</th>
                         <th>Date</th>
-                        <th>Consigner</th>
-                        <th>Consignee</th>
                         <th>Service level</th>
                         <th>Items</th>
-                        <th>Assigned rider & truck</th>
+                        <th>Assigned rider & vehicle</th>
                         <th>From</th>
                         <th>To</th>
+                        <th>Receiver</th>
                         <th>Collection status</th>
+                        <th style="text-align: right;">Amount (Ksh)</th>
                     </tr>
                 </tfoot>
                 <tbody class="text-primary">
@@ -194,14 +194,14 @@
                             <td data-date="{{ $collection->dateRequested }}">
                                 {{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}
                             </td>
-                            <td>{{ $collection->client->name ?? '' }}</td>
-                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
                             <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel->sub_category_name ?? null) }}</td>
                             <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
                             <td>{{ optional($collection->user)->name ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo : 'Pending' }}</td>
                             <td>{{ $collection->shipmentCollection->sender_town ?? '' }}</td>
                             <td>{{ $collection->shipmentCollection->receiver_town ?? '' }}</td>
+                            <td>{{ $collection->shipmentCollection->receiver_name ?? '' }}</td>
                             <td>{{ $collection->status ?? '' }}</td>
+                            <td style="text-align: right;"> {{ number_format($collection->shipmentCollection?->actual_total_cost, 2) }} </td>
                         </tr>
                     @empty
                         <tr><td colspan="13" class="text-center">No records found</td></tr>

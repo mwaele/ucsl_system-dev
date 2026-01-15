@@ -109,11 +109,12 @@
                 <tr>
                     <th>#</th>
                     <th>Request ID</th>
-                    <th>Client</th>
+                    <th>Date</th>
                     <th>From</th>
                     <th>To</th>
-                    <th>Date Requested</th>
-                    <th>Description</th>
+                    <th>Receiver</th>
+                    <th>Items</th>
+                    <th>Weight</th>
                     <th style="text-align: right;">Amount (Ksh)</th>
                 </tr>
             </thead>
@@ -122,16 +123,28 @@
                     <tr>
                         <td> {{ $loop->iteration }}. </td>
                         <td> {{ $request->requestId }} </td>
-                        <td> {{ $request->client->name }} </td>
-                        <td> {{ $request->shipmentCollection?->sender_town }} </td>
-                        <td> {{ $request->shipmentCollection?->receiver_town }} </td>
                         <td> {{ \Carbon\Carbon::parse($request->dateRequested)->format('M j, Y') }}
                         </td>
-                        <td> {{ $request->parcelDetails }} </td>
+                        <td> {{ $request->shipmentCollection?->sender_town }} </td>
+                        <td> {{ $request->shipmentCollection?->receiver_town }} </td>
+                        <td> {{ $request->shipmentCollection?->receiver_name }} </td>
+                        <td> {{ $request->shipmentCollection?->items?->count() ?? '' }} </td>
+                        <td> {{ $request->shipmentCollection?->total_weight }}kg </td>
                         <td style="text-align: right;"> {{ number_format($request->shipmentCollection?->actual_total_cost, 2) }} </td>
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="8" style="text-align: right;">Total</th>
+                    <th style="text-align: right;">
+                        {{ number_format(
+                            $clientRequests->sum(fn ($request) => $request->shipmentCollection?->actual_total_cost ?? 0),
+                            2
+                        ) }}
+                    </th>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </body>

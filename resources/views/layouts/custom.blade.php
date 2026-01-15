@@ -201,7 +201,7 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Nav Item - Dashboard -->
-            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'manager' || Auth::user()->role === 'super-admin')
                 <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('dashboard') }}">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -211,6 +211,7 @@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0" />
+            @endif
 
                 <!-- Nav Item - Pages Collapse Menu -->
                 <!-- <li
@@ -261,7 +262,8 @@
                 </div>
             </li> -->
 
-                <!-- Nav Item - Shipments -->
+            <!-- Nav Item - Shipments -->
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
                 <li
                     class="nav-item {{ request()->routeIs('shipments.*', 'clientRequests.*', 'frontOffice.*', 'loading_sheets.*', 'overnight.*', 'sameday.*') ? 'active' : '' }}">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -385,9 +387,11 @@
                 </a>
             </li> --}}
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
+            
             @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+                
                 <li
                     class="nav-item {{ request()->routeIs('shipment_arrivals.*', 'parcel_collection') ? 'active' : '' }}">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -411,9 +415,10 @@
                 </li>
             @endif
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
             @if (Auth::user()->role === 'driver')
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+                
                 <li class="nav-item {{ request()->routeIs('my_deliveries.*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('my_deliveries.show') }}">
                         <i class="fas fa-fw fa-shipping-fast"></i>
@@ -430,9 +435,10 @@
                 </a>
             </li> --}}
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+            @if (Auth::user()->role === 'staff' || Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin' || Auth::user()->role === 'manager')
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0" />
+
                 <!-- Nav Item - Clients Collapse Menu -->
                 <li class="nav-item {{ request()->routeIs('payments.*', 'reports.*') ? 'active' : '' }}">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse"

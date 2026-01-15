@@ -434,10 +434,14 @@
                                     @elseif ($request->status == 'collected')
                                         bg-warning
                                     @elseif ($request->status == 'delivered')
-                                        bg-primary @endif
+                                        bg-primary
+                                    @else
+                                        bg-dark
+                                    @endif
                                     fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}
                                     </span>
+
                                     @if ($request->priority_level == 'high' && $request->status !== 'delivered')
                                         <span class="badge p-2 mt-2 bg-danger fs-5 text-white">
                                             Deliver by
