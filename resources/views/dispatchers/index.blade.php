@@ -84,9 +84,9 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form id="editForm" method="post" enctype="multipart/form-data">
+                                <form id="addForm" method="post" enctype="multipart/form-data">
                                     @csrf
-                                    @method('PUT')
+                                    @method('POST')
                                     <input type="hidden" name="id" id="edit_id">
 
                                     <div class="row mb-3">
@@ -135,12 +135,11 @@
                                             <textarea name="remarks" id="remarks" class="form-control" rows="2"></textarea>
                                         </div>
                                     </div>
+                                    <div class="modal-footer d-flex justify-content-between ">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
+                                        <button type="submit" form="addForm" class="btn btn-primary">Submit</button>
+                                    </div>
                                 </form>
-                            </div>
-
-                            <div class="modal-footer d-flex justify-content-between">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
-                                <button type="submit" form="editForm" class="btn btn-primary">Update Changes</button>
                             </div>
 
                             <!-- Script -->
@@ -175,12 +174,7 @@
                                     });
                                 });
                             </script>
-
-
-                            <div class="modal-footer d-flex justify-content-between ">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                            </div>
+                        
                             </form>
                         </div>
                     </div>
@@ -246,13 +240,12 @@
 
                                         {{-- <input type="hidden" name="office_id" value="{{ Auth::user()->station }}"> --}}
                                     </div>
-
+                                    <div class="modal-footer d-flex justify-content-between ">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
+                                        <button type="submit" class="btn btn-primary">Update Changes</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="modal-footer d-flex justify-content-between ">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close X</button>
-                                <button type="submit" class="btn btn-primary">Update Changes</button>
-                            </div>
-                            </form>
                         </div>
                     </div>
                 </div>

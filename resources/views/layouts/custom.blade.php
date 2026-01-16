@@ -770,7 +770,7 @@
             <hr class="sidebar-divider my-0" />
 
             <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
+            <div class="mt-2 text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
         </ul>
