@@ -431,7 +431,7 @@
                                 <td> {{ $request->client->name }} </td>
                                 <td> {{ $request->collectionLocation }} </td>
                                 <td data-date="{{ $request->dateRequested }}">
-                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y h:i A') ?? null }}
                                 </td>
                                 <td> {{ $request->user->name ?? '—' }} </td>
                                 <td> {{ $request->vehicle->regNo ?? '—' }} </td>
@@ -446,6 +446,8 @@
                                         bg-danger
                                     @elseif ($request->status == 'delivered')
                                         bg-primary
+                                    @elseif ($request->status == 'Collection Cancelled')
+                                        bg-danger
                                     @else bg-dark @endif
                                     fs-5 text-white">
                                         {{ \Illuminate\Support\Str::title($request->status) }}

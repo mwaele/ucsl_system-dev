@@ -688,7 +688,7 @@
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
                                 <td data-date="{{ $request->shipmentCollection?->created_at }}">
-                                    {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y') ?? null }}
+                                    {{ \Carbon\Carbon::parse($request->shipmentCollection?->created_at)->format('M d, Y h:i A') ?? null }}
                                 </td>
                                 <td> {{ $request->shipmentCollection?->office->name ?? $request->pickupLocation }} </td>
                                 <td> {{ $request->shipmentCollection?->special_destination->destination ?? $request->collectionLocation }}
@@ -697,7 +697,7 @@
                                 </td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name ?? $request->serviceLevel?->sub_category_name }}
                                 </td>
-                                <td> {{ $request->shipmentCollection?->collectedBy->name ?? 'user' }} </td>
+                                <td> {{ $request->createdBy->name }} </td>
                                 <td>
                                     @php
                                         $status = $request->shipmentCollection?->clientRequestById->status ?? null;
@@ -709,6 +709,7 @@
                                             @if ($status === 'pending collection') bg-secondary
                                             @elseif ($status === 'collected') bg-warning
                                             @elseif ($status === 'verified') bg-primary
+                                            @elseif ($status === 'Collection Cancelled') bg-danger
                                             @else bg-dark @endif
                                             fs-5 text-white">
                                             {{ \Illuminate\Support\Str::title($status) }}

@@ -276,9 +276,9 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item"
                             href="{{ route('client_shipments_report', ['type' => 'client_portal']) }}">Shipment Reports</a>
-                        <hr class="sidebar-divide my-0" />
+                        <!-- <hr class="sidebar-divide my-0" />
                         <a class="collapse-item"
-                            href="{{ route('client_payments_report', ['type' => 'client_portal']) }}">Payment reports</a>
+                            href="{{ route('client_payments_report', ['type' => 'client_portal']) }}">Payment reports</a> -->
                     </div>
                 </div>
             </li>
