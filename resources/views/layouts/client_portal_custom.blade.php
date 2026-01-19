@@ -1279,125 +1279,119 @@
                 //     $('input[name="cost"]').val((cost - vat).toFixed(2));
                 //     $('input[name="vat"]').val(vat);
                 //     $('input[name="total_cost"]').val((cost).toFixed(2));
-                // }
+                // }                
                 
-                
-                function recalculateCosts() {
-    let totalWeight = 0;
-    let totalVolume = 0;
-    let cost = 0;
-    let rate_id = $('#rate_id').val();
+                function recalculateCosts() 
+                {
+                    let totalWeight = 0;
+                    let totalVolume = 0;
+                    let cost = 0;
 
-    let client_id = $('#cid').val() ?? $('#clientId').val();
-    client_id = parseInt(client_id);
-    
-    let serviceType = $('#overnight').val();
+                    const rate_id = parseInt($('#rate_id').val());
+                    let client_id = $('#cid').val() ?? $('#clientId').val();
+                    client_id = parseInt(client_id);
 
-    const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
+                    const serviceType = $('#overnight').val();
+                    const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
 
-    let extraCost = 50;
-    if (client_id === 11) extraCost = 30;
-    if (client_id === 12) extraCost = 50; // handled separately
+                    // ==========================
+                    // EXTRA COST PER KG
+                    // ==========================
+                    let extraCost = 50;
+                    if (client_id === 11) extraCost = 30;
+                    if (client_id === 12) extraCost = 50;
 
-    $('#shipmentTable tbody tr').each(function () {
-        const row = $(this);
+                    // ==========================
+                    // CALCULATE TOTAL WEIGHT & VOLUME
+                    // ==========================
+                    $('#shipmentTable tbody tr').each(function () {
+                        const row = $(this);
 
-        // ✅ Skip non-item rows (like sub-item containers)
-        if (row.find('input[name="packages[]"]').length === 0) return;
+                        // Skip non-item rows
+                        if (row.find('input[name="packages[]"]').length === 0) return;
 
-        const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
-        const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
-        const volume = parseFloat(row.find('input[name="volume[]"]').val()) || 0;
-        
-        // ✅ ALWAYS calculate totals
-        totalWeight += weight * packages;
-        totalVolume += volume;
+                        const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                        const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
+                        const volume = parseFloat(row.find('input[name="volume[]"]').val()) || 0;
 
-        if (client_id === 12 && serviceType ==="overnight") {
-            // 🔥 Client 9: cost per item × packages
-            cost += baseCost * packages;
-        }
-        
-    });
+                        totalWeight += weight * packages;
+                        totalVolume += volume;
+                    });
 
-    // ==========================
-    // NORMAL CLIENTS (NOT 9)
-    // ==========================
-       $('input[name="total_weight"]').val(totalWeight.toFixed(2));
+                    // ==========================
+                    // DETERMINE BILLABLE WEIGHT
+                    // ==========================
+                    const volumeWeight = totalVolume / 5000;
+                    const billableWeight = Math.max(totalWeight, volumeWeight);
 
-    if ( client_id !== 11 && serviceType !== "overnight") {
-        const volumeWeight = totalVolume / 5000;
-        let baseWeight = Math.max(totalWeight, volumeWeight);
+                    $('input[name="total_weight"]').val(billableWeight.toFixed(2));
 
-        if (volumeWeight > totalWeight) {
-            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
-        }
+                    // ==========================
+                    // COST CALCULATION
+                    // ==========================
 
-        cost = baseCost;
+                    // CLIENT 12 – overnight charged per package
+                    if (client_id === 12 && serviceType === "overnight") {
+                        let packageCount = 0;
 
-        if (baseWeight > 5) {
-            const extraWeight = baseWeight - 5;
-            cost += extraWeight * extraCost;
-        }
-    }
-    if (client_id == 11 && rate_id !== 220) {
-        const volumeWeight = totalVolume / 5000;
-        let baseWeight = Math.max(totalWeight, volumeWeight);
+                        $('#shipmentTable tbody tr').each(function () {
+                            const row = $(this);
+                            if (row.find('input[name="packages[]"]').length === 0) return;
+                            packageCount += parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                        });
 
-        if (volumeWeight > totalWeight) {
-            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
-        }
+                        cost = baseCost * packageCount;
+                    }
 
-        cost = baseCost;
+                    // CLIENT 11 – overnight (30 Ksh per kg above 5kg)
+                    else if (client_id === 11 && serviceType === "overnight") {
+                        cost = baseCost;
 
-        if (baseWeight > 5) {
-            const extraWeight = baseWeight - 5;
-            cost += 1 * 0;
-        }
-    }
-    if (client_id == 11 && rate_id == 220) {
-        const volumeWeight = totalVolume / 5000;
-        let baseWeight = Math.max(totalWeight, volumeWeight);
+                        if (billableWeight > 5) {
+                            cost += (billableWeight - 5) * 30;
+                        }
+                    }
 
-        if (volumeWeight > totalWeight) {
-            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
-        }
+                    // CLIENT 11 – NON-OVERNIGHT
+                    else if (client_id === 11 && serviceType !== "overnight") {
+                        cost = baseCost;
+                    }
 
-        cost = baseCost;
+                    // NORMAL CLIENTS
+                    else {
+                        cost = baseCost;
 
-        if (baseWeight > 5) {
-            const extraWeight = baseWeight - 5;
-            cost += extraWeight * extraCost;
-        }
-    }
+                        if (billableWeight > 5) {
+                            cost += (billableWeight - 5) * extraCost;
+                        }
+                    }
 
-    // ==========================
-    // VAT CALCULATION
-    // ==========================
-    function extractVAT(costWithVAT) {
-        const rawVat = (costWithVAT * 0.16) / 1.16;
+                    // ==========================
+                    // VAT CALCULATION
+                    // ==========================
+                    function extractVAT(costWithVAT) {
+                        const rawVat = (costWithVAT * 0.16) / 1.16;
 
-        const integerPart = Math.floor(rawVat);
-        const decimalPart = rawVat - integerPart;
+                        const integerPart = Math.floor(rawVat);
+                        const decimalPart = rawVat - integerPart;
 
-        let roundedDecimal = 0;
-        if (decimalPart <= 0.03) roundedDecimal = 0.00;
-        else if (decimalPart <= 0.07) roundedDecimal = 0.05;
-        else roundedDecimal = 0.10;
+                        let roundedDecimal = 0;
+                        if (decimalPart <= 0.03) roundedDecimal = 0.00;
+                        else if (decimalPart <= 0.07) roundedDecimal = 0.05;
+                        else roundedDecimal = 0.10;
 
-        let result = integerPart + roundedDecimal;
-        if (result >= integerPart + 1) result = integerPart + 1.00;
+                        let result = integerPart + roundedDecimal;
+                        if (result >= integerPart + 1) result = integerPart + 1.00;
 
-        return result.toFixed(2);
-    }
+                        return result.toFixed(2);
+                    }
 
-    const vat = extractVAT(cost);
+                    const vat = extractVAT(cost);
 
-    $('input[name="cost"]').val((cost - vat).toFixed(2));
-    $('input[name="vat"]').val(vat);
-    $('input[name="total_cost"]').val(cost.toFixed(2));
-}
-
+                    $('input[name="cost"]').val((cost - vat).toFixed(2));
+                    $('input[name="vat"]').val(vat);
+                    $('input[name="total_cost"]').val(cost.toFixed(2));
+                }
 
 
                 // Watch for changes in volume dimensions

@@ -178,8 +178,8 @@
                                             </div>
                                             <div class="col-md-3 d-none" id="destination-wrapper">
                                                 <h6 for="collectionLocation" class="text-primary">Specify Destination Location</h6>
-                                        <input type="text" name="destination_location" class="form-control">
-                                    </div>
+                                                <input type="text" name="destination_location" class="form-control">
+                                            </div>
 
                                             <div class="col-md-3">
                                                 <h6 for="collectionLocation" class="text-primary">Pickup Location</h6>
