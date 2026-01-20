@@ -1307,7 +1307,6 @@
                     $('#shipmentTable tbody tr').each(function () {
                         const row = $(this);
 
-                        // Skip non-item rows
                         if (row.find('input[name="packages[]"]').length === 0) return;
 
                         const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
@@ -1355,6 +1354,12 @@
                     // CLIENT 11 – NON-OVERNIGHT
                     else if (client_id === 11 && serviceType !== "overnight") {
                         cost = baseCost;
+
+                        // 🔥 RATE 220 → charge extra per kg
+                        if (rate_id === 220 && billableWeight > 5) {
+                            cost += (billableWeight - 5) * extraCost;
+                        }
+                        // rate_id !== 220 → no extra charge (do nothing)
                     }
 
                     // NORMAL CLIENTS
@@ -1392,7 +1397,6 @@
                     $('input[name="vat"]').val(vat);
                     $('input[name="total_cost"]').val(cost.toFixed(2));
                 }
-
 
                 // Watch for changes in volume dimensions
                 $(document).on('input', 'input[name="length[]"], input[name="width[]"], input[name="height[]"]',

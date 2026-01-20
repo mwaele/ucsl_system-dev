@@ -316,7 +316,7 @@
                                 <th>Date Requested</th>
                                 <th>Rider</th>
                                 <th>Vehicle</th>
-                                <th>Desc.</th>
+                                <th>Waybill no.</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -334,7 +334,7 @@
                                     </td>
                                     <td> {{ $request->user->name ?? '—' }} </td>
                                     <td> {{ $request->vehicle->regNo ?? '—' }} </td>
-                                    <td> {{ $request->parcelDetails }} </td>
+                                    <td> {{ $request->shipmentCollection?->waybill_no }} </td>
                                     <td>
                                         <span
                                             class="badge p-2

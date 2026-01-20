@@ -36,13 +36,13 @@ class LoadingSheetController extends Controller
         //
         $offices = Office::where('id',Auth::user()->station)->get();
         $destinations = $shipments = DB::table('shipment_collections')
-        ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
-        ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
-        ->where('client_requests.status', 'verified')
-        ->where('shipment_collections.loading_status', null)
-        ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
-        ->groupBy('rates.destination','rates.id')
-        ->get();
+            ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+            ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
+            ->where('client_requests.status', 'verified')
+            ->where('shipment_collections.loading_status', null)
+            ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
+            ->groupBy('rates.destination','rates.id')
+            ->get();
 
         //dd($destinations);
         $transporters = Transporter::orderBy('id', 'desc')->get();

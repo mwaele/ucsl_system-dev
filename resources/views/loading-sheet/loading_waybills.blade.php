@@ -53,6 +53,7 @@
                             <select name="waybill_no[]" id="categories-multiselect" class="multiselect" multiple>
                                 @foreach ($shipment_collections as $shipment_collection)
                                     <option value="{{ $shipment_collection->id }}">
+                                        {{ $shipment_collection->waybill_no }} - {{ $shipment_collection->destination?->destination }}
                                     </option>
                                 @endforeach
                             </select>
@@ -167,6 +168,7 @@
                             let row = `
                     <tr data-shipment-id="${shipmentId}">
                         <td>${item.waybill_no}</td>
+                        <td>${item.destination?.destination}</td>
                         <td>${item.item_name}</td>
                         <td>${item.packages_no}</td>
                         <td>${item.actual_quantity}</td>
