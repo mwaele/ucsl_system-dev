@@ -90,7 +90,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Approval Status</label>
-                                                <select name="approvalStatus" class="form-control">
+                                                <select name="approvalStatus" class="form-control" required>
                                                     <option value="">Select Status</option>
                                                     <option value="pending">Pending</option>
                                                     <option value="approved">Approved</option>
@@ -117,7 +117,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Status</label>
-                                                <select name="status" class="form-control">
+                                                <select name="status" class="form-control" required>
                                                     <option value="">Select Status</option>
                                                     <option value="active">Active</option>
                                                     <option value="closed">Closed</option>
@@ -128,7 +128,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label class="text-primary">Type</label>
-                                                <select name="status" class="form-control">
+                                                <select name="type" class="form-control" required>
                                                     <option value="">Select Type</option>
                                                     <option value="Overnight">Overnight</option>
                                                     <option value="Same Day">Same Day</option>
@@ -357,6 +357,21 @@
                                                                         <option value="closed"
                                                                             {{ $rate->status == 'closed' ? 'selected' : '' }}>
                                                                             Closed</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    <label class="text-primary">Type</label>
+                                                                    <select name="type" class="form-control">
+                                                                        <option value="">Select Type</option>
+                                                                        <option value="Overnight"
+                                                                            {{ $rate->type == 'Overnight' ? 'selected' : '' }}>
+                                                                            Overnight</option>
+                                                                        <option value="Same Day"
+                                                                            {{ $rate->type == 'Same Day' ? 'selected' : '' }}>
+                                                                            Same Day</option>
                                                                     </select>
                                                                 </div>
                                                             </div>

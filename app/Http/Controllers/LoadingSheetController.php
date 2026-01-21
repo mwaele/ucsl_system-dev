@@ -156,9 +156,14 @@ class LoadingSheetController extends Controller
                 'client_requests.requestId'
             )
             ->where('client_requests.status', 'verified')
-            ->where('shipment_collections.waybill_no', '!=', '') // Exclude empty waybill numbers
-            ->whereNull('shipment_collections.loading_status') // Correct way to check NULL
-            ->select('shipment_collections.*');
+            ->where('shipment_collections.waybill_no', '!=', '')
+            ->whereNull('shipment_collections.loading_status')
+            ->select('shipment_collections.*')
+            ->with([
+                'destination',
+                'special_destination',
+                'client',
+            ]);
 
         // If destination_id is NOT 0, filter by destination
         if ($loadingSheet->destination_id != 0) {
@@ -192,7 +197,7 @@ class LoadingSheetController extends Controller
 
     public function generate_loading_sheet(Request $request, $id)
     {
-                // Fetch loading sheet details
+        // Fetch loading sheet details
         $loadingSheet = LoadingSheet::with(['office'])->find($id);
 
         // Destination (fallback if not found)

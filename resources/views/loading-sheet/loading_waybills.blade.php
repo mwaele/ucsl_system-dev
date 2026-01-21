@@ -53,7 +53,7 @@
                             <select name="waybill_no[]" id="categories-multiselect" class="multiselect" multiple>
                                 @foreach ($shipment_collections as $shipment_collection)
                                     <option value="{{ $shipment_collection->id }}">
-                                        {{ $shipment_collection->waybill_no }} - {{ $shipment_collection->destination?->destination }}
+                                        {{ $shipment_collection->waybill_no }} - {{ $shipment_collection->resolved_destination?->destination }}
                                     </option>
                                 @endforeach
                             </select>

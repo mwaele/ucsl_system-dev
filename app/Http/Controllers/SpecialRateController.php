@@ -64,6 +64,7 @@ class SpecialRateController extends Controller
                 'applicableFrom'=>'nullable|string',
                 'applicableTo'=>'nullable|string',
                 'status'=>'required',
+                'type'=>'required',
                 'approvalStatus'=>'required',
                 'dateApproved'=>'nullable|string',
                 'office_id' =>'required',

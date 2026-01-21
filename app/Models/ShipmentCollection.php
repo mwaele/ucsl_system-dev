@@ -145,4 +145,13 @@ class ShipmentCollection extends Model
         return $this->belongsTo(User::class, 'verified_by');
     }
 
+    public function getResolvedDestinationAttribute()
+    {
+        if ($this->client->type === 'on_account') {
+            return $this->special_destination;
+        }
+
+        return $this->destination;
+    }
+
 }
