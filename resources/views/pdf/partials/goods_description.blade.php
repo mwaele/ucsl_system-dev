@@ -7,7 +7,7 @@
     <table style="width: 100%; font-size: 8px; margin-top: 4px;">
       <tr style>
         <td style="width: 60%;"><strong style="color: #14489F;">FROM:</strong> {{ $collection->office->name ?? '' }}</td>
-        <td style="width: 40%;"><strong style="color: #14489F;">TO:</strong> {{ $collection->destination->destination ?? '' }}</td>
+        <td style="width: 40%;"><strong style="color: #14489F;">TO:</strong> {{ $collection->resolved_destination ?? '' }} </td>
       </tr>
     </table>
   </div>
