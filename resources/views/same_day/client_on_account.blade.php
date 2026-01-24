@@ -876,7 +876,7 @@
                                         </button>
                                     @endif --}}
 
-                                    @if ($request->status === 'collected')
+                                    @if ($request->status === 'collected' || $request->status === 'released' || $request->status === 'verified' || $request->status === 'delivered')
                                         <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
                                             Waybill <i class="fas fa-file-invoice"></i>

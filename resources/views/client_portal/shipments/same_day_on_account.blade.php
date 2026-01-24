@@ -720,7 +720,7 @@
 
                                 </td>
                                 <td class="d-flex pl-2">
-                                    @if ($request->status === 'verified' || $request->status === 'Pending-Collection')
+                                    @if ($request->status === 'verified' || $request->status === 'Pending-Collection' || $request->status === 'released' || $request->status === 'delivered')
                                         {{-- Waybill Generation --}}
                                         <button class="btn btn-sm btn-primary mr-2" title="Generate Waybill"
                                             data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
