@@ -434,34 +434,35 @@ class ShipmentCollectionController extends Controller
         $consignment_no = $this->consignmentNumberService->generate();
 
         // Save main shipment
-        $shipment = ShipmentCollection::create([
-            'receiver_name' => $request->receiverContactPerson,
-            'receiver_id_no' => $request->receiverIdNo,
-            'receiver_phone' => $request->receiverPhone,
-            'receiver_address' => $request->receiverAddress,
-            'receiver_town' => $request->receiverTown,
-            'origin_id' => $request->origin_id,
-            'client_id' => $request->client_id,
-            'requestId' => $request->requestId,
-            'destination_id' => $request->destination_id,
-            'cost' => $request->cost,
-            'sender_type' => $request->sender_type,
-            'sender_name' => $request->sender_name,
-            'sender_contact' => $request->sender_contact,
-            'sender_address' => $request->sender_address,
-            'sender_town' => $request->sender_town,
-            'sender_id_no' => $request->sender_id_no,
-            'vat' => $request->vat,
-            'total_cost' => $request->total_cost,
-            'total_weight' => $request->total_weight,
-            'collected_by' => Auth::user()->id,
-            'consignment_no' => $consignment_no,
-            'base_cost' => $request->base_cost,
-            'sender_email' => $request->senderEmail,
-            'receiver_email' => $request->receiverEmail,
-            'special_rates_status' => $request->special_rate_state,
-            
-        ]);
+        $shipment = ShipmentCollection::updateOrCreate(
+            ['requestId' => $request->requestId],
+            [
+                'receiver_name' => $request->receiverContactPerson,
+                'receiver_id_no' => $request->receiverIdNo,
+                'receiver_phone' => $request->receiverPhone,
+                'receiver_address' => $request->receiverAddress,
+                'receiver_town' => $request->receiverTown,
+                'origin_id' => $request->origin_id,
+                'client_id' => $request->client_id,
+                'destination_id' => $request->destination_id,
+                'cost' => $request->cost,
+                'sender_type' => $request->sender_type,
+                'sender_name' => $request->sender_name,
+                'sender_contact' => $request->sender_contact,
+                'sender_address' => $request->sender_address,
+                'sender_town' => $request->sender_town,
+                'sender_id_no' => $request->sender_id_no,
+                'vat' => $request->vat,
+                'total_cost' => $request->total_cost,
+                'total_weight' => $request->total_weight,
+                'collected_by' => Auth::user()->id,
+                'consignment_no' => $consignment_no,
+                'base_cost' => $request->base_cost,
+                'sender_email' => $request->senderEmail,
+                'receiver_email' => $request->receiverEmail,
+                'special_rates_status' => $request->special_rate_state,
+            ]
+        );
 
         // Check if the client request sub_category_id matches the "Same Day" sub_category
         $sameDaySubCategoryId = DB::table('sub_categories')
@@ -529,7 +530,7 @@ class ShipmentCollectionController extends Controller
             ->update(['status' => 'collected','collected_by' => Auth::user()->id,
             'consignment_no' => $consignment_no]); // or whatever status you need
 
-            $id = DB::table('tracks')->where('requestId', $request->rqid)->value('id');
+            $id = DB::table('tracks')->where('requestId', $request->requestId)->value('id');
 
             $text = $itemCount === 1 ? 'item' : 'items';
             $text2 = $totalWeight === 1 ? 'kg' : 'kgs';
