@@ -113,10 +113,12 @@
                         <tr>
                             <th>#</th>
                             <th>Req ID</th>
+                            <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
                             <th>Telephone Number</th>
                             <th>Pickup Location</th>
+                            <th>Destination</th>
                             <th>Parcel Details</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -127,12 +129,13 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $collection->requestId }}</td>
+                                <td>{{ $collection->dateRequested }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
                                 <td>{{ $collection->client->contactPersonPhone }}</td>
                                 <td>{{ $collection->collectionLocation }}</td>
+                                <td>{{ $collection->shipmentCollection->resolved_destination->destination }}</td>
                                 <td>{{ $collection->parcelDetails }}</td>
-
                                 <td>
                                     @php
                                         $statusColor = match ($collection->status) {
@@ -220,10 +223,12 @@
                         <tr>
                             <th>#</th>
                             <th>Req ID</th>
+                            <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
                             <th>Telephone Number</th>
                             <th>Pickup Location</th>
+                            <th>Destination</th>
                             <th>Parcel Details</th>
                             <th>Status</th>
                             <th>Action</th>

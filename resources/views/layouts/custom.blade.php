@@ -347,14 +347,12 @@
                         class="collapse {{ request()->routeIs('my_collections.show') ? 'active' : '' }}"
                         aria-labelledby="headingRiderCollections" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <a class="collapse-item" href="{{ route('my_collections.show') }}">
-                                <i class="fas fa-fw fa-clipboard"></i>
-                                <span class="sized">UCSL Collections</span>
+                            <a class="collapse-item" href="{{ route('my_collections.show') }}">UCSL Collections
                             </a>
 
-                            <a class="collapse-item" href="{{ route('my_collections.collect') }}">
-                                <i class="fas fa-fw fa-clipboard"></i>
-                                <span class="sized">CLIENT Collections </span>
+                            <hr class="sidebar-divider my-0" />
+
+                            <a class="collapse-item" href="{{ route('my_collections.collect') }}">CLIENT Collections
                             </a>
                         </div>
                     </div>
