@@ -114,6 +114,7 @@
                             <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
+                            <th>Date</th>
                             <th>Telephone Number</th>
                             <th>Pickup Location</th>
                             <th>Parcel Details</th>
@@ -128,6 +129,7 @@
                                 <td>{{ $collection->requestId }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
+                                <td>{{ $collection->dateRequested }}</td>
                                 <td>{{ $collection->client->contactPersonPhone }}</td>
                                 <td>{{ $collection->collectionLocation }}</td>
                                 <td>{{ $collection->parcelDetails }}</td>
@@ -224,6 +226,7 @@
                             <th>Req ID</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
+                            <th>Date</th>
                             <th>Telephone Number</th>
                             <th>Pickup Location</th>
                             <th>Parcel Details</th>
@@ -265,6 +268,7 @@
                             <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}
                             </p>
                             <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
+                            <p class="mb-1"><strong>Date:</strong> {{ $collection->dateRequested ?? '' }} </p>
 
                             @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                 <span class="badge bg-danger text-white d-inline-block mb-2">

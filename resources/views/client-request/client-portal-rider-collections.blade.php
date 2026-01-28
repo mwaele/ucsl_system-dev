@@ -116,10 +116,11 @@
                             <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
-                            <th>Telephone Number</th>
-                            <th>Pickup Location</th>
                             <th>Destination</th>
-                            <th>Parcel Details</th>
+                            <th>Receiver</th>
+                            <th>Waybill</th>
+                            <th>Items</th>
+                            <th>Weight</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -132,10 +133,11 @@
                                 <td>{{ $collection->dateRequested }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
-                                <td>{{ $collection->client->contactPersonPhone }}</td>
-                                <td>{{ $collection->collectionLocation }}</td>
                                 <td>{{ $collection->shipmentCollection->resolved_destination->destination }}</td>
-                                <td>{{ $collection->parcelDetails }}</td>
+                                <td>{{ $collection->shipmentCollection->receiver_name }}</td>
+                                <td>{{ $collection->shipmentCollection->waybill_no }}</td>
+                                <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                                <td>{{ $collection->shipmentCollection?->total_weight ?? '' }}kg</td>
                                 <td>
                                     @php
                                         $statusColor = match ($collection->status) {
@@ -226,10 +228,11 @@
                             <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
-                            <th>Telephone Number</th>
-                            <th>Pickup Location</th>
                             <th>Destination</th>
-                            <th>Parcel Details</th>
+                            <th>Receiver</th>
+                            <th>Waybill</th>
+                            <th>Items</th>
+                            <th>Weight</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -269,11 +272,11 @@
                             </div>
 
                             <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
-                            <p class="mb-1"><strong>Phone:</strong> {{ $collection->client->contactPersonPhone }}</p>
-                            <p class="mb-1"><strong>Pickup:</strong> {{ $collection->collectionLocation }}</p>
-                            <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}
-                            </p>
-                            <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
+                            <p class="mb-1"><strong>Destination:</strong> {{ $collection->shipmentCollection->resolved_destination->destination }} </p>
+                            <p class="mb-1"><strong>Receiver:</strong> {{ $collection->shipmentCollection->receiver_name }} </p>
+                            <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }} </p>
+                            <p class="mb-1"><strong>Waybill:</strong> {{ $collection->shipmentCollection->waybill_no }} </p>
+                            <p class="mb-1"><strong>Date:</strong> {{ $collection->dateRequested ?? '' }} </p>
 
                             @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                                 <span class="badge bg-danger text-white d-inline-block mb-2">
