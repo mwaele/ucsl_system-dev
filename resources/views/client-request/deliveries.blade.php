@@ -378,22 +378,22 @@
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label class="form-label text-primary text-primary">Sender
-                                                                Email <span class="text-danger">*</span>
+                                                                Email
                                                             </label>
                                                             <input type="email" class="form-control" name="senderEmail"
-                                                                id="senderEmail" required>
+                                                                id="senderEmail">
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="form-group col-md-6">
                                                             <label class="form-label text-primary text-primary">ID
-                                                                Number <span class="text-danger">*</span></label>
+                                                                Number </label>
                                                             <input type="text" class="form-control"
-                                                                name="sender_id_no" id="sender_id_no" maxlength="8">
+                                                                name="sender_id_no" id="sender_id_no">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label class="form-label text-primary text-primary">Phone
-                                                                <span class="text-danger">*</span></label>
+                                                                </label>
                                                             <input type="text" class="form-control"
                                                                 name="sender_contact" id="sender_contact">
                                                         </div>
@@ -407,7 +407,7 @@
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label class="form-label text-primary text-primary">Address
-                                                                <span class="text-danger">*</span></label>
+                                                                </label>
                                                             <input type="text" class="form-control"
                                                                 name="sender_address" id="sender_address">
                                                         </div>
@@ -441,30 +441,27 @@
 
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">Receiver
-                                                            Email <span class="text-danger">*</span>
+                                                            Email
                                                         </label>
                                                         <input type="email" class="form-control" name="receiverEmail" 
                                                         value="{{ $collection->shipmentCollection?->receiver_email }}"
-                                                            required>
+                                                            >
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">ID
-                                                            Number <span class="text-danger">*</span>
+                                                            Number
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverIdNo"
-                                                        value="{{ $collection->shipmentCollection?->receiver_id_no }}"
-                                                            required maxlength="8">
+                                                        value="{{ $collection->shipmentCollection?->receiver_id_no }}">
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">Phone
                                                             Number
-                                                            <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverPhone"
-                                                        value="{{ $collection->shipmentCollection?->receiver_phone }}"
-                                                            required>
+                                                        value="{{ $collection->shipmentCollection?->receiver_phone }}">
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
@@ -473,8 +470,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverAddress"
-                                                        value="{{ $collection->shipmentCollection?->receiver_address }}"
-                                                            required>
+                                                        value="{{ $collection->shipmentCollection?->receiver_address }}" required>
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">Town
@@ -493,7 +489,7 @@
                                         <!-- Origin & Destination -->
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label class="form-label text-primary text-primary">Origin
+                                                <label class="form-label text-primary text-primary">Origins
                                                     <span class="text-danger">*</span> </label>
                                                 <select name="origin_id" id="origin_id_special"
                                                     class="form-control origin-dropdown-special">
@@ -515,7 +511,9 @@
                                                     </option>
                                                 </select>
                                             </div>
-                                            <input type="hidden" name='destination_id' id="destination_id_special">
+                                            <input type="hidden" 
+                                            value="{{ $collection->shipmentCollection->destination_id }}"
+                                            name='destination_id' id="destination_id_special">
                                         </div>
                                         {{-- <input type="hidden" name='destination' id="destination_id">
 
@@ -1047,17 +1045,17 @@
                                                             <label for="payment_mode" class="text-primary">
                                                                 <h6>Payment Mode</h6>
                                                             </label>
-                                                            <select id="payment_mode" name="payment_mode"
-                                                                class="form-control" required>
-                                                                <option value="" selected>--
-                                                                    Select --
-                                                                </option>
-                                                                <option value="M-Pesa">M-Pesa</option>
-                                                                <option value="Cash">Cash</option>
-                                                                <option value="COD">COD</option>
-                                                                <option value="Cheque">Cheque</option>
-                                                                <option value="Invoice">Invoice
-                                                                </option>
+
+                                                            <select id="payment_mode" name="payment_mode" class="form-control" required>
+                                                                @php
+                                                                    $paymentMethod = old('payment_mode', optional($collection->shipmentCollection)->payment_method);
+                                                                @endphp
+                                                                
+                                                                <option value="M-Pesa"  {{ $paymentMethod === 'M-Pesa' ? 'selected' : '' }}>M-Pesa</option>
+                                                                <option value="Cash"    {{ $paymentMethod === 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                                <option value="COD"     {{ $paymentMethod === 'COD' ? 'selected' : '' }}>COD</option>
+                                                                <option value="Cheque"  {{ $paymentMethod === 'Cheque' ? 'selected' : '' }}>Cheque</option>
+                                                                <option value="Invoice" {{ $paymentMethod === 'Invoice' ? 'selected' : '' }}>Invoice</option>
                                                             </select>
                                                         </div>
 
@@ -1072,6 +1070,7 @@
                                                                 pattern="[A-Z0-9]{10}"
                                                                 title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
                                                                 oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)"
+                                                                value="{{ $collection->shipmentCollection->reference ?? '' }}"
                                                                 required>
                                                         </div>
 
@@ -1918,12 +1917,14 @@
                         const destinationSelect2 = modal.find('.destination-dropdown-special');
                         const cid = modal.find('#cid').val();
                         const serviceType = modal.find('#service_type').val();
+                        const destinationIdSpecialInput = modal.find('#destination_id_special')
+                            .val(); // Clear previous destination ID
 
                         $('#origin_id').val(selectedOfficeId2);
                         destinationSelect2.html('<option value="">Select Destination</option>');
 
                         if (selectedOfficeId2) {
-                            $.get('/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' + serviceType)
+                            $.get('/special_rates/get_destinations/' + selectedOfficeId2 + '/' + cid + '/' + destinationIdSpecialInput)
                                 .done(function(data) {
                                     data.forEach(function(item) {
                                         destinationSelect2.append(
@@ -1939,29 +1940,74 @@
 
                     function recalculateCosts() {
                         let totalWeight = 0;
+                        let totalVolume = 0;
 
                         $('#shipmentTable tbody tr').each(function() {
                             const row = $(this);
                             const weight = parseFloat(row.find('input[name="weight[]"]').val()) || 0;
                             const packages = parseFloat(row.find('input[name="packages[]"]').val()) || 1;
+                            const volume = parseFloat(row.find('.volume').val()) || 1;
                             totalWeight += weight * packages;
+                            totalVolume += volume;
                         });
 
                         $('input[name="total_weight"]').val(totalWeight.toFixed(2));
 
                         const baseCost = parseFloat($('input[name="base_cost"]').val()) || 0;
                         let cost = baseCost;
+                        volumeWeight = totalVolume / 5000;
 
-                        if (totalWeight > 25) {
-                            const extraWeight = totalWeight - 25;
+                        let baseWeight = 0;
+
+
+                        if (totalWeight > volumeWeight) {
+                            baseWeight = totalWeight;
+                            //alert('weight' + baseWeight)
+                        }
+                        if (volumeWeight > totalWeight) {
+                            baseWeight = volumeWeight;
+                            //alert('volume weight' + baseWeight)
+                            $('input[name="total_weight"]').val(baseWeight.toFixed(2));
+                        }
+
+                        if (baseWeight > 25) {
+                            const extraWeight = baseWeight - 25;
                             cost += extraWeight * 50;
                         }
 
-                        $('input[name="cost"]').val(cost.toFixed(2));
+                        function extractVAT(costWithVAT) {
+                            // Calculate raw VAT when total already includes VAT
+                            const rawVat = (costWithVAT * 0.16) / 1.16;
 
-                        const vat = cost * 0.16;
-                        $('input[name="vat"]').val(vat.toFixed(2));
-                        $('input[name="total_cost"]').val((cost + vat).toFixed(2));
+                            const integerPart = Math.floor(rawVat);
+                            const decimalPart = rawVat - integerPart;
+                            let roundedDecimal = 0;
+
+                            // Apply the same custom rounding rules
+                            if (decimalPart <= 0.03) {
+                                roundedDecimal = 0.00;
+                            } else if (decimalPart > 0.03 && decimalPart <= 0.07) {
+                                roundedDecimal = 0.05;
+                            } else {
+                                roundedDecimal = 0.10;
+                            }
+
+                            let result = integerPart + roundedDecimal;
+
+                            // Handle carry-over if rounding pushes to next integer
+                            if (result >= integerPart + 1) {
+                                result = integerPart + 1.00;
+                            }
+
+                            // Return always formatted to 2 decimals, e.g., "69.00" or "69.05"
+                            return result.toFixed(2);
+                        }
+
+
+                        const vat = extractVAT(cost);
+                        $('input[name="cost"]').val((cost - vat).toFixed(2));
+                        $('input[name="vat"]').val(vat);
+                        $('input[name="total_cost"]').val((cost).toFixed(2));
                     }
 
                     // Trigger when destination changes
@@ -1979,7 +2025,7 @@
                                 .done(function(data) {
                                     const baseCost = parseFloat(data.cost);
                                     $('input[name="base_cost"]').val(baseCost);
-                                    recalculateCosts();
+                                    // recalculateCosts();
                                 })
                                 .fail(function() {
                                     console.error("Failed to fetch base cost");
