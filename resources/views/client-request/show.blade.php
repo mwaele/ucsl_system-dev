@@ -760,7 +760,7 @@
                                         </div>
                                         <div>
                                             <strong>To:</strong>
-                                            {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                            {{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}
                                         </div>
                                         <div><strong>Total Items:</strong>
                                             {{ $collection->shipmentCollection->items->count() }}</div>

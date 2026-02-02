@@ -796,7 +796,7 @@
                                             <strong>From:</strong>
                                             {{ $collection->shipmentCollection->office->name }}
                                             <strong style="margin-left: 10px;">To:</strong>
-                                            {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                            {{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}
                                         </div>
                                         <div><strong>Total Items:</strong>
                                             {{ $collection->shipmentCollection->items->count() }}</div>
@@ -811,14 +811,14 @@
                                         <div style="font-weight: bold;">Sender:</div>
                                         <div>Name: {{ $collection->client->name }}</div>
                                         <div>KRA PIN:
-                                            {{ $collection->shipmentCollection->client->kraPin }}
+                                            {{ $collection->shipmentCollection?->client->kraPin }}
                                         </div>
                                         @php
-                                            $phone = $collection->client->contact;
-                                            $maskedPhone =
-                                                substr($phone, 0, 3) .
-                                                str_repeat('*', strlen($phone) - 6) .
-                                                substr($phone, -3);
+                                            $phone = optional($collection->client)->contact;
+
+                                            $maskedPhone = $phone && strlen($phone) > 6
+                                                ? substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3)
+                                                : $phone;
                                         @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
@@ -827,22 +827,22 @@
                                         <hr style="margin: 4px 0;">
 
                                         <div style="font-weight: bold;">Receiver:</div>
-                                        <div>Name: {{ $collection->shipmentCollection->receiver_name }}
+                                        <div>Name: {{ $collection->shipmentCollection?->receiver_name }}
                                         </div>
                                         @php
-                                            $phone = $collection->shipmentCollection->receiver_phone;
-                                            $maskedPhone =
-                                                substr($phone, 0, 3) .
-                                                str_repeat('*', strlen($phone) - 6) .
-                                                substr($phone, -3);
+                                            $phone = $collection->shipmentCollection?->receiver_phone;
+
+                                            $maskedPhone = $phone && strlen($phone) > 6
+                                                ? substr($phone, 0, 3) . str_repeat('*', strlen($phone) - 6) . substr($phone, -3)
+                                                : $phone;
                                         @endphp
 
                                         <div>Phone: {{ $maskedPhone }}</div>
 
                                         <div>Address:
-                                            {{ $collection->shipmentCollection->receiver_address }}
+                                            {{ $collection->shipmentCollection?->receiver_address }}
                                         </div>
-                                        <div>Town: {{ $collection->shipmentCollection->receiver_town }}
+                                        <div>Town: {{ $collection->shipmentCollection?->receiver_town }}
                                         </div>
                                         <hr style="margin: 4px 0;">
 

@@ -113,10 +113,11 @@
                             <th>Date</th>
                             <th>Client Name</th>
                             <th>Service Level</th>
-                            <th>Telephone Number</th>
-                            <th>Pick-up </th>
-                            <th>Drop-off</th>
-                            <th>Parcel Details</th>
+                            <th>Destination</th>
+                            <th>Receiver</th>
+                            <th>Waybill</th>
+                            <th>Items</th>
+                            <th>Weight</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -129,12 +130,11 @@
                                 <td>{{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
-                                <td>{{ $collection->client->contactPersonPhone }}</td>
-                                <td>{{ $collection->pickupLocation ?? ($collection->office->name ?? $collection->shipmentCollection->office->name) }}
-                                </td>
-                                <td>{{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}
-                                </td>
-                                <td>{{ $collection->parcelDetails }}</td>
+                                <td>{{ $collection->shipmentCollection->resolved_destination->destination }}</td>
+                                <td>{{ $collection->shipmentCollection->receiver_name }}</td>
+                                <td>{{ $collection->shipmentCollection->waybill_no }}</td>
+                                <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
+                                <td>{{ $collection->shipmentCollection?->total_weight ?? '' }}kg</td>
                                 <td>
                                     <span
                                         class="badge p-2 fs-6 text-white
@@ -228,14 +228,14 @@
 
                         <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
                         <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}</p>
-                        <p class="mb-1"><strong>Phone:</strong> {{ $collection->client->contactPersonPhone }}</p>
-                        <p class="mb-1"><strong>Pickup:</strong>
-                            {{ $collection->pickupLocation ?? ($collection->office->name ?? $collection->shipmentCollection->office->name) }}
+                        <p class="mb-1"><strong>Destination:</strong> {{ $collection->shipmentCollection->resolved_destination->destination }} </p>
+                        <p class="mb-1"><strong>Receiver:</strong>
+                            {{ $collection->shipmentCollection->receiver_name }}
                         </p>
-                        <p class="mb-1"><strong>Dropoff:</strong>
-                            {{ $collection->collectionLocation ?? $collection->shipmentCollection->destination->destination }}
+                        <p class="mb-1"><strong>Waybill:</strong>
+                            {{ $collection->shipmentCollection->waybill_no }}
                         </p>
-                        <p class="mb-1"><strong>Parcel:</strong> {{ $collection->parcelDetails }}</p>
+                        <p class="mb-1"><strong>Date:</strong> {{ $collection->dateRequested }} </p>
 
                         @if ($collection->priority_level == 'high' && $collection->status !== 'delivered')
                             <p class="badge p-2 mt-2 bg-danger text-white">
@@ -760,7 +760,7 @@
                                         </div>
                                         <div>
                                             <strong>To:</strong>
-                                            {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                            {{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}
                                         </div>
                                         <div><strong>Total Items:</strong>
                                             {{ $collection->shipmentCollection->items->count() }}</div>
@@ -1041,16 +1041,20 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         {{-- Payment Mode --}}
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-4"> 
                                                             <label for="payment_mode" class="text-primary">
                                                                 <h6>Payment Mode</h6>
                                                             </label>
 
+                                                            @php
+                                                                $paymentMethod = old('payment_mode', optional($collection->shipmentCollection)->payment_mode);
+                                                            @endphp
+
                                                             <select id="payment_mode" name="payment_mode" class="form-control" required>
-                                                                @php
-                                                                    $paymentMethod = old('payment_mode', optional($collection->shipmentCollection)->payment_method);
-                                                                @endphp
-                                                                
+                                                                <option value="" disabled {{ empty($paymentMethod) ? 'selected' : '' }}>
+                                                                    -- Select Payment Mode --
+                                                                </option>
+
                                                                 <option value="M-Pesa"  {{ $paymentMethod === 'M-Pesa' ? 'selected' : '' }}>M-Pesa</option>
                                                                 <option value="Cash"    {{ $paymentMethod === 'Cash' ? 'selected' : '' }}>Cash</option>
                                                                 <option value="COD"     {{ $paymentMethod === 'COD' ? 'selected' : '' }}>COD</option>
@@ -1066,10 +1070,10 @@
                                                             </label>
                                                             <input type="text" id="reference" name="reference"
                                                                 class="form-control text-uppercase"
-                                                                placeholder="e.g. TH647CDTNA" maxlength="10"
+                                                                {{-- placeholder="e.g. TH647CDTNA" maxlength="10"
                                                                 pattern="[A-Z0-9]{10}"
                                                                 title="Enter a 10-character M-Pesa code in capital letters with no spaces or special characters"
-                                                                oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)"
+                                                                oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0,10)" --}}
                                                                 value="{{ $collection->shipmentCollection->reference ?? '' }}"
                                                                 required>
                                                         </div>
@@ -1131,7 +1135,7 @@
                                                             </div>
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-primary">
-                                                                    Phone Number <span class="text-danger">*</span>
+                                                                    Phone Number 
                                                                 </label>
                                                                 <input type="text" class="form-control"
                                                                     name="receiver_phone"
@@ -1141,7 +1145,7 @@
                                                         <div class="form-row">
                                                             <div class="form-group col-md-6">
                                                                 <label class="form-label text-primary">
-                                                                    ID Number <span class="text-danger">*</span>
+                                                                    ID Number
                                                                 </label>
                                                                 <input type="text" class="form-control"
                                                                     name="receiver_id_no" maxlength="8"
@@ -1510,7 +1514,7 @@
                                         </div>
                                         <div>
                                             <strong>To:</strong>
-                                            {{ $collection->shipmentCollection->destination->destination ?? '' }}
+                                            {{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}
                                         </div>
                                         <div><strong>Total Items:</strong>
                                             {{ $collection->shipmentCollection->items->count() }}
