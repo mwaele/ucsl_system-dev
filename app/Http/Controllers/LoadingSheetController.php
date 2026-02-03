@@ -35,14 +35,47 @@ class LoadingSheetController extends Controller
     {
         //
         $offices = Office::where('id',Auth::user()->station)->get();
-        $destinations = $shipments = DB::table('shipment_collections')
+
+        $walkinShipments = DB::table('shipment_collections')
+            ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')
             ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
             ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
+            ->where('clients.type', 'walkin')
             ->where('client_requests.status', 'verified')
-            ->where('shipment_collections.loading_status', null)
-            ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
-            ->groupBy('rates.destination','rates.id')
+            ->whereNull('shipment_collections.loading_status')
+            ->select(
+                'rates.destination as destination_name',
+                'rates.id as destination_id',
+                DB::raw('count(shipment_collections.id) as total_shipments')
+            )
+            ->groupBy('rates.destination', 'rates.id')
             ->get();
+
+        $onAccountShipments = DB::table('shipment_collections')
+            ->join('clients', 'shipment_collections.client_id', '=', 'clients.id')
+            ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+            ->join('special_rates', 'shipment_collections.destination_id', '=', 'special_rates.id')
+            ->where('clients.type', 'on_account')
+            ->where('client_requests.status', 'verified')
+            ->whereNull('shipment_collections.loading_status')
+            ->select(
+                'special_rates.destination as destination_name',
+                'special_rates.id as destination_id',
+                DB::raw('count(shipment_collections.id) as total_shipments')
+            )
+            ->groupBy('special_rates.destination', 'special_rates.id')
+            ->get();
+
+        $destinations = $walkinShipments->merge($onAccountShipments);
+
+        // $destinations = $shipments = DB::table('shipment_collections')
+        //     ->join('client_requests', 'shipment_collections.requestId', '=', 'client_requests.requestId')
+        //     ->join('rates', 'shipment_collections.destination_id', '=', 'rates.id')
+        //     ->where('client_requests.status', 'verified')
+        //     ->where('shipment_collections.loading_status', null)
+        //     ->select('rates.destination as destination_name', 'rates.id as destination_id', DB::raw('count(shipment_collections.id) as total_shipments'))
+        //     ->groupBy('rates.destination','rates.id')
+        //     ->get();
 
         //dd($destinations);
         $transporters = Transporter::orderBy('id', 'desc')->get();

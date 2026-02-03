@@ -254,7 +254,7 @@
                                 <td> {{ str_pad($sheet->batch_no, 4, '0', STR_PAD_LEFT) }} </td>
                                 <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
-                                <td> {{ $sheet->rate->destination ?? '' }} @if ($sheet->destination_id == '0')
+                                <td> {{ $sheet->special_destination->destination ?? '' }} @if ($sheet->destination_id == '0')
                                         {{ 'Various' }}
                                     @endif
                                 </td>
