@@ -154,7 +154,7 @@ class LoadingSheetController extends Controller
         $loadingSheet->office_id = $request->origin_station_id;
         $loadingSheet->station_id = Auth::user()->station;
         $loadingSheet->destination = $request->destination;
-        $loadingSheet->destination_id = $request->destination;
+        $loadingSheet->destination_id = $request->destination_id;
         $loadingSheet->transported_by = $request->transporter_id;
         $loadingSheet->vehicle_reg_no = $request->reg_no;
         $loadingSheet->dispatcher_id = $request->dispatcher_id;

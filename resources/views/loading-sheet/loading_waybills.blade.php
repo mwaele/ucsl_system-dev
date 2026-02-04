@@ -40,7 +40,7 @@
                     <div class="col-md-3">
                         <label class="text-white" for="destination">Destination</label>
                         <input type="text"
-                            value="{{ $loading_sheet->rate->destination ?? '' }} @if ($loading_sheet->destination_id == '0') {{ 'Various' }} @endif"
+                            value="{{ $loading_sheet->destination ?? '' }} @if ($loading_sheet->destination_id == '0') {{ 'Various' }} @endif"
                             class="form-control" readonly>
                     </div>
                 </div>

@@ -138,8 +138,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="destination" class="form-label">Destination</label>
-                                        <select name="destination" id="" class="form-control">
+                                        <label for="destination_id" class="form-label">Destination</label>
+                                        <select name="destination_id" id="destination_id" class="form-control">
                                             <option value="">Select Destination</option>
                                             <option value="0">Various</option>
                                             @foreach ($destinations as $destination)
@@ -148,6 +148,8 @@
                                                 </option>
                                             @endforeach
                                         </select>
+
+                                        <input type="hidden" name="destination" id="destination_hidden">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="origin" class="form-label">Transporter</label>
@@ -254,7 +256,7 @@
                                 <td> {{ str_pad($sheet->batch_no, 4, '0', STR_PAD_LEFT) }} </td>
                                 <td> {{ $sheet->dispatch_date ?? 'Pending Dispatch' }} </td>
                                 <td> {{ $sheet->office->name }} </td>
-                                <td> {{ $sheet->special_destination->destination ?? '' }} @if ($sheet->destination_id == '0')
+                                <td> {{ $sheet->destination ?? '' }} @if ($sheet->destination_id == '0')
                                         {{ 'Various' }}
                                     @endif
                                 </td>
@@ -334,6 +336,11 @@
             } else {
                 $('#truck_id').empty().append('<option value="">Select Truck</option>');
             }
+        });
+
+        document.getElementById('destination_id').addEventListener('change', function () {
+            const selectedText = this.options[this.selectedIndex].text;
+            document.getElementById('destination_hidden').value = selectedText;
         });
     </script>
 @endsection
