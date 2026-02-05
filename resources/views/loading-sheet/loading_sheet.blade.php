@@ -82,6 +82,7 @@
                             <th>WAYBILL NO.</th>
                             <th>CLIENT</th>
                             <th>DESCRIPTION</th>
+                            <th>RECEIVER</th>
                             <th>DESTINATION</th>
                             <th>QTY</th>
                             <th>WEIGHT</th>
@@ -92,11 +93,11 @@
                     <tbody>
                         @foreach ($data as $item)
                             <tr>
-
                                 <td>{{ $item->waybill_no }}</td>
                                 <td>{{ $item->client_name }}</td>
                                 <td>{{ $item->item_names }}</td>
-                                <td>{{ $item->destination ?? '' }}</td>
+                                <td>{{ $item->receiver_name }}</td>
+                                <td>{{ $item->receiver_town ?? '' }}</td>
                                 <td>{{ $item->total_quantity }}</td>
                                 <td>{{ $item->total_weight }}</td>
                                 <td>{{ number_format($item->total_cost, 2) }}</td>

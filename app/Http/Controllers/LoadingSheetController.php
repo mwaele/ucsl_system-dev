@@ -330,7 +330,9 @@ class LoadingSheetController extends Controller
 
         ->select(
             'lsw.waybill_no',
-            'r.destination', // Destination from rates
+            'r.destination',
+            'sc.receiver_name',
+            'sc.receiver_town',
             'sc.total_cost',
             'c.name as client_name',
             'sc.payment_mode',
@@ -339,7 +341,7 @@ class LoadingSheetController extends Controller
             DB::raw('SUM(si.actual_weight) as total_weight')
         )
         ->where('lsw.loading_sheet_id', $id)
-        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode', 'r.destination')
+        ->groupBy('lsw.waybill_no', 'c.name', 'r.id', 'sc.total_cost','sc.payment_mode', 'r.destination', 'sc.receiver_name', 'sc.receiver_town')
         ->get();
 
         $totals = DB::table('loading_sheet_waybills as lsw')
