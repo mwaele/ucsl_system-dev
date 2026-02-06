@@ -473,7 +473,7 @@ class LoadingSheetController extends Controller
                     'message'         => $parcelMessage,
                 ]);
             } else {
-                Log::warning("Message record skipped: phone number is null for {$$shipment->receiver_name}");
+                Log::warning("Message record skipped: phone number is null for {$shipment->receiver_name}");
             }
 
             // sender email

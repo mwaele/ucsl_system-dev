@@ -168,7 +168,6 @@
                             let row = `
                     <tr data-shipment-id="${shipmentId}">
                         <td>${item.waybill_no}</td>
-                        <td>${item.destination?.destination}</td>
                         <td>${item.item_name}</td>
                         <td>${item.packages_no}</td>
                         <td>${item.actual_quantity}</td>

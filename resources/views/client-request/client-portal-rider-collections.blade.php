@@ -494,30 +494,26 @@
 
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">Receiver
-                                                            Email <span class="text-danger">*</span>
+                                                            Email
                                                         </label>
                                                         <input type="email" class="form-control" name="receiverEmail"
-                                                            value="{{ $collection->shipmentCollection?->receiver_email }}"
-                                                            required>
+                                                            value="{{ $collection->shipmentCollection?->receiver_email }}">
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">ID
-                                                            Number <span class="text-danger">*</span>
+                                                            Number
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverIdNo"
-                                                            value="{{ $collection->shipmentCollection?->receiver_id_no }}"
-                                                            required maxlength="8">
+                                                            value="{{ $collection->shipmentCollection?->receiver_id_no }}" maxlength="8">
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label class="form-label text-primary text-primary">Phone
                                                             Number
-                                                            <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" class="form-control" name="receiverPhone"
-                                                            value="{{ $collection->shipmentCollection?->receiver_phone }}"
-                                                            required>
+                                                            value="{{ $collection->shipmentCollection?->receiver_phone }}">
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
