@@ -877,39 +877,10 @@
                                     @endif --}}
 
                                     @if ($request->status === 'collected' || $request->status === 'released' || $request->status === 'verified' || $request->status === 'delivered')
-                                        <button class="btn btn-sm btn-info mr-1" title="Generate Waybill"
-                                            data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">
-                                            Waybill <i class="fas fa-file-invoice"></i>
+                                        <button class="btn btn-sm btn-success mr-1 open-waybill"
+                                            data-id="{{ $request->requestId }}">
+                                            <i class="fas fa-file-invoice"></i> Generate Waybill
                                         </button>
-
-                                        <div class="modal fade" id="waybillModal{{ $request->requestId }}"
-                                            tabindex="-1" role="dialog" aria-labelledby="waybillLabel"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title text-primary">Waybill Preview</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body"
-                                                        style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                                        <iframe src="{{ route('waybill.preview', $request->requestId) }}"
-                                                            width="100%" height="500" frameborder="0"></iframe>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Close</button>
-                                                        <a href="{{ route('waybill.generate', $request->requestId) }}"
-                                                            target="_blank" class="btn btn-primary">
-                                                            Generate
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     @endif
 
                                     @if ($request->status === 'delivered')
@@ -1023,6 +994,31 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                <!-- Generate Waybill Modal -->
+                <div class="modal fade" id="waybillModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl" style="max-width: 850px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-primary">Waybill Preview</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    &times;
+                                </button>
+                            </div>
+
+                            <div class="modal-body" style="max-height:80vh; overflow:auto;">
+                                <iframe id="waybillFrame" width="100%" height="500"></iframe>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                                <a id="waybillGenerateLink" class="btn btn-primary" target="_blank">
+                                    Generate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <script>
                     $(document).ready(function() {

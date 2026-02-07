@@ -2557,6 +2557,26 @@
                 }
             });
         </script>
+
+        <script>
+            document.addEventListener("click", function(e){
+                if(e.target.closest(".open-waybill")){
+                    let id = e.target.closest(".open-waybill").dataset.id;
+
+                    let previewUrl = "/waybill/preview/" + id;
+                    let generateUrl = "/waybill/generate/" + id;
+
+                    document.getElementById("waybillFrame").src = previewUrl;
+                    document.getElementById("waybillGenerateLink").href = generateUrl;
+
+                    $('#waybillModal').modal('show');
+                }
+            });
+
+            $('#waybillModal').on('hidden.bs.modal', function () {
+                document.getElementById("waybillFrame").src = "";
+            });
+        </script>
     </div>
 </body>
 
