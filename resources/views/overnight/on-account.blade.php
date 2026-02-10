@@ -843,7 +843,6 @@
                                             </div>
                                         @endif
 
-
                                         @if ($request->status === 'verified')
                                             <button class="btn btn-sm btn-success mr-1" title="Generate Waybill"
                                                 data-toggle="modal" data-target="#waybillModal{{ $request->requestId }}">

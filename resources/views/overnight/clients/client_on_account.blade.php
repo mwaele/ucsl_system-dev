@@ -734,13 +734,13 @@
                                             </div>
                                         @endif
 
-                                        @if ($request->status === 'collected')
+                                        @if ($request->status === 'received_at_front_office')
                                             {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
                                                     data-toggle="modal" data-rider="{{ $request->user->name }}"
                                                     data-target="#verifyCollectedParcel-{{ $request->requestId }}">
                                                     <i class="fas fa-clipboard-check"></i>
                                                 </button> --}}
-                                            <button class="btn btn-info btn-sm verify-btn mr-1"
+                                            <button class="btn btn-primary btn-sm verify-btn mr-1"
                                                 data-id="{{ $request->shipmentCollection->id }}"
                                                 data-request-id="{{ $request->requestId }}"
                                                 data-rider="{{ $request->user->name }}"
@@ -754,25 +754,53 @@
                                             </button>
                                         @endif
 
-                                        @if ($request->status === 'collected')
-                                            <button class="btn btn-sm btn-warning mr-1" title="View Client Request">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        @endif
-
                                         @if ($request->status === 'verified')
-                                            <button class="btn btn-sm btn-success mr-1 open-waybill"
-                                                data-id="{{ $request->requestId }}">
-                                                <i class="fas fa-file-invoice"></i> Generate Waybill
-                                            </button>
+                                        <button class="btn btn-sm btn-success mr-1 open-waybill"
+                                            data-id="{{ $request->requestId }}">
+                                            <i class="fas fa-file-invoice"></i> Generate Waybill
+                                        </button>
                                         @endif
-
-                                        {{-- @if ($request->status === 'verified')
-                                            <button class="btn btn-sm btn-primary mr-1" title="Dispatch parcel"
-                                                data-toggle="modal" data-target="">
-                                                <i class="fas fa-truck"></i>
+                                        
+                                        @if ($request->status === 'collected')
+                                            <!-- Receive Collection Button -->
+                                            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#receiveCollectionModal-{{ $request->id }}">
+                                                <i class="fas fa-hand-holding-usd"></i> Receive Collection
                                             </button>
-                                        @endif --}}
+
+                                            <!-- Receive CollectionModal -->
+                                            <div class="modal fade" id="receiveCollectionModal-{{ $request->id }}" tabindex="-1" role="dialog"
+                                                aria-labelledby="receiveCollectionLabel-{{ $request->id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        
+                                                        <div class="modal-header bg-success text-white">
+                                                            <h5 class="modal-title" id="receiveCollectionLabel-{{ $request->id }}">
+                                                                Receive Rider Collection #{{ $request->requestId }}
+                                                            </h5>
+                                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <form action="{{ route('requests.receiveCollection', $request->id) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-body">
+                                                                <div class="form-group">
+                                                                    <label for="remarks-{{ $request->id }}">Remarks</label>
+                                                                    <textarea name="remarks" id="remarks-{{ $request->id }}" class="form-control"
+                                                                            rows="3" placeholder="Enter remarks..."></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-success">Confirm Receipt</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         @if ($request->status === 'Pending-Collection')
                                             <button class="btn btn-sm btn-primary" title="Delivery" data-toggle="modal"
@@ -884,7 +912,7 @@
                             @endforeach
                         </tbody>
                     </table>
-
+                    
                     <!-- Generate Waybill Modal -->
                     <div class="modal fade" id="waybillModal" tabindex="-1">
                         <div class="modal-dialog modal-xl" style="max-width: 850px;">

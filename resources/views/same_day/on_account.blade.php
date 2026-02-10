@@ -939,13 +939,6 @@
                                         </div>
                                     @endif
 
-                                    @if ($request->status === 'delivered')
-                                        <button class="btn btn-sm btn-warning mr-1" title="Dispatch parcel"
-                                            data-toggle="modal" data-target="">
-                                            <i class="fas fa-truck"></i>
-                                        </button>
-                                    @endif
-
                                     @if ($request->status === 'Pending-Collection')
                                         <button class="btn btn-sm btn-primary" title="Delivery" data-toggle="modal"
                                             data-target="#allocateRider-{{ $request->id }}">

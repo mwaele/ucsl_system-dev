@@ -319,16 +319,10 @@
                                     </button>
 
                                     <!-- Release Collection Button -->
-                                    <button class="btn btn-sm btn-warning ml-1 mr-1 mb-1" title="Release Collection"
+                                    <!-- <button class="btn btn-sm btn-warning ml-1 mr-1 mb-1" title="Release Collection"
                                         data-toggle="modal" data-target="#releaseCollectionModal-{{ $collection->id }}">
                                         Release Collection <i class="fas fa-arrow-circle-right ml-1"></i>
-                                    </button>
-
-                                    <!-- <button class="btn btn-warning btn-sm text-white d-flex mb-1 align-items-center gap-1 w-100 justify-content-center"
-                                                                                                                                                                                                                                                                                                            title="Waybill" data-toggle="modal"
-                                                                                                                                                                                                                                                                                                            data-target="#waybillModal{{ $collection->requestId }}">
-                                                                                                                                                                                                                                                                                                            <i class="fas fa-file-invoice"></i> <span>Waybill</span>
-                                                                                                                                                                                                                                                                                                        </button> -->
+                                    </button> -->                                                                                                                                                                                                                                                                     </button> -->
                                 @endif
 
                                 @if (in_array($collection->status, ['verified', 'delivered']))

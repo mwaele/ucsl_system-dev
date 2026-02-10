@@ -12,8 +12,8 @@
                     <!-- Date Range Filter -->
                     <div id="dateRangeFilter" class="d-flex flex-wrap align-items-center mr-4">
                         <h5 class="m-0 font-weight-bold text-primary mr-2">Filter by date:</h5>
-                        <input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
-                        <input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <h5 class="m-0 font-weight-bold mr-2">Start</h5><input type="date" id="startDate" class="form-control me-2 mr-2" style="width: 150px;">
+                        <h5 class="m-0 font-weight-bold mr-2">End</h5><input type="date" id="endDate" class="form-control me-2 mr-2" style="width: 150px;">
                         <button id="clearFilter" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Clear
                         </button>
