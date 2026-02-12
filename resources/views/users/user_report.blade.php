@@ -80,7 +80,7 @@
                         <td> {{ $user->phone_number }} </td>
                         <td> {{ $user->email }} </td>
                         <td> {{ $user->role }} </td>
-                        <td> {{ $user->station }} </td>
+                        <td> {{ $user->office?->name }} </td>
                         <td class="uppercase"> {{ $user->status }} </td>
                     </tr>
                 @endforeach

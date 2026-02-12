@@ -8,7 +8,11 @@
                 <h5 class="mb-0">User Accounts</h5>
 
                 <div class="d-flex gap-2 ms-auto">
-                    <a href="/client_performance_report/generate"
+                    <a href="/users_excel_report"
+                        class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+                        <i class="fas fa-download fa text-white"></i> Generate Excel
+                    </a>
+                    <a href="/users_report"
                         class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
                         <i class="fas fa-download fa text-white"></i> Generate Report
                     </a>

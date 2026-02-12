@@ -209,6 +209,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users_report', [UserController::class, 'users_report']);
+    Route::get('/users_excel_report', [UserController::class, 'users_excel_report']);
     Route::put('/client/{id}', [ClientController::class, 'update'])->name('client.update');
 
     Route::get('/clients_report', [ClientController::class, 'clients_report'])->name('clients_report');

@@ -261,7 +261,7 @@ class UserController extends Controller
         return response()->json($drivers);
     }
 
-    public function users_report()
+    public function users_report(Request $request)
     {
         $users = User::orderBy('created_at', 'desc')->get();
 
@@ -280,6 +280,25 @@ class UserController extends Controller
             'users_report.pdf',
             'a4',
             'landscape'
+        );
+    }
+
+    public function users_excel_report(Request $request)
+    {
+        $users = User::orderBy('created_at', 'desc')->get();
+
+        UserLog::create([
+            'name'    => Auth::user()->name,
+            'actions' => 'Generated users Excel report',
+            'url'     => $request->fullUrl(),
+            'table'   => "users",
+            'user_id' => Auth::id(),
+        ]);
+
+        return $this->renderExcel(
+            'users.user_report_excel',
+            ['users' => $users],
+            'users_report.xlsx'
         );
     }
 

@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use App\Helpers\PdfHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GenericViewExport;
 
 trait PdfReportTrait
 {
@@ -37,4 +39,16 @@ trait PdfReportTrait
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
     }
+
+    public function renderExcel(
+        string $view,
+        array $data,
+        string $filename
+    ) {
+        return Excel::download(
+            new GenericViewExport($view, $data),
+            $filename
+        );
+    }
+
 }
