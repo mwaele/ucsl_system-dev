@@ -130,7 +130,7 @@
                                 <td>{{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
-                                <td>{{ $collection->shipmentCollection->resolved_destination->destination }}</td>
+                                <td>{{ $collection->shipmentCollection->resolved_destination->destination ?? null }}</td>
                                 <td>{{ $collection->shipmentCollection->receiver_name }}</td>
                                 <td>{{ $collection->shipmentCollection->waybill_no }}</td>
                                 <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
@@ -228,7 +228,7 @@
 
                         <p class="mb-1"><strong>Client:</strong> {{ $collection->client->name ?? '' }}</p>
                         <p class="mb-1"><strong>Service:</strong> {{ $collection->serviceLevel->sub_category_name }}</p>
-                        <p class="mb-1"><strong>Destination:</strong> {{ $collection->shipmentCollection->resolved_destination->destination }} </p>
+                        <p class="mb-1"><strong>Destination:</strong> {{ $collection->shipmentCollection->resolved_destination->destination ?? '' }} </p>
                         <p class="mb-1"><strong>Receiver:</strong>
                             {{ $collection->shipmentCollection->receiver_name }}
                         </p>
@@ -999,7 +999,7 @@
                                         <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
                                         <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
                                         <input type="hidden" name="delivery_location"
-                                            value="{{ $collection->shipmentCollection->destination->destination }}">
+                                            value="{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}">
 
                                         @php
                                             $hasPayment = $collection->shipmentCollection->payment !== null;
