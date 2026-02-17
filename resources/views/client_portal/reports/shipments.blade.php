@@ -45,6 +45,9 @@
                 </div>
             </div>
 
+            <button id="generateExcel" class="btn btn-danger shadow-sm mr-2">
+                <i class="fas fa-download fa text-white"></i> Generate Excel
+            </button>
             <button id="generateReport" class="btn btn-danger shadow-sm">
                 <i class="fas fa-download fa text-white"></i> Generate Report
             </button>
@@ -65,6 +68,7 @@
                     const startInput = document.getElementById(startInputId);
                     const endInput = document.getElementById(endInputId);
                     const reportBtn = document.getElementById(reportBtnId);
+                    const excelBtn = document.getElementById("generateExcel");
                     const clearBtn = document.getElementById(clearBtnId);
                     const serviceLevelFilter = document.getElementById("serviceLevel");
                     const statusFilter = document.getElementById("status");
@@ -138,15 +142,26 @@
                     statusFilter.addEventListener("change", filterTable);
                     clearBtn.addEventListener("click", clearFilter);
 
-                    reportBtn.addEventListener("click", function () {
+                    function buildQuery() {
                         let startDate = startInput.value;
                         let endDate = endInput.value;
                         let serviceLevel = serviceLevelFilter.value;
                         let status = statusFilter.value;
 
-                        // Include filters in report URL
-                        window.location.href = `${reportUrl}?start=${startDate}&end=${endDate}&serviceLevel=${serviceLevel}&status=${status}`;
-                    });
+                        return `?start=${startDate}&end=${endDate}&serviceLevel=${serviceLevel}&status=${status}`;
+                    }
+
+                    if (reportBtn) {
+                        reportBtn.addEventListener("click", function () {
+                            window.location.href = reportUrl + buildQuery();
+                        });
+                    }
+
+                    if (excelBtn) {
+                        excelBtn.addEventListener("click", function () {
+                            window.location.href = "/client_shipment_report/generate_excel" + buildQuery();
+                        });
+                    }
                 }
 
                 // Example usage for "Overnight walk-in" page

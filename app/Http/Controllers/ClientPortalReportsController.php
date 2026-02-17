@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\ShipmentCollection;
 use App\Models\ClientRequest;
 use App\Models\Payment;
 use App\Traits\PdfReportTrait;
+use App\Models\UserLog;
+use Throwable;
 
 class ClientPortalReportsController extends Controller
 {
@@ -123,4 +126,220 @@ class ClientPortalReportsController extends Controller
             'landscape'
         );
     }
+
+    // public function shipmentReportGenerateExcel(Request $request)
+    // {
+    //     $startDate = $request->input('start');
+    //     $endDate = $request->input('end');
+    //     $serviceLevel = $request->input('serviceLevel');
+    //     $status = $request->input('status');
+
+    //     $query = ClientRequest::with([
+    //                 'client',
+    //                 'shipmentCollection',
+    //                 'serviceLevel',
+    //                 'user',
+    //                 'vehicle',
+    //                 'createdBy'
+    //             ])
+    //             ->where('clientId', auth('client')->user()->id);
+
+    //     if ($startDate) {
+    //         $query->whereDate('dateRequested', '>=', $startDate);
+    //     }
+
+    //     if ($endDate) {
+    //         $query->whereDate('dateRequested', '<=', $endDate);
+    //     }
+
+    //     if ($serviceLevel) {
+    //         $query->whereHas('serviceLevel', function ($q) use ($serviceLevel) {
+    //             $q->where('sub_category_name', $serviceLevel);
+    //         });
+    //     }
+
+    //     if ($status) {
+    //         $query->where('status', $status);
+    //     }
+
+    //     $clientRequests = $query->orderBy('dateRequested', 'desc')->get();
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Build Dynamic Report Title (same logic as PDF)
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     $reportTitle = 'Client Shipment Report';
+
+    //     if ($status || $serviceLevel || $startDate || $endDate) {
+    //         $filters = [];
+
+    //         if ($status) {
+    //             $filters[] = "$status shipments";
+    //         }
+
+    //         if ($serviceLevel) {
+    //             $filters[] = "$serviceLevel parcels";
+    //         }
+
+    //         if ($startDate && $endDate) {
+    //             $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y') .
+    //                         " to " . Carbon::parse($endDate)->format('M d, Y');
+    //         } elseif ($startDate) {
+    //             $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y');
+    //         } elseif ($endDate) {
+    //             $filters[] = "Until " . Carbon::parse($endDate)->format('M d, Y');
+    //         }
+
+    //         $reportTitle .= ' - ' . implode(', ', $filters);
+    //     } else {
+    //         $reportTitle .= ' - All Shipments';
+    //     }
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Optional: Log action like users_excel_report
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     UserLog::create([
+    //         'name'    => auth('client')->user()->name,
+    //         'actions' => 'Generated shipment Excel report',
+    //         'url'     => $request->fullUrl(),
+    //         'table'   => "client_requests",
+    //         'user_id' => auth('client')->user()->id,
+    //     ]);
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Return Excel
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     return $this->renderExcel(
+    //         'client_portal.reports.shipment_excel_report',
+    //         [
+    //             'clientRequests' => $clientRequests,
+    //             'reportTitle'    => $reportTitle
+    //         ],
+    //         'client_shipments_report.xlsx'
+    //     );
+    // }
+
+    public function shipmentReportGenerateExcel(Request $request)
+    {
+        try {
+
+            Log::info('Shipment Excel: START');
+
+            $startDate    = $request->input('start');
+            $endDate      = $request->input('end');
+            $serviceLevel = $request->input('serviceLevel');
+            $status       = $request->input('status');
+
+            Log::info('Shipment Excel: Filters', [
+                'start' => $startDate,
+                'end' => $endDate,
+                'serviceLevel' => $serviceLevel,
+                'status' => $status,
+            ]);
+
+            $query = ClientRequest::with([
+                        'client',
+                        'shipmentCollection',
+                        'serviceLevel',
+                        'user',
+                        'vehicle',
+                        'createdBy'
+                    ])
+                    ->where('clientId', auth('client')->user()->id);
+
+            Log::info('Shipment Excel: Base query built');
+
+            if ($startDate) {
+                $query->whereDate('dateRequested', '>=', $startDate);
+            }
+
+            if ($endDate) {
+                $query->whereDate('dateRequested', '<=', $endDate);
+            }
+
+            if ($serviceLevel) {
+                $query->whereHas('serviceLevel', function ($q) use ($serviceLevel) {
+                    $q->where('sub_category_name', $serviceLevel);
+                });
+            }
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            Log::info('Shipment Excel: Filters applied');
+
+            $clientRequests = $query->orderBy('dateRequested', 'desc')->get();
+
+            Log::info('Shipment Excel: Records fetched', [
+                'count' => $clientRequests->count()
+            ]);
+
+            // Build Title
+            $reportTitle = 'Client Shipment Report';
+
+            Log::info('Shipment Excel: Building title');
+
+            if ($status || $serviceLevel || $startDate || $endDate) {
+
+                $filters = [];
+
+                if ($status) {
+                    $filters[] = "$status shipments";
+                }
+
+                if ($serviceLevel) {
+                    $filters[] = "$serviceLevel parcels";
+                }
+
+                if ($startDate && $endDate) {
+                    $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y')
+                                . " to " . Carbon::parse($endDate)->format('M d, Y');
+                } elseif ($startDate) {
+                    $filters[] = "From " . Carbon::parse($startDate)->format('M d, Y');
+                } elseif ($endDate) {
+                    $filters[] = "Until " . Carbon::parse($endDate)->format('M d, Y');
+                }
+
+                $reportTitle .= ' - ' . implode(', ', $filters);
+            } else {
+                $reportTitle .= ' - All Shipments';
+            }
+
+            Log::info('Shipment Excel: Title built', [
+                'title' => $reportTitle
+            ]);
+
+            Log::info('Shipment Excel: Attempting Excel download');
+
+            return $this->renderExcel(
+                'client_portal.reports.shipment_excel_report',
+                [
+                    'clientRequests' => $clientRequests,
+                    'reportTitle'    => $reportTitle
+                ],
+                'client_shipments_report.xlsx'
+            );
+
+        } catch (Throwable $e) {
+
+            Log::error('Shipment Excel: FAILED', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Excel generation failed. Check logs.');
+        }
+    }
+
 }
