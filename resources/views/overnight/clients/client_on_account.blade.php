@@ -313,7 +313,9 @@
                                 <th>Client</th>
                                 <th>Pick-up Location</th>
                                 <th>Destination</th>
+                                <th>Receiver</th>
                                 <th>Date Requested</th>
+                                <th>Time</th>
                                 <th>Rider</th>
                                 <th>Vehicle</th>
                                 <th>Waybill no.</th>
@@ -327,10 +329,14 @@
                                     <td> {{ $loop->iteration }}. </td>
                                     <td> {{ $request->requestId }} </td>
                                     <td> {{ $request->client->name }} </td>
-                                    <td> {{ $request->collectionLocation }} </td>
+                                    <td> {{ $request->shipmentCollection?->sender_town }} </td>
                                     <td>{{ $request->shipmentCollection?->receiver_town}}</td>
+                                    <td>{{ $request->shipmentCollection?->receiver_name}}</td>
                                     <td data-date="{{ $request->dateRequested }}">
                                         {{ \Carbon\Carbon::parse($request->dateRequested)->format('M d, Y') ?? null }}
+                                    </td>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($request->dateRequested)->format('h:i A') ?? null }}
                                     </td>
                                     <td> {{ $request->user->name ?? '—' }} </td>
                                     <td> {{ $request->vehicle->regNo ?? '—' }} </td>

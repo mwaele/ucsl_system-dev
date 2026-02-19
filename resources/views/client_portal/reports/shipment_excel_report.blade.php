@@ -3,46 +3,64 @@
         <tr>
             <th>#</th>
             <th>Request ID</th>
-            <th>Date</th>
+            <th>Date Requested</th>
             <th>Service Level</th>
-            <th>Items</th>
-            <th>Assigned rider & truck</th>
             <th>From</th>
             <th>To</th>
             <th>Receiver</th>
-            <th>Collection Status</th>
-            <th>Amount (Ksh)</th>
+            <th>Assigned</th>
+            <th>Items</th>
+            <th>Amount</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
-        @forelse ($clientRequests ?? [] as $collection)
+        @foreach ($clientRequests as $collection)
+
+            @php
+                $serviceLevel = $collection->serviceLevel
+                    ? ($collection->serviceLevel->sub_category_name ?? '')
+                    : '';
+
+                $shipment = $collection->shipmentCollection;
+
+                $senderTown   = $shipment ? ($shipment->sender_town ?? '') : '';
+                $receiverTown = $shipment ? ($shipment->receiver_town ?? '') : '';
+                $receiverName = $shipment ? ($shipment->receiver_name ?? '') : '';
+
+                $riderName = $collection->user ? ($collection->user->name ?? '') : '';
+                $vehicleNo = $collection->vehicle ? ($collection->vehicle->regNo ?? '') : '';
+
+                $assignment = 'Pending';
+
+                if ($riderName) {
+                    $assignment = $riderName;
+                    if ($vehicleNo) {
+                        $assignment .= ' | ' . $vehicleNo;
+                    }
+                }
+
+                $itemsCount = $shipment && $shipment->items
+                    ? $shipment->items->count()
+                    : 0;
+
+                $amount = $shipment ? ($shipment->actual_total_cost ?? 0) : 0;
+
+            @endphp
+
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $collection->requestId ?? '' }}</td>
-                <td>
-                    {{ $collection->dateRequested 
-                        ? \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') 
-                        : '' }}
-                </td>
-                <td>{{ \Illuminate\Support\Str::title($collection->serviceLevel?->sub_category_name ?? '') }}</td>
-                <td>{{ $collection->shipmentCollection?->items?->count() ?? '' }}</td>
-                <td>
-                    {{ optional($collection->user)->name 
-                        ? optional($collection->user)->name . ' | ' . optional($collection->vehicle)->regNo 
-                        : 'Pending' }}
-                </td>
-                <td>{{ $collection->shipmentCollection?->sender_town ?? '' }}</td>
-                <td>{{ $collection->shipmentCollection?->receiver_town ?? '' }}</td>
-                <td>{{ $collection->shipmentCollection?->receiver_name ?? '' }}</td>
-                <td>{{ $collection->status ?? '' }}</td>
-                <td>
-                    {{ number_format($collection->shipmentCollection?->actual_total_cost ?? 0, 2) }}
-                </td>
+                <td>{{ $collection->requestId }}</td>
+                <td>{{ $collection->dateRequested }}</td>
+                <td>{{ $serviceLevel }}</td>
+                <td>{{ $senderTown }}</td>
+                <td>{{ $receiverTown }}</td>
+                <td>{{ $receiverName }}</td>
+                <td>{{ $assignment }}</td>
+                <td>{{ $itemsCount }}</td>
+                <td>{{ number_format((float) $amount, 2, '.', '') }}</td>
+                <td>{{ $collection->status }}</td>
             </tr>
-        @empty
-            <tr>
-                <td colspan="11">No records found</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>

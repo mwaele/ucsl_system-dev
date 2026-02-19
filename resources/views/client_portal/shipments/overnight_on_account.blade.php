@@ -637,10 +637,11 @@
                         <tr class="text-success">
                             <th>#</th>
                             <th>Request ID</th>
-                            <th>Client</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Origin</th>
                             <th>Destination</th>
+                            <th>Receiver</th>
                             <th>Service Level</th>
                             <th>Collected By</th>
                             <th>Status</th>
@@ -651,10 +652,11 @@
                         <tr>
                             <th>#</th>
                             <th>Request ID</th>
-                            <th>Client</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Origin</th>
                             <th>Destination</th>
+                            <th>Receiver</th>
                             <th>Service Level</th>
                             <th>Collected By</th>
                             <th>Status</th>
@@ -666,12 +668,15 @@
                             <tr>
                                 <td> {{ $loop->iteration }}. </td>
                                 <td> {{ $request->requestId }} </td>
-                                <td> {{ $request->client->name }} </td>
                                 <td data-date="{{ $request->shipmentCollection?->created_at }}">
                                     {{ $request->shipmentCollection?->created_at?->format('M d, Y') }}
                                 </td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($request->dateRequested)->format('h:i A') ?? null }}
+                                </td>
                                 <td> {{ $request->shipmentCollection?->office->name ?? '' }} </td>
                                 <td> {{ $request->shipmentCollection?->special_destination?->destination }} </td>
+                                <td>{{ $request->shipmentCollection?->receiver_name}}</td>
                                 <td> {{ $request->shipmentCollection?->clientRequestById->serviceLevel->sub_category_name }}
                                 </td>
                                 <td> {{ $request->shipmentCollection->collectedBy->name ?? 'Pending' }} </td>
