@@ -1003,32 +1003,6 @@
                     </div>
                 </div>
 
-                <!-- Waybill Modal -->
-                <div class="modal fade" id="waybillModal{{ $collection->requestId }}" tabindex="-1" role="dialog"
-                    aria-labelledby="waybillLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document" style="max-width: 850px;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title text-primary">Waybill Preview</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body" style="max-height: 80vh; overflow-y: auto; background: #f9f9f9;">
-                                <iframe src="{{ route('waybill.preview', $collection->requestId) }}" width="100%"
-                                    height="500" frameborder="0"></iframe>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <a href="{{ route('waybill.generate', $collection->requestId) }}" target="_blank"
-                                    class="btn btn-primary">
-                                    Generate
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 @if ($collection->status === 'pending collection' || $collection->status === 'collection_failed')
                     <!-- Failed Collection Modal -->
                     <div class="modal fade" id="failedCollectionModal-{{ $collection->id }}" tabindex="-1"

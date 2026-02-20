@@ -1,8 +1,6 @@
-@extends('layouts.custom')
+@extends(‘layouts.custom’)
 
-@section('content')
-    <!-- DataTales Example -->
-    <div class="card">
+@section(‘content’)
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
                 <h4 class="m-0 font-weight-bold text-danger">Overnight and Same Day Shipment Deliveries</h4>
@@ -740,7 +738,7 @@
                                     <div id="receipt-{{ $collection->id }}"
                                         style="font-family: monospace; font-size: 13px; line-height: 1.2;">
                                         <div style="text-align: center;">
-                                            <img src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
+                                            <img loading="lazy" src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
                                                 style="height: 70px;">
                                         </div>
                                         <div style="text-align: center; font-size: 15px;">
@@ -945,7 +943,7 @@
                                                 <span> {{ $collection->vehicle->regNo ?? '' }} </span>
                                             </div><br>
                                             <div class=" mt-0 pt-0 " style="text-align: center">
-                                                <img src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
+                                                <img loading="lazy" src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
                                                     alt="Authorized QR Code"
                                                     style="width: 120px; height: auto; margin-top: 10px;">
                                             </div>
@@ -1496,7 +1494,7 @@
                                     <div id="receipt-{{ $collection->id }}"
                                         style="font-family: monospace; font-size: 13px; line-height: 1.2;">
                                         <div style="text-align: center;">
-                                            <img src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
+                                            <img loading="lazy" src="{{ asset('images/ucsl_logo_monochrome.png') }}" alt="Logo"
                                                 style="height: 70px;">
                                         </div>
                                         <div style="text-align: center; font-size: 15px;"><strong>Goods
@@ -1707,7 +1705,7 @@
 
                                             <br>
                                             <div class=" mt-0 pt-0 " style="text-align: center">
-                                                <img src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
+                                                <img loading="lazy" src="{{ asset('qrcodes') . '/' . $collection->requestId . '.svg' }}"
                                                     alt="Authorized QR Code"
                                                     style="width: 120px; height: auto; margin-top: 10px;">
                                             </div>
@@ -2068,4 +2066,5 @@
             </script>
         </div>
     </div>
+
 @endsection
