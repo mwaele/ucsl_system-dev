@@ -1,6 +1,8 @@
-@extends(‘layouts.custom’)
+@extends('layouts.custom')
 
-@section(‘content’)
+@section('content')
+    <!-- DataTales Example -->
+    <div class="card">
         <div class="card-header py-3">
             <div class="d-sm-flex align-items-center justify-content-between">
                 <h4 class="m-0 font-weight-bold text-danger">Overnight and Same Day Shipment Deliveries</h4>
@@ -997,7 +999,7 @@
                                         <input type="hidden" name="client_id" value="{{ $collection->client->id }}">
                                         <input type="hidden" name="requestId" value="{{ $collection->requestId }}">
                                         <input type="hidden" name="delivery_location"
-                                            value="{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}">
+                                            value="{{ $collection->shipmentCollection->resolved_destination->destination ?? '' }}">
 
                                         @php
                                             $hasPayment = $collection->shipmentCollection->payment !== null;
@@ -2066,5 +2068,4 @@
             </script>
         </div>
     </div>
-
 @endsection

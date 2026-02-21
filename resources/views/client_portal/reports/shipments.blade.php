@@ -45,11 +45,11 @@
                 </div>
             </div>
 
-            <button id="generateExcel" class="btn btn-danger shadow-sm mr-2">
-                <i class="fas fa-download fa text-white"></i> Generate Excel
+            <button id="generateExcel" class="btn btn-success shadow-sm mr-2">
+                <i class="fas fa-file-excel text-white"></i> Generate Excel
             </button>
             <button id="generateReport" class="btn btn-danger shadow-sm">
-                <i class="fas fa-download fa text-white"></i> Generate Report
+                <i class="fas fa-file-pdf text-white"></i> Generate PDF
             </button>
 
             <script>

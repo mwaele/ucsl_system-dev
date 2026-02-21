@@ -340,7 +340,7 @@
 
                                             <div class="col-md-2">
                                                 <h6 for="payment_mode" class="text-primary">Payment Mode</h6>
-                                                <select name="payment_mode" id="payment_mode" class="form-control">
+                                                <select name="payment_mode" id="payment_mode" class="form-control" required>
                                                     <option value="" selected>-- Select --</option>
                                                     {{-- <option value="M-Pesa">M-Pesa</option>
                                                     <option value="COD">COD</option>
