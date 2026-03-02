@@ -105,7 +105,7 @@
                         }
 
                         // Initialize filter for this table
-                        initDateFilter("dataTable", 3, "/client_portal_overnight_report");
+                        initDateFilter("dataTable", 2, "/client_portal_overnight_report");
                     </script>
 
                     <form action="{{ route('client_portal_request.create') }}" method="POST" enctype="multipart/form-data">

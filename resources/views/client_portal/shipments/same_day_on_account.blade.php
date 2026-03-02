@@ -204,7 +204,7 @@
 
                                             <div class="col-md-2">
                                                 <h6 for="receiverIdNo" class="text-primary">ID Number</h6>
-                                                <input type="text" id="receiverIdNo" class="form-control"
+                                                <input type="number" id="receiverIdNo" class="form-control"
                                                     name="receiverIdNo">
                                             </div>
 

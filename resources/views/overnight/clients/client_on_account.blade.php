@@ -740,7 +740,7 @@
                                             </div>
                                         @endif
 
-                                        @if ($request->status === 'received_at_front_office')
+                                        @if ($request->status === 'received_at_front_office' || $request->status === 'delivered')
                                             {{-- <button class="btn btn-sm btn-info mr-1" title="Verify Collected Parcel"
                                                     data-toggle="modal" data-rider="{{ $request->user->name }}"
                                                     data-target="#verifyCollectedParcel-{{ $request->requestId }}">

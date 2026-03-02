@@ -127,7 +127,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}.</td>
                                 <td>{{ $collection->requestId }}</td>
-                                <td>{{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}</td>
+                                <td data-date="{{ $collection->dateRequested }}">{{ \Carbon\Carbon::parse($collection->dateRequested)->format('M d, Y') ?? null }}</td>
                                 <td>{{ $collection->client->name ?? '' }}</td>
                                 <td>{{ $collection->serviceLevel->sub_category_name }}</td>
                                 <td>{{ $collection->shipmentCollection->resolved_destination->destination ?? null }}</td>

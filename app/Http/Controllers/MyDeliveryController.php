@@ -80,10 +80,10 @@ class MyDeliveryController extends Controller
         //     $approvalStatuses[$collection->requestId] = $shipment?->agent_approved ?? false;
         // }
 
-        $approvalStatuses = $collections->mapWithKeys(function ($collection) {
-            $agent = $collection->shipmentCollection?->agent;
-            return [$collection->requestId => $agent?->agent_approved ?? false];
-        });
+        // $approvalStatuses = $collections->mapWithKeys(function ($collection) {
+        //     $agent = $collection->shipmentCollection?->agent;
+        //     return [$collection->requestId => $agent?->agent_approved ?? false];
+        // });
         
         $currentModule = 'rider deliveries module';
         $previousModule = session('current_module');
