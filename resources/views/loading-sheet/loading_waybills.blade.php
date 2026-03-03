@@ -53,7 +53,7 @@
                             <select name="waybill_no[]" id="categories-multiselect" class="multiselect" multiple>
                                 @foreach ($shipment_collections as $shipment_collection)
                                     <option value="{{ $shipment_collection->id }}">
-                                        {{ $shipment_collection->waybill_no }} - {{ $shipment_collection->resolved_destination?->destination }}
+                                        {{ $shipment_collection->requestId }} | {{ $shipment_collection->waybill_no }} - {{ $shipment_collection->resolved_destination?->destination }}
                                     </option>
                                 @endforeach
                             </select>
@@ -64,6 +64,7 @@
                 <table class="table mt-3" id="shipment-item-table">
                     <thead>
                         <tr>
+                            <th>Request ID</th>
                             <th>Waybill No</th>
                             <th>Item Name</th>
                             <th>Packages</th>
@@ -167,6 +168,7 @@
                             let shipmentId = String(item.shipment_id);
                             let row = `
                     <tr data-shipment-id="${shipmentId}">
+                        <td>${item.requestId}</td>
                         <td>${item.waybill_no}</td>
                         <td>${item.item_name}</td>
                         <td>${item.packages_no}</td>

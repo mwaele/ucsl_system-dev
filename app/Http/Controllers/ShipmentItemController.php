@@ -47,6 +47,7 @@ class ShipmentItemController extends Controller
             ->whereIn('shipment_items.shipment_id', $shipmentIds)
             ->select(
                 'shipment_collections.id as shipment_id',
+                'shipment_collections.requestId',
                 'shipment_collections.waybill_no',
                 'shipment_items.item_name',
                 'shipment_items.packages_no',
