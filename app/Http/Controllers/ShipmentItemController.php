@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ShipmentItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ShipmentItemController extends Controller
 {
@@ -40,9 +41,19 @@ class ShipmentItemController extends Controller
 
     public function getItems(Request $request)
     {
+        Log::info('REQUEST TIME:', ['time' => microtime(true)]);
         $shipmentIds = $request->input('ids');
-
-        $items = DB::table('shipment_items')
+    
+        if (!is_array($shipmentIds)) {
+            $shipmentIds = explode(',', $shipmentIds);
+        }
+    
+        if (empty($shipmentIds)) {
+            Log::warning('No shipment IDs provided');
+            return response()->json([]);
+        }
+    
+        $query = DB::table('shipment_items')
             ->join('shipment_collections', 'shipment_items.shipment_id', '=', 'shipment_collections.id')
             ->whereIn('shipment_items.shipment_id', $shipmentIds)
             ->select(
@@ -53,9 +64,17 @@ class ShipmentItemController extends Controller
                 'shipment_items.packages_no',
                 'shipment_items.actual_quantity',
                 'shipment_items.actual_weight'
-            )
-            ->get();
-
+            );
+    
+        Log::info('SQL:', [
+            'query' => $query->toSql(),
+            'bindings' => $query->getBindings()
+        ]);
+    
+        $items = $query->get();
+    
+        Log::info('Fetched Items:', $items->toArray());
+    
         return response()->json($items);
     }
 

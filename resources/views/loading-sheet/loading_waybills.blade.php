@@ -57,6 +57,14 @@
                                     </option>
                                 @endforeach
                             </select>
+
+                            <style>
+                                #categories-multiselect {
+                                    height: 200px;         /* Adjust to the height you want */
+                                    overflow-y: auto;      /* Enables vertical scrolling */
+                                    width: 100%;           /* Optional: make it full width */
+                                }
+                            </style>
                             <span id="waybill_no_feedback"></span>
                         </div>
                     </div>
@@ -93,11 +101,7 @@
     </div>
     <script>
         $(document).ready(function() {
-            $('#categories-multiselect').multiselect({
-                includeSelectAllOption: true,
-                enableFiltering: true,
-                buttonWidth: '100%'
-            });
+
             // Fetch and load new shipment items
             // $('#categories-multiselect').on('change', function() {
             //     const selectedIds = ($(this).val() || []).map(String); // Normalize to string
@@ -150,36 +154,53 @@
             // });
 
             // When categories are selected/unselected
-            $('#categories-multiselect').on('change', function() {
-                const selectedIds = ($(this).val() || []).map(String); // Normalize to string
-                console.log("Selected IDs:", selectedIds);
+            
+            let ajaxTimeout = null;
 
-                $.ajax({
-                    url: '/get-shipment-items',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        ids: selectedIds
-                    },
-                    success: function(items) {
-                        $('#shipment-item-table tbody').empty();
-
-                        items.forEach(function(item) {
-                            let shipmentId = String(item.shipment_id);
-                            let row = `
-                    <tr data-shipment-id="${shipmentId}">
-                        <td>${item.requestId}</td>
-                        <td>${item.waybill_no}</td>
-                        <td>${item.item_name}</td>
-                        <td>${item.packages_no}</td>
-                        <td>${item.actual_quantity}</td>
-                        <td>${item.actual_weight}</td>
-                        <td><button type="button" class="btn btn-danger btn-sm remove_row">Remove</button></td>
-                    </tr>`;
-                            $('#shipment-item-table tbody').append(row);
+            $('#categories-multiselect').multiselect({
+                includeSelectAllOption: true,
+                enableFiltering: true,
+                buttonWidth: '100%',
+                maxHeight: 300,
+            
+                onChange: function() {
+            
+                    clearTimeout(ajaxTimeout);
+            
+                    ajaxTimeout = setTimeout(function() {
+            
+                        const selectedIds = $('#categories-multiselect').val() || [];
+            
+                        $.ajax({
+                            url: '/get-shipment-items',
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: selectedIds
+                            },
+                            success: function(items) {
+                                console.log("Returned items:", items);
+            
+                                $('#shipment-item-table tbody').empty();
+            
+                                items.forEach(function(item) {
+                                    let row = `
+                                        <tr>
+                                            <td>${item.requestId}</td>
+                                            <td>${item.waybill_no}</td>
+                                            <td>${item.item_name}</td>
+                                            <td>${item.packages_no}</td>
+                                            <td>${item.actual_quantity}</td>
+                                            <td>${item.actual_weight}</td>
+                                        </tr>
+                                    `;
+                                    $('#shipment-item-table tbody').append(row);
+                                });
+                            }
                         });
-                    }
-                });
+            
+                    }, 300); // waits 300ms before firing
+                }
             });
 
             // When "Remove" button is clicked
