@@ -322,18 +322,19 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="padding-left:5px; !important">{{ $invoice->name }} <br>
-                        {{ $invoice->address }} <br>
+                    <td style="padding-left:5px; !important">{{ $shipment_collection->client->name ?? '' }} <br>
+                        {{ $shipment_collection->client->address ?? '' }}<br>
                         {{-- {{ $invoice->city }} <br> --}}
-                        {{ 'PIN: ' . $invoice->kraPin }}
+                        {{ 'PIN: ' . ($shipment_collection->client->kraPin ?? '') }} 
 
                     </td>
                     <td class="text-center" style="padding-right:5px!important;">
                         <p style="padding:3px!important; margin:0 !important"> <strong>Sender:
-                            </strong>{{ $invoice->sender_name }}
+                            </strong>{{ $shipment_collection->sender_name ?? '' }}
+
                         </p>
                         <p style="padding:3px!important; margin:0 !important"> <strong>Receiver: </strong>
-                            {{ $invoice->receiver_name }}</p>
+                           {{ $shipment_collection->receiver_name ?? '' }}</p>
 
                     </td>
                     <td class="text-right" style="padding-right:5px!important;">
@@ -346,9 +347,6 @@
 
 
                     </td>
-                    {{-- <td>{{ $invoice-> }} </td>
-                    <td>{{ $invoice-> }}
-                    </td> --}}
                 </tr>
             </tbody>
 
@@ -362,8 +360,8 @@
                 <th style="text-align: left">Payment Due in</th>
             </tr>
             <tr>
-                <td>{{ $invoice->waybill_no }}</td>
-                <td>{{ $invoice->requestId }}</td>
+                <td>{{ $shipment_collection->waybill_no ?? '' }}</td>
+                <td>{{ $shipment_collection->requestId ?? '' }}</td>
                 <td>{{ $invoice->invoice_status }}</td>
                 <td>
                     @php
@@ -396,14 +394,14 @@
             </thead>
             <tbody>
                 @php
-                    $subTotal = $invoice->actual_cost + ($invoice->last_mile_delivery_charges ?? 0);
-                    $vat = $invoice->actual_vat;
+                    $subTotal = $shipment_collection->actual_cost + ($shipment_collection->last_mile_delivery_charges ?? 0);
+                    $vat = $shipment_collection->actual_vat;
                     $grandTotal = $subTotal + $vat;
                 @endphp
                 {{-- @foreach ($shipmentItems as $item) --}}
                 <tr>
                     <td> {{ '1' }}. </td>
-                    <td>Shipment from {{ $invoice->routeFrom }} </td>
+                    <td>Shipment from {{ $shipment_collection->office->name ?? '' }} - {{ $shipment_collection->resolved_destination->destination ?? '' }} </td>
                     <td class="text-center" style="text-align: center"> {{ $shipmentItems->count() }} </td>
                     <td class="text-right"> {{ $totalWeight }} </td>
                     <td class="text-right">{{ number_format($subTotal, 2) }} </td>
@@ -449,10 +447,10 @@
                 </td>
                 <td style="">
                     <p>Checked By:________________ </p>
-                    < </td>
+                    </td>
                 <td style="">
                     <p>Approved By:_______________ </p>
-                    < </td>
+                    </td>
             </tr>
             <tr>
                 <td colspan="1" style=" padding:2px">
