@@ -192,6 +192,7 @@
                                             <td>${item.packages_no}</td>
                                             <td>${item.actual_quantity}</td>
                                             <td>${item.actual_weight}</td>
+                                            <td><button type="button" class="btn btn-danger btn-sm remove_row">Remove</button></td>
                                         </tr>
                                     `;
                                     $('#shipment-item-table tbody').append(row);

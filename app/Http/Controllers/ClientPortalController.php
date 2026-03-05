@@ -39,6 +39,7 @@ use App\Models\DeliveryControl;
 use App\Models\ClientLog;
 use App\Models\Vehicles;
 use App\Services\ConsignmentNumberService;
+use App\Services\WaybillNumberService;
 use App\Jobs\SendCollectionNotificationsJob;
 use BaconQrCode\Writer;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -57,13 +58,16 @@ class ClientPortalController extends Controller
 
     protected $requestIdService;
     protected $consignmentNumberService;
+    protected $waybillNumberService;
 
     public function __construct(
         RequestIdService $requestIdService,
-        ConsignmentNumberService $consignmentNumberService
+        ConsignmentNumberService $consignmentNumberService,
+        WaybillNumberService $waybillNumberService
     ) {
         $this->requestIdService = $requestIdService;
         $this->consignmentNumberService = $consignmentNumberService;
+        $this->waybillNumberService = $waybillNumberService;
     }
 
     public function index(Request $request)
@@ -842,30 +846,8 @@ class ClientPortalController extends Controller
             file_put_contents($qrCodePath, $qrContent);
 
             // Generate waybill
-            $prefix = 'UCSL';
-            $suffix = 'KE';
-            $padLength = 10;
+            $waybill_no = $this->waybillNumberService->generate();
 
-            $latestWaybill = DB::table('shipment_collections')
-                ->whereNotNull('waybill_no')
-                ->orderByDesc('id')
-                ->value('waybill_no');
-
-            if ($latestWaybill) {
-                // Remove prefix and suffix
-                $waybill_no = substr($latestWaybill, strlen($prefix), -strlen($suffix));
-
-                // Convert to int and increment
-                $bill_no = (int)$waybill_no + 1;
-            } else {
-                // First waybill
-                $bill_no = 1;
-            }
-
-            // Pad with zeros
-            $padded_no = str_pad($bill_no, $padLength, '0', STR_PAD_LEFT);
-
-            $waybill_no = $prefix . $padded_no . $suffix;
             $client = Client::findOrFail($request->clientId);
 
             // 1a. Save ShipmentCollection
@@ -914,21 +896,21 @@ class ClientPortalController extends Controller
             // 1b. Handle manual waybill number + image upload
             if (($validated['manualWaybillStatus'] ?? null) === 'yes') {
 
-    $updateData = [
-        'manual_waybillNo' => $validated['manualWaybillNo'] ?? null,
-    ];
+                $updateData = [
+                    'manual_waybillNo' => $validated['manualWaybillNo'] ?? null,
+                ];
 
-    if ($request->hasFile('manualWaybillImage')) {
-        $file = $request->file('manualWaybillImage');
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads'), $filename);
+                if ($request->hasFile('manualWaybillImage')) {
+                    $file = $request->file('manualWaybillImage');
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('uploads'), $filename);
 
-        $updateData['manual_waybill'] = $filename;
-    }
+                    $updateData['manual_waybill'] = $filename;
+                }
 
-    // ✅ UPDATE EXISTING RECORD (NO DUPLICATION)
-    $collection->update($updateData);
-}
+                // ✅ UPDATE EXISTING RECORD (NO DUPLICATION)
+                $collection->update($updateData);
+            }
 
 
             // 2. Rebuild items array from flat structure

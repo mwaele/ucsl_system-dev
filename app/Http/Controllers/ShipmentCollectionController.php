@@ -14,6 +14,7 @@ use App\Models\TrackingInfo;
 use App\Models\ShipmentSubItem;
 use App\Services\RequestIdService;
 use App\Services\ConsignmentNumberService;
+use App\Services\WaybillNumberService;
 use App\Services\SmsService;
 use App\Models\SentMessage;
 use App\Models\Client;
@@ -36,13 +37,16 @@ class ShipmentCollectionController extends Controller
 
     protected $requestIdService;
     protected $consignmentNumberService;
+    protected $waybillNumberService;
 
     public function __construct(
         RequestIdService $requestIdService,
-        ConsignmentNumberService $consignmentNumberService
+        ConsignmentNumberService $consignmentNumberService,
+        WaybillNumberService $waybillNumberService
     ) {
         $this->requestIdService = $requestIdService;
         $this->consignmentNumberService = $consignmentNumberService;
+        $this->waybillNumberService = $waybillNumberService;
     }
     
     /**
@@ -553,34 +557,10 @@ class ShipmentCollectionController extends Controller
             // -------------------------
             // 4. Generate and save waybill
             // -------------------------
-
-            // Set waybill format components
-            $prefix = 'UCSL';
-            $suffix = 'KE';
-            $padLength = 10;
-
-            // Get the latest waybill number from the database
-            $latestWaybill = DB::table('shipment_collections')
-                ->whereNotNull('waybill_no')
-                ->orderByDesc('id')
-                ->value('waybill_no');
-
-            // If a previous waybill exists, increment it; otherwise, start from 1
-            $bill_no = $latestWaybill
-                ? (int)substr($latestWaybill, strlen($prefix), -strlen($suffix)) + 1
-                : 1;
-
-            // Construct the new waybill number
-            $waybill_no = $prefix . str_pad($bill_no, $padLength, '0', STR_PAD_LEFT) . $suffix;
+            $waybill_no = $this->waybillNumberService->generate();
 
             // Save the generated waybill number into the shipment_collections table
-            $shipment = ShipmentCollection::where('requestId', $request->requestId)->first();
-
-            if ($shipment) {
-                $shipment->waybill_no = $waybill_no;
-                $shipment->save();
-            }
-
+            $shipment->update(['waybill_no' => $waybill_no]);
 
             Log::info('Waybill number generated and saved.', ['waybill_no' => $waybill_no]);
          
